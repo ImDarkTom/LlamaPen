@@ -43,19 +43,47 @@ function inputKeyUp(e: KeyboardEvent) {
         content: message,
     });
 
-    fetch('http://localhost:11434/api/chat', {
+    chatMessages.push({
+        role: 'assistant',
+        content: '',
+    });
+
+    sendMessage();
+}
+
+async function sendMessage() {
+    function handleChunk(value: Uint8Array) {
+        const chunkText = new TextDecoder().decode(value).trim().split('\n');
+
+        for (const chunk of chunkText) {
+            const chunkJson = JSON.parse(chunk);
+
+            const messageChunk = chunkJson.message.content;
+            chatMessages[chatMessages.length - 1].content += messageChunk;
+        }
+    }
+
+    const response = await fetch('http://localhost:11434/api/chat', {
         method: 'POST',
         body: JSON.stringify({
             model: 'llama3.2:1b',
             messages: chatMessages,
-            stream: false,
+            stream: true,
         })
-    })
-        .then(response => response.json())
-        .then(response => {
-            chatMessages.push(response.message);
+    });
+
+    const reader = response.body?.getReader();
+
+    while (true) {
+        const { done, value } = await reader!.read();
+
+        if (done) {
             localStorage.setItem('messages', JSON.stringify(chatMessages));
-        });
+            return;
+        }
+
+        handleChunk(value);
+    }
 }
 
 defineExpose({
