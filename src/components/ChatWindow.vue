@@ -124,6 +124,7 @@ think {
     display: flex;
     flex-direction: column;
     border-radius: 1rem 1rem 1rem 0.05rem;
+    box-shadow: 0px 3px 10px -3px black;
 }
 
 .chat-message.user {

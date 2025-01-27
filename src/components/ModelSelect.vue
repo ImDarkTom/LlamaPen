@@ -38,11 +38,10 @@ function changeModel() {
 </template>
 
 <style scoped>
-.navbar {
-    display: flex;
-    flex-direction: row;
-    justify-content: space-between;
-    background-color: var(--bg-4);
-    padding: 1rem;
+select {
+    border: 1px solid var(--txt-1);
+    border-radius: 0.5rem;
+    padding: 0.5rem;
+    background-color: var(--bg-2);
 }
 </style>

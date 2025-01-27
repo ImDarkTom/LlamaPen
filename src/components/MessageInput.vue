@@ -26,6 +26,10 @@ function inputKeyUp(e: KeyboardEvent) {
         return;
     }
 
+    if (e.shiftKey) {
+        return;
+    }
+
     const message = messageInput.value?.value.trim();
 
     if (!message || message == "") {
@@ -108,6 +112,7 @@ textarea {
     resize: vertical;
     border: 1px solid;
     min-height: 1rem;
-    background: var(--example);
+    background: var(--bg-2);
+    box-shadow: 0px 3px 10px -3px black;
 }
 </style>
