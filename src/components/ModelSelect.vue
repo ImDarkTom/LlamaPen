@@ -5,7 +5,7 @@ const modelsList = ref([]);
 const modelSelectRef = ref<HTMLSelectElement | null>(null);
 
 onMounted(() => {
-    fetch('http://localhost:11434/api/tags')
+    fetch(`${localStorage.getItem('customUrl')}/api/tags`)
         .then(response => response.json())
         .then(response => {
             modelsList.value = response.models.map((item: { model: string }) => item.model);

@@ -5,7 +5,7 @@ import { computed, ref } from 'vue';
 import { marked } from 'marked';
 import TopBar from './TopBar.vue';
 import ModelSelect from './ModelSelect.vue';
-
+import CustomUrlButton from './CustomUrlButton.vue';
 
 marked.use({
     extensions: [{
@@ -54,6 +54,7 @@ const chatMessages = computed(() => {
                 <StatusText />
             </template>
             <template #right>
+                <CustomUrlButton />
                 <ModelSelect />
             </template>
         </TopBar>

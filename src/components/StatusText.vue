@@ -6,7 +6,7 @@ const statusMessageElem = ref<HTMLElement | null>(null);
 const connectedToOllama = ref<boolean | null>(null);
 
 onMounted(() => {
-    fetch('http://localhost:11434/')
+    fetch(`${localStorage.getItem('customUrl')}/`)
         .then(response => response.text())
         .then(response => {
             statusMessageText.value = response;
