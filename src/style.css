@@ -102,13 +102,13 @@ h6 {
 
 @media (prefers-color-scheme: dark) {
     :root {
-        --bg-1: #030408;
-        --bg-2: hsl(275, 30%, 17%);
-        --bg-3: hsl(254, 26%, 29%);
-        --bg-4: hsl(283, 17%, 45%);
-        --bg-accent: #fcf8f8;
+        --bg-1: #0d1a30;
+        --bg-2: #192a51;
+        --bg-3: #2a3a6a;
+        --bg-4: #3a4a8a;
+        --bg-accent: #967aa1;
 
-        --txt-1: #f5e6e8;
-        --txt-accent: #192a51;
+        --txt-1: #f0f0f0;
+        --txt-accent: #fffafa;
     }
 }
