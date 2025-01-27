@@ -2,6 +2,7 @@
 import StatusText from './StatusText.vue';
 import MessageInput from './MessageInput.vue';
 import { computed, ref } from 'vue';
+import { marked } from 'marked';
 
 const messageInputRef = ref<InstanceType<typeof MessageInput> | null>(null);
 
@@ -30,7 +31,7 @@ const chatMessages = computed(() => {
         <div class="message-list">
             <div v-for="message of chatMessages" class="chat-message" :class="{ 'user': message.role === 'user' }">
                 <span class="message-creator">{{ message.role }}</span>
-                <span>{{ message.content }}</span>
+                <span v-html="marked(message.content)" class="message-text"></span>
             </div>
         </div>
         <div class="message-input-container">
@@ -38,6 +39,16 @@ const chatMessages = computed(() => {
         </div>
     </div>
 </template>
+
+<style>
+.message-text p {
+    padding-bottom: 0.5rem;
+}
+
+.message-text li {
+    list-style: circle;
+}
+</style>
 
 <style scoped>
 .message-input-container {

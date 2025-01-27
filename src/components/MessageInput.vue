@@ -13,6 +13,7 @@ function handleCommands(text: string): boolean {
     switch (text) {
         case "/clear":
             localStorage.setItem("messages", "[]");
+            location.reload();
             return true;
 
         default:
@@ -52,24 +53,14 @@ function inputKeyUp(e: KeyboardEvent) {
     })
         .then(response => response.json())
         .then(response => {
-            chatMessages.push(messageParser(response.message));
+            chatMessages.push(response.message);
             localStorage.setItem('messages', JSON.stringify(chatMessages));
         });
 }
 
-/**
- * 
- * @param message Message from ai
- * @returns HTML output.
- */
-function messageParser(message: any): string {
-    // TODO use `marked` for md parsing
-    return message;
-}
-
 defineExpose({
     chatMessages,
-})
+});
 
 </script>
 
