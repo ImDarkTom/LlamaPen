@@ -120,7 +120,7 @@ think {
     box-sizing: border-box;
     padding: 1rem;
     margin: 1rem;
-    width: clamp(400px, 50%, 1280px);
+    width: clamp(350px, 50%, 1280px);
     display: flex;
     flex-direction: column;
     border-radius: 1rem 1rem 1rem 0.05rem;
