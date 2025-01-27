@@ -1,11 +1,21 @@
 :root {
+    --bg-1: #f5e6e8;
+    --bg-2: #d5c6e0;
+    --bg-3: #aaa1c8;
+    --bg-4: #967aa1;
+    --bg-accent: #192a51;
+
+    --txt-1: #030408;
+    --txt-accent: #fcf8f8;
+
+
     font-family: Inter, system-ui, Avenir, Helvetica, Arial, sans-serif;
     line-height: 1.5;
     font-weight: 400;
 
     color-scheme: light dark;
-    color: rgba(255, 255, 255, 0.87);
-    background-color: #242424;
+    color: var(--txt-1);
+    background-color: var(--bg-1);
 
     font-synthesis: none;
     text-rendering: optimizeLegibility;
@@ -88,4 +98,17 @@ h6 {
 #app {
     width: 100vw;
     height: 100vh;
+}
+
+@media (prefers-color-scheme: dark) {
+    :root {
+        --bg-1: #030408;
+        --bg-2: hsl(275, 30%, 17%);
+        --bg-3: hsl(254, 26%, 29%);
+        --bg-4: hsl(283, 17%, 45%);
+        --bg-accent: #fcf8f8;
+
+        --txt-1: #f5e6e8;
+        --txt-accent: #192a51;
+    }
 }

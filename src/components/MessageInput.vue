@@ -66,7 +66,7 @@ async function sendMessage() {
     const response = await fetch('http://localhost:11434/api/chat', {
         method: 'POST',
         body: JSON.stringify({
-            model: 'llama3.2:1b',
+            model: localStorage.getItem('selectedModel'),
             messages: chatMessages,
             stream: true,
         })
@@ -93,7 +93,8 @@ defineExpose({
 </script>
 
 <template>
-    <textarea ref="messageInput" @keyup="inputKeyUp" rows="1"></textarea>
+    <textarea ref="messageInput" @keyup="inputKeyUp" rows="1"
+        placeholder="Enter a message (or clear with /clear)..."></textarea>
 </template>
 
 <style scoped>
@@ -105,7 +106,8 @@ textarea {
     margin: 1rem;
     border-radius: 1rem;
     resize: vertical;
-    border: 1px solid white;
+    border: 1px solid;
     min-height: 1rem;
+    background: var(--example);
 }
 </style>
