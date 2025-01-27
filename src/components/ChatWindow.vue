@@ -120,7 +120,7 @@ think {
     box-sizing: border-box;
     padding: 1rem;
     margin: 1rem;
-    width: 50%;
+    width: clamp(400px, 50%, 1280px);
     display: flex;
     flex-direction: column;
     border-radius: 1rem 1rem 1rem 0.05rem;
@@ -129,6 +129,7 @@ think {
 .chat-message.user {
     margin-left: auto;
     border-radius: 1rem 1rem 0.05rem 1rem;
+    background-color: var(--bg-3);
 }
 
 .message-creator {
