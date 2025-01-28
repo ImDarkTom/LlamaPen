@@ -67,7 +67,7 @@ async function sendMessage() {
         }
     }
 
-    const response = await fetch('http://localhost:11434/api/chat', {
+    const response = await fetch(`${localStorage.getItem('customUrl')}/api/chat`, {
         method: 'POST',
         body: JSON.stringify({
             model: localStorage.getItem('selectedModel'),
