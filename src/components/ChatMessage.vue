@@ -33,55 +33,61 @@ marked.use({
             }
         },
         renderer(token) {
-            return `<div class="thought-text-container"><blockquote class="thought-text">\n${token.text}\n</blockquote></div>`;
+            return `
+            <div class="thought-text-container">
+                <blockquote class="thought-text">\n${token.text}\n</blockquote>
+            </div>`;
         }
     }]
 });
 </script>
 
 <template>
-    <div class="chat-message" :class="{ 'user': message.role === 'user' }">
+    <div class="chat-message" :class="{ 'bubble': message.role === 'user', 'full': message.role === 'assistant' }">
         <span class="message-creator">{{ props.message.role }}</span>
         <span v-html="marked(props.message.content)" class="message-text"></span>
     </div>
 </template>
 
-<style>
-.message-list {
-    display: flex;
-    flex-direction: column;
-    overflow-y: auto;
-    flex: 1;
-}
-
+<style lang="scss">
 .chat-message {
-    background-color: var(--bg-2);
     color: var(--txt-1);
     box-sizing: border-box;
     padding: 1rem;
     margin: 1rem;
-    width: clamp(350px, 50%, 1280px);
     display: flex;
     flex-direction: column;
-    border-radius: 1rem 1rem 1rem 0.05rem;
+
+    .message-creator {
+        font-weight: bold;
+        text-transform: capitalize;
+        padding-bottom: 0.8rem;
+        font-size: 1.2rem;
+    }
+
+    .message-text {
+        p {
+            padding-bottom: 0.5rem;
+        }
+    }
+}
+
+.chat-message.bubble {
+    margin-left: auto;
+    border-radius: 1rem;
+    background-color: var(--bg-3);
+    width: clamp(350px, 50%, 1280px);
     box-shadow: 0px 3px 10px -3px black;
 }
 
-.chat-message.user {
-    margin-left: auto;
-    border-radius: 1rem 1rem 0.05rem 1rem;
-    background-color: var(--bg-3);
-}
+.chat-message.full {
+    width: 100%;
+    box-sizing: border-box;
+    margin: 0;
 
-.message-creator {
-    font-weight: bold;
-    text-transform: capitalize;
-    padding-bottom: 0.8rem;
-    font-size: 1.2rem;
-}
-
-.message-text p {
-    padding-bottom: 0.5rem;
+    .message-creator {
+        display: none;
+    }
 }
 
 .thought-text-container,
@@ -95,12 +101,13 @@ think {
     border-radius: 1rem;
     padding: 0.5rem;
     box-sizing: border-box;
-}
+    margin-bottom: 1rem;
 
-.thought-header {
-    font-weight: bold;
-    padding: 0.5rem 0;
-    font-style: normal;
-    filter: none;
+    .thought-header {
+        font-weight: bold;
+        padding: 0.5rem 0;
+        font-style: normal;
+        filter: none;
+    }
 }
 </style>

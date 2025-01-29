@@ -10,11 +10,13 @@
   },
   "dependencies": {
     "marked": "^15.0.6",
-    "vue": "^3.5.13"
+    "vue": "^3.5.13",
+    "vue-icons-plus": "^0.1.8"
   },
   "devDependencies": {
     "@vitejs/plugin-vue": "^5.2.1",
     "@vue/tsconfig": "^0.7.0",
+    "sass": "^1.83.4",
     "typescript": "~5.6.2",
     "vite": "^6.0.5",
     "vue-tsc": "^2.2.0"
