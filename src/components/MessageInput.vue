@@ -3,7 +3,7 @@ import { reactive, ref } from 'vue';
 
 const messageInput = ref<HTMLTextAreaElement | null>(null);
 
-let chatMessages = reactive<any[]>(JSON.parse(localStorage.getItem('messages') || "[]"));
+let chatMessages = reactive<OllamaMessage[]>(JSON.parse(localStorage.getItem('messages') || "[]"));
 /**
  * 
  * @param text Text to parse for command.
@@ -97,11 +97,17 @@ defineExpose({
 </script>
 
 <template>
-    <textarea ref="messageInput" @keyup="inputKeyUp" rows="1"
-        placeholder="Enter a message (or clear with /clear)..."></textarea>
+    <div class="message-input-container">
+        <textarea ref="messageInput" @keyup="inputKeyUp" rows="1"
+            placeholder="Enter a message (or clear with /clear)..."></textarea>
+    </div>
 </template>
 
 <style scoped>
+.message-input-container {
+    display: flex;
+}
+
 textarea {
     width: 100%;
     box-sizing: border-box;
