@@ -1,5 +1,9 @@
 <script setup lang="ts">
 import { marked } from 'marked';
+import { BsCopy, BsPen, BsRepeat } from 'vue-icons-plus/bs';
+import TooltipBottom from './TooltipBottom.vue';
+import { ref } from 'vue';
+import { useChatStore } from '../stores/chat';
 
 // const mockMessages = [
 //     {
@@ -40,12 +44,53 @@ marked.use({
         }
     }]
 });
+
+function copyMessage(message: OllamaMessage) {
+    const tempElem = document.createElement('input');
+    tempElem.value = message.content;
+
+    tempElem.select();
+    tempElem.setSelectionRange(0, 99999);
+
+    navigator.clipboard.writeText(tempElem.value);
+
+    copyTooltipText.value = "Copied!";
+
+    setTimeout(() => {
+        copyTooltipText.value = "Copy text";
+    }, 1000);
+}
+
+const copyTooltipText = ref<string>("Copy text");
+
+// const chatStore = useChatStore();
+
+function editMessage(message: OllamaMessage) {
+    // const messageText = message.content;
+    // const messageIndex = chatStore.messages.findIndex((storedMessage) => storedMessage === message);
+
+    // chatStore.messages.splice(messageIndex);
+
+    console.log("to be added");
+}
+
 </script>
 
 <template>
-    <div class="chat-message" :class="{ 'bubble': message.role === 'user', 'full': message.role === 'assistant' }">
+    <div class="chat-message" :class="{ 'bubble': props.message.role === 'user', 'full': props.message.role === 'assistant' }">
         <span class="message-creator">{{ props.message.role }}</span>
-        <span v-html="marked(props.message.content)" class="message-text"></span>
+
+        <span v-if="props.message.role !== 'user'" v-html="marked(props.message.content)" class="message-text"></span>
+        <span v-else v-html="props.message.content" class="message-text"></span>
+
+        <div class="message-options">
+            <TooltipBottom v-if="props.message.role !== 'user'" :text="copyTooltipText" >
+                <BsCopy title="Copy Text" @click="copyMessage(props.message)" />
+            </TooltipBottom>
+            <TooltipBottom v-else text="Edit" >
+                <BsPen title="Edit" @click="editMessage(props.message)" />
+            </TooltipBottom>
+        </div>
     </div>
 </template>
 
@@ -70,14 +115,35 @@ marked.use({
             padding-bottom: 0.5rem;
         }
     }
+
+    .message-options {
+        display: flex;
+        flex-direction: row;
+        gap: 0.5rem;
+        padding-top: 1rem;
+
+        > * {
+            box-sizing: content-box;
+            padding: 0.5rem;
+            border-radius: 0.5rem;
+            cursor: pointer;
+
+            &:hover {
+                @include mixin.shadow-low;
+
+                background-color: var(--bg-2);
+            }
+        }
+    }
 }
 
 .chat-message.bubble {
+    @include mixin.shadow-medium;
+    
     margin-left: auto;
     border-radius: 1rem;
     background-color: var(--bg-3);
     width: clamp(350px, 50%, 1280px);
-    box-shadow: 0px 3px 10px -3px black;
 }
 
 .chat-message.full {
