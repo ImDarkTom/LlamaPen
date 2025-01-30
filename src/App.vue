@@ -7,6 +7,7 @@ if (!localStorage.getItem('customUrl')) {
 }
 
 // TODO:
+// Thinking timer
 // Scroll down while message being generated
 // Generated message options:
 //   - Regenerate

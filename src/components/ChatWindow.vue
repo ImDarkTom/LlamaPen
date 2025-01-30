@@ -1,17 +1,15 @@
 <script setup lang="ts">
 import StatusText from './StatusText.vue';
 import MessageInput from './MessageInput.vue';
-import { computed, ref } from 'vue';
 import TopBar from './TopBar.vue';
 import ModelSelect from './ModelSelect.vue';
 import CustomUrlButton from './CustomUrlButton.vue';
 import ChatMessages from './ChatMessages.vue';
+import { useChatStore } from '../stores/chat';
 
-const messageInputRef = ref<InstanceType<typeof MessageInput> | null>(null);
-
-const chatMessages = computed(() => {
-    return messageInputRef.value?.chatMessages || [];
-});
+// Ran on setup, since async we do not need onBeforeMount.
+const chatStore = useChatStore();
+chatStore.setMessages(JSON.parse(localStorage.getItem('messages') || "[]"));
 </script>
 
 <template>
@@ -25,8 +23,8 @@ const chatMessages = computed(() => {
                 <ModelSelect />
             </template>
         </TopBar>
-        <ChatMessages :chatMessages="chatMessages" />
-        <MessageInput ref="messageInputRef" />
+        <ChatMessages />
+        <MessageInput />
     </div>
 </template>
 

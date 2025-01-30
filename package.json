@@ -10,6 +10,7 @@
   },
   "dependencies": {
     "marked": "^15.0.6",
+    "pinia": "^2.3.1",
     "vue": "^3.5.13",
     "vue-icons-plus": "^0.1.8"
   },

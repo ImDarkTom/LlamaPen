@@ -1,5 +1,12 @@
 <script setup lang="ts">
 import { reactive, ref } from 'vue';
+import { useChatStore } from '../stores/chat';
+
+const chatStore = useChatStore();
+
+function saveChatMessages(newMessages: OllamaMessage[]) {
+    chatStore.setMessages(newMessages);
+}
 
 const messageInput = ref<HTMLTextAreaElement | null>(null);
 
@@ -52,6 +59,7 @@ function inputKeyUp(e: KeyboardEvent) {
         content: '',
     });
 
+    saveChatMessages(chatMessages);
     sendMessage();
 }
 
@@ -64,6 +72,7 @@ async function sendMessage() {
 
             const messageChunk = chunkJson.message.content;
             chatMessages[chatMessages.length - 1].content += messageChunk;
+            saveChatMessages(chatMessages);
         }
     }
 
@@ -89,11 +98,6 @@ async function sendMessage() {
         handleChunk(value);
     }
 }
-
-defineExpose({
-    chatMessages,
-});
-
 </script>
 
 <template>
