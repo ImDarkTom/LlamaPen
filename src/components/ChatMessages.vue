@@ -32,7 +32,7 @@ function handleScroll(_e: Event) {
     if (!messageListRef.value) {
         return;
     }
-    
+
     const messageListElem = messageListRef.value;
 
     const elementHeight = messageListElem.scrollHeight;
@@ -48,7 +48,7 @@ function handleScroll(_e: Event) {
 
 <template>
     <div class="message-list" ref="messageListRef" @scroll="handleScroll">
-        <ChatMessage v-for="message of chatStore.messages" :message="message" />
+        <ChatMessage v-for="message of chatStore.getOllamaMessageList" :message="message" />
     </div>
 </template>
 

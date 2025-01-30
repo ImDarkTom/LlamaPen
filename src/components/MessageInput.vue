@@ -1,12 +1,9 @@
 <script setup lang="ts">
 import { reactive, ref } from 'vue';
 import { useChatStore } from '../stores/chat';
+import { v7 as randomUUIDv7 } from "uuid";
 
 const chatStore = useChatStore();
-
-function saveChatMessages(newMessages: OllamaMessage[]) {
-    chatStore.setMessages(newMessages);
-}
 
 const messageInput = ref<HTMLTextAreaElement | null>(null);
 
@@ -49,21 +46,18 @@ function inputKeyUp(e: KeyboardEvent) {
         return;
     }
 
-    chatMessages.push({
+    chatStore.addMessage(chatStore.conversation.latestMessageId, {
         role: 'user',
-        content: message,
+        content: message
     });
 
-    chatMessages.push({
-        role: 'assistant',
-        content: '',
-    });
-
-    saveChatMessages(chatMessages);
     sendMessage();
 }
 
 async function sendMessage() {
+    const messageId = randomUUIDv7();
+    let constructedMessage: string = "";
+
     function handleChunk(value: Uint8Array) {
         const chunkText = new TextDecoder().decode(value).trim().split('\n');
 
@@ -71,8 +65,8 @@ async function sendMessage() {
             const chunkJson = JSON.parse(chunk);
 
             const messageChunk = chunkJson.message.content;
-            chatMessages[chatMessages.length - 1].content += messageChunk;
-            saveChatMessages(chatMessages);
+            constructedMessage += messageChunk;
+            chatStore.updateMessageText(messageId, constructedMessage);
         }
     }
 
@@ -80,7 +74,7 @@ async function sendMessage() {
         method: 'POST',
         body: JSON.stringify({
             model: localStorage.getItem('selectedModel'),
-            messages: chatMessages,
+            messages: chatStore.getOllamaMessageList,
             stream: true,
         })
     });
