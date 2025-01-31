@@ -1,16 +1,13 @@
 <script setup lang="ts">
-import { reactive, ref } from 'vue';
-import { useChatStore } from '../stores/chat';
+import { ref } from 'vue';
+import { useAllChatsStore } from '../stores/allChats';
+import { useRoute } from 'vue-router';
 
-const chatStore = useChatStore();
-
-function saveChatMessages(newMessages: OllamaMessage[]) {
-    chatStore.setMessages(newMessages);
-}
+const route = useRoute();
+const allChats = useAllChatsStore();
 
 const messageInput = ref<HTMLTextAreaElement | null>(null);
 
-let chatMessages = reactive<OllamaMessage[]>(JSON.parse(localStorage.getItem('messages') || "[]"));
 /**
  * 
  * @param text Text to parse for command.
@@ -49,21 +46,15 @@ function inputKeyUp(e: KeyboardEvent) {
         return;
     }
 
-    chatMessages.push({
-        role: 'user',
-        content: message,
-    });
-
-    chatMessages.push({
-        role: 'assistant',
-        content: '',
-    });
-
-    saveChatMessages(chatMessages);
-    sendMessage();
+    sendMessage(message);
 }
 
-async function sendMessage() {
+async function sendMessage(userMessage: string) {
+    allChats.setOpened(route.params.id as string);
+    
+    allChats.addMessage('user', userMessage);
+    const responseMessageId = allChats.addMessage('assistant', '');
+
     function handleChunk(value: Uint8Array) {
         const chunkText = new TextDecoder().decode(value).trim().split('\n');
 
@@ -71,8 +62,7 @@ async function sendMessage() {
             const chunkJson = JSON.parse(chunk);
 
             const messageChunk = chunkJson.message.content;
-            chatMessages[chatMessages.length - 1].content += messageChunk;
-            saveChatMessages(chatMessages);
+            allChats.modifyMessage(responseMessageId, messageChunk, 'append');
         }
     }
 
@@ -80,7 +70,7 @@ async function sendMessage() {
         method: 'POST',
         body: JSON.stringify({
             model: localStorage.getItem('selectedModel'),
-            messages: chatMessages,
+            messages: allChats.openedAsOllama,
             stream: true,
         })
     });
@@ -91,7 +81,7 @@ async function sendMessage() {
         const { done, value } = await reader!.read();
 
         if (done) {
-            localStorage.setItem('messages', JSON.stringify(chatMessages));
+            allChats.saveToLocalStorage();
             return;
         }
 

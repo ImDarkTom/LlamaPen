@@ -1,20 +1,8 @@
 <script setup lang="ts">
 import { marked } from 'marked';
-import { BsCopy, BsPen, BsRepeat } from 'vue-icons-plus/bs';
+import { BsCopy, BsPen } from 'vue-icons-plus/bs';
 import TooltipBottom from './TooltipBottom.vue';
-import { ref } from 'vue';
-import { useChatStore } from '../stores/chat';
-
-// const mockMessages = [
-//     {
-//         role: 'user',
-//         content: 'what is 2 + 2?'
-//     },
-//     {
-//         role: 'assistant',
-//         content: 'The answer is 4.'
-//     }
-// ];
+import { ref, defineProps } from 'vue';
 
 const props = defineProps<{
     message: OllamaMessage;
@@ -65,7 +53,7 @@ const copyTooltipText = ref<string>("Copy text");
 
 // const chatStore = useChatStore();
 
-function editMessage(message: OllamaMessage) {
+function editMessage(_message: OllamaMessage) {
     // const messageText = message.content;
     // const messageIndex = chatStore.messages.findIndex((storedMessage) => storedMessage === message);
 

@@ -5,3 +5,13 @@ interface OllamaMessage {
     role: MessageRole;
     content: string;
 }
+
+type Chat = {
+    id: string;
+    label: string;
+    messages: AppMessage[];
+}
+
+interface AppMessage extends OllamaMessage {
+    id: string;
+}
