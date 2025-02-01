@@ -1,24 +1,12 @@
 <script setup lang="ts">
 import { useAllChatsStore } from '../../stores/allChats';
-import { useRouter } from 'vue-router';
 import SidebarEntry from './SidebarEntry.vue';
-import { IpWrite } from 'vue-icons-plus/ip';
-import { AiOutlineSearch } from 'vue-icons-plus/ai';
 import { ref } from 'vue';
 import { TbLayoutSidebarLeftCollapse, TbLayoutSidebarLeftExpand } from 'vue-icons-plus/tb';
-
-const router = useRouter();
+import SidebarHeader from './SidebarHeader.vue';
 
 const allChats = useAllChatsStore();
 allChats.loadChats();
-
-const newChat = () => {
-    router.push('/');
-}
-
-function search() {
-    alert('to be added...');
-}
 
 const showSidebar = ref<boolean>(true);
 
@@ -26,12 +14,8 @@ const showSidebar = ref<boolean>(true);
 
 <template>
     <div v-if="showSidebar" class="sidebar">
-        <div class="header">
-            <span class="branding">LlamaPen</span>
-            <AiOutlineSearch class="search right-icon" @click="search" />
-            <IpWrite class="new-chat right-icon" @click="newChat()" />
-        </div>
-        <ul>
+        <SidebarHeader />
+        <ul class="sidebar-chats">
             <SidebarEntry v-for="chat of allChats.chats" :chat="chat" />
         </ul>
     </div>
@@ -76,39 +60,11 @@ $sidebar-width: 16vw;
     background-color: var(--bg-2);
     justify-content: center;
     align-items: center;
-    
-    .header {
-        display: flex;
-        flex-direction: row;
-        padding: 0.5rem;
-        box-sizing: border-box;
 
-        .branding {
-            flex: 1;
-            font-size: 1.5rem;
-        }
-
-        .right-icon {
-            height: 1.65rem;
-            margin: auto;
-            width: auto;
-            cursor: pointer;
-            margin-left: 1ch;
-            padding: 0.35rem;
-            box-sizing: content-box;
-            border-radius: 0.5rem;
-
-            &:hover {
-                background-color: var(--bg-3);
-                @include mixin.shadow-low;
-            }
-        }
+    .sidebar-chats {
+        list-style: none;
+        padding: 0;
+        margin: 0;
     }
-}
-
-ul {
-    list-style: none;
-    padding: 0;
-    margin: 0;
 }
 </style>
