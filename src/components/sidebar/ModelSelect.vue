@@ -38,11 +38,13 @@ function changeModel() {
 select {
     outline: none;
     border: none;
-    border-bottom: 1px solid var(--txt-1);
-    border-radius: 0;
-    padding: 0.5rem;
+    padding: 0.25rem;
+    margin: 0.25rem;
     background-color: var(--bg-4);
-    border-radius: 0.5rem 0.5rem 0 0 ;
+    border-radius: 0.5rem;
+    overflow: hidden;
+    width: calc(16vw - 0.5rem);
+    box-sizing: border-box;
 
     &:hover {
         background-color: var(--bg-3);

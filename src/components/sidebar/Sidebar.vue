@@ -4,6 +4,7 @@ import SidebarEntry from './SidebarEntry.vue';
 import { ref } from 'vue';
 import { TbLayoutSidebarLeftCollapse, TbLayoutSidebarLeftExpand } from 'vue-icons-plus/tb';
 import SidebarHeader from './SidebarHeader.vue';
+import SidebarOptions from './SidebarOptions.vue';
 
 const allChats = useAllChatsStore();
 allChats.loadChats();
@@ -18,6 +19,7 @@ const showSidebar = ref<boolean>(true);
         <ul class="sidebar-chats">
             <SidebarEntry v-for="chat of allChats.chats" :chat="chat" />
         </ul>
+        <SidebarOptions />
     </div>
     <div class="sidebar-toggle" :class="{'sidebar-open': showSidebar}">
         <TbLayoutSidebarLeftCollapse v-if="showSidebar" @click="showSidebar = false"/>
@@ -55,16 +57,17 @@ $sidebar-width: 16vw;
 }
 
 .sidebar {
+    display: flex;
+    flex-direction: column;
     height: 100vh;
     min-width: $sidebar-width;
     background-color: var(--bg-2);
-    justify-content: center;
-    align-items: center;
 
     .sidebar-chats {
         list-style: none;
         padding: 0;
         margin: 0;
+        flex: 1;
     }
 }
 </style>

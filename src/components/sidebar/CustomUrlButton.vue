@@ -15,17 +15,7 @@ function customUrlDialog() {
 </script>
 
 <template>
-    <input type="button" value="Custom URL" @click="customUrlDialog">
+    <input type="button" value="🔗" @click="customUrlDialog">
 </template>
 
-<style scoped>
-input {
-    margin-right: 1rem;
-    background-color: var(--bg-2);
-    font-style: italic;
-    border: 1px solid var(--txt-1);
-    border-radius: 0.5rem;
-    padding: 0.4rem;
-    cursor: pointer;
-}
-</style>
+<style scoped></style>

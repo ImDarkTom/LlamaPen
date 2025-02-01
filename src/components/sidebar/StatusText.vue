@@ -18,20 +18,15 @@ onMounted(() => {
         })
 });
 
-function showGuide() {
-    const originUrl = window.location.origin;
-
-    alert(`Ollama does not allow external connections by default, for this app to work you need to add this URL to Ollama's trusted origins and re-launch it. You can do this by running this in command prompt or powershell: \n\n set OLLAMA_ORIGINS=\"${originUrl}\" & ollama serve`);
-}
-
 </script>
 
 <template>
-    <span class="status-text" :class="{ 'ok': connectedToOllama === true, 'fail': connectedToOllama === false }">
-        Ollama status:
-        <span ref="statusMessageElem">{{ statusMessageText }}</span>
-    </span>
-    <input type="button" value="?" @click="showGuide">
+    <div class="status-text-wrapper">
+        <span class="status-text" :class="{ 'ok': connectedToOllama === true, 'fail': connectedToOllama === false }">
+            Ollama status:
+            <span ref="statusMessageElem">{{ statusMessageText }}</span>
+        </span>
+    </div>
 </template>
 
 <style scoped>

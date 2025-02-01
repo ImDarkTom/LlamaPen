@@ -1,23 +1,10 @@
 <script setup lang="ts">
-import StatusText from './StatusText.vue';
 import MessageInput from './MessageInput.vue';
-import TopBar from './TopBar.vue';
-import ModelSelect from './ModelSelect.vue';
-import CustomUrlButton from './CustomUrlButton.vue';
 import ChatMessages from './ChatMessages.vue';
 </script>
 
 <template>
     <div class="chat-window">
-        <TopBar>
-            <template #left>
-                <StatusText />
-            </template>
-            <template #right>
-                <CustomUrlButton />
-                <ModelSelect />
-            </template>
-        </TopBar>
         <ChatMessages />
         <MessageInput />
     </div>
