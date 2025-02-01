@@ -8,23 +8,6 @@ const allChats = useAllChatsStore();
 
 const messageInput = ref<HTMLTextAreaElement | null>(null);
 
-/**
- * 
- * @param text Text to parse for command.
- * @returns  If a command has been ran.
- */
-function handleCommands(text: string): boolean {
-    switch (text) {
-        case "/clear":
-            localStorage.setItem("messages", "[]");
-            location.reload();
-            return true;
-
-        default:
-            return false;
-    }
-}
-
 function inputKeyUp(e: KeyboardEvent) {
     if (e.key !== 'Enter') {
         return;
@@ -41,10 +24,6 @@ function inputKeyUp(e: KeyboardEvent) {
     }
 
     messageInput.value!.value = "";
-
-    if (handleCommands(message)) {
-        return;
-    }
 
     sendMessage(message);
 }
@@ -93,7 +72,7 @@ async function sendMessage(userMessage: string) {
 <template>
     <div class="message-input-container">
         <textarea ref="messageInput" @keyup="inputKeyUp" rows="1"
-            placeholder="Enter a message (or clear with /clear)..."></textarea>
+            placeholder="Enter a message..."></textarea>
     </div>
 </template>
 
