@@ -1,8 +1,9 @@
 <script setup lang="ts">
 import { onMounted, ref } from 'vue';
 
-const modelsList = ref([]);
-const modelSelectRef = ref<HTMLSelectElement | null>(null);
+const modelsList = ref<string[]>([]);
+const selectedModel = ref<string | null>(localStorage.getItem('selectedModel'));
+
 
 onMounted(() => {
     fetch(`${localStorage.getItem('customUrl')}/api/tags`)
@@ -10,38 +11,41 @@ onMounted(() => {
         .then(response => {
             modelsList.value = response.models.map((item: { model: string }) => item.model);
 
-            if (!localStorage.getItem('selectedModel')) {
-                // Set to top model by default
-                localStorage.setItem('selectedModel', response.models[0].model);
+            if (!selectedModel.value || !modelsList.value.includes(selectedModel.value)) {
+                selectedModel.value = response.models[0].model;
+                changeModel();
             }
         });
 });
 
 function changeModel() {
-    const selectedModel = modelSelectRef.value?.value;
-
-    if (!selectedModel) {
-        return;
+    if (selectedModel.value) {
+        localStorage.setItem('selectedModel', selectedModel.value);
     }
-
-    localStorage.setItem('selectedModel', selectedModel);
 }
 
 </script>
 
 <template>
-    <select @change="changeModel" ref="modelSelectRef">
+    <select @change="changeModel" v-model="selectedModel">
         <option v-for="model in modelsList" :key="model" :value="model">
             {{ model }}
         </option>
     </select>
 </template>
 
-<style scoped>
+<style scoped lang="scss">
 select {
-    border: 1px solid var(--txt-1);
-    border-radius: 0.5rem;
+    outline: none;
+    border: none;
+    border-bottom: 1px solid var(--txt-1);
+    border-radius: 0;
     padding: 0.5rem;
-    background-color: var(--bg-2);
+    background-color: var(--bg-4);
+    border-radius: 0.5rem 0.5rem 0 0 ;
+
+    &:hover {
+        background-color: var(--bg-3);
+    }
 }
 </style>
