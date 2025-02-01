@@ -5,11 +5,6 @@ import TopBar from './TopBar.vue';
 import ModelSelect from './ModelSelect.vue';
 import CustomUrlButton from './CustomUrlButton.vue';
 import ChatMessages from './ChatMessages.vue';
-import { useChatStore } from '../stores/chat';
-
-// Ran on setup, since async we do not need onBeforeMount.
-const chatStore = useChatStore();
-chatStore.setMessages(JSON.parse(localStorage.getItem('messages') || "[]"));
 </script>
 
 <template>

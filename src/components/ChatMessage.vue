@@ -50,9 +50,6 @@ function copyMessage(message: OllamaMessage) {
 }
 
 const copyTooltipText = ref<string>("Copy text");
-
-// const chatStore = useChatStore();
-
 function editMessage(_message: OllamaMessage) {
     // const messageText = message.content;
     // const messageIndex = chatStore.messages.findIndex((storedMessage) => storedMessage === message);
