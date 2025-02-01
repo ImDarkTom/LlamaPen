@@ -3,8 +3,10 @@ import { ref } from 'vue';
 import { AiOutlineClose } from 'vue-icons-plus/ai';
 import { BsChatLeft } from 'vue-icons-plus/bs';
 import { useAllChatsStore } from '../stores/allChats';
+import { useRouter } from 'vue-router';
 
 const allChats = useAllChatsStore();
+const router = useRouter();
 
 const props = defineProps<{
     chat: Chat,
@@ -15,6 +17,7 @@ function deleteChat(e: MouseEvent) {
 
     if (confirm(`Are you sure you want to delete "${props.chat.label}"?`)) {
         allChats.deleteChat(props.chat.id);
+        router.push('/');
     }
 }
 
