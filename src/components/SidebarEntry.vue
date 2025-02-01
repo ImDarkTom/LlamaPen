@@ -95,6 +95,7 @@ li {
 
     &.active {
         background-color: var(--bg-4);
+        @include mixin.shadow-low;
     }
 }
 
