@@ -50,11 +50,22 @@ export const useAllChatsStore = defineStore('allchats', {
         createChat(uuid: string) {
             this.chats.push({
                 id: uuid,
-                label: 'New Chat',
+                label: 'New Chat' + Math.floor(Math.random() * 999), // temporary number to distunguish chats
                 messages: []
             });
 
-            localStorage.setItem('chats', JSON.stringify(this.chats));
+            this.saveToLocalStorage();
+        },
+        deleteChat(uuid: string) {
+            const chatToDeleteIndex = this.chats.findIndex((chat) => chat.id === uuid);
+
+            if (chatToDeleteIndex === -1) {
+                return;
+            }
+
+            this.chats.splice(chatToDeleteIndex, 1);
+            
+            this.saveToLocalStorage();
         },
         addMessage(role: MessageRole, content: string): string {
             const newMessageId = generateUUID();
@@ -85,6 +96,12 @@ export const useAllChatsStore = defineStore('allchats', {
             } else if (mode === 'replace') {
                 message.content = content;
             }
+        },
+        editChatName(uuid: string, newName: string) {
+            const chatToEditIndex = this.chats.findIndex((chat) => chat.id === uuid);
+
+            this.chats[chatToEditIndex].label = newName;
+            this.saveToLocalStorage();
         },
         saveToLocalStorage() {
             localStorage.setItem('chats', JSON.stringify(this.chats));
