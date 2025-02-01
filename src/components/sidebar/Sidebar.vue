@@ -1,5 +1,5 @@
 <script setup lang="ts">
-import { useAllChatsStore } from '../stores/allChats';
+import { useAllChatsStore } from '../../stores/allChats';
 import { useRouter } from 'vue-router';
 import SidebarEntry from './SidebarEntry.vue';
 import { IpWrite } from 'vue-icons-plus/ip';

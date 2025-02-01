@@ -1,6 +1,6 @@
 <script setup lang="ts">
 import ChatWindow from './ChatWindow.vue';
-import Sidebar from './Sidebar.vue';
+import Sidebar from './sidebar/Sidebar.vue';
 
 if (!localStorage.getItem('customUrl')) {
     localStorage.setItem('customUrl', 'http://localhost:11434');

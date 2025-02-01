@@ -2,7 +2,7 @@
 import { ref } from 'vue';
 import { AiOutlineClose } from 'vue-icons-plus/ai';
 import { BsChatLeft } from 'vue-icons-plus/bs';
-import { useAllChatsStore } from '../stores/allChats';
+import { useAllChatsStore } from '../../stores/allChats';
 import { useRouter } from 'vue-router';
 
 const allChats = useAllChatsStore();
