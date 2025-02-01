@@ -110,6 +110,8 @@ li {
     flex-direction: row;
     color: var(--txt-1);
     text-decoration: none;
+    position: relative;
+    box-sizing: content-box;
 
     &:hover {
         .chat-close {
@@ -125,7 +127,7 @@ li {
     .chat-text {
         border: none;
         outline: none;
-        margin: none;
+        margin: 0;
         background-color: transparent;
         color: var(--txt-1);
         flex: 1;
@@ -134,6 +136,7 @@ li {
         justify-content: center;
         align-items: center;
         cursor: default;
+        text-overflow: ellipsis;
 
         &.editing {
             box-shadow: 0px 0px 0px 1px red inset;
@@ -142,6 +145,9 @@ li {
     }
 
     .chat-close {
+        position: absolute;
+        right: 0;
+        margin-right: 0.5rem;
         transition: color 0.15s ease-in-out;
         display: none;
 
