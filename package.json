@@ -9,6 +9,7 @@
     "preview": "vite preview"
   },
   "dependencies": {
+    "@types/node": "^22.13.0",
     "marked": "^15.0.6",
     "path": "^0.12.7",
     "pinia": "^2.3.1",
