@@ -30,6 +30,7 @@ function inputKeyUp(e: KeyboardEvent) {
 
 async function sendMessage(userMessage: string) {
     allChats.setOpened(route.params.id as string);
+    allChats.initialise();
     
     allChats.addMessage('user', userMessage);
     const responseMessageId = allChats.addMessage('assistant', '');

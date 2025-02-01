@@ -20,23 +20,14 @@ export const useAllChatsStore = defineStore('allchats', {
         initialise() {
             this.loadChats();
 
-            if (!this.openedId) {
-                const newUuid = generateUUID();
+            if (!this.openedId || !this.openedIdExists) {
+                const newUuid = this.openedId || generateUUID();
 
                 this.createChat(newUuid);
                 this.setOpened(newUuid);
                 this.saveToLocalStorage();
                 return;
             }
-
-            if (!this.openedIdExists) {
-                this.createChat(this.openedId);
-                this.setOpened(this.openedId);
-                this.saveToLocalStorage();
-
-                return;
-            }
-
             
         },
         loadChats() {
@@ -70,9 +61,6 @@ export const useAllChatsStore = defineStore('allchats', {
         addMessage(role: MessageRole, content: string): string {
             const newMessageId = generateUUID();
 
-            console.log(newMessageId);
-            console.log(this.openedChat);
-
             this.openedChat?.messages.push({
                 id: newMessageId,
                 role: role,
@@ -84,7 +72,6 @@ export const useAllChatsStore = defineStore('allchats', {
             return newMessageId;
         },
         modifyMessage(messageId: string, content: string, mode: 'append' | 'replace') {
-            console.log(this.openedChat);
             const message = this.openedChat?.messages.find((message) => message.id === messageId);
 
             if (!message) {

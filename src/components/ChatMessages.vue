@@ -10,18 +10,15 @@ const scrollingDown = ref<Boolean>(false);
 const route = useRoute();
 
 const allChatStore = useAllChatsStore();
-const chatId = route.params.id || null;
-
-onMounted(() => {
-    allChatStore.setOpened(chatId as string);
-    allChatStore.initialise();
-});
 
 watch(() => route.params.id, (newId, oldId) => {
     if (newId !== oldId) {
         allChatStore.setOpened(newId as string);
-        allChatStore.initialise();
     }
+});
+
+onMounted(() => {
+    allChatStore.setOpened(route.params.id as string);
 });
 
 allChatStore.$subscribe((_, _state) => {
