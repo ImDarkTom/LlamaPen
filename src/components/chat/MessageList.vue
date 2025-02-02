@@ -62,6 +62,7 @@ function handleScroll(_e: Event) {
     overflow-y: auto;
     flex: 1;
     max-width: 48rem;
+    width: 100%;
     margin: 0 auto;
 }
 </style>
