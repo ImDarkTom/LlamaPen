@@ -11,20 +11,23 @@ allChats.loadChats();
 
 const showSidebar = ref<boolean>(true);
 
+const toggleSidebar = () => {
+    showSidebar.value = !showSidebar.value
+}
 </script>
 
 <template>
     <div class="sidebar-container">
-        <div v-if="showSidebar" class="sidebar">
+        <div class="sidebar" :class="{ 'hidden': !showSidebar }">
             <SidebarHeader />
             <ul class="sidebar-chats">
-                <SidebarEntry v-for="chat of allChats.chats" :chat="chat" />
+                <SidebarEntry v-for="chat of allChats.chats" :key="chat.id" :chat="chat" />
             </ul>
             <SidebarOptions />
         </div>
-        <div class="sidebar-toggle" :class="{'sidebar-open': showSidebar}">
-            <TbLayoutSidebarLeftCollapse v-if="showSidebar" @click="showSidebar = false"/>
-            <TbLayoutSidebarLeftExpand v-else @click="showSidebar = true" />
+        <div class="sidebar-toggle" @pointerdown="toggleSidebar">
+            <TbLayoutSidebarLeftCollapse v-if="showSidebar"/>
+            <TbLayoutSidebarLeftExpand v-else />
         </div>
     </div>
 </template>
@@ -41,6 +44,10 @@ const showSidebar = ref<boolean>(true);
         background-color: var(--bg-2);
         box-sizing: border-box;
         padding: 0.5rem;
+
+        &.hidden {
+            display: none;
+        }
 
         .sidebar-chats {
             list-style: none;

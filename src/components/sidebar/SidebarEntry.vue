@@ -66,11 +66,15 @@ function editKeyPressed(e: KeyboardEvent) {
     }
 }
 
+const navigateToChat = () => {
+    router.push(`/chat/${props.chat.id}`);
+}
+
 </script>
 
 <template>
     <li :class="{ 'active': props.chat.id === allChats.openedId }">
-        <router-link :to="`/chat/${props.chat.id}`" class="chat-link">
+        <div class="chat-link" @pointerdown="navigateToChat">
             <BsChatLeft class="chat-icon" />
             <input type="text" 
                 class="chat-text" 
@@ -81,7 +85,7 @@ function editKeyPressed(e: KeyboardEvent) {
                 :value="props.chat.label" 
                 readonly>
             <AiOutlineClose class="chat-close" @click="deleteChat" />
-        </router-link>
+        </div>
     </li>
 </template>
 
