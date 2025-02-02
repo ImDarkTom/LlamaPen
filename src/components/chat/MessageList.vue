@@ -1,7 +1,7 @@
 <script setup lang="ts">
 import { onMounted, ref, watch } from 'vue';
 import ChatMessage from './ChatMessage.vue';
-import { useAllChatsStore } from '../stores/allChats';
+import { useAllChatsStore } from '../../stores/allChats';
 import { useRoute } from 'vue-router';
 
 const messageListRef = ref<HTMLElement | null>(null);
@@ -61,5 +61,7 @@ function handleScroll(_e: Event) {
     flex-direction: column;
     overflow-y: auto;
     flex: 1;
+    max-width: 48rem;
+    margin: 0 auto;
 }
 </style>

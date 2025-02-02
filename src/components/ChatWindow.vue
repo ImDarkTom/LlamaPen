@@ -1,11 +1,11 @@
 <script setup lang="ts">
 import MessageInput from './MessageInput.vue';
-import ChatMessages from './ChatMessages.vue';
+import MessageList from './chat/MessageList.vue';
 </script>
 
 <template>
     <div class="chat-window">
-        <ChatMessages />
+        <MessageList />
         <MessageInput />
     </div>
 </template>

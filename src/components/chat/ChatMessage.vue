@@ -1,7 +1,7 @@
 <script setup lang="ts">
 import { marked } from 'marked';
 import { BsCopy, BsPen } from 'vue-icons-plus/bs';
-import TooltipBottom from './TooltipBottom.vue';
+import TooltipBottom from '../TooltipBottom.vue';
 import { ref, defineProps } from 'vue';
 
 const props = defineProps<{
@@ -87,6 +87,25 @@ function editMessage(_message: OllamaMessage) {
     margin: 1rem;
     display: flex;
     flex-direction: column;
+    
+    &.bubble {
+        @include mixin.shadow-medium;
+        
+        margin-left: auto;
+        border-radius: 1rem;
+        background-color: var(--bg-3);
+        width: clamp(350px, 50%, 1280px);
+    }
+
+    &.full {
+        width: 100%;
+        box-sizing: border-box;
+        margin: 0;
+
+        .message-creator {
+            display: none;
+        }
+    }
 
     .message-creator {
         font-weight: bold;
@@ -98,6 +117,13 @@ function editMessage(_message: OllamaMessage) {
     .message-text {
         p {
             padding-bottom: 0.5rem;
+        }
+
+        pre {
+            overflow-x: auto;
+            background-color: rgba($color: #000000, $alpha: 0.5);
+            box-sizing: border-box;
+            padding: 0.5rem;
         }
     }
 
@@ -119,25 +145,6 @@ function editMessage(_message: OllamaMessage) {
                 background-color: var(--bg-2);
             }
         }
-    }
-}
-
-.chat-message.bubble {
-    @include mixin.shadow-medium;
-    
-    margin-left: auto;
-    border-radius: 1rem;
-    background-color: var(--bg-3);
-    width: clamp(350px, 50%, 1280px);
-}
-
-.chat-message.full {
-    width: 100%;
-    box-sizing: border-box;
-    margin: 0;
-
-    .message-creator {
-        display: none;
     }
 }
 
