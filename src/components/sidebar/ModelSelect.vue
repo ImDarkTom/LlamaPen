@@ -38,12 +38,9 @@ function changeModel() {
 select {
     outline: none;
     border: none;
-    padding: 0.25rem;
-    margin: 0.25rem;
-    background-color: var(--bg-4);
+    padding: 0.5rem;
+    background: transparent;
     border-radius: 0.5rem;
-    overflow: hidden;
-    width: calc(16vw - 0.5rem);
     box-sizing: border-box;
 
     &:hover {

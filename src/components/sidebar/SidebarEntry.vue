@@ -87,7 +87,7 @@ function editKeyPressed(e: KeyboardEvent) {
 
 <style scoped lang="scss">
 li {
-    margin: 0.5rem 0.25rem;
+    margin: 0.5rem 0;
     background-color: transparent;
     display: flex;
     border-radius: 0.5rem;
@@ -100,59 +100,59 @@ li {
         background-color: var(--bg-4);
         @include mixin.shadow-low;
     }
-}
 
-.chat-link {
-    width: 100%;
-    height: 100%;
-    display: flex;
-    padding: 0.5rem;
-    flex-direction: row;
-    color: var(--txt-1);
-    text-decoration: none;
-    position: relative;
-    box-sizing: content-box;
-
-    &:hover {
-        .chat-close {
-            display: initial;
-        }
-    }
-    
-    .chat-icon {
-        box-sizing: border-box;
-        padding: 0.1rem;
-    }
-
-    .chat-text {
-        border: none;
-        outline: none;
-        margin: 0;
-        background-color: transparent;
+    .chat-link {
+        width: 100%;
+        height: 100%;
+        display: flex;
+        padding: 0.5rem;
+        flex-direction: row;
         color: var(--txt-1);
-        flex: 1;
-        padding: 0 1ch;
-        box-sizing: border-box;
-        justify-content: center;
-        align-items: center;
-        cursor: default;
-        text-overflow: ellipsis;
-
-        &.editing {
-            box-shadow: 0px 0px 0px 1px red inset;
-            background-color: var(--bg-1);
-        }
-    }
-
-    .chat-close {
-        position: absolute;
-        right: 0;
-        margin-right: 0.5rem;
-        transition: color 0.15s ease-in-out;
-        display: none;
+        text-decoration: none;
+        position: relative;
+        box-sizing: content-box;
 
         &:hover {
-            color: rgb(255, 100, 100);
+            .chat-close {
+                display: initial;
+            }
+        }
+        
+        .chat-icon {
+            box-sizing: border-box;
+            padding: 0.1rem;
+        }
+
+        .chat-text {
+            border: none;
+            outline: none;
+            margin: 0;
+            background-color: transparent;
+            color: var(--txt-1);
+            flex: 1;
+            padding: 0 1ch;
+            box-sizing: border-box;
+            justify-content: center;
+            align-items: center;
+            cursor: default;
+            text-overflow: ellipsis;
+
+            &.editing {
+                box-shadow: 0px 0px 0px 1px red inset;
+                background-color: var(--bg-1);
+            }
+        }
+
+        .chat-close {
+            position: absolute;
+            right: 0;
+            margin-right: 0.5rem;
+            transition: color 0.15s ease-in-out;
+            display: none;
+
+            &:hover {
+                color: rgb(255, 100, 100);
+            }
         }
     }
 }

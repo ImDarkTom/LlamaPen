@@ -24,30 +24,30 @@ function search() {
 
 <style scoped lang="scss">
 .header {
-        display: flex;
-        flex-direction: row;
-        padding: 0.5rem;
-        box-sizing: border-box;
+    display: flex;
+    flex-direction: row;
+    padding: 0rem;
+    box-sizing: border-box;
 
-        .branding {
-            flex: 1;
-            font-size: 1.5rem;
-        }
+    .branding {
+        flex: 1;
+        font-size: 1.5rem;
+    }
 
-        .right-icon {
-            height: 1.65rem;
-            margin: auto;
-            width: auto;
-            cursor: pointer;
-            margin-left: 1ch;
-            padding: 0.35rem;
-            box-sizing: content-box;
-            border-radius: 0.5rem;
+    .right-icon {
+        height: 1.65rem;
+        margin: auto;
+        width: auto;
+        cursor: pointer;
+        margin-left: 1ch;
+        padding: 0.35rem;
+        box-sizing: content-box;
+        border-radius: 0.5rem;
 
-            &:hover {
-                background-color: var(--bg-3);
-                @include mixin.shadow-low;
-            }
+        &:hover {
+            background-color: var(--bg-3);
+            @include mixin.shadow-low;
         }
     }
+}
 </style>

@@ -29,26 +29,22 @@ onMounted(() => {
     </div>
 </template>
 
-<style scoped>
-.status-text {
-    color: yellow;
-}
+<style scoped lang="scss">
+.status-text-wrapper {
+    overflow: hidden;
+    text-overflow: ellipsis;
+    padding: 0.5rem 0;
 
-.status-text.ok {
-    color: lime;
-}
+    .status-text {
+        color: hsl(60, 100%, 75%);
 
-.status-text.fail {
-    color: red;
-}
+        &.ok {
+            color: hsl(120, 100%, 75%);
+        }
 
-input {
-    background: transparent;
-    color: var(--txt-accent);
-    font-weight: bold;
-    border: 1px solid var(--txt-accent);
-    margin-left: 1rem;
-    border-radius: 1rem;
-    cursor: pointer;
+        &.fail {
+            color: hsl(0, 100%, 75%);
+        }
+    }
 }
 </style>

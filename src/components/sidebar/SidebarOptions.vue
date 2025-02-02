@@ -15,8 +15,8 @@ function showGuide() {
     <div class="sidebar-options">
         <StatusText />
         <div class="buttons">
-            <input type="button" value="?" @click="showGuide">
-            <CustomUrlButton />
+            <input type="button" class="button" value="?" @click="showGuide">
+            <CustomUrlButton class="button" />
         </div>
         <ModelSelect />
     </div>
@@ -31,11 +31,13 @@ function showGuide() {
     .buttons {
         display: flex;
         flex-direction: row;
+        gap: 0.5rem;
 
-        * {
+        .button {
             flex: 1;
             border: none;
-            margin: 0.25rem;
+            padding: 0.25rem 0;
+            margin: 0;
             box-sizing: border-box;
             border-radius: 0.5rem;
             height: 2rem;
