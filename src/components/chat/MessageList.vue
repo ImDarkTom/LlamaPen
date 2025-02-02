@@ -51,7 +51,7 @@ function handleScroll(_e: Event) {
 
 <template>
     <div class="message-list" ref="messageListRef" @scroll="handleScroll">
-        <ChatMessage v-for="message of allChatStore.openedAsOllama" :message="message" />
+        <ChatMessage v-for="message of (allChatStore.openedChat?.messages || [])" :key="message.id" :message="message" />
     </div>
 </template>
 

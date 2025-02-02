@@ -5,7 +5,7 @@ import TooltipBottom from '../TooltipBottom.vue';
 import { ref, defineProps } from 'vue';
 
 const props = defineProps<{
-    message: OllamaMessage;
+    message: AppMessage;
 }>();
 
 marked.use({

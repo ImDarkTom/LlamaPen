@@ -7,7 +7,7 @@ export const useAllChatsStore = defineStore('allchats', {
         openedId: null as string | null,
     }),
     getters: {
-        openedChat: (state) => state.chats.find(chat => chat.id === state.openedId) || null,
+        openedChat: (state) => state.chats.find(chat => chat.id === state.openedId),
         openedAsOllama: (state) => state.chats.find(chat => chat.id === state.openedId)?.messages.map((item) => {
             return {
                 role: item.role,
