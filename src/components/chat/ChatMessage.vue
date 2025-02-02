@@ -1,7 +1,7 @@
 <script setup lang="ts">
 import { marked } from 'marked';
 import MessageOptions from './MessageOptions.vue';
-import { ref, defineProps } from 'vue';
+import { defineProps } from 'vue';
 
 defineProps<{
     message: AppMessage;
