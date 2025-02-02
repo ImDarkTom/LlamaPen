@@ -1,11 +1,21 @@
 <script setup lang="ts">
-import { marked } from 'marked';
 import MessageOptions from './MessageOptions.vue';
 import { defineProps } from 'vue';
+
+import { Marked } from 'marked';
+
+import "katex/dist/katex.min.css";
+import markedKatex from 'marked-katex-extension';
+
+import { markedHighlight } from 'marked-highlight';
+import "highlight.js/styles/monokai.min.css"
+import hljs from 'highlight.js';
 
 defineProps<{
     message: AppMessage;
 }>();
+
+const marked = new Marked();
 
 marked.use({
     extensions: [{
@@ -32,13 +42,24 @@ marked.use({
     }]
 });
 
+marked.use(markedKatex());
+
+marked.use(markedHighlight({
+    emptyLangClass: 'hljs',
+    langPrefix: 'hljs language-',
+    highlight(code, lang, _info) {
+        const language = hljs.getLanguage(lang) ? lang : 'plaintext';
+
+        return hljs.highlight(code, { language }).value;
+    }
+}));
 </script>
 
 <template>
     <div class="chat-message" :class="{ 'bubble': message.role === 'user', 'full': message.role === 'assistant' }">
         <!-- <span class="message-creator">{{ message.role }}</span> -->
 
-        <span v-if="message.role !== 'user'" v-html="marked(message.content)" class="message-text"></span>
+        <span v-if="message.role !== 'user'" v-html="marked.parse(message.content)" class="message-text"></span>
         <span v-else v-html="message.content" class="message-text"></span>
 
         <MessageOptions :message="message" />
@@ -53,10 +74,10 @@ marked.use({
     margin: 1rem;
     display: flex;
     flex-direction: column;
-    
+
     &.bubble {
         @include mixin.shadow-medium;
-        
+
         margin-left: auto;
         border-radius: 1rem;
         background-color: var(--bg-3);
@@ -77,9 +98,6 @@ marked.use({
 
         pre {
             overflow-x: auto;
-            background-color: rgba($color: #000000, $alpha: 0.5);
-            box-sizing: border-box;
-            padding: 0.5rem;
         }
     }
 }
