@@ -9,10 +9,13 @@ import SidebarOptions from './SidebarOptions.vue';
 const allChats = useAllChatsStore();
 allChats.loadChats();
 
-const showSidebar = ref<boolean>(true);
+const showSidebarFromLS = localStorage.getItem('showSidebar');
+const showSidebar = ref<boolean>(showSidebarFromLS ? showSidebarFromLS === 'true' : true);
+// If a value exists for showSidebarFromLS, check if it is 'true', if there is no saved value, default to true.
 
 const toggleSidebar = () => {
-    showSidebar.value = !showSidebar.value
+    showSidebar.value = !showSidebar.value;
+    localStorage.setItem('showSidebar', String(showSidebar.value))
 }
 </script>
 
