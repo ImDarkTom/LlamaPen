@@ -60,48 +60,13 @@ marked.use(markedHighlight({
         <!-- <span class="message-creator">{{ message.role }}</span> -->
 
         <span v-if="message.role !== 'user'" v-html="marked.parse(message.content)" class="message-text"></span>
-        <span v-else v-html="message.content" class="message-text"></span>
+        <div v-else class="message-text">{{ message.content }}</div>
 
         <MessageOptions :message="message" />
     </div>
 </template>
 
 <style lang="scss">
-.chat-message {
-    color: var(--txt-1);
-    box-sizing: border-box;
-    padding: 1rem;
-    margin: 1rem;
-    display: flex;
-    flex-direction: column;
-
-    &.bubble {
-        @include mixin.shadow-medium;
-
-        margin-left: auto;
-        border-radius: 1rem;
-        background-color: var(--bg-3);
-        max-width: 28rem;
-        min-width: fit-content;
-    }
-
-    &.full {
-        width: 100%;
-        box-sizing: border-box;
-        margin: 0;
-    }
-
-    .message-text {
-        p {
-            padding-bottom: 0.5rem;
-        }
-
-        pre {
-            overflow-x: auto;
-        }
-    }
-}
-
 .thought-text-container,
 think {
     font-style: italic;
@@ -120,6 +85,42 @@ think {
         padding: 0.5rem 0;
         font-style: normal;
         filter: none;
+    }
+}
+</style>
+
+<style scoped lang="scss">
+.chat-message {
+    color: var(--txt-1);
+    box-sizing: border-box;
+    padding: 1rem;
+    margin: 1rem;
+    display: flex;
+    flex-direction: column;
+
+    &.bubble {
+        @include mixin.shadow-medium;
+
+        margin-left: auto;
+        border-radius: 1rem;
+        background-color: var(--bg-3);
+        max-width: 70%;
+    }
+
+    &.full {
+        width: 100%;
+        box-sizing: border-box;
+        margin: 0;
+    }
+
+    .message-text {
+        p {
+            padding-bottom: 0.5rem;
+        }
+
+        pre {
+            overflow-x: auto;
+        }
     }
 }
 </style>
