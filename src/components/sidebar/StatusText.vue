@@ -1,12 +1,15 @@
 <script setup lang="ts">
 import { onMounted, ref } from 'vue';
+import { useConfigStore } from '../../stores/config';
+
+const config = useConfigStore();
 
 const statusMessageText = ref("Waiting for Ollama...");
 const statusMessageElem = ref<HTMLElement | null>(null);
 const connectedToOllama = ref<boolean | null>(null);
 
 onMounted(() => {
-    fetch(`${localStorage.getItem('customUrl')}/`)
+    fetch(config.apiUrl('/'))
         .then(response => response.text())
         .then(response => {
             statusMessageText.value = response;

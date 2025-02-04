@@ -1,11 +1,14 @@
 <script setup lang="ts">
 import { onMounted, ref } from 'vue';
+import { useConfigStore } from '../../stores/config';
+
+const config = useConfigStore();
 
 const modelsList = ref<string[]>([]);
 const selectedModel = ref<string | null>(localStorage.getItem('selectedModel'));
 
 onMounted(() => {
-    fetch(`${localStorage.getItem('customUrl')}/api/tags`)
+    fetch(config.apiUrl('/api/tags'))
         .then(response => response.json())
         .then(response => {
             modelsList.value = response.models.map((item: { model: string }) => item.model);

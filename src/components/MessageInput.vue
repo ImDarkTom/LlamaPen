@@ -3,9 +3,11 @@ import { ref } from 'vue';
 import { useAllChatsStore } from '../stores/allChats';
 import { useRoute } from 'vue-router';
 import ModelSelect from './sidebar/ModelSelect.vue';
+import { useConfigStore } from '../stores/config';
 
 const route = useRoute();
 const allChats = useAllChatsStore();
+const config = useConfigStore();
 
 const messageInput = ref<HTMLTextAreaElement | null>(null);
 
@@ -59,7 +61,7 @@ async function sendMessage(userMessage: string) {
         }
     }
 
-    const response = await fetch(`${localStorage.getItem('customUrl')}/api/chat`, {
+    const response = await fetch(config.apiUrl('/api/chat'), {
         method: 'POST',
         body: JSON.stringify({
             model: localStorage.getItem('selectedModel'),

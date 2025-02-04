@@ -1,16 +1,18 @@
 <script setup lang="ts">
+import { useConfigStore } from '../../stores/config';
+
+const config = useConfigStore();
+
 function customUrlDialog() {
-    const currentUrl = localStorage.getItem('customUrl') || 'http://localhost:11434';
+    const currentUrl = config.ollamaUrl;
     const customUrl = prompt("Enter a custom URL to use as a Ollama instance, write in the format of an origin i.e. 'http://example.com:8080'. \n\n Leave blank to reset to default (http://localhost:11434): ", currentUrl);
 
     if (!customUrl || customUrl == "") {
-        localStorage.setItem('customUrl', 'http://localhost:11434');
-        location.reload();
+        config.setOllamaUrl('http://localhost:11434')
         return;
     }
 
-    localStorage.setItem('customUrl', customUrl);
-    location.reload();
+    config.setOllamaUrl(customUrl);;
 }
 </script>
 
