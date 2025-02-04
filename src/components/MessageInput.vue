@@ -35,55 +35,23 @@ function inputKeyUp(e: KeyboardEvent) {
     messageInput.value!.value = "";
     updateTextAreaHeight();
 
-    sendMessage(message);
+    const selectedModel = localStorage.getItem('selectedModel');
+
+    if (!selectedModel) {
+        throw new Error('No selected model found in localStorage.')
+    }
+
+    allChats.sendMessage(message, {
+        chatId: route.params.id as string,
+        requestUrl: config.apiUrl('/api/chat'),
+        selectedModel: selectedModel,
+    })
 }
 
 function updateTextAreaHeight() {
     messageInput.value!.style.height = "auto";
     messageInput.value!.style.height = (1 + messageInput.value!.scrollHeight) + "px";
 }
-
-async function sendMessage(userMessage: string) {
-    allChats.setOpened(route.params.id as string);
-    allChats.initialise();
-
-    allChats.addMessage('user', userMessage);
-    const responseMessageId = allChats.addMessage('assistant', '');
-
-    function handleChunk(value: Uint8Array) {
-        const chunkText = new TextDecoder().decode(value).trim().split('\n');
-
-        for (const chunk of chunkText) {
-            const chunkJson = JSON.parse(chunk);
-
-            const messageChunk = chunkJson.message.content;
-            allChats.modifyMessage(responseMessageId, messageChunk, 'append');
-        }
-    }
-
-    const response = await fetch(config.apiUrl('/api/chat'), {
-        method: 'POST',
-        body: JSON.stringify({
-            model: localStorage.getItem('selectedModel'),
-            messages: allChats.openedAsOllama,
-            stream: true,
-        })
-    });
-
-    const reader = response.body?.getReader();
-
-    while (true) {
-        const { done, value } = await reader!.read();
-
-        if (done) {
-            allChats.saveToLocalStorage();
-            return;
-        }
-
-        handleChunk(value);
-    }
-}
-
 </script>
 
 <template>

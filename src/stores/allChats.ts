@@ -1,10 +1,15 @@
 import { defineStore } from "pinia";
 import { v4 as generateUUID } from 'uuid';
 
+interface AllChatsState {
+    chats: Chat[],
+    openedId: string | null,
+}
+
 export const useAllChatsStore = defineStore('allchats', {
-    state: () => ({
-        chats: [] as Chat[],
-        openedId: null as string | null,
+    state: (): AllChatsState => ({
+        chats: [],
+        openedId: null
     }),
     getters: {
         openedChat: (state) => state.chats.find(chat => chat.id === state.openedId),
@@ -17,7 +22,17 @@ export const useAllChatsStore = defineStore('allchats', {
         openedIdExists: (state) => state.chats.find(chat => chat.id === state.openedId) !== undefined,
     },
     actions: {
-        initialise() {
+        findMessageById(id: string) {
+            if (!this.openedChat) {
+                return null;
+            }
+
+            return this.openedChat.messages.find((message) => message.id === id);
+        },
+        findChatIndexById(id: string) {
+            return this.chats.findIndex((chat) => chat.id === id);
+        },
+        ensureChatInitialised() {
             this.loadChats();
 
             if (!this.openedId || !this.openedIdExists) {
@@ -31,9 +46,14 @@ export const useAllChatsStore = defineStore('allchats', {
             
         },
         loadChats() {
-            const chats = JSON.parse(localStorage.getItem('chats') || "[]");
+            try {
+                const chats = JSON.parse(localStorage.getItem('chats') || "[]");
 
-            this.chats = chats;
+                this.chats = chats;
+            } catch (error: unknown) {
+                console.error('Failed to load chats from localStorage:', error);
+                this.chats = [];
+            }
         },
         setOpened(id: string | null) {
             this.openedId = id;
@@ -48,10 +68,14 @@ export const useAllChatsStore = defineStore('allchats', {
             this.saveToLocalStorage();
         },
         deleteChat(uuid: string) {
-            const chatToDeleteIndex = this.chats.findIndex((chat) => chat.id === uuid);
+            const chatToDeleteIndex = this.findChatIndexById(uuid);
 
             if (chatToDeleteIndex === -1) {
                 return;
+            }
+
+            if (uuid === this.openedId) {
+                this.openedId = null;
             }
 
             this.chats.splice(chatToDeleteIndex, 1);
@@ -72,7 +96,7 @@ export const useAllChatsStore = defineStore('allchats', {
             return newMessageId;
         },
         modifyMessage(messageId: string, content: string, mode: 'append' | 'replace') {
-            const message = this.openedChat?.messages.find((message) => message.id === messageId);
+            const message = this.findMessageById(messageId);
 
             if (!message) {
                 throw new Error("Couldn't find message to modify.")
@@ -85,13 +109,70 @@ export const useAllChatsStore = defineStore('allchats', {
             }
         },
         editChatName(uuid: string, newName: string) {
-            const chatToEditIndex = this.chats.findIndex((chat) => chat.id === uuid);
+            const chatToEditIndex = this.findChatIndexById(uuid);
 
             this.chats[chatToEditIndex].label = newName;
             this.saveToLocalStorage();
         },
         saveToLocalStorage() {
             localStorage.setItem('chats', JSON.stringify(this.chats));
+        },
+        async sendMessage(
+            userMessage: string, 
+            options: {
+                chatId: string,
+                requestUrl: string,
+                selectedModel: string }
+        ) {
+            this.setOpened(options.chatId);
+            this.ensureChatInitialised();
+
+            this.addMessage('user', userMessage);
+            
+            const responseMessageId = this.addMessage('assistant', '');
+
+            const payload = JSON.stringify({
+                model: options.selectedModel,
+                messages: this.openedAsOllama,
+                stream: true,
+            });
+
+            const response = await fetch(options.requestUrl, {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json',
+                },
+                body: payload,
+            });
+
+            if (!response.body) {
+                throw new Error(`No response body recieved from sendMessage request, response code: ${response.status}`);
+            }
+
+            const reader = response.body.getReader();
+            const textDecoder = new TextDecoder();
+
+            while (true) {
+                const { done, value } = await reader.read();
+
+                if (done) {
+                    this.saveToLocalStorage();
+                    break;
+                }
+
+                const chunkText = textDecoder.decode(value).trim().split('\n');
+
+                for (const chunk of chunkText) {
+                    try {
+                        const chunkJson = JSON.parse(chunk);
+                        const messageChunk = chunkJson.message.content;
+
+                        this.modifyMessage(responseMessageId, messageChunk, 'append');
+                    } catch (error: unknown) {
+                        console.error('Error parsing response chunk', error);
+                    }
+                }
+            }
         }
     }
 })
