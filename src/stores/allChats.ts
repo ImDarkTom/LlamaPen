@@ -117,6 +117,13 @@ export const useAllChatsStore = defineStore('allchats', {
         saveToLocalStorage() {
             localStorage.setItem('chats', JSON.stringify(this.chats));
         },
+        /**
+         * Adds a new message to chat with ID `chatId` and sends a request to the `requestUrl` with the current opened chat as the message list.
+         * @param userMessage The message added by the user.
+         * @param options.chatId The chat ID to add the message to.
+         * @param options.requestUrl The url to send the request to.
+         * @param options.selectedModel The model to use. Added into the request payload.
+         */
         async sendMessage(
             userMessage: string, 
             options: {
@@ -173,6 +180,22 @@ export const useAllChatsStore = defineStore('allchats', {
                     }
                 }
             }
+        },
+        editUserSentMessage(messageId: string, newMessageContent: string, options: { requestUrl: string, selectedModel: string }) {
+            if (!this.openedChat || !this.openedId) {
+                return;
+            }
+
+            const chatMessageIndex = this.openedChat.messages.findIndex((message) => message.id === messageId);
+
+            this.openedChat.messages.splice(chatMessageIndex);
+            this.saveToLocalStorage();
+
+            this.sendMessage(newMessageContent, {
+                chatId: this.openedId,
+                requestUrl: options.requestUrl,
+                selectedModel: options.selectedModel
+            });
         }
     }
 })

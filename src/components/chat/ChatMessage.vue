@@ -1,6 +1,6 @@
 <script setup lang="ts">
 import MessageOptions from './MessageOptions.vue';
-import { defineProps } from 'vue';
+import { defineProps, ref } from 'vue';
 
 import { Marked } from 'marked';
 
@@ -10,8 +10,11 @@ import markedKatex from 'marked-katex-extension';
 import { markedHighlight } from 'marked-highlight';
 import "highlight.js/styles/monokai.min.css"
 import hljs from 'highlight.js';
+import MessageEditor from './MessageEditor.vue';
+import { useAllChatsStore } from '../../stores/allChats';
+import { useConfigStore } from '../../stores/config';
 
-defineProps<{
+const props = defineProps<{
     message: AppMessage;
 }>();
 
@@ -53,14 +56,37 @@ marked.use(markedHighlight({
         return hljs.highlight(code, { language }).value;
     }
 }));
+
+const allChats = useAllChatsStore();
+const config = useConfigStore();
+
+const editing = ref<boolean>(false);
+
+function editMessage() {
+    editing.value = true;
+}
+
+function cancelEditing() {
+    editing.value = false;
+}
+
+function finishEdit(newText: string) {
+    editing.value = false;
+
+    allChats.editUserSentMessage(props.message.id, newText, {
+        requestUrl: config.apiUrl('/api/chat'),
+        selectedModel: localStorage.getItem('selectedModel')!
+    });
+}
 </script>
 
 <template>
     <div class="chat-message" :class="{ 'bubble': message.role === 'user', 'full': message.role === 'assistant' }">
         <span v-if="message.role !== 'user'" v-html="marked.parse(message.content)" class="message-text"></span>
+        <MessageEditor class="message-text" v-else-if="editing" :messageText="message.content" @onCancelEdit="cancelEditing" @onFinishEditing="finishEdit" />
         <div v-else class="message-text">{{ message.content }}</div>
 
-        <MessageOptions :message="message" />
+        <MessageOptions :message="message" @editMessage="editMessage"/>
     </div>
 </template>
 

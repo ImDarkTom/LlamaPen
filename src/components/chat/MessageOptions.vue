@@ -25,13 +25,10 @@ function copyMessage(message: OllamaMessage) {
 
 const copyTooltipText = ref<string>("Copy text");
 function editMessage(_message: OllamaMessage) {
-    // const messageText = message.content;
-    // const messageIndex = chatStore.messages.findIndex((storedMessage) => storedMessage === message);
-
-    // chatStore.messages.splice(messageIndex);
-
-    console.log("to be added");
+    emit('editMessage');
 }
+
+const emit = defineEmits(['editMessage']);
 </script>
 
 <template>

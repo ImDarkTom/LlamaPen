@@ -45,7 +45,7 @@ function inputKeyUp(e: KeyboardEvent) {
         chatId: route.params.id as string,
         requestUrl: config.apiUrl('/api/chat'),
         selectedModel: selectedModel,
-    })
+    });
 }
 
 function updateTextAreaHeight() {
