@@ -97,6 +97,7 @@ think {
     margin: 1rem;
     display: flex;
     flex-direction: column;
+    white-space: pre-wrap;
 
     &.bubble {
         @include mixin.shadow-medium;
@@ -114,10 +115,6 @@ think {
     }
 
     .message-text {
-        p {
-            padding-bottom: 0.5rem;
-        }
-
         pre {
             overflow-x: auto;
         }
