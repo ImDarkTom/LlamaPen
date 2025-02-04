@@ -57,8 +57,6 @@ marked.use(markedHighlight({
 
 <template>
     <div class="chat-message" :class="{ 'bubble': message.role === 'user', 'full': message.role === 'assistant' }">
-        <!-- <span class="message-creator">{{ message.role }}</span> -->
-
         <span v-if="message.role !== 'user'" v-html="marked.parse(message.content)" class="message-text"></span>
         <div v-else class="message-text">{{ message.content }}</div>
 
