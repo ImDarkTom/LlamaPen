@@ -4,7 +4,6 @@ import { onMounted, ref } from 'vue';
 const modelsList = ref<string[]>([]);
 const selectedModel = ref<string | null>(localStorage.getItem('selectedModel'));
 
-
 onMounted(() => {
     fetch(`${localStorage.getItem('customUrl')}/api/tags`)
         .then(response => response.json())
@@ -42,6 +41,9 @@ select {
     background: transparent;
     border-radius: 0.5rem;
     box-sizing: border-box;
+    width: fit-content;
+    color: var(--txt-2);
+    cursor: pointer;
 
     &:hover {
         background-color: var(--bg-3);

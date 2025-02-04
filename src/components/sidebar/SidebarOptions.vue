@@ -1,6 +1,5 @@
 <script setup lang="ts">
 import CustomUrlButton from './CustomUrlButton.vue';
-import ModelSelect from './ModelSelect.vue';
 import StatusText from './StatusText.vue';
 
 
@@ -18,7 +17,6 @@ function showGuide() {
             <input type="button" class="button" value="?" @click="showGuide">
             <CustomUrlButton class="button" />
         </div>
-        <ModelSelect />
     </div>
 </template>
 

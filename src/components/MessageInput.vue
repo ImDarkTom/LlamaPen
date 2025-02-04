@@ -2,6 +2,7 @@
 import { ref } from 'vue';
 import { useAllChatsStore } from '../stores/allChats';
 import { useRoute } from 'vue-router';
+import ModelSelect from './sidebar/ModelSelect.vue';
 
 const route = useRoute();
 const allChats = useAllChatsStore();
@@ -9,6 +10,12 @@ const allChats = useAllChatsStore();
 const messageInput = ref<HTMLTextAreaElement | null>(null);
 
 function inputKeyUp(e: KeyboardEvent) {
+    updateTextAreaHeight();
+
+    if (!messageInput.value) {
+        return;
+    }
+
     if (e.key !== 'Enter') {
         return;
     }
@@ -24,14 +31,20 @@ function inputKeyUp(e: KeyboardEvent) {
     }
 
     messageInput.value!.value = "";
+    updateTextAreaHeight();
 
     sendMessage(message);
+}
+
+function updateTextAreaHeight() {
+    messageInput.value!.style.height = "auto";
+    messageInput.value!.style.height = (1 + messageInput.value!.scrollHeight) + "px";
 }
 
 async function sendMessage(userMessage: string) {
     allChats.setOpened(route.params.id as string);
     allChats.initialise();
-    
+
     allChats.addMessage('user', userMessage);
     const responseMessageId = allChats.addMessage('assistant', '');
 
@@ -68,31 +81,56 @@ async function sendMessage(userMessage: string) {
         handleChunk(value);
     }
 }
+
 </script>
 
 <template>
-    <div class="message-input-container">
-        <textarea ref="messageInput" @keyup="inputKeyUp" rows="1"
-            placeholder="Enter a message..."></textarea>
+    <div>
+        <div class="message-input-container">
+            <textarea ref="messageInput" @keyup="inputKeyUp" placeholder="Enter a message..."></textarea>
+            <div class="footer">
+                <ModelSelect />
+            </div>
+        </div>
     </div>
 </template>
 
-<style scoped>
-.message-input-container {
-    display: flex;
-}
+<style scoped lang="scss">
+div {
+    margin: auto;
 
-textarea {
-    width: 100%;
-    box-sizing: border-box;
-    font-size: 1.2rem;
-    padding: 1rem;
-    margin: 1rem;
-    border-radius: 1rem;
-    resize: vertical;
-    border: 1px solid;
-    min-height: 1rem;
-    background: var(--bg-2);
-    box-shadow: 0px 3px 10px -3px black;
+    .message-input-container {
+        margin: 1rem;
+        padding: 0.5rem;
+        box-sizing: border-box;
+        display: flex;
+        flex-direction: column;
+        align-items: center;
+        max-height: 24rem;
+
+        background-color: var(--bg-2);
+        border-radius: 1rem;
+        border: 1px solid var(--txt-1);
+
+        textarea {
+            width: 48rem;
+            box-sizing: border-box;
+            font-size: 1rem;
+            padding: 0.5rem;
+            background-color: transparent;
+            border: none;
+            outline: none;
+            resize: none;
+            overflow-y: auto;
+            word-wrap: break-word;
+        }
+
+        .footer {
+            display: flex;
+            flex-direction: column;
+            justify-content: start;
+            width: 100%;
+        }
+    }
 }
 </style>
