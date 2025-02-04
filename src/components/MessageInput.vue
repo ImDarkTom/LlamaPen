@@ -1,9 +1,10 @@
 <script setup lang="ts">
-import { ref } from 'vue';
+import { onMounted, onUnmounted, ref } from 'vue';
 import { useAllChatsStore } from '../stores/allChats';
 import { useRoute } from 'vue-router';
 import ModelSelect from './sidebar/ModelSelect.vue';
 import { useConfigStore } from '../stores/config';
+import { eventBus } from '../eventBus';
 
 const route = useRoute();
 const allChats = useAllChatsStore();
@@ -43,10 +44,26 @@ function updateTextAreaHeight() {
     messageInput.value!.style.height = (1 + messageInput.value!.scrollHeight) + "px";
 }
 
+onMounted(() => {
+    eventBus.on('sendEditedMessage', (e) => {
+        if (!allChats.openedChat) {
+            return;
+        }
+
+        const messageToEditIndex = allChats.openedChat?.messages.findIndex((message) => message.id === e.messageId);
+        allChats.openedChat?.messages.splice(messageToEditIndex, 9e9);
+
+        sendMessage(e.newText);
+    });
+});
+
+onUnmounted(() => {
+    eventBus.off('sendEditedMessage');
+})
+
 async function sendMessage(userMessage: string) {
     allChats.setOpened(route.params.id as string);
     allChats.initialise();
-
     allChats.addMessage('user', userMessage);
     const responseMessageId = allChats.addMessage('assistant', '');
 

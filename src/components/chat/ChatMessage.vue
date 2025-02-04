@@ -1,6 +1,6 @@
 <script setup lang="ts">
 import MessageOptions from './MessageOptions.vue';
-import { defineProps } from 'vue';
+import { defineProps, ref } from 'vue';
 
 import { Marked } from 'marked';
 
@@ -11,7 +11,9 @@ import { markedHighlight } from 'marked-highlight';
 import "highlight.js/styles/monokai.min.css"
 import hljs from 'highlight.js';
 
-defineProps<{
+import { eventBus } from '../../eventBus';
+
+const props = defineProps<{
     message: AppMessage;
 }>();
 
@@ -53,16 +55,51 @@ marked.use(markedHighlight({
         return hljs.highlight(code, { language }).value;
     }
 }));
+
+const editable = ref<boolean>(false);
+const messageTextRef = ref<HTMLElement | null>(null);
+
+function editMessage() {
+    editable.value = true;
+
+    messageTextRef.value?.focus();
+}
+
+function editingKeyUp(e: KeyboardEvent) {
+    if (e.shiftKey) {
+        return;
+    }
+
+    if (e.key !== "Enter") {
+        return;
+    }
+
+    finishEdit();
+}
+
+function finishEdit() {
+    if (!messageTextRef.value?.textContent) {
+        return;
+    }
+
+    const newText = messageTextRef.value.textContent;
+    const messageId = props.message.id;
+
+    editable.value = false;
+    messageTextRef.value.blur();
+
+    
+    eventBus.emit('sendEditedMessage', { newText: newText, messageId: messageId });
+}
+
 </script>
 
 <template>
     <div class="chat-message" :class="{ 'bubble': message.role === 'user', 'full': message.role === 'assistant' }">
-        <!-- <span class="message-creator">{{ message.role }}</span> -->
-
         <span v-if="message.role !== 'user'" v-html="marked.parse(message.content)" class="message-text"></span>
-        <div v-else class="message-text">{{ message.content }}</div>
+        <div v-else class="message-text" :contenteditable="editable" @keyup="editingKeyUp" ref="messageTextRef">{{ message.content }}</div>
 
-        <MessageOptions :message="message" />
+        <MessageOptions :message="message" @editMessage="editMessage" />
     </div>
 </template>
 
