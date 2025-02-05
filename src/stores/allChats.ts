@@ -4,12 +4,14 @@ import { v4 as generateUUID } from 'uuid';
 interface AllChatsState {
     chats: Chat[],
     openedId: string | null,
+    isGenerating: boolean,
 }
 
 export const useAllChatsStore = defineStore('allchats', {
     state: (): AllChatsState => ({
         chats: [],
-        openedId: null
+        openedId: null,
+        isGenerating: false,
     }),
     getters: {
         openedChat: (state) => state.chats.find(chat => chat.id === state.openedId),
@@ -159,10 +161,13 @@ export const useAllChatsStore = defineStore('allchats', {
             const reader = response.body.getReader();
             const textDecoder = new TextDecoder();
 
+            this.isGenerating = true;
+
             while (true) {
                 const { done, value } = await reader.read();
 
-                if (done) {
+                if (done || !this.isGenerating) {
+                    this.isGenerating = false; // Ensure false if we stop generating normally
                     this.saveToLocalStorage();
                     break;
                 }

@@ -1,20 +1,26 @@
 <script setup lang="ts">
-import { ref } from 'vue';
+import { computed, ref } from 'vue';
 import { useAllChatsStore } from '../stores/allChats';
 import { useRoute } from 'vue-router';
 import ModelSelect from './sidebar/ModelSelect.vue';
 import { useConfigStore } from '../stores/config';
+import ActionButton from './ActionButton.vue';
 
 const route = useRoute();
 const allChats = useAllChatsStore();
 const config = useConfigStore();
 
 const messageInput = ref<HTMLTextAreaElement | null>(null);
+const messageInputValue = ref('');
+
+const canGenerate = computed<boolean>(() => {
+    return messageInputValue.value.trim() !== '';
+});
 
 function inputKeyUp(e: KeyboardEvent) {
     updateTextAreaHeight();
 
-    if (!messageInput.value) {
+    if (!canGenerate) {
         return;
     }
 
@@ -26,13 +32,13 @@ function inputKeyUp(e: KeyboardEvent) {
         return;
     }
 
-    const message = messageInput.value?.value.trim();
+    startGeneration();
+}
 
-    if (!message || message == "") {
-        return;
-    }
+function startGeneration() {
+    const message = messageInputValue.value.trim();
 
-    messageInput.value!.value = "";
+    messageInputValue.value = "";
     updateTextAreaHeight();
 
     const selectedModel = localStorage.getItem('selectedModel');
@@ -57,9 +63,10 @@ function updateTextAreaHeight() {
 <template>
     <div>
         <div class="message-input-container">
-            <textarea ref="messageInput" @keyup="inputKeyUp" placeholder="Enter a message..."></textarea>
+            <textarea ref="messageInput" v-model="messageInputValue" @keyup="inputKeyUp" placeholder="Enter a message..."></textarea>
             <div class="footer">
                 <ModelSelect />
+                <ActionButton :canGenerate="canGenerate" @startGeneration="startGeneration"/>
             </div>
         </div>
     </div>
@@ -97,8 +104,8 @@ div {
 
         .footer {
             display: flex;
-            flex-direction: column;
-            justify-content: start;
+            flex-direction: row;
+            justify-content: space-between;
             width: 100%;
         }
     }
