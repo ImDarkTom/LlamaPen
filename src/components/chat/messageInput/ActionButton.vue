@@ -1,6 +1,6 @@
 <script setup lang="ts">
 import { ImCancelCircle } from 'vue-icons-plus/im';
-import { useAllChatsStore } from '../stores/allChats';
+import { useAllChatsStore } from '../../../stores/allChats';
 import { BiSolidSend } from 'vue-icons-plus/bi';
 
 const allChats = useAllChatsStore();

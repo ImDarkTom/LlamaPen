@@ -4,7 +4,7 @@ import ChatMessage from './ChatMessage.vue';
 import { useAllChatsStore } from '../../stores/allChats';
 import { useRoute } from 'vue-router';
 import { emitter } from '../../mitt';
-import { useUiStore } from '../../stores/UIStore';
+import { useUiStore } from '../../stores/uiStore';
 
 const messageListRef = ref<HTMLElement | null>(null);
 
