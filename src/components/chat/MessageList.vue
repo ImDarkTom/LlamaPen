@@ -1,15 +1,17 @@
 <script setup lang="ts">
-import { onMounted, ref, watch } from 'vue';
+import { onMounted, onUnmounted, ref, watch } from 'vue';
 import ChatMessage from './ChatMessage.vue';
 import { useAllChatsStore } from '../../stores/allChats';
 import { useRoute } from 'vue-router';
+import { emitter } from '../../mitt';
+import { useUiStore } from '../../stores/UIStore';
 
 const messageListRef = ref<HTMLElement | null>(null);
-const scrollingDown = ref<Boolean>(false);
 
 const route = useRoute();
 
 const allChatStore = useAllChatsStore();
+const uiStore = useUiStore();
 
 watch(() => route.params.id, (newId, oldId) => {
     if (newId !== oldId) {
@@ -19,15 +21,24 @@ watch(() => route.params.id, (newId, oldId) => {
 
 onMounted(() => {
     allChatStore.setOpened(route.params.id as string);
+    emitter.on('scrollToBottom', scrollToBottom);
 });
 
-allChatStore.$subscribe((_, _state) => {
+onUnmounted(() => {
+    emitter.off('scrollToBottom');
+})
+
+function scrollToBottom() {
     if (!messageListRef.value) {
         return;
     }
 
-    if (scrollingDown) {
-        messageListRef.value.scrollTop = messageListRef.value.scrollHeight;
+    messageListRef.value.scrollTop = messageListRef.value.scrollHeight;
+}
+
+allChatStore.$subscribe((_, _state) => {
+    if (uiStore.chatList.isScrollingDown) {
+        scrollToBottom();
     }
 });
 
@@ -41,11 +52,7 @@ function handleScroll(_e: Event) {
     const elementHeight = messageListElem.scrollHeight;
     const userScrolled = messageListElem.scrollTop + messageListElem.clientHeight;
 
-    if (elementHeight < userScrolled + 25) { // 25 pixel padding
-        scrollingDown.value = true;
-    } else {
-        scrollingDown.value = false;
-    }
+    uiStore.setScrollingDown(elementHeight < userScrolled + 25) // 25px padding
 }
 </script>
 

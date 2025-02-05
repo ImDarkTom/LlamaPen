@@ -1,5 +1,6 @@
 import { defineStore } from "pinia";
 import { v4 as generateUUID } from 'uuid';
+import { emitter } from "../mitt";
 
 interface AllChatsState {
     chats: Chat[],
@@ -139,6 +140,7 @@ export const useAllChatsStore = defineStore('allchats', {
             this.addMessage('user', userMessage);
             
             const responseMessageId = this.addMessage('assistant', '');
+            emitter.emit('scrollToBottom');
 
             const payload = JSON.stringify({
                 model: options.selectedModel,

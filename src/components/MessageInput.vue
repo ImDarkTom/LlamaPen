@@ -5,6 +5,7 @@ import { useRoute } from 'vue-router';
 import ModelSelect from './sidebar/ModelSelect.vue';
 import { useConfigStore } from '../stores/config';
 import ActionButton from './ActionButton.vue';
+import ScrollToBottomButton from './chat/ScrollToBottomButton.vue';
 
 const route = useRoute();
 const allChats = useAllChatsStore();
@@ -63,6 +64,7 @@ function updateTextAreaHeight() {
 <template>
     <div>
         <div class="message-input-container">
+            <ScrollToBottomButton />
             <textarea ref="messageInput" v-model="messageInputValue" @keyup="inputKeyUp" placeholder="Enter a message..."></textarea>
             <div class="footer">
                 <ModelSelect />
@@ -84,6 +86,7 @@ div {
         flex-direction: column;
         align-items: center;
         max-height: 24rem;
+        position: relative;
 
         background-color: var(--bg-2);
         border-radius: 1rem;
