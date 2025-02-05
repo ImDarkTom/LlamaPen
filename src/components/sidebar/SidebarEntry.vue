@@ -3,7 +3,7 @@ import { ref } from 'vue';
 import { AiOutlineClose } from 'vue-icons-plus/ai';
 import { BsChatLeft } from 'vue-icons-plus/bs';
 import { useAllChatsStore } from '../../stores/allChats';
-import { useRouter } from 'vue-router';
+import { RouterLink, useRouter } from 'vue-router';
 
 const allChats = useAllChatsStore();
 const router = useRouter();
@@ -66,19 +66,19 @@ function editKeyPressed(e: KeyboardEvent) {
     }
 }
 
-const navigateToChat = () => {
+function navigateToChat(e: KeyboardEvent) {
+    if (e.metaKey || e.ctrlKey) return;
     router.push(`/chat/${props.chat.id}`);
 }
 
 </script>
 
 <template>
-    <li :class="{ 'active': props.chat.id === allChats.openedId }">
-        <div class="chat-link" @pointerdown="navigateToChat">
+    <RouterLink :to="`/chat/${props.chat.id}`" @mousedown.prevent="navigateToChat" @dblclick="editChatName" class="link-wrapper" :class="{ 'active': props.chat.id === allChats.openedId }">
+        <div class="chat-link">
             <BsChatLeft class="chat-icon" />
             <input type="text" 
                 class="chat-text" 
-                @dblclick="editChatName" 
                 @blur="stopEditing()" 
                 @keydown="editKeyPressed" 
                 ref="chatTextRef" 
@@ -86,11 +86,11 @@ const navigateToChat = () => {
                 readonly>
             <AiOutlineClose class="chat-close" @click="deleteChat" />
         </div>
-    </li>
+    </RouterLink>
 </template>
 
 <style scoped lang="scss">
-li {
+.link-wrapper {
     margin: 0.5rem 0;
     background-color: transparent;
     display: flex;
@@ -138,7 +138,7 @@ li {
             box-sizing: border-box;
             justify-content: center;
             align-items: center;
-            cursor: default;
+            cursor: pointer;
             text-overflow: ellipsis;
 
             &.editing {

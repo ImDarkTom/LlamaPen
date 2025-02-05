@@ -23,9 +23,9 @@ const toggleSidebar = () => {
     <div class="sidebar-container">
         <div class="sidebar" :class="{ 'hidden': !showSidebar }">
             <SidebarHeader />
-            <ul class="sidebar-chats">
+            <div class="sidebar-chats">
                 <SidebarEntry v-for="chat of allChats.chats" :key="chat.id" :chat="chat" />
-            </ul>
+            </div>
             <SidebarOptions />
         </div>
         <div class="sidebar-toggle" @pointerdown="toggleSidebar">
@@ -53,7 +53,6 @@ const toggleSidebar = () => {
         }
 
         .sidebar-chats {
-            list-style: none;
             padding: 0;
             margin: 0;
             flex: 1;
