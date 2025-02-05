@@ -1,6 +1,6 @@
 <script setup lang="ts">
 import MessageOptions from './MessageOptions.vue';
-import { defineProps, ref } from 'vue';
+import { defineProps, nextTick, ref } from 'vue';
 
 import { Marked } from 'marked';
 
@@ -61,9 +61,14 @@ const allChats = useAllChatsStore();
 const config = useConfigStore();
 
 const editing = ref<boolean>(false);
+const messageEditorRef = ref<InstanceType<typeof MessageEditor> | null>(null);
 
 function editMessage() {
     editing.value = true;
+
+    nextTick(() => {
+        messageEditorRef.value?.focusEditor();
+    });
 }
 
 function cancelEditing() {
@@ -81,9 +86,11 @@ function finishEdit(newText: string) {
 </script>
 
 <template>
-    <div class="chat-message" :class="{ 'bubble': message.role === 'user', 'full': message.role === 'assistant' }">
+    <div v-if="editing" class="chat-message message-editing full">
+        <MessageEditor ref="messageEditorRef" class="message-text" :messageText="message.content" @onCancelEdit="cancelEditing" @onFinishEditing="finishEdit" />
+    </div>
+    <div v-else class="chat-message" :class="{ 'bubble': message.role === 'user', 'full': message.role === 'assistant' }">
         <span v-if="message.role !== 'user'" v-html="marked.parse(message.content)" class="message-text"></span>
-        <MessageEditor class="message-text" v-else-if="editing" :messageText="message.content" @onCancelEdit="cancelEditing" @onFinishEditing="finishEdit" />
         <div v-else class="message-text">{{ message.content }}</div>
 
         <MessageOptions :message="message" @editMessage="editMessage"/>

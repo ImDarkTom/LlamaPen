@@ -136,6 +136,7 @@ export const useAllChatsStore = defineStore('allchats', {
         ) {
             this.setOpened(options.chatId);
             this.ensureChatInitialised();
+            this.isGenerating = false; // Ensure any other connections are stopped.
 
             this.addMessage('user', userMessage);
             
