@@ -21,6 +21,7 @@ function onKeyUp(e: KeyboardEvent) {
     }
 
     if (e.key === "Enter") {
+        e.preventDefault();
         emit('onFinishEditing', editorRef.value?.value)
     }
 }
