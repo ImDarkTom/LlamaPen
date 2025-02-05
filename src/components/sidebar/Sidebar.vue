@@ -44,6 +44,7 @@ const toggleSidebar = () => {
         flex-direction: column;
         height: 100vh;
         width: 18vw;
+        min-width: 260px;
         background-color: var(--bg-2);
         box-sizing: border-box;
         padding: 0.5rem;
