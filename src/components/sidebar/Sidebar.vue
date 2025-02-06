@@ -1,7 +1,7 @@
 <script setup lang="ts">
 import { useAllChatsStore } from '../../stores/allChats';
 import SidebarEntry from './SidebarEntry.vue';
-import { ref } from 'vue';
+import { onMounted, onUnmounted, ref } from 'vue';
 import { TbLayoutSidebarLeftCollapse, TbLayoutSidebarLeftExpand } from 'vue-icons-plus/tb';
 import SidebarHeader from './SidebarHeader.vue';
 import SidebarOptions from './footer/SidebarFooter.vue';
@@ -17,6 +17,21 @@ const toggleSidebar = () => {
     showSidebar.value = !showSidebar.value;
     localStorage.setItem('showSidebar', String(showSidebar.value))
 }
+
+function shortcutListener(e: KeyboardEvent) {
+    if (e.key === "S" && e.ctrlKey && e.shiftKey) {
+        e.preventDefault();
+        toggleSidebar();
+    }
+}
+
+onMounted(() => {
+    document.addEventListener('keydown', shortcutListener);
+});
+
+onUnmounted(() => {
+    document.removeEventListener('keydown', shortcutListener);
+});
 </script>
 
 <template>
