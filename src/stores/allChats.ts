@@ -1,12 +1,13 @@
 import { defineStore } from "pinia";
 import { v4 as generateUUID } from 'uuid';
 import { emitter } from "../mitt";
+import { useConfigStore } from "./config";
 
 interface AllChatsState {
     chats: Chat[],
     openedId: string | null,
     isGenerating: boolean,
-}
+};
 
 export const useAllChatsStore = defineStore('allchats', {
     state: (): AllChatsState => ({
@@ -35,7 +36,7 @@ export const useAllChatsStore = defineStore('allchats', {
         findChatIndexById(id: string) {
             return this.chats.findIndex((chat) => chat.id === id);
         },
-        ensureChatInitialised() {
+        ensureChatInitialised(): string | null {
             this.loadChats();
 
             if (!this.openedId || !this.openedIdExists) {
@@ -44,8 +45,10 @@ export const useAllChatsStore = defineStore('allchats', {
                 this.createChat(newUuid);
                 this.setOpened(newUuid);
                 this.saveToLocalStorage();
-                return;
+                return newUuid;
             }
+
+            return null;
             
         },
         loadChats() {
@@ -64,7 +67,7 @@ export const useAllChatsStore = defineStore('allchats', {
         createChat(uuid: string) {
             this.chats.push({
                 id: uuid,
-                label: 'New Chat' + Math.floor(Math.random() * 999), // temporary number to distunguish chats
+                label: 'New Chat',
                 messages: []
             });
 
@@ -134,8 +137,13 @@ export const useAllChatsStore = defineStore('allchats', {
                 requestUrl: string,
                 selectedModel: string }
         ) {
-            this.setOpened(options.chatId);
-            this.ensureChatInitialised();
+            let chatId = options.chatId;
+            const chatInitialisedResult = this.ensureChatInitialised();
+
+            if (!options.chatId && typeof chatInitialisedResult === 'string') {
+                chatId = chatInitialisedResult;
+            }
+
             this.isGenerating = false; // Ensure any other connections are stopped.
 
             this.addMessage('user', userMessage);
@@ -172,6 +180,7 @@ export const useAllChatsStore = defineStore('allchats', {
                 if (done || !this.isGenerating) {
                     this.isGenerating = false; // Ensure false if we stop generating normally
                     this.saveToLocalStorage();
+                    this.generateChatTitle(chatId, options.selectedModel);
                     break;
                 }
 
@@ -204,6 +213,57 @@ export const useAllChatsStore = defineStore('allchats', {
                 requestUrl: options.requestUrl,
                 selectedModel: options.selectedModel
             });
-        }
+        },
+        async generateChatTitle(chatId: string, selectedModel: string) {
+            const selectedChat = this.chats.find((chat) => chat.id === chatId);
+
+            if (!selectedChat) {
+                throw new Error('Selected chat to generate title for doesn\'t exist');
+            }
+
+            const selectedChatMessages = selectedChat.messages;
+            const firstTwoChatMessages = selectedChatMessages.slice(0, 2);
+
+            if (!firstTwoChatMessages) {
+                throw new Error('Chat does not have any messages.');
+            }
+
+            // https://github.com/open-webui/open-webui/blob/b72150c881955721a63ae7f4ea1b9ea293816fc1/backend/open_webui/config.py#L1097
+            const generationPrompt = `Create a concise, 3-5 word title as a title for the chat history, in the given language. RESPOND ONLY WITH THE TITLE TEXT.
+
+Examples of titles:
+Stock Market Trends
+Perfect Chocolate Chip Recipe
+Evolution of Music Streaming
+Remote Work Productivity Tips
+Artificial Intelligence in Healthcare
+Video Game Development Insights
+
+<chat_history>
+${firstTwoChatMessages.map((message) => {
+    return `${message.role}: ${message.content}`
+}).join('\n')}
+</chat_history>
+`.trim();
+
+            const payload = JSON.stringify({
+                model: selectedModel,
+                stream: false,
+                prompt: generationPrompt,
+            });
+
+            const response = await fetch(useConfigStore().apiUrl('/api/generate'), {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json',
+                },
+                body: payload,
+            });
+
+            const responseJson = await response.json();
+
+            selectedChat.label = responseJson.response;
+            this.saveToLocalStorage();
+        },
     }
 })
