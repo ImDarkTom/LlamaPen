@@ -74,7 +74,14 @@ function navigateToChat(e: KeyboardEvent) {
 </script>
 
 <template>
-    <RouterLink :to="`/chat/${props.chat.id}`" @mousedown.prevent="navigateToChat" @dblclick="editChatName" class="link-wrapper" :class="{ 'active': props.chat.id === allChats.openedId }">
+    <RouterLink 
+        :to="`/chat/${props.chat.id}`" 
+        @mousedown.prevent="navigateToChat" 
+        @dblclick="editChatName" 
+        class="link-wrapper" 
+        :class="{ 'active': props.chat.id === allChats.openedId }" 
+        :title="props.chat.label"
+    >
         <div class="chat-link">
             <BsChatLeft class="chat-icon" />
             <input type="text" 
@@ -83,7 +90,8 @@ function navigateToChat(e: KeyboardEvent) {
                 @keydown="editKeyPressed" 
                 ref="chatTextRef" 
                 :value="props.chat.label" 
-                readonly>
+                readonly
+            >
             <AiOutlineClose class="chat-close" @click="deleteChat" />
         </div>
     </RouterLink>
