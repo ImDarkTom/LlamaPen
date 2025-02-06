@@ -157,12 +157,16 @@ export const useAllChatsStore = defineStore('allchats', {
                 stream: true,
             });
 
+            const controller = new AbortController();
+            const signal = controller.signal;
+
             const response = await fetch(options.requestUrl, {
                 method: 'POST',
                 headers: {
                     'Content-Type': 'application/json',
                 },
                 body: payload,
+                signal: signal,
             });
 
             if (!response.body) {
@@ -178,6 +182,8 @@ export const useAllChatsStore = defineStore('allchats', {
                 const { done, value } = await reader.read();
 
                 if (done || !this.isGenerating) {
+                    controller.abort('Cancelled response.');
+
                     this.isGenerating = false; // Ensure false if we stop generating normally
                     this.saveToLocalStorage();
                     this.generateChatTitle(chatId, options.selectedModel);
