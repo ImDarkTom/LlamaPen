@@ -39,7 +39,7 @@ onUnmounted(() => {
         <div class="sidebar" :class="{ 'hidden': !showSidebar }">
             <SidebarHeader />
             <div class="sidebar-chats">
-                <SidebarEntry v-for="chat of allChats.chats" :key="chat.id" :chat="chat" />
+                <SidebarEntry v-for="chat of allChats.chats.sort((a, b) => (b.lastMessage ?? 0) - (a.lastMessage ?? 0))" :key="chat.id" :chat="chat" />
             </div>
             <SidebarOptions />
         </div>

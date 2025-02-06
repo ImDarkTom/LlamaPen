@@ -68,7 +68,9 @@ export const useAllChatsStore = defineStore('allchats', {
             this.chats.push({
                 id: uuid,
                 label: 'New Chat',
-                messages: []
+                messages: [],
+                created: Date.now(),
+                lastMessage: Date.now(),
             });
 
             this.saveToLocalStorage();
@@ -89,19 +91,29 @@ export const useAllChatsStore = defineStore('allchats', {
             this.saveToLocalStorage();
         },
         addMessage(role: MessageRole, content: string): string {
+            if (!this.openedChat) {
+                throw new Error('No opened chat to add message to.');
+            }
+
             const newMessageId = generateUUID();
 
-            this.openedChat?.messages.push({
+            this.openedChat.messages.push({
                 id: newMessageId,
                 role: role,
                 content: content
             });
+
+            this.openedChat.lastMessage = Date.now();
 
             this.saveToLocalStorage();
 
             return newMessageId;
         },
         modifyMessage(messageId: string, content: string, mode: 'append' | 'replace') {
+            if (!this.openedChat) {
+                return;
+            }
+
             const message = this.findMessageById(messageId);
 
             if (!message) {
@@ -113,6 +125,8 @@ export const useAllChatsStore = defineStore('allchats', {
             } else if (mode === 'replace') {
                 message.content = content;
             }
+
+            this.openedChat.lastMessage = Date.now();
         },
         editChatName(uuid: string, newName: string) {
             const chatToEditIndex = this.findChatIndexById(uuid);

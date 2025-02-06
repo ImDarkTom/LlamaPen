@@ -10,6 +10,8 @@ type Chat = {
     id: string;
     label: string;
     messages: AppMessage[];
+    created: number; // Date in ms
+    lastMessage: number; // Date in ms
 }
 
 interface AppMessage extends OllamaMessage {

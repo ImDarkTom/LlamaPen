@@ -71,6 +71,26 @@ function navigateToChat(e: KeyboardEvent) {
     router.push(`/chat/${props.chat.id}`);
 }
 
+function getDateTimeString(timeInt: unknown) {
+    if (typeof timeInt === 'number') {
+        return new Date(timeInt).toLocaleString(undefined, {
+            day: '2-digit',
+            month: 'short',
+            year: 'numeric',
+            hour: '2-digit',
+            minute: '2-digit',
+            hour12: false,
+        });
+    } else {
+        return "Unknown";
+    }
+}
+    
+
+const hoverTitle = `${props.chat.label}
+Last message: ${getDateTimeString(props.chat.lastMessage)}
+Created: ${getDateTimeString(props.chat.created)}`;
+
 </script>
 
 <template>
@@ -80,7 +100,7 @@ function navigateToChat(e: KeyboardEvent) {
         @dblclick="editChatName" 
         class="link-wrapper" 
         :class="{ 'active': props.chat.id === allChats.openedId }" 
-        :title="props.chat.label"
+        :title="hoverTitle"
     >
         <div class="chat-link">
             <BsChatLeft class="chat-icon" />
