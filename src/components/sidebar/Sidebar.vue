@@ -4,7 +4,7 @@ import SidebarEntry from './SidebarEntry.vue';
 import { ref } from 'vue';
 import { TbLayoutSidebarLeftCollapse, TbLayoutSidebarLeftExpand } from 'vue-icons-plus/tb';
 import SidebarHeader from './SidebarHeader.vue';
-import SidebarOptions from './SidebarOptions.vue';
+import SidebarOptions from './footer/SidebarFooter.vue';
 
 const allChats = useAllChatsStore();
 allChats.loadChats();
