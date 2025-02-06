@@ -5,13 +5,13 @@ import { onMounted, onUnmounted, ref } from 'vue';
 import { TbLayoutSidebarLeftCollapse, TbLayoutSidebarLeftExpand } from 'vue-icons-plus/tb';
 import SidebarHeader from './SidebarHeader.vue';
 import SidebarOptions from './footer/SidebarFooter.vue';
+import { useConfigStore } from '../../stores/config';
 
 const allChats = useAllChatsStore();
 allChats.loadChats();
 
-const showSidebarFromLS = localStorage.getItem('showSidebar');
-const showSidebar = ref<boolean>(showSidebarFromLS ? showSidebarFromLS === 'true' : true);
-// If a value exists for showSidebarFromLS, check if it is 'true', if there is no saved value, default to true.
+const useConfig = useConfigStore();
+const showSidebar = ref<boolean>(useConfig.showSidebar);
 
 const toggleSidebar = () => {
     showSidebar.value = !showSidebar.value;
