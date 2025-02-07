@@ -1,6 +1,6 @@
 <script setup lang="ts">
 import MessageOptions from './MessageOptions.vue';
-import { defineProps, nextTick, ref } from 'vue';
+import { nextTick, ref } from 'vue';
 
 import { Marked } from 'marked';
 
@@ -87,13 +87,15 @@ function finishEdit(newText: string) {
 
 <template>
     <div v-if="editing" class="chat-message message-editing full">
-        <MessageEditor ref="messageEditorRef" class="message-text" :messageText="message.content" @onCancelEdit="cancelEditing" @onFinishEditing="finishEdit" />
+        <MessageEditor ref="messageEditorRef" class="message-text" :messageText="message.content"
+            @onCancelEdit="cancelEditing" @onFinishEditing="finishEdit" />
     </div>
-    <div v-else class="chat-message" :class="{ 'bubble': message.role === 'user', 'full': message.role === 'assistant' }">
+    <div v-else class="chat-message"
+        :class="{ 'bubble': message.role === 'user', 'full': message.role === 'assistant' }">
         <span v-if="message.role !== 'user'" v-html="marked.parse(message.content)" class="message-text"></span>
         <div v-else class="message-text">{{ message.content }}</div>
 
-        <MessageOptions :message="message" @editMessage="editMessage"/>
+        <MessageOptions :message="message" @editMessage="editMessage" />
     </div>
 </template>
 
