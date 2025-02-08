@@ -1,6 +1,6 @@
-import { createApp } from 'vue'
-import './styles/style.scss'
-import App from './App.vue'
+import { createApp } from 'vue';
+import './styles/style.css';
+import App from './App.vue';
 import { createPinia } from 'pinia';
 import { createRouter, createWebHistory } from 'vue-router';
 import ChatWindow from './components/ChatWindow.vue';

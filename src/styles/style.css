@@ -1,9 +1,23 @@
+@import "tailwindcss";
+
+@theme {
+    --color-primary: #0d1a30;
+    --color-secondary: #192a51;
+    --color-tertiary: #2a3a6a;
+    --color-quaternary: #3a4a8a;
+    /* --bg-accent: #967aa1; */
+
+    --color-text: #f0f0f0;
+    --color-text-alt: #c5cadb;
+    --color-text-accent: #fffafa;
+}
+
 :root {
     --bg-1: #f5e6e8;
     --bg-2: #d5c6e0;
     --bg-3: #aaa1c8;
     --bg-4: #967aa1;
-    --bg-accent: #192a51;
+    /* --bg-accent: #192a51; */
 
     --txt-1: #030408;
     --txt-2: #15171e;
@@ -106,7 +120,7 @@ h6 {
         --bg-2: #192a51;
         --bg-3: #2a3a6a;
         --bg-4: #3a4a8a;
-        --bg-accent: #967aa1;
+        /* --bg-accent: #967aa1; */
 
         --txt-1: #f0f0f0;
         --txt-2: #c5cadb;

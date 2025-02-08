@@ -86,10 +86,14 @@ function finishEdit(newText: string) {
 </script>
 
 <template>
-    <div v-if="editing" class="chat-message message-editing full">
+    <div v-if="editing" class="chat-message full">
         <MessageEditor ref="messageEditorRef" class="message-text" :messageText="message.content" @onCancelEdit="cancelEditing" @onFinishEditing="finishEdit" />
     </div>
-    <div v-else class="chat-message" :class="{ 'bubble': message.role === 'user', 'full': message.role === 'assistant' }">
+    <div v-else class="chat-message" 
+        :class="{ 
+            'bubble !ml-auto shadow-md shadow-black rounded-xl bg-tertiary max-w-7/10': message.role === 'user', 
+            'full w-full !m-0': message.role === 'assistant' 
+            }">
         <span v-if="message.role !== 'user'" v-html="marked.parse(message.content)" class="message-text"></span>
         <div v-else class="message-text">{{ message.content }}</div>
 
@@ -129,21 +133,6 @@ think {
     display: flex;
     flex-direction: column;
     white-space: pre-wrap;
-
-    &.bubble {
-        @include mixin.shadow-medium;
-
-        margin-left: auto;
-        border-radius: 1rem;
-        background-color: var(--bg-3);
-        max-width: 70%;
-    }
-
-    &.full {
-        width: 100%;
-        box-sizing: border-box;
-        margin: 0;
-    }
 
     .message-text {
         pre {
