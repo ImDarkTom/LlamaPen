@@ -46,7 +46,7 @@ function handleScroll(_e: Event) {
     if (!messageListRef.value) {
         return;
     }
-    
+
     const messageListElem = messageListRef.value;
 
     const elementHeight = messageListElem.scrollHeight;
@@ -58,7 +58,8 @@ function handleScroll(_e: Event) {
 
 <template>
     <div class="message-list" ref="messageListRef" @scroll="handleScroll">
-        <ChatMessage v-for="message of (allChatStore.openedChat?.messages || [])" :key="message.id" :message="message" />
+        <ChatMessage v-for="message of (allChatStore.openedChat?.messages || [])" :key="message.id"
+            :message="message" />
     </div>
 </template>
 
@@ -71,5 +72,6 @@ function handleScroll(_e: Event) {
     max-width: 48rem;
     width: 100%;
     margin: 0 auto;
+    scrollbar-width: thin;
 }
 </style>
