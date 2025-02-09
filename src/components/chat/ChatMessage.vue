@@ -86,41 +86,25 @@ function finishEdit(newText: string) {
 </script>
 
 <template>
-    <div v-if="editing" class="chat-message message-editing full">
-        <MessageEditor ref="messageEditorRef" class="message-text" :messageText="message.content"
-            @onCancelEdit="cancelEditing" @onFinishEditing="finishEdit" />
-    </div>
-    <div v-else class="chat-message"
-        :class="{ 'bubble': message.role === 'user', 'full': message.role === 'assistant' }">
-        <span v-if="message.role !== 'user'" v-html="marked.parse(message.content)" class="message-text"></span>
-        <div v-else class="message-text">{{ message.content }}</div>
+    <div class="chat-message" :class="{ 
+        'bubble': props.message.role === 'user' && !editing, 
+        'full': props.message.role === 'assistant' || editing 
+    }">
+        <MessageEditor v-if="editing" 
+            ref="messageEditorRef" 
+            :messageText="message.content"
+            @onCancelEdit="cancelEditing" 
+            @onFinishEditing="finishEdit" 
+        />
+        
+        <template v-else>
+            <span v-if="message.role !== 'user'" v-html="marked.parse(message.content)" class="message-text"></span>
+            <div v-else class="message-text">{{ message.content }}</div>
 
-        <MessageOptions :message="message" @editMessage="editMessage" />
+            <MessageOptions :message="message" @editMessage="editMessage" />
+        </template>
     </div>
 </template>
-
-<style lang="scss">
-.thought-text-container,
-think {
-    font-style: italic;
-    filter: opacity(0.8);
-    padding-bottom: 1rem;
-    display: flex;
-    flex-direction: column;
-    background-color: var(--bg-3);
-    border-radius: 1rem;
-    padding: 0.5rem;
-    box-sizing: border-box;
-    margin-bottom: 1rem;
-
-    .thought-header {
-        font-weight: bold;
-        padding: 0.5rem 0;
-        font-style: normal;
-        filter: none;
-    }
-}
-</style>
 
 <style scoped lang="scss">
 .chat-message {
@@ -151,6 +135,29 @@ think {
         pre {
             overflow-x: auto;
         }
+    }
+}
+</style>
+
+<style lang="scss">
+.thought-text-container,
+think {
+    font-style: italic;
+    filter: opacity(0.8);
+    padding-bottom: 1rem;
+    display: flex;
+    flex-direction: column;
+    background-color: var(--bg-3);
+    border-radius: 1rem;
+    padding: 0.5rem;
+    box-sizing: border-box;
+    margin-bottom: 1rem;
+
+    .thought-header {
+        font-weight: bold;
+        padding: 0.5rem 0;
+        font-style: normal;
+        filter: none;
     }
 }
 </style>
