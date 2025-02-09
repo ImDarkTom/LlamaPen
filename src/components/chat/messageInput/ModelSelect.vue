@@ -29,27 +29,10 @@ function changeModel() {
 </script>
 
 <template>
-    <select @change="changeModel" v-model="selectedModel">
+    <select @change="changeModel" v-model="selectedModel"
+        class="outline-none border-none p-2 rounded-lg box-border w-fit text-txt-2 cursor-pointer hover:bg-primary-300">
         <option v-for="model in modelsList" :key="model" :value="model">
             {{ model }}
         </option>
     </select>
 </template>
-
-<style scoped lang="scss">
-select {
-    outline: none;
-    border: none;
-    padding: 0.5rem;
-    background: transparent;
-    border-radius: 0.5rem;
-    box-sizing: border-box;
-    width: fit-content;
-    color: var(--txt-2);
-    cursor: pointer;
-
-    &:hover {
-        background-color: var(--bg-3);
-    }
-}
-</style>
