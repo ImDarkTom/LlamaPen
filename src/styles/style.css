@@ -10,6 +10,9 @@
     --color-primary-500: #0d1a30;
     --color-primary-600: #020408;
     --color-primary-700: #000000;
+
+    --color-txt-1: #f0f0f0;
+    --color-txt-2: #c5cadb
 }
 
 :root {
@@ -28,8 +31,8 @@
     font-weight: 400;
 
     color-scheme: light dark;
-    color: var(--txt-1);
-    background-color: var(--bg-1);
+    color: var(--color-txt-1);
+    background-color: var(--color-primary-500);
 
     font-synthesis: none;
     text-rendering: optimizeLegibility;

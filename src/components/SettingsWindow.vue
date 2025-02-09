@@ -27,7 +27,7 @@ import OllamaUrl from './settings/OllamaUrl.vue';
             border: none;
             padding: 0.5rem;
             border-radius: 0.5rem;
-            color: var(--txt-accent);
+            color: var(--txt-1);
         }
     }
 }
