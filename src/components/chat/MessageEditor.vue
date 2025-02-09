@@ -49,6 +49,6 @@ textarea {
     border-radius: 0.5rem;
     resize: vertical;
 
-    @include mixin.shadow-medium;
+    box-shadow: 0px 3px 10px -3px black;
 }
 </style>

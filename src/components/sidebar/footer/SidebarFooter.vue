@@ -43,7 +43,7 @@ function showGuide() {
             cursor: pointer;
 
             &:hover {
-                @include mixin.shadow-low;
+                box-shadow: 0px 2px 5px -2px rgba(0, 0, 0, 0.5);
                 background-color: var(--bg-4);
             }
         }

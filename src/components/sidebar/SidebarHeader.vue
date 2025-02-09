@@ -16,10 +16,10 @@ function search() {
 
 <template>
     <div class="header">
-            <span class="branding">LlamaPen</span>
-            <AiOutlineSearch class="search right-icon" @click="search" />
-            <IpWrite class="new-chat right-icon" @click="newChat()" />
-        </div>
+        <span class="branding">LlamaPen</span>
+        <AiOutlineSearch class="search right-icon" @click="search" />
+        <IpWrite class="new-chat right-icon" @click="newChat()" />
+    </div>
 </template>
 
 <style scoped lang="scss">
@@ -46,7 +46,7 @@ function search() {
 
         &:hover {
             background-color: var(--bg-3);
-            @include mixin.shadow-low;
+            box-shadow: 0px 2px 5px -2px rgba(0, 0, 0, 0.5);
         }
     }
 }

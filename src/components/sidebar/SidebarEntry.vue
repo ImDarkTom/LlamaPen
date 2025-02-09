@@ -85,7 +85,7 @@ function getDateTimeString(timeInt: unknown) {
         return "Unknown";
     }
 }
-    
+
 
 const hoverTitle = `${props.chat.label}
 Last message: ${getDateTimeString(props.chat.lastMessage)}
@@ -94,24 +94,12 @@ Created: ${getDateTimeString(props.chat.created)}`;
 </script>
 
 <template>
-    <RouterLink 
-        :to="`/chat/${props.chat.id}`" 
-        @mousedown.prevent="navigateToChat" 
-        @dblclick="editChatName" 
-        class="link-wrapper" 
-        :class="{ 'active': props.chat.id === allChats.openedId }" 
-        :title="hoverTitle"
-    >
+    <RouterLink :to="`/chat/${props.chat.id}`" @mousedown.prevent="navigateToChat" @dblclick="editChatName"
+        class="link-wrapper" :class="{ 'active': props.chat.id === allChats.openedId }" :title="hoverTitle">
         <div class="chat-link">
             <BsChatLeft class="chat-icon" />
-            <input type="text" 
-                class="chat-text" 
-                @blur="stopEditing()" 
-                @keydown="editKeyPressed" 
-                ref="chatTextRef" 
-                :value="props.chat.label" 
-                readonly
-            >
+            <input type="text" class="chat-text" @blur="stopEditing()" @keydown="editKeyPressed" ref="chatTextRef"
+                :value="props.chat.label" readonly>
             <AiOutlineClose class="chat-close" @click="deleteChat" />
         </div>
     </RouterLink>
@@ -130,7 +118,7 @@ Created: ${getDateTimeString(props.chat.created)}`;
 
     &.active {
         background-color: var(--bg-4);
-        @include mixin.shadow-low;
+        box-shadow: 0px 2px 5px -2px rgba(0, 0, 0, 0.5);
     }
 
     .chat-link {
@@ -149,7 +137,7 @@ Created: ${getDateTimeString(props.chat.created)}`;
                 display: initial;
             }
         }
-        
+
         .chat-icon {
             box-sizing: border-box;
             padding: 0.1rem;
