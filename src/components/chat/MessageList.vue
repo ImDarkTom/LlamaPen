@@ -57,21 +57,10 @@ function handleScroll(_e: Event) {
 </script>
 
 <template>
-    <div class="message-list" ref="messageListRef" @scroll="handleScroll">
-        <ChatMessage v-for="message of (allChatStore.openedChat?.messages || [])" :key="message.id"
-            :message="message" />
+    <div class="flex justify-center overflow-y-auto" ref="messageListRef" @scroll="handleScroll">
+        <div class="flex flex-col grow max-w-[48rem]" >
+            <ChatMessage v-for="message of (allChatStore.openedChat?.messages || [])" :key="message.id"
+                :message="message" />
+        </div>
     </div>
 </template>
-
-<style scoped>
-.message-list {
-    display: flex;
-    flex-direction: column;
-    overflow-y: auto;
-    flex: 1;
-    max-width: 48rem;
-    width: 100%;
-    margin: 0 auto;
-    scrollbar-width: thin;
-}
-</style>

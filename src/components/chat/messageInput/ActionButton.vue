@@ -20,27 +20,11 @@ defineProps<{
 <template>
     <ImCancelCircle 
         v-if="allChats.isGenerating" 
-        class="action-button" 
-        @click="cancelGeneration" 
-        :class="{ 'disabled': !canGenerate && !allChats.isGenerating }" />
+        class="bg-primary-100 p-2 box-content rounded-lg cursor-pointer"
+        @click="cancelGeneration" :class="{ 'opacity-50 !cursor-default': !canGenerate && !allChats.isGenerating }" />
     <BiSolidSend 
         v-else 
-        class="action-button" 
+        class="bg-primary-100 p-2 box-content rounded-lg cursor-pointer"
         @click="emit('startGeneration')"
-        :class="{ 'disabled': !canGenerate && !allChats.isGenerating }" />
+        :class="{ 'opacity-50 !cursor-default': !canGenerate && !allChats.isGenerating }" />
 </template>
-
-<style scoped lang="scss">
-.action-button {
-    background-color: var(--bg-3);
-    padding: 0.5rem;
-    box-sizing: content-box;
-    border-radius: 0.5rem;
-    cursor: pointer;
-
-    &.disabled {
-        opacity: 0.5;
-        cursor: default;
-    }
-}
-</style>

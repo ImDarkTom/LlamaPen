@@ -86,71 +86,35 @@ function finishEdit(newText: string) {
 </script>
 
 <template>
-    <div v-if="editing" class="chat-message message-editing full">
-        <MessageEditor ref="messageEditorRef" class="message-text" :messageText="message.content"
-            @onCancelEdit="cancelEditing" @onFinishEditing="finishEdit" />
-    </div>
-    <div v-else class="chat-message"
-        :class="{ 'bubble': message.role === 'user', 'full': message.role === 'assistant' }">
-        <span v-if="message.role !== 'user'" v-html="marked.parse(message.content)" class="message-text"></span>
-        <div v-else class="message-text">{{ message.content }}</div>
+    <div class="text-txt-1 box-border p-4 m-4 flex flex-col whitespace-pre-wrap" :class="{ 
+        'ml-auto rounded-xl bg-primary-300 max-w-[70%] shadow-sm shadow-black': props.message.role === 'user' && !editing, 
+        'w-full box-border !p-0 !m-0': props.message.role === 'assistant' || editing 
+    }">
+        <MessageEditor v-if="editing" 
+            ref="messageEditorRef" 
+            :messageText="message.content"
+            @onCancelEdit="cancelEditing" 
+            @onFinishEditing="finishEdit" 
+        />
 
-        <MessageOptions :message="message" @editMessage="editMessage" />
+        <template v-else>
+            <span v-if="message.role !== 'user'" v-html="marked.parse(message.content)" class="message-text"></span>
+            <div v-else class="message-text">{{ message.content }}</div>
+
+            <MessageOptions :message="message" @editMessage="editMessage" />
+        </template>
     </div>
 </template>
 
-<style lang="scss">
+<style>
+@reference "@/styles/style.css";
+
 .thought-text-container,
 think {
-    font-style: italic;
-    filter: opacity(0.8);
-    padding-bottom: 1rem;
-    display: flex;
-    flex-direction: column;
-    background-color: var(--bg-3);
-    border-radius: 1rem;
-    padding: 0.5rem;
-    box-sizing: border-box;
-    margin-bottom: 1rem;
-
-    .thought-header {
-        font-weight: bold;
-        padding: 0.5rem 0;
-        font-style: normal;
-        filter: none;
-    }
+    @apply italic opacity-80 pb-4 flex bg-primary-200 rounded-xl p-2 box-border mb-4;
 }
-</style>
 
-<style scoped lang="scss">
-.chat-message {
-    color: var(--txt-1);
-    box-sizing: border-box;
-    padding: 1rem;
-    margin: 1rem;
-    display: flex;
-    flex-direction: column;
-    white-space: pre-wrap;
-
-    &.bubble {
-        @include mixin.shadow-medium;
-
-        margin-left: auto;
-        border-radius: 1rem;
-        background-color: var(--bg-3);
-        max-width: 70%;
-    }
-
-    &.full {
-        width: 100%;
-        box-sizing: border-box;
-        margin: 0;
-    }
-
-    .message-text {
-        pre {
-            overflow-x: auto;
-        }
-    }
+.message-text pre {
+    @apply overflow-x-auto mb-4 border border-txt-1/50 rounded-lg;
 }
 </style>

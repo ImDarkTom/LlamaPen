@@ -12,20 +12,8 @@ watch(uiStore.chatList, () => {
 }); 
 </script>
 
-<template><span v-if="showButton" @click="emitter.emit('scrollToBottom')">Scroll to bottom ↓</span></template>
-
-<style scoped lang="scss">
-span {
-    position: absolute;
-    top: -3rem;
-    left: 50%;
-    transform: translate(-50%, 0);
-    background-color: var(--bg-3);
-    padding: 0.5rem;
-    border-radius: 0.5rem;
-    user-select: none;
-    cursor: pointer;
-
-    @include mixin.shadow-low;
-}
-</style>
+<template>
+    <span v-if="showButton" @click="emitter.emit('scrollToBottom')"
+        class="absolute -top-12 -translate-x-0 bg-primary-300 p-2 rounded-lg select-none cursor-pointer shadow-sm shadow-black">Scroll
+        to bottom ↓</span>
+</template>

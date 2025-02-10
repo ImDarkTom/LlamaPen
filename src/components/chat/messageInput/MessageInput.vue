@@ -62,55 +62,17 @@ function updateTextAreaHeight() {
 </script>
 
 <template>
-    <div>
-        <div class="message-input-container">
+    <div class="m-auto">
+        <div
+            class="m-4 p-2 box-border flex flex-col items-center max-h-[48rem] relative bg-primary-400 rounded-xl border-[1px] border-solid border-txt-1">
             <ScrollToBottomButton />
-            <textarea ref="messageInput" v-model="messageInputValue" @keyup="inputKeyUp" placeholder="Enter a message..."></textarea>
-            <div class="footer">
+            <textarea ref="messageInput" v-model="messageInputValue" @keyup="inputKeyUp"
+                placeholder="Enter a message..."
+                class="w-[48rem] box-border text-base p-2 border-none outline-none resize-none overflow-y-auto break-words"></textarea>
+            <div class="flex flex-row justify-between w-full">
                 <ModelSelect />
-                <ActionButton :canGenerate="canGenerate" @startGeneration="startGeneration"/>
+                <ActionButton :canGenerate="canGenerate" @startGeneration="startGeneration" />
             </div>
         </div>
     </div>
 </template>
-
-<style scoped lang="scss">
-div {
-    margin: auto;
-
-    .message-input-container {
-        margin: 1rem;
-        padding: 0.5rem;
-        box-sizing: border-box;
-        display: flex;
-        flex-direction: column;
-        align-items: center;
-        max-height: 24rem;
-        position: relative;
-
-        background-color: var(--bg-2);
-        border-radius: 1rem;
-        border: 1px solid var(--txt-1);
-
-        textarea {
-            width: 48rem;
-            box-sizing: border-box;
-            font-size: 1rem;
-            padding: 0.5rem;
-            background-color: transparent;
-            border: none;
-            outline: none;
-            resize: none;
-            overflow-y: auto;
-            word-wrap: break-word;
-        }
-
-        .footer {
-            display: flex;
-            flex-direction: row;
-            justify-content: space-between;
-            width: 100%;
-        }
-    }
-}
-</style>

@@ -2,10 +2,7 @@
 </script>
 
 <template>
-    <div class="setting-wrapper">
+    <div>
         <input type="text" placeholder="http://localhost:11434">
     </div>
 </template>
-
-<style lang="scss">
-</style>

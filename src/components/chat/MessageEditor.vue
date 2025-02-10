@@ -36,19 +36,5 @@ defineExpose({
 </script>
 
 <template>
-    <textarea :value="messageText" ref="editorRef" @keyup="onKeyUp"></textarea>
+    <textarea class="bg-primary-300 border-none outline-none p-4 !m-4 box-border rounded-xl resize-y shadow-md shadow-black" :value="messageText" ref="editorRef" @keyup="onKeyUp"></textarea>
 </template>
-
-<style scoped lang="scss">
-textarea {
-    background-color: var(--bg-3);
-    border: none;
-    outline: none;
-    padding: 1rem;
-    box-sizing: border-box;
-    border-radius: 0.5rem;
-    resize: vertical;
-
-    @include mixin.shadow-medium;
-}
-</style>
