@@ -32,34 +32,24 @@ const emit = defineEmits(['editMessage']);
 </script>
 
 <template>
-    <div class="message-options">
-        <TooltipBottom v-if="message.role !== 'user'" :text="copyTooltipText">
-            <BsCopy title="Copy Text" @click="copyMessage(message)" />
+    <div class="flex flex-row gap-2 pt-4">
+        <TooltipBottom class="message-option" v-if="message.role !== 'user'" :text="copyTooltipText">
+            <BsCopy  title="Copy Text" @click="copyMessage(message)" />
         </TooltipBottom>
-        <TooltipBottom v-else text="Edit">
+        <TooltipBottom class="message-option" v-else text="Edit">
             <BsPen title="Edit" @click="editMessage(message)" />
         </TooltipBottom>
     </div>
 </template>
 
-<style scoped lang="scss">
-.message-options {
-    display: flex;
-    flex-direction: row;
-    gap: 0.5rem;
-    padding-top: 1rem;
+<style scoped>
+@reference "@/styles/style.css";
 
-    >* {
-        box-sizing: content-box;
-        padding: 0.5rem;
-        border-radius: 0.5rem;
-        cursor: pointer;
+.message-option {
+    @apply box-content p-2 rounded-lg cursor-pointer;
+}
 
-        &:hover {
-            box-shadow: 0px 2px 5px -2px rgba(0, 0, 0, 0.5);
-
-            background-color: var(--bg-2);
-        }
-    }
+.message-option:hover {
+    @apply shadow-md bg-primary-400;
 }
 </style>
