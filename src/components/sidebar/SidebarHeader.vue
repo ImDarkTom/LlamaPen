@@ -15,39 +15,9 @@ function search() {
 </script>
 
 <template>
-    <div class="header">
-        <span class="branding">LlamaPen</span>
-        <AiOutlineSearch class="search right-icon" @click="search" />
-        <IpWrite class="new-chat right-icon" @click="newChat()" />
+    <div class="flex flex-row p-0 box-border">
+        <span class="flex-1 text-2xl font-bold">LlamaPen</span>
+        <AiOutlineSearch aria-label="Search" class="h-6 w-auto m-auto cursor-pointer ml-2 p-2 box-content rounded-lg hover:bg-primary-300 hover:shadow-sm shadow-black" @click="search" />
+        <IpWrite aria-label="New Chat" class="h-6 w-auto m-auto cursor-pointer ml-2 p-2 box-content rounded-lg hover:bg-primary-300 hover:shadow-sm shadow-black" @click="newChat()" />
     </div>
 </template>
-
-<style scoped lang="scss">
-.header {
-    display: flex;
-    flex-direction: row;
-    padding: 0rem;
-    box-sizing: border-box;
-
-    .branding {
-        flex: 1;
-        font-size: 1.5rem;
-    }
-
-    .right-icon {
-        height: 1.65rem;
-        margin: auto;
-        width: auto;
-        cursor: pointer;
-        margin-left: 1ch;
-        padding: 0.35rem;
-        box-sizing: content-box;
-        border-radius: 0.5rem;
-
-        &:hover {
-            background-color: var(--bg-3);
-            box-shadow: 0px 2px 5px -2px rgba(0, 0, 0, 0.5);
-        }
-    }
-}
-</style>

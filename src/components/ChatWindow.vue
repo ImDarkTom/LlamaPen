@@ -4,17 +4,8 @@ import MessageList from './chat/MessageList.vue';
 </script>
 
 <template>
-    <div class="chat-window">
+    <div class="w-full h-full flex flex-col">
         <MessageList />
         <MessageInput />
     </div>
 </template>
-
-<style scoped>
-.chat-window {
-    width: 100%;
-    height: 100%;
-    display: flex;
-    flex-direction: column;
-}
-</style>

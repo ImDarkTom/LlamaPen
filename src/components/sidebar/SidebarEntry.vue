@@ -96,8 +96,8 @@ Created: ${getDateTimeString(props.chat.created)}`;
 
 <template>
     <RouterLink :to="`/chat/${props.chat.id}`" @mousedown.prevent="navigateToChat" @dblclick="editChatName"
-        class="my-2 flex flex-col rounded-lg" :class="{ '!bg-primary-200 shadow-sm shadow-black': props.chat.id === allChats.openedId }" :title="hoverTitle">
-        <div class="group w-full h-full flex flex-row p-2 relative">
+        class="my-2 flex flex-col" :title="hoverTitle">
+        <div class="group w-full h-full flex flex-row p-2 relative rounded-lg hover:bg-primary-300" :class="{ '!bg-primary-200 shadow-sm shadow-black': props.chat.id === allChats.openedId }">
             <BsChatLeft class="box-border p-0.5" />
             <input type="text" class="border-none outline-none m-0 flex-1 px-2 box-border justify-center items-center cursor-pointer text-ellipsis" @blur="stopEditing()" @keydown="editKeyPressed" ref="chatTextRef"
                 :value="props.chat.label" readonly :class="{ '!bg-primary-500 rounded-sm': editing }">
