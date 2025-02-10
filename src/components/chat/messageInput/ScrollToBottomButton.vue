@@ -14,6 +14,6 @@ watch(uiStore.chatList, () => {
 
 <template>
     <span v-if="showButton" @click="emitter.emit('scrollToBottom')"
-        class="absolute -top-12 -translate-x-0 bg-primary-300 p-2 rounded-lg select-none cursor-pointer shadow-md">Scroll
+        class="absolute -top-12 -translate-x-0 bg-primary-300 p-2 rounded-lg select-none cursor-pointer shadow-sm shadow-black">Scroll
         to bottom ↓</span>
 </template>

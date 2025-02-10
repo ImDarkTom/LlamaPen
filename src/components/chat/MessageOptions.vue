@@ -50,6 +50,6 @@ const emit = defineEmits(['editMessage']);
 }
 
 .message-option:hover {
-    @apply shadow-md bg-primary-400;
+    @apply shadow-sm shadow-black bg-primary-400;
 }
 </style>

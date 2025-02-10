@@ -19,5 +19,3 @@ function customUrlDialog() {
 <template>
     <input type="button" value="🔗" @click="customUrlDialog">
 </template>
-
-<style scoped></style>

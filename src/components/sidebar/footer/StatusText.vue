@@ -23,31 +23,11 @@ onMounted(() => {
 
 </script>
 
-<template>
-    <div class="status-text-wrapper">
-        <span class="status-text" :class="{ 'ok': connectedToOllama === true, 'fail': connectedToOllama === false }">
+<template>  
+    <div class="overflow-hidden overflow-ellipsis py-2">
+        <span class="text-amber-400" :class="{ 'text-emerald-400': connectedToOllama === true, 'text-red-400': connectedToOllama === false }">
             Ollama status:
             <span ref="statusMessageElem">{{ statusMessageText }}</span>
         </span>
     </div>
 </template>
-
-<style scoped lang="scss">
-.status-text-wrapper {
-    overflow: hidden;
-    text-overflow: ellipsis;
-    padding: 0.5rem 0;
-
-    .status-text {
-        color: hsl(60, 100%, 75%);
-
-        &.ok {
-            color: hsl(120, 100%, 75%);
-        }
-
-        &.fail {
-            color: hsl(0, 100%, 75%);
-        }
-    }
-}
-</style>

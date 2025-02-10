@@ -11,42 +11,11 @@ function showGuide() {
 </script>
 
 <template>
-    <div class="sidebar-options">
+    <div class="flex flex-col max-w-full">
         <StatusText />
-        <div class="buttons">
-            <input type="button" class="button" value="?" @click="showGuide">
-            <CustomUrlButton class="button" />
+        <div class="flex flex-row gap-2">
+            <input type="button" class="flex-1 border-none px-1 py-0 m-0 box-border rounded-lg h-8 bg-primary-300 cursor-pointer hover:shadow-sm shadow-black hover:bg-primary-200" value="?" @click="showGuide">
+            <CustomUrlButton class="flex-1 border-none px-1 py-0 m-0 box-border rounded-lg h-8 bg-primary-300 cursor-pointer hover:shadow-sm shadow-black hover:bg-primary-200" />
         </div>
     </div>
 </template>
-
-<style scoped lang="scss">
-.sidebar-options {
-    display: flex;
-    flex-direction: column;
-    max-width: 100%;
-
-    .buttons {
-        display: flex;
-        flex-direction: row;
-        gap: 0.5rem;
-
-        .button {
-            flex: 1;
-            border: none;
-            padding: 0.25rem 0;
-            margin: 0;
-            box-sizing: border-box;
-            border-radius: 0.5rem;
-            height: 2rem;
-            background-color: var(--bg-3);
-            cursor: pointer;
-
-            &:hover {
-                box-shadow: 0px 2px 5px -2px rgba(0, 0, 0, 0.5);
-                background-color: var(--bg-4);
-            }
-        }
-    }
-}
-</style>
