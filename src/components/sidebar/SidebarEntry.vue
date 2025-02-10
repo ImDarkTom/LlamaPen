@@ -7,6 +7,7 @@ import { RouterLink, useRouter } from 'vue-router';
 
 const allChats = useAllChatsStore();
 const router = useRouter();
+const editing = ref<boolean>(false);
 
 const props = defineProps<{
     chat: Chat,
@@ -36,7 +37,7 @@ function editChatName(e: MouseEvent) {
     chatTextElem.focus();
     chatTextElem.select();
     chatTextElem.setSelectionRange(0, 999);
-    chatTextElem.classList.add('editing');
+    editing.value = true;
 }
 
 function stopEditing(save = true) {
@@ -47,7 +48,7 @@ function stopEditing(save = true) {
     }
 
     chatTextElem.setAttribute('readonly', '');
-    chatTextElem.classList.remove('editing');
+    editing.value = false;
 
     if (!save) {
         chatTextElem.value = chatTextElem.getAttribute('data-originaltext') || "Unnamed chat";
@@ -95,85 +96,12 @@ Created: ${getDateTimeString(props.chat.created)}`;
 
 <template>
     <RouterLink :to="`/chat/${props.chat.id}`" @mousedown.prevent="navigateToChat" @dblclick="editChatName"
-        class="link-wrapper" :class="{ 'active': props.chat.id === allChats.openedId }" :title="hoverTitle">
-        <div class="chat-link">
-            <BsChatLeft class="chat-icon" />
-            <input type="text" class="chat-text" @blur="stopEditing()" @keydown="editKeyPressed" ref="chatTextRef"
-                :value="props.chat.label" readonly>
-            <AiOutlineClose class="chat-close" @click="deleteChat" />
+        class="my-2 flex flex-col rounded-lg" :class="{ '!bg-primary-200 shadow-sm shadow-black': props.chat.id === allChats.openedId }" :title="hoverTitle">
+        <div class="group w-full h-full flex flex-row p-2 relative">
+            <BsChatLeft class="box-border p-0.5" />
+            <input type="text" class="border-none outline-none m-0 flex-1 px-2 box-border justify-center items-center cursor-pointer text-ellipsis" @blur="stopEditing()" @keydown="editKeyPressed" ref="chatTextRef"
+                :value="props.chat.label" readonly :class="{ '!bg-primary-500 rounded-sm': editing }">
+            <AiOutlineClose class="hidden group-hover:block box-content absolute right-0 pr-2 hover:text-red-400 transition-colors duration-150 ease-in-out" @click="deleteChat" />
         </div>
     </RouterLink>
 </template>
-
-<style scoped lang="scss">
-.link-wrapper {
-    margin: 0.5rem 0;
-    background-color: transparent;
-    display: flex;
-    border-radius: 0.5rem;
-
-    &:hover {
-        background-color: var(--bg-3);
-    }
-
-    &.active {
-        background-color: var(--bg-4);
-        box-shadow: 0px 2px 5px -2px rgba(0, 0, 0, 0.5);
-    }
-
-    .chat-link {
-        width: 100%;
-        height: 100%;
-        display: flex;
-        padding: 0.5rem;
-        flex-direction: row;
-        color: var(--txt-1);
-        text-decoration: none;
-        position: relative;
-        box-sizing: content-box;
-
-        &:hover {
-            .chat-close {
-                display: initial;
-            }
-        }
-
-        .chat-icon {
-            box-sizing: border-box;
-            padding: 0.1rem;
-        }
-
-        .chat-text {
-            border: none;
-            outline: none;
-            margin: 0;
-            background-color: transparent;
-            color: var(--txt-1);
-            flex: 1;
-            padding: 0 1ch;
-            box-sizing: border-box;
-            justify-content: center;
-            align-items: center;
-            cursor: pointer;
-            text-overflow: ellipsis;
-
-            &.editing {
-                box-shadow: 0px 0px 0px 1px red inset;
-                background-color: var(--bg-1);
-            }
-        }
-
-        .chat-close {
-            position: absolute;
-            right: 0;
-            margin-right: 0.5rem;
-            transition: color 0.15s ease-in-out;
-            display: none;
-
-            &:hover {
-                color: rgb(255, 100, 100);
-            }
-        }
-    }
-}
-</style>

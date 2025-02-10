@@ -35,65 +35,19 @@ onUnmounted(() => {
 </script>
 
 <template>
-    <div class="sidebar-container">
-        <div class="sidebar" :class="{ 'hidden': !showSidebar }">
+    <div class="relative">
+        <div class="flex flex-col h-full w-[18vw] min-w-64 bg-primary-400 box-border p-2" :class="{ 'hidden': !showSidebar }">
             <SidebarHeader />
-            <div class="sidebar-chats">
+            <div class="p-0 m-0 flex-1">
                 <SidebarEntry v-for="chat of allChats.chats.sort((a, b) => (b.lastMessage ?? 0) - (a.lastMessage ?? 0))" :key="chat.id" :chat="chat" />
             </div>
             <SidebarOptions />
         </div>
-        <div class="sidebar-toggle" @pointerdown="toggleSidebar">
-            <TbLayoutSidebarLeftCollapse v-if="showSidebar"/>
-            <TbLayoutSidebarLeftExpand v-else />
+        <div class="absolute top-0 right-0 transform translate-x-full h-12 w-12 p-1">
+            <div class="h-10 w-10 p-1 cursor-pointer rounded-lg hover:bg-primary-300" @pointerdown="toggleSidebar">
+                <TbLayoutSidebarLeftCollapse class="size-full" v-if="showSidebar"/>
+                <TbLayoutSidebarLeftExpand class="size-full" v-else />
+            </div>
         </div>
     </div>
 </template>
-
-<style scoped lang="scss">
-.sidebar-container {
-    position: relative;
-
-    .sidebar {
-        display: flex;
-        flex-direction: column;
-        height: 100vh;
-        width: 18vw;
-        min-width: 260px;
-        background-color: var(--bg-2);
-        box-sizing: border-box;
-        padding: 0.5rem;
-
-        &.hidden {
-            display: none;
-        }
-
-        .sidebar-chats {
-            padding: 0;
-            margin: 0;
-            flex: 1;
-        }
-    }
-
-    .sidebar-toggle {
-        position: absolute;
-        top: 0;
-        right: -3rem;
-        height: 2.5rem;
-        width: 2.5rem;
-        padding: 0.25rem;
-        margin: 0.25rem;
-        cursor: pointer;
-        border-radius: 0.5rem;
-
-        &:hover {
-            background-color: var(--bg-3)
-        }
-
-        * {
-            width: 100%;
-            height: 100%;
-        }
-    }
-}
-</style>
