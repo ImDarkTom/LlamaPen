@@ -11,20 +11,27 @@ function cancelGeneration() {
 
 const emit = defineEmits(['startGeneration']);
 
-defineProps<{
+const props = defineProps<{
     canGenerate: boolean,
 }>();
+
+function handleClick() {
+    if (allChats.isGenerating) {
+        cancelGeneration();
+    } else {
+        if (!props.canGenerate) {
+            return;
+        }
+        
+        emit('startGeneration');
+    }
+}
 
 </script>
 
 <template>
-    <ImCancelCircle 
-        v-if="allChats.isGenerating" 
+    <component :is="allChats.isGenerating ? ImCancelCircle : BiSolidSend" 
         class="bg-primary-100 p-2 box-content rounded-lg cursor-pointer"
-        @click="cancelGeneration" :class="{ 'opacity-50 !cursor-default': !canGenerate && !allChats.isGenerating }" />
-    <BiSolidSend 
-        v-else 
-        class="bg-primary-100 p-2 box-content rounded-lg cursor-pointer"
-        @click="emit('startGeneration')"
-        :class="{ 'opacity-50 !cursor-default': !canGenerate && !allChats.isGenerating }" />
+        :class="{ 'opacity-50 !cursor-default': !canGenerate && !allChats.isGenerating }"
+        @click="handleClick" />
 </template>
