@@ -62,7 +62,7 @@ function updateTextAreaHeight() {
 </script>
 
 <template>
-    <div class="m-auto">
+    <div class="mx-auto">
         <div
             class="m-4 p-2 box-border flex flex-col items-center max-h-[48rem] relative bg-primary-400 rounded-xl border-[1px] border-solid border-txt-1">
             <ScrollToBottomButton />
