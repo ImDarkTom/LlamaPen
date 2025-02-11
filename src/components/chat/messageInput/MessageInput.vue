@@ -64,7 +64,7 @@ function updateTextAreaHeight() {
 <template>
     <div class="mx-auto">
         <div
-            class="m-4 p-2 box-border flex flex-col items-center max-h-[48rem] relative bg-primary-400 rounded-xl border-[1px] border-solid border-txt-1">
+            class="mx-4 mb-4 p-2 box-border flex flex-col items-center max-h-[48rem] relative bg-primary-400 rounded-xl border border-solid border-txt-1">
             <ScrollToBottomButton />
             <textarea ref="messageInput" v-model="messageInputValue" @keyup="inputKeyUp"
                 placeholder="Enter a message..."
