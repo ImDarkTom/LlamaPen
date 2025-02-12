@@ -13,6 +13,14 @@ allChats.loadChats();
 const useConfig = useConfigStore();
 const showSidebar = ref<boolean>(useConfig.showSidebar);
 
+function handlePointerDown(e: MouseEvent) {
+    if (e.button !== 0) {
+        return;
+    }
+
+    toggleSidebar();
+}
+
 const toggleSidebar = () => {
     showSidebar.value = !showSidebar.value;
     localStorage.setItem('showSidebar', String(showSidebar.value))
@@ -46,7 +54,7 @@ onUnmounted(() => {
             <SidebarOptions />
         </div>
         <div class="absolute top-0 right-0 transform translate-x-full h-12 w-12 p-1">
-            <div class="h-10 w-10 p-1 cursor-pointer rounded-lg hover:bg-primary-300" @pointerdown="toggleSidebar">
+            <div class="h-10 w-10 p-1 cursor-pointer rounded-lg hover:bg-primary-300" @pointerdown="handlePointerDown">
                 <TbLayoutSidebarLeftCollapse class="size-full" v-if="showSidebar"/>
                 <TbLayoutSidebarLeftExpand class="size-full" v-else />
             </div>
