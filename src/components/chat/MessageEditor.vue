@@ -1,5 +1,5 @@
 <script setup lang="ts">
-import { ref } from 'vue';
+import { onBeforeUnmount, onMounted, ref } from 'vue';
 
 
 defineProps<{
@@ -9,6 +9,14 @@ defineProps<{
 const emit = defineEmits(['onFinishEditing', 'onCancelEdit']);
 
 const editorRef = ref<HTMLTextAreaElement | null>(null);
+
+onMounted(() => {
+    document.addEventListener('keyup', onKeyUp);
+})
+
+onBeforeUnmount(() => {
+    document.removeEventListener('keyup', onKeyUp);
+});
 
 function onKeyUp(e: KeyboardEvent) {
     if (e.shiftKey) {
@@ -36,5 +44,5 @@ defineExpose({
 </script>
 
 <template>
-    <textarea class="bg-primary-300 border-none outline-none p-4 !m-4 box-border rounded-xl resize-y shadow-md shadow-black" :value="messageText" ref="editorRef" @keyup="onKeyUp"></textarea>
+    <textarea class="bg-primary-300 border-none outline-none p-4 !m-2 box-border rounded-xl resize-y shadow-sm shadow-black" :value="messageText" ref="editorRef" @keyup="onKeyUp"></textarea>
 </template>
