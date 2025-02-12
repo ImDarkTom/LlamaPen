@@ -16,7 +16,7 @@ function search() {
 
 <template>
     <div class="flex flex-row p-0 box-border">
-        <span class="flex-1 text-2xl font-bold">LlamaPen</span>
+        <span class="flex-1 text-2xl font-bold select-none">LlamaPen</span>
         <AiOutlineSearch aria-label="Search" class="h-6 w-auto m-auto cursor-pointer ml-2 p-2 box-content rounded-lg hover:bg-primary-300 hover:shadow-sm shadow-black" @click="search" />
         <IpWrite aria-label="New Chat" class="h-6 w-auto m-auto cursor-pointer ml-2 p-2 box-content rounded-lg hover:bg-primary-300 hover:shadow-sm shadow-black" @click="newChat()" />
     </div>
