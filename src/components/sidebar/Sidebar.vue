@@ -39,7 +39,9 @@ onUnmounted(() => {
         <div class="flex flex-col h-full w-[18vw] min-w-64 bg-primary-400 box-border p-2" :class="{ 'hidden': !showSidebar }">
             <SidebarHeader />
             <div class="p-0 m-0 flex-1">
-                <SidebarEntry v-for="chat of allChats.chats.sort((a, b) => (b.lastMessage ?? 0) - (a.lastMessage ?? 0))" :key="chat.id" :chat="chat" />
+                <SidebarEntry v-for="chat of allChats.chats.filter((chat) => (chat.pinned || false)).sort((a, b) => (b.lastMessage ?? 0) - (a.lastMessage ?? 0))" :key="chat.id" :chat="chat" />
+                <!-- <div class="w-full h-[1px] bg-txt-1/50" role="separator"></div> -->
+                <SidebarEntry v-for="chat of allChats.chats.filter((chat) => !(chat.pinned || false)).sort((a, b) => (b.lastMessage ?? 0) - (a.lastMessage ?? 0))" :key="chat.id" :chat="chat" />
             </div>
             <SidebarOptions />
         </div>

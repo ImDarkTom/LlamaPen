@@ -12,6 +12,7 @@ type Chat = {
     messages: AppMessage[];
     created: number; // Date in ms
     lastMessage: number; // Date in ms
+    pinned?: boolean;
 }
 
 interface AppMessage extends OllamaMessage {

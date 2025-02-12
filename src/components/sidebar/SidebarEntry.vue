@@ -1,7 +1,7 @@
 <script setup lang="ts">
 import { ref } from 'vue';
 import { AiOutlineClose } from 'vue-icons-plus/ai';
-import { BsChatLeft } from 'vue-icons-plus/bs';
+import { BsChatLeft, BsFillPinAngleFill, BsPinAngle } from 'vue-icons-plus/bs';
 import { useAllChatsStore } from '../../stores/allChats';
 import { RouterLink, useRouter } from 'vue-router';
 
@@ -92,13 +92,28 @@ const hoverTitle = `${props.chat.label}
 Last message: ${getDateTimeString(props.chat.lastMessage)}
 Created: ${getDateTimeString(props.chat.created)}`;
 
+const hoveringOverIcon = ref<boolean>(false);
+const pinned = ref<boolean>(props.chat.pinned || false);
+
+function setPinned(value: boolean) {
+    pinned.value = value;
+    props.chat.pinned = value;
+
+    allChats.saveToLocalStorage();
+}
 </script>
 
 <template>
     <RouterLink :to="`/chat/${props.chat.id}`" @mousedown.prevent="navigateToChat" @dblclick="editChatName"
         class="my-2 flex flex-col" :title="hoverTitle">
         <div class="group w-full h-full flex flex-row p-2 relative rounded-lg hover:bg-primary-300 transition-all duration-150" :class="{ '!bg-primary-200 shadow-sm shadow-black': props.chat.id === allChats.openedId }">
-            <BsChatLeft class="box-border p-0.5 shrink-0" />
+            <div class="box-content shrink-0" @mouseenter="hoveringOverIcon = true" @mouseleave="hoveringOverIcon = false">
+                <template v-if="hoveringOverIcon || pinned">
+                    <BsFillPinAngleFill v-if="pinned" class="box-border p-0.5 text-red-400" @mousedown="setPinned(false)" />
+                    <BsPinAngle v-else class="box-border p-0.5" @mousedown="setPinned(true)" />
+                </template>
+                <BsChatLeft v-else class="box-border p-0.5" />
+            </div>
             <input type="text" class="border-none outline-none m-0 flex-1 px-2 box-border justify-center items-center cursor-pointer text-ellipsis" @blur="stopEditing()" @keydown="editKeyPressed" ref="chatTextRef"
                 :value="props.chat.label" readonly :class="{ '!bg-primary-500 rounded-sm': editing }">
             <AiOutlineClose class="hidden shrink-0 group-hover:block box-content pr-0 hover:text-red-400 transition-colors duration-150 ease-in-out" @click="deleteChat" />
