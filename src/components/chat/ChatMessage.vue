@@ -1,6 +1,6 @@
 <script setup lang="ts">
 import MessageOptions from './MessageOptions.vue';
-import { nextTick, ref } from 'vue';
+import { nextTick, onMounted, ref } from 'vue';
 
 import { Marked } from 'marked';
 
@@ -8,11 +8,14 @@ import "katex/dist/katex.min.css";
 import markedKatex from 'marked-katex-extension';
 
 import { markedHighlight } from 'marked-highlight';
-import "highlight.js/styles/monokai.min.css"
+import "highlight.js/styles/atom-one-dark.min.css";
 import hljs from 'highlight.js';
 import MessageEditor from './MessageEditor.vue';
 import { useAllChatsStore } from '../../stores/allChats';
 import { useConfigStore } from '../../stores/config';
+
+const allChats = useAllChatsStore();
+const config = useConfigStore();
 
 const props = defineProps<{
     message: AppMessage;
@@ -57,9 +60,7 @@ marked.use(markedHighlight({
     }
 }));
 
-const allChats = useAllChatsStore();
-const config = useConfigStore();
-
+// === Editing ===
 const editing = ref<boolean>(false);
 const messageEditorRef = ref<InstanceType<typeof MessageEditor> | null>(null);
 
@@ -112,5 +113,9 @@ function finishEdit(newText: string) {
 .thought-text-container,
 think {
     @apply italic opacity-80 pb-4 flex bg-primary-200 rounded-lg p-2 box-border mb-4;
+}
+
+.hljs {
+    @apply mb-4 rounded-lg border border-txt-1/50;
 }
 </style>
