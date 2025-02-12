@@ -5,7 +5,19 @@ module.exports = {
         './src/**/*.{vue,js,ts,jsx,tsx}'
     ],
     theme: {
-        extend: {}
+        extend: {
+            typography: {
+                DEFAULT: {
+                    css: {
+                        pre: false,
+                        code: false,
+                        'pre code': false,
+                        'code::before': false,
+                        'code::after': false
+                    }
+                }
+            }
+        }
     },
-    plugins: [],
+    plugins: [require("@tailwindcss/typography")],
 }

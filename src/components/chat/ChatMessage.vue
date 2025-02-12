@@ -86,9 +86,9 @@ function finishEdit(newText: string) {
 </script>
 
 <template>
-    <div class="text-txt-1 box-border p-4 m-4 flex flex-col whitespace-pre-wrap" :class="{ 
+    <div class="text-txt-1 box-border p-4 m-2 flex flex-col" :class="{ 
         'ml-auto rounded-xl bg-primary-300 max-w-[70%] shadow-sm shadow-black': props.message.role === 'user' && !editing, 
-        'w-full box-border !p-0 !m-0': props.message.role === 'assistant' || editing 
+        'w-full box-border !p-2 !m-0': props.message.role === 'assistant' || editing 
     }">
         <MessageEditor v-if="editing" 
             ref="messageEditorRef" 
@@ -98,8 +98,8 @@ function finishEdit(newText: string) {
         />
 
         <template v-else>
-            <span v-if="message.role !== 'user'" v-html="marked.parse(message.content)" class="message-text"></span>
-            <div v-else class="message-text">{{ message.content }}</div>
+            <span v-if="message.role !== 'user'" v-html="marked.parse(message.content)" class="max-w-none prose prose-invert"></span>
+            <div v-else class="max-w-none prose prose-invert">{{ message.content }}</div>
 
             <MessageOptions :message="message" @editMessage="editMessage" />
         </template>
@@ -111,10 +111,6 @@ function finishEdit(newText: string) {
 
 .thought-text-container,
 think {
-    @apply italic opacity-80 pb-4 flex bg-primary-200 rounded-xl p-2 box-border mb-4;
-}
-
-.message-text pre {
-    @apply overflow-x-auto mb-4 border border-txt-1/50 rounded-lg;
+    @apply italic opacity-80 pb-4 flex bg-primary-200 rounded-lg p-2 box-border mb-4;
 }
 </style>

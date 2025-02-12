@@ -24,6 +24,7 @@
     "vue-router": "^4.5.0"
   },
   "devDependencies": {
+    "@tailwindcss/typography": "^0.5.16",
     "@tailwindcss/vite": "^4.0.6",
     "@types/node": "^22.13.1",
     "@vitejs/plugin-vue": "^5.2.1",
