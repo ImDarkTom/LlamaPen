@@ -4,6 +4,7 @@ import { AiOutlineClose } from 'vue-icons-plus/ai';
 import { BsChatLeft, BsFillPinAngleFill, BsPinAngle } from 'vue-icons-plus/bs';
 import { useAllChatsStore } from '../../stores/allChats';
 import { RouterLink, useRouter } from 'vue-router';
+import errorHandler from '../../utils/errorHandler';
 
 const allChats = useAllChatsStore();
 const router = useRouter();
@@ -101,6 +102,10 @@ function setPinned(value: boolean) {
 
     allChats.saveToLocalStorage();
 }
+
+function showPopup() {
+    errorHandler.handleError(new Error('test'), 'example message', true);
+}
 </script>
 
 <template>
@@ -119,4 +124,5 @@ function setPinned(value: boolean) {
             <AiOutlineClose class="hidden shrink-0 group-hover:block box-content pr-0 hover:text-red-400 transition-colors duration-150 ease-in-out" @click="deleteChat" />
         </div>
     </RouterLink>
+    <button @click="showPopup" class="size-10 bg-red-500"></button>
 </template>
