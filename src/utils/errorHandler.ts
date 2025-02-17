@@ -7,11 +7,11 @@ class ErrorHandler {
         console.error(message, error);
 
         if (popup) {
-            this.showPopup(message);
+            this.showErrorPopup(message);
         }
     }
 
-    private showPopup(message: string) {
+    private showErrorPopup(message: string) {
         emitter.emit('showErrorPopup', message);
     }
 }

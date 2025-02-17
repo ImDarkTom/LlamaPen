@@ -4,7 +4,6 @@ import { AiOutlineClose } from 'vue-icons-plus/ai';
 import { BsChatLeft, BsFillPinAngleFill, BsPinAngle } from 'vue-icons-plus/bs';
 import { useAllChatsStore } from '../../stores/allChats';
 import { RouterLink, useRouter } from 'vue-router';
-import errorHandler from '../../utils/errorHandler';
 
 const allChats = useAllChatsStore();
 const router = useRouter();
@@ -102,15 +101,12 @@ function setPinned(value: boolean) {
 
     allChats.saveToLocalStorage();
 }
-
-function showPopup() {
-    errorHandler.handleError(new Error('test'), 'example message', true);
-}
 </script>
 
 <template>
     <RouterLink :to="`/chat/${props.chat.id}`" @mousedown.prevent="navigateToChat" @dblclick="editChatName"
-        class="my-2 flex flex-col" :title="hoverTitle">
+        class="my-2 flex flex-col" :title="hoverTitle"
+        role="listitem">
         <div class="group w-full h-full flex flex-row p-2 relative rounded-lg hover:bg-primary-300 transition-all duration-150" :class="{ '!bg-primary-200 shadow-sm shadow-black': props.chat.id === allChats.openedId }">
             <div class="box-content shrink-0" @mouseenter="hoveringOverIcon = true" @mouseleave="hoveringOverIcon = false">
                 <template v-if="hoveringOverIcon || pinned">
@@ -124,5 +120,4 @@ function showPopup() {
             <AiOutlineClose class="hidden shrink-0 group-hover:block box-content pr-0 hover:text-red-400 transition-colors duration-150 ease-in-out" @click="deleteChat" />
         </div>
     </RouterLink>
-    <button @click="showPopup" class="size-10 bg-red-500"></button>
 </template>
