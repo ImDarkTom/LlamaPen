@@ -25,6 +25,7 @@ function setModel(newModelName: string) {
     localStorage.setItem('selectedModel', newModelName);
     toggleShowSelect();
     searchQuery.value = "";
+    focusedItemIndex.value = 0;
 }
 
 const showSelect = ref<boolean>(false);
@@ -39,16 +40,32 @@ async function toggleShowSelect() {
     }
 }
 
-function searchKeyUp(e: KeyboardEvent) {
-    if (e.key === "Enter" && queriedModelList.value.length === 1) {
-        setModel(queriedModelList.value[0].name);
+function searchKeyDown(e: KeyboardEvent) {
+    if (e.key === "Enter") {
+        setModel(queriedModelList.value[focusedItemIndex.value].name);
         return;
     }
 
     if (e.key === "Escape") {
         toggleShowSelect();
+        return
     }
+
+    if (e.key === "ArrowUp") {
+        focusedItemIndex.value = Math.max(focusedItemIndex.value - 1, 0); // back 1 index or keep at 0
+    }
+
+    if (e.key === "ArrowDown") {
+        focusedItemIndex.value = Math.min(focusedItemIndex.value + 1, queriedModelList.value.length - 1); // back 1 index or keep at 0
+    }
+
+    nextTick(() => {
+        listItemsRef.value[focusedItemIndex.value]?.scrollIntoView({ block: 'nearest' });
+    });
 }
+
+const modelListRef = ref<HTMLElement | null>(null);
+const listItemsRef = ref<Array<HTMLElement | null>>([]);
 
 const searchQuery = defineModel<string>('');
 
@@ -57,6 +74,8 @@ const queriedModelList = computed<ModelList>(() => {
 });
 
 const searchFocused = ref<boolean>(false);
+const focusedItemIndex = ref<number>(0);
+
 </script>
 
 <template>
@@ -67,11 +86,12 @@ const searchFocused = ref<boolean>(false);
             <BsChevronDown class="w-4 h-full" />
         </div>
         <div v-if="showSelect" class="absolute left-0 bottom-full mb-2 bg-primary-300 p-1 rounded-xl">
-            <input ref="searchBarRef" v-model="searchQuery" @focus="searchFocused = true" @blur="searchFocused = false" @keyup="searchKeyUp" type="search" placeholder="Search a model..." class="bg-primary-400 focus:bg-primary-500 w-full rounded-xl h-10 p-2 !mb-1 outline-0">
-            <ul class="max-h-80 overflow-y-auto">
-                <li @click="setModel(model.name)" v-for="model in queriedModelList" :key="model.name"
+            <input ref="searchBarRef" v-model="searchQuery" @focus="searchFocused = true" @blur="searchFocused = false" @keydown="searchKeyDown" type="search" placeholder="Search a model..." class="bg-primary-400 focus:bg-primary-500 w-full rounded-xl h-10 p-2 !mb-1 outline-0">
+            <ul ref="modelListRef" role="list" class="max-h-80 overflow-y-auto">
+                <li role="listitem" @click="setModel(model.name)" v-for="(model, index) in queriedModelList" :key="model.name"
                     class="flex flex-col cursor-pointer px-3 py-2 hover:bg-primary-400 rounded-xl"
-                    :class="{ 'first:bg-primary-500': searchFocused }"
+                    :class="{ 'bg-primary-500': index === focusedItemIndex }"
+                    ref="listItemsRef"
                     >
                     <span class="min-w-max text-md font-semibold">{{ model.name }}</span>
                     <span class="text-sm text-txt-2">{{ model.details.parameter_size }}</span>
