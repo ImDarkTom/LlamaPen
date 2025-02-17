@@ -1,6 +1,6 @@
 <script setup lang="ts">
 import { onBeforeUnmount, onMounted, ref } from 'vue';
-import { emitter, PopupButtons } from '../mitt';
+import { emitter, PopupButtons } from '../../mitt';
 
 const showing = ref<boolean>(false);
 const title = ref<string>('Popup');
