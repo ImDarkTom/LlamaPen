@@ -12,7 +12,7 @@ class ErrorHandler {
     }
 
     private showPopup(message: string) {
-        emitter.emit('showPopup', message);
+        emitter.emit('showErrorPopup', message);
     }
 }
 
