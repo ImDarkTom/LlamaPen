@@ -56,7 +56,7 @@ const unpinnedChats = computed<Chat[]>(() => {
 
 <template>
     <div class="relative">
-        <div class="flex flex-col h-full w-[18vw] min-w-64 bg-primary-400 box-border p-2" :class="{ 'hidden': !showSidebar }">
+        <div class="flex flex-col h-full w-[calc(100vw-3rem)] sm:w-[calc(100vw-3rem)] md:w-[18vw] md:min-w-64 bg-primary-400 box-border p-2" :class="{ 'hidden': !showSidebar }">
             <SidebarHeader />
 
             <!-- Chats List -->

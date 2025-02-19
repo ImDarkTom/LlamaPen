@@ -62,13 +62,13 @@ function updateTextAreaHeight() {
 </script>
 
 <template>
-    <div class="mx-auto">
+    <div class="w-full flex flex-row justify-center">
         <div
-            class="mx-4 mb-2 p-2 box-border flex flex-col items-center max-h-[48rem] relative bg-primary-400 rounded-xl border border-solid border-txt-1">
+            class="w-full sm:w-full lg:w-3xl mx-1 mb-1 sm:mx-1 sm:mb-1 md:mx-4 md:mb-2 p-2 box-border flex flex-col items-center max-h-[48rem] relative bg-primary-400 rounded-xl border border-solid border-txt-1">
             <ScrollToBottomButton />
             <textarea ref="messageInput" v-model="messageInputValue" @keyup="inputKeyUp"
                 placeholder="Enter a message..."
-                class="w-[48rem] box-border text-base p-2 border-none outline-none resize-none overflow-y-auto break-words"></textarea>
+                class="w-full box-border text-base p-2 border-none outline-none resize-none overflow-y-auto break-words"></textarea>
             <div class="flex flex-row justify-between w-full">
                 <ModelSelect />
                 <ActionButton :canGenerate="canGenerate" @startGeneration="startGeneration" />

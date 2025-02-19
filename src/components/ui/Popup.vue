@@ -12,6 +12,7 @@ onMounted(() => {
         title.value = "Error";
         message.value = newMessage;
         showing.value = true;
+        buttons.value = PopupButtons.CLOSE;
     });
 
     emitter.on('showPopup', (popupSettings) => {
