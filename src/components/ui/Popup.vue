@@ -15,13 +15,7 @@ onMounted(() => {
         buttons.value = PopupButtons.CLOSE;
     });
 
-    emitter.on('showPopup', (popupSettings) => {
-        title.value = popupSettings.title;
-        message.value = popupSettings.messageHtml; // todo: make it render as html
-        buttons.value = popupSettings.buttons;
-    })
-
-    document.addEventListener('keyup', (e) => handleKeyUp(e))
+    document.addEventListener('keyup', handleKeyUp)
 });
 
 onBeforeUnmount(() => {
@@ -50,12 +44,7 @@ function close() {
             <h2 id="popupTitle" class="text-3xl font-semibold">{{ title }}</h2>
             <p id="popupText" class="mt-4 grow">{{ message }}</p>
             <div>
-                <button v-if="buttons == PopupButtons.CLOSE" class="mt-4 bg-primary-400 w-36 h-12 rounded-xl cursor-pointer hover:font-semibold" @click="close">Close</button>
-                <template v-else>
-                    <button class="mt-4 bg-primary-400 w-36 h-12 rounded-xl cursor-pointer hover:font-semibold">Ok</button>
-                    <button class="mt-4 bg-primary-400 w-36 h-12 rounded-xl cursor-pointer hover:font-semibold">Cancel</button>
-                    <!-- todo: have these be able to be ran as a function that returns a boolean based off of what is pressed here like `alert` -->
-                </template>
+                <button class="mt-4 bg-primary-400 w-36 h-12 rounded-xl cursor-pointer hover:font-semibold" @click="close">Close</button>
             </div>
         </div>
     </div>

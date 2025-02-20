@@ -7,12 +7,7 @@ export enum PopupButtons {
 
 interface Events extends Record<EventType, unknown> {
     scrollToBottom: undefined,
-    showErrorPopup: string,
-    showPopup: {
-        title: string,
-        messageHtml: string,
-        buttons: PopupButtons
-    }
+    showErrorPopup: string
 };
 
 export const emitter = mitt<Events>();
