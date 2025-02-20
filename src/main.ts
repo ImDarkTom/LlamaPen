@@ -7,6 +7,7 @@ import ChatWindow from "./components/ChatWindow.vue";
 import SettingsWindow from "./components/SettingsWindow.vue";
 import Layout from "./components/Layout.vue";
 import mousedownOutside from "./directives/mousedownOutside";
+import GuideWindow from "./components/GuideWindow.vue";
 
 const routes = [
     {
@@ -16,6 +17,7 @@ const routes = [
             { path: "/", component: ChatWindow },
             { path: "/chat/:id", component: ChatWindow },
             { path: "/settings", component: SettingsWindow },
+            { path: '/guide', component: GuideWindow }
         ],
     },
 ];
