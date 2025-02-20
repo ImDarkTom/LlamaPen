@@ -1,6 +1,6 @@
 <script setup lang="ts">
 import { ref } from 'vue';
-import TooltipBottom from '../TooltipBottom.vue';
+import TooltipBottom from '../ui/TooltipBottom.vue';
 import { BsCopy, BsPen } from 'vue-icons-plus/bs';
 
 defineProps<{

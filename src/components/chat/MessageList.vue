@@ -57,7 +57,7 @@ function handleScroll(_e: Event) {
 </script>
 
 <template>
-    <div class="flex justify-center overflow-y-auto flex-1" ref="messageListRef" @scroll="handleScroll">
+    <div class="w-dvw sm:w-dvw md:w-auto flex justify-center overflow-y-auto flex-1" ref="messageListRef" @scroll="handleScroll">
         <div class="flex flex-col grow max-w-[48rem]" >
             <ChatMessage v-for="message of (allChatStore.openedChat?.messages || [])" :key="message.id"
                 :message="message" />

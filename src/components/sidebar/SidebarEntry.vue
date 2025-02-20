@@ -105,7 +105,8 @@ function setPinned(value: boolean) {
 
 <template>
     <RouterLink :to="`/chat/${props.chat.id}`" @mousedown.prevent="navigateToChat" @dblclick="editChatName"
-        class="my-2 flex flex-col" :title="hoverTitle">
+        class="my-2 flex flex-col" :title="hoverTitle"
+        role="listitem">
         <div class="group w-full h-full flex flex-row p-2 relative rounded-lg hover:bg-primary-300 transition-all duration-150" :class="{ '!bg-primary-200 shadow-sm shadow-black': props.chat.id === allChats.openedId }">
             <div class="box-content shrink-0" @mouseenter="hoveringOverIcon = true" @mouseleave="hoveringOverIcon = false">
                 <template v-if="hoveringOverIcon || pinned">
