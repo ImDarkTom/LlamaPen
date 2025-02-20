@@ -6,6 +6,7 @@ import { createRouter, createWebHistory } from "vue-router";
 import ChatWindow from "./components/ChatWindow.vue";
 import SettingsWindow from "./components/SettingsWindow.vue";
 import Layout from "./components/Layout.vue";
+import mousedownOutside from "./directives/mousedownOutside";
 
 const routes = [
     {
@@ -27,5 +28,7 @@ const router = createRouter({
 const app = createApp(App);
 app.use(createPinia());
 app.use(router);
+
+app.directive('mousedown-outside', mousedownOutside);
 
 app.mount("#app");

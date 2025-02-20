@@ -3,8 +3,11 @@ import { computed, nextTick, onBeforeUnmount, onMounted, ref } from 'vue';
 import { useConfigStore } from '../../../stores/config';
 import { BsChevronDown, BsChevronUp } from 'vue-icons-plus/bs';
 import errorHandler from '../../../utils/errorHandler';
+import { useUiStore } from '../../../stores/uiStore';
+import { VscDebugDisconnect } from 'vue-icons-plus/vsc';
 
 const config = useConfigStore();
+const uiStore = useUiStore();
 
 // State
 const modelsList = ref<ModelList>([]);
@@ -51,6 +54,12 @@ const queriedModelList = computed<ModelList>(() => {
 function handleKeyboardShortcuts(e: KeyboardEvent) {
     if (e.key === "M" && e.ctrlKey && e.shiftKey) {
         e.preventDefault();
+        toggleShowSelect();
+    }
+}
+
+function handleClickOutside() {
+    if (showSelect.value) {
         toggleShowSelect();
     }
 }
@@ -103,16 +112,17 @@ function searchKeyDown(e: KeyboardEvent) {
 
     if (scrollDown) {
         nextTick(() => {
-            listItemsRef.value[focusedItemIndex.value]?.scrollIntoView({ block: 'center' });
+            listItemsRef.value[focusedItemIndex.value]?.scrollIntoView({ block: 'center', behavior: 'smooth' });
         });
     }
 }
 </script>
 
 <template>
-    <div class="relative">
+    <div v-mousedown-outside="handleClickOutside">
+        <div class="relative" id="modelselect">
         <div @click="toggleShowSelect"
-            class="bg-primary-400 hover:bg-primary-500 cursor-pointer p-3 box-border rounded-xl flex flex-row gap-2 text-txt-2 hover:text-txt-1 transition-colors duration-150 select-none"
+            class="bg-primary-400 hover:bg-primary-500 cursor-pointer p-3 box-border rounded-xl flex flex-row items-center gap-2 text-txt-2 hover:text-txt-1 transition-colors duration-150 select-none"
             aria-haspopup="listbox"
             :aria-expanded="showSelect"
             >
@@ -121,14 +131,19 @@ function searchKeyDown(e: KeyboardEvent) {
             <BsChevronDown v-else class="w-4 h-full" />
         </div>
 
-        <div v-if="showSelect" class="absolute left-0 bottom-full mb-2 bg-primary-300 p-1 rounded-xl w-[90dvw] sm:w-[90dvw] lg:w-[25rem] box-border" role="listbox">
+        <div v-if="showSelect" 
+            class="absolute left-0 bottom-full mb-2 bg-primary-300 p-1 rounded-xl w-[90dvw] sm:w-[90dvw] lg:w-[25rem] box-border" 
+            role="listbox"
+            >
             <input ref="searchBarRef" v-model="searchQuery" @focus="searchFocused = true" @blur="searchFocused = false" @keydown="searchKeyDown" type="search" placeholder="Search a model..." 
                 class="bg-primary-400 focus:bg-primary-500 w-full rounded-xl h-10 p-2 !mb-1 outline-0"
+                :class="{ 'cursor-not-allowed': !uiStore.connectedToOllama }"
                 aria-label="Search for a model..."
-                aria-controls="model-list">
+                aria-controls="model-list"
+                :disabled="!uiStore.connectedToOllama">
             
             <ul role="list" class="max-h-80 overflow-y-auto">
-                <li role="listitem" v-for="(model, index) in queriedModelList" :key="model.name"
+                <li v-if="uiStore.connectedToOllama" role="listitem" v-for="(model, index) in queriedModelList" :key="model.name"
                     class="flex flex-col cursor-pointer px-3 py-2 hover:bg-primary-400 rounded-xl overflow-x-hidden"
                     :class="{ 'bg-primary-500': index === focusedItemIndex }"
                     @click="setModel(model.name)"
@@ -138,8 +153,13 @@ function searchKeyDown(e: KeyboardEvent) {
                     <span class="w-full text-md font-semibold text-ellipsis whitespace-nowrap overflow-hidden" :title="model.name">{{ model.name }}</span>
                     <span class="text-sm text-txt-2">{{ model.details.parameter_size }}</span>
                 </li>
+                <li v-else class="h-24 flex px-3 py-2 roundex-xl justify-center items-center font-bold gap-2">
+                    <VscDebugDisconnect />
+                    Not connected to Ollama.
+                </li>
             </ul>
 
         </div>
+    </div>
     </div>
 </template>
