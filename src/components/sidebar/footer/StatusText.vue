@@ -1,40 +1,26 @@
 <script setup lang="ts">
 import { onMounted, ref } from 'vue';
-import { useConfigStore } from '../../../stores/config';
-import { useUiStore } from '../../../stores/uiStore';
-
-const config = useConfigStore();
-const uiStore = useUiStore();
+import apiClient from '../../../utils/apiClient';
 
 // UI State
 const statusMessageText = ref("Waiting for Ollama...");
+const statusStillLoading = ref(true);
 
 // Refs
 const statusMessageElem = ref<HTMLElement | null>(null);
 
-onMounted(() => {
-    fetch(config.apiUrl('/'))
-        .then(response => {
-            if (!response.ok) {
-                throw new Error(`HTTP Error when connecting to Ollama, code: ${response.status}`)
-            }
-            return response.text();
-        })
-        .then(response => {
-            statusMessageText.value = response;
-            uiStore.setConnectedToOllama(true);
-        })
-        .catch((error) => {
-            statusMessageText.value = error;
-            uiStore.setConnectedToOllama(false);
-        })
-});
+onMounted(async () => {
+    const status = await apiClient.status;
+    apiClient.refreshConnectionCheck(status);
 
+    statusStillLoading.value = false;
+    statusMessageText.value = status.errorMessage || status.message;
+});
 </script>
 
 <template>  
     <div class="overflow-hidden overflow-ellipsis py-2">
-        <span class="text-amber-400" :class="{ 'text-emerald-400': uiStore.connectedToOllama, 'text-red-400': !uiStore.connectedToOllama }">
+        <span class="text-amber-400" :class="{ 'text-emerald-400': apiClient.connected, 'text-red-400': !apiClient.connected && !statusStillLoading }">
             Ollama status:
             <span ref="statusMessageElem" :title="statusMessageText">{{ statusMessageText }}</span>
         </span>

@@ -1,13 +1,8 @@
 <script setup lang="ts">
-import { computed, nextTick, onBeforeUnmount, onMounted, ref } from 'vue';
-import { useConfigStore } from '../../../stores/config';
+import { computed, nextTick, onBeforeUnmount, onMounted, ref, watch } from 'vue';
 import { BsChevronDown, BsChevronUp } from 'vue-icons-plus/bs';
-import errorHandler from '../../../utils/errorHandler';
-import { useUiStore } from '../../../stores/uiStore';
 import { VscDebugDisconnect } from 'vue-icons-plus/vsc';
-
-const config = useConfigStore();
-const uiStore = useUiStore();
+import apiClient from '../../../utils/apiClient';
 
 // State
 const modelsList = ref<ModelList>([]);
@@ -24,19 +19,12 @@ const searchBarRef = ref<HTMLInputElement | null>(null);
 const listItemsRef = ref<Array<HTMLElement | null>>([]);
 
 // Lifecycle hooks
-onMounted(() => {
-    fetch(config.apiUrl('/api/tags'))
-        .then(response => response.json())
-        .then(response => {
-            modelsList.value = response.models;
-
-            if (!selectedModel.value || !modelsList.value.map((item) => item.name).includes(selectedModel.value)) {
-                selectedModel.value = response.models[0].model;
-            }
-        })
-        .catch((error) => {
-            errorHandler.handleError(error, `Unable to connect to Ollama at '${config.ollamaUrl}'. Ensure Ollama is setup and running. For a guide on how to configure Ollama to work with this app press the '?' icon on the bottom left of the sidebar.'`, true);
-        });
+onMounted(async () => {
+    const modelList = await apiClient.models;
+    
+    if (!selectedModel.value || !modelsList.value.map((item) => item.name).includes(selectedModel.value)) {
+        selectedModel.value = modelList.models[0].model;
+    }
 
     document.addEventListener('keydown', handleKeyboardShortcuts)
 });
@@ -124,7 +112,7 @@ function searchKeyDown(e: KeyboardEvent) {
             <div @click="toggleShowSelect"
                 class="bg-primary-400 hover:bg-primary-500 cursor-pointer p-3 box-border rounded-xl flex flex-row items-center gap-2 text-txt-2 hover:text-txt-1 transition-colors duration-150 select-none"
                 aria-haspopup="listbox" :aria-expanded="showSelect">
-                <template v-if="uiStore.connectedToOllama">
+                <template v-if="apiClient.connected">
                     {{ selectedModel }}
                 </template>
                 <p class="flex flex-row gap-2 items-center italic" v-else>
@@ -141,11 +129,11 @@ function searchKeyDown(e: KeyboardEvent) {
                 <input ref="searchBarRef" v-model="searchQuery" @focus="searchFocused = true"
                     @blur="searchFocused = false" @keydown="searchKeyDown" type="search" placeholder="Search a model..."
                     class="bg-primary-400 focus:bg-primary-500 w-full rounded-xl h-10 p-2 !mb-1 outline-0"
-                    :class="{ 'cursor-not-allowed': !uiStore.connectedToOllama }" aria-label="Search for a model..."
-                    aria-controls="model-list" :disabled="!uiStore.connectedToOllama">
+                    :class="{ 'cursor-not-allowed': !apiClient.connected }" aria-label="Search for a model..."
+                    aria-controls="model-list" :disabled="!apiClient.connected">
 
                 <ul role="list" class="max-h-80 overflow-y-auto">
-                    <li v-if="uiStore.connectedToOllama" role="listitem" v-for="(model, index) in queriedModelList"
+                    <li v-if="apiClient.connected" role="listitem" v-for="(model, index) in queriedModelList"
                         :key="model.name"
                         class="flex flex-col cursor-pointer px-3 py-2 hover:bg-primary-400 rounded-xl overflow-x-hidden"
                         :class="{ 'bg-primary-500': index === focusedItemIndex }" @click="setModel(model.name)"
