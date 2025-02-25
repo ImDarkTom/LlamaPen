@@ -1,6 +1,8 @@
 <script setup lang="ts">
 import { onBeforeMount } from 'vue';
-import apiClient from './utils/apiClient';
+import { useApiStore } from './utils/apiClient';
+
+const apiStore = useApiStore();
 
 onBeforeMount(() => {
     const defaultUrl = 'http://localhost:11434';
@@ -11,7 +13,7 @@ onBeforeMount(() => {
         apiUrl = defaultUrl;
     }
 
-    apiClient.setBaseUrl(apiUrl);
+    apiStore.setBaseUrl(apiUrl);
 });
 </script>
 

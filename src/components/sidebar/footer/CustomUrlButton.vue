@@ -1,9 +1,11 @@
 <script setup lang="ts">
-import apiClient from '../../../utils/apiClient';
+import { useApiStore } from '../../../utils/apiClient';
+
+const apiStore = useApiStore();
 
 function setApiUrlDialog() {
 	const defaultUrl = 'http://localhost:11434';
-	const currentUrl = apiClient.getBaseUrl;
+	const currentUrl = apiStore.getBaseUrl;
 
 	let customUrl = prompt("Enter a custom URL to use as a Ollama instance, write in the format of an origin i.e. 'http://example.com:8080'. \n\n Leave blank to reset to default (http://localhost:11434): ", currentUrl);
 
@@ -17,7 +19,7 @@ function setApiUrlDialog() {
 	}
 
 	localStorage.setItem('apiUrl', customUrl);
-	apiClient.setBaseUrl(customUrl);
+	apiStore.setBaseUrl(customUrl);
 
 	if (customUrl === currentUrl) {
 		return;

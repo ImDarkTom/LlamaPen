@@ -1,6 +1,8 @@
 <script setup lang="ts">
 import { onMounted, ref } from 'vue';
-import apiClient from '../../../utils/apiClient';
+import { useApiStore } from '../../../utils/apiClient';
+
+const apiStore = useApiStore();
 
 // UI State
 const statusMessageText = ref("Waiting for Ollama...");
@@ -10,8 +12,8 @@ const statusStillLoading = ref(true);
 const statusMessageElem = ref<HTMLElement | null>(null);
 
 onMounted(async () => {
-    const status = await apiClient.status;
-    apiClient.refreshConnectionCheck(status);
+    const status = await apiStore.getStatus();
+    apiStore.refreshConnectionCheck(status);
 
     statusStillLoading.value = false;
     statusMessageText.value = status.errorMessage || status.message;
@@ -20,7 +22,7 @@ onMounted(async () => {
 
 <template>  
     <div class="overflow-hidden overflow-ellipsis py-2">
-        <span class="text-amber-400" :class="{ 'text-emerald-400': apiClient.connected, 'text-red-400': !apiClient.connected && !statusStillLoading }">
+        <span class="text-amber-400" :class="{ 'text-emerald-400': apiStore.connected, 'text-red-400': !apiStore.connected && !statusStillLoading }">
             Ollama status:
             <span ref="statusMessageElem" :title="statusMessageText">{{ statusMessageText }}</span>
         </span>
