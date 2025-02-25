@@ -19,6 +19,10 @@ export const useApiStore = defineStore('api', {
 	},
 
 	actions: {
+		/**
+		 * Sends a request to the base url to check if we can connect to it.
+		 * @returns An API status check object.
+		 */
 		async getStatus(): Promise<ApiStatus> {
 			const errorsMap: { [key: string]: string } = {
 				'TypeError': 'Network error. Please check your connection & Ollama URL.',
@@ -27,20 +31,24 @@ export const useApiStore = defineStore('api', {
 			try {
 				const response = await fetch(this.getBaseUrl);
 				const message = await response.text();
+
 				return { code: response.status, message };
 			} catch (e: unknown) {
 				const err = e as Error;
-				console.log(err.message, err.name, err.stack);
 
 				return {
 					code: -1,
 					message: '',
 					error: err.message,
-					errorMessage: errorsMap[err.name] || 'An unexpected error occurred.',
+					errorMessage: errorsMap[err.name] || 'An unknown error occurred.',
 				};
 			}
 		},
 
+		/**
+		 * Refreshes the value for `isConnected`. 
+		 * @param statusCheck (Optional) Status check to use instead of sending a new request.
+		 */
 		async refreshConnectionCheck(statusCheck?: ApiStatus) {
 			try {
 				const status = statusCheck ?? await this.getStatus();
@@ -59,7 +67,11 @@ export const useApiStore = defineStore('api', {
 			this.baseUrl = url;
 		},
 	
-		getModels(): Promise<{models: ModelList}> {
+		/**
+		 * Gets model list from `/api/tags`.
+		 * @returns A `ModelListResponse` promise or throws an error.
+		 */
+		getModels(): Promise<ModelListResponse> {
 			return fetch(this.getBaseUrl + '/api/tags')
 				.then(async response => {
 					if (!response.ok) {

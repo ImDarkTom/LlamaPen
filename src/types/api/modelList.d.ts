@@ -1,7 +1,12 @@
+/**
+ * Represents a single item in a model list.
+ */
 type ModelListItem = {
     name: string;
     model: string;
+    /** Unix timestamp for last modified. */
     modified_at: string;
+    /** Model size in bytes. */
     size: number;
     digest: string;
     details: {
@@ -15,6 +20,9 @@ type ModelListItem = {
 
 type ModelList = ModelListItem[];
 
+/**
+ * The expected response schema for `/api/tags`.
+ */
 type ModelListResponse = {
     models: ModelList;
 }
