@@ -1,7 +1,7 @@
 import { defineStore } from "pinia";
 import { v4 as generateUUID } from 'uuid';
 import { emitter } from "../mitt";
-import { useConfigStore } from "./config";
+import { useApiStore } from "../utils/apiClient";
 
 interface AllChatsState {
     chats: Chat[],
@@ -24,8 +24,12 @@ export const useAllChatsStore = defineStore('allchats', {
             }
         }),
         openedIdExists: (state) => state.chats.find(chat => chat.id === state.openedId) !== undefined,
+        selectedModel: () => localStorage.getItem('selectedModel')
     },
     actions: {
+        setIsGenerating(value: boolean) {
+            this.isGenerating = value;
+        },
         findMessageById(id: string) {
             if (!this.openedChat) {
                 return null;
@@ -142,14 +146,12 @@ export const useAllChatsStore = defineStore('allchats', {
          * @param userMessage The message added by the user.
          * @param options.chatId The chat ID to add the message to.
          * @param options.requestUrl The url to send the request to.
-         * @param options.selectedModel The model to use. Added into the request payload.
          */
         async sendMessage(
             userMessage: string, 
             options: {
                 chatId: string,
-                requestUrl: string,
-                selectedModel: string }
+                requestUrl: string }
         ) {
             let chatId = options.chatId;
             const chatInitialisedResult = this.ensureChatInitialised();
@@ -166,7 +168,7 @@ export const useAllChatsStore = defineStore('allchats', {
             emitter.emit('scrollToBottom');
 
             const payload = JSON.stringify({
-                model: options.selectedModel,
+                model: this.selectedModel,
                 messages: this.openedAsOllama,
                 stream: true,
             });
@@ -200,7 +202,7 @@ export const useAllChatsStore = defineStore('allchats', {
 
                     this.isGenerating = false; // Ensure false if we stop generating normally
                     this.saveToLocalStorage();
-                    this.generateChatTitle(chatId, options.selectedModel);
+                    this.generateChatTitle(chatId);
                     break;
                 }
 
@@ -218,7 +220,7 @@ export const useAllChatsStore = defineStore('allchats', {
                 }
             }
         },
-        editUserSentMessage(messageId: string, newMessageContent: string, options: { requestUrl: string, selectedModel: string }) {
+        editUserSentMessage(messageId: string, newMessageContent: string, options: { requestUrl: string }) {
             if (!this.openedChat || !this.openedId) {
                 return;
             }
@@ -230,11 +232,10 @@ export const useAllChatsStore = defineStore('allchats', {
 
             this.sendMessage(newMessageContent, {
                 chatId: this.openedId,
-                requestUrl: options.requestUrl,
-                selectedModel: options.selectedModel
+                requestUrl: options.requestUrl
             });
         },
-        async generateChatTitle(chatId: string, selectedModel: string) {
+        async generateChatTitle(chatId: string) {
             const selectedChat = this.chats.find((chat) => chat.id === chatId);
 
             if (!selectedChat) {
@@ -266,23 +267,9 @@ ${firstTwoChatMessages.map((message) => {
 </chat_history>
 `.trim();
 
-            const payload = JSON.stringify({
-                model: selectedModel,
-                stream: false,
-                prompt: generationPrompt,
-            });
+            const completion = await useApiStore().generateCompletion({prompt: generationPrompt});
 
-            const response = await fetch(useConfigStore().apiUrl('/api/generate'), {
-                method: 'POST',
-                headers: {
-                    'Content-Type': 'application/json',
-                },
-                body: payload,
-            });
-
-            const responseJson = await response.json();
-
-            selectedChat.label = responseJson.response;
+            selectedChat.label = completion.response;
             this.saveToLocalStorage();
         },
     }

@@ -80,8 +80,7 @@ function finishEdit(newText: string) {
     editing.value = false;
 
     allChats.editUserSentMessage(props.message.id, newText, {
-        requestUrl: config.apiUrl('/api/chat'),
-        selectedModel: localStorage.getItem('selectedModel')!
+        requestUrl: config.apiUrl('/api/chat')
     });
 }
 </script>

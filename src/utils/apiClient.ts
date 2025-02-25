@@ -1,4 +1,5 @@
 import { defineStore } from 'pinia';
+import { useAllChatsStore } from '../stores/allChats';
 
 interface ApiStatus {
 	code: number; 
@@ -83,6 +84,73 @@ export const useApiStore = defineStore('api', {
 				.catch((e: unknown) => {
 					throw new Error(`❌ [API Client] Error getting model list: ${(e as Error).message}`);
 				});
+		},
+
+		async generateCompletion(requestBody: { prompt: string}): Promise<CompletionResponse> {
+			const response = await fetch(this.baseUrl + '/api/generate', {
+				method: 'POST',
+				body: JSON.stringify({
+					...requestBody,
+					model: useAllChatsStore().selectedModel,
+					stream: false,
+				})
+			});
+			
+			const json = await response.json();
+
+			return json;
+		},
+
+		async *generateChatCompletion(messages: OllamaMessage[]) {
+			const controller = new AbortController();
+            const signal = controller.signal;
+
+            const response = await fetch(this.baseUrl + '/api/chat', {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json',
+                },
+                body: JSON.stringify({
+					model: useAllChatsStore().selectedModel,
+					messages: messages,
+				}),
+                signal: signal,
+            });
+
+            if (!response.body) {
+                throw new Error(`No response body recieved from sendMessage request, response code: ${response.status}`);
+            }
+
+            const reader = response.body.getReader();
+            const textDecoder = new TextDecoder();
+
+            this.isGenerating = true;
+
+            while (true) {
+                const { done, value } = await reader.read();
+
+                if (done || !this.isGenerating) {
+                    controller.abort('Cancelled response.');
+
+                    this.isGenerating = false; // Ensure false if we stop generating normally
+                    this.saveToLocalStorage();
+                    this.generateChatTitle(chatId);
+                    break;
+                }
+
+                const chunkText = textDecoder.decode(value).trim().split('\n');
+
+                for (const chunk of chunkText) {
+                    try {
+                        const chunkJson = JSON.parse(chunk);
+                        const messageChunk = chunkJson.message.content;
+
+                        this.modifyMessage(responseMessageId, messageChunk, 'append');
+                    } catch (error: unknown) {
+                        console.error('Error parsing response chunk', error);
+                    }
+                }
+            }
 		}
 	}
 });
