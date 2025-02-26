@@ -70,7 +70,7 @@ function updateTextAreaHeight() {
                 placeholder="Enter a message..."
                 class="w-full box-border text-base p-2 border-none outline-none resize-none overflow-y-auto break-words"></textarea>
             <div class="relative flex flex-row justify-between w-full">
-                <ModelSelect />
+                <ModelSelect direction="up" />
                 <ActionButton :canGenerate="canGenerate" @startGeneration="startGeneration" />
             </div>
         </div>
