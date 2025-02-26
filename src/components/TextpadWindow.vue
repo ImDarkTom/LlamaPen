@@ -21,6 +21,7 @@ watch(() => route.params.id, (newId, oldId) => {
 });
 
 function loadTextpad() {
+	save();
 	allTextpadsStore.setOpened(route.params.id as string);
 
 	if (!mainTextarea.value) {

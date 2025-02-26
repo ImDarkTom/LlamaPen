@@ -85,9 +85,8 @@ export const useTextpadStore = defineStore('textpad', {
 
         // textpad-only
         write(text: string) {
-            console.log("starting textpad write");
+            console.time("textpad-write");
             this.ensureTextpadInitialised();
-            console.log("ensured textpad initialised");
 
             if (!this.openedTextpad) {
                 throw new Error('New textpad failed to initialise.')
@@ -95,6 +94,7 @@ export const useTextpadStore = defineStore('textpad', {
 
             this.openedTextpad.content = text;
             this.saveToLocalStorage();
+            console.timeEnd('textpad-write');
         }
 	},
 });
