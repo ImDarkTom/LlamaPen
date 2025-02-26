@@ -1,14 +1,14 @@
 <script setup lang="ts">
-import { useAllChatsStore } from '../../stores/allChats';
 import SidebarEntry from './SidebarEntry.vue';
-import { computed, onMounted, onUnmounted, ref } from 'vue';
+import { onMounted, onUnmounted, ref } from 'vue';
 import { TbLayoutSidebarLeftCollapse, TbLayoutSidebarLeftExpand } from 'vue-icons-plus/tb';
 import SidebarHeader from './SidebarHeader.vue';
 import SidebarOptions from './footer/SidebarFooter.vue';
 import { useConfigStore } from '../../stores/config';
+import { useUiStore } from '../../stores/uiStore';
+import ChatList from './ChatList.vue';
 
-const allChats = useAllChatsStore();
-allChats.loadChats();
+const uiStore = useUiStore();
 
 const useConfig = useConfigStore();
 const showSidebar = ref<boolean>(useConfig.showSidebar);
@@ -40,18 +40,6 @@ onMounted(() => {
 onUnmounted(() => {
     document.removeEventListener('keydown', shortcutListener);
 });
-
-const pinnedChats = computed<Chat[]>(() => {
-    return allChats.chats.filter((chat) => (chat.pinned || false)).sort((a, b) => (b.lastMessage ?? 0) - (a.lastMessage ?? 0));
-});
-
-const hasPinnedChats = computed<boolean>(() => {
-    return pinnedChats.value.length !== 0;
-})
-
-const unpinnedChats = computed<Chat[]>(() => {
-    return allChats.chats.filter((chat) => !(chat.pinned || false)).sort((a, b) => (b.lastMessage ?? 0) - (a.lastMessage ?? 0));
-})
 </script>
 
 <template>
@@ -61,16 +49,18 @@ const unpinnedChats = computed<Chat[]>(() => {
             <SidebarHeader />
 
             <!-- Chats List -->
-            <div class="p-0 m-0 flex-1 overflow-y-auto">
-                <div class="p-0 m-0 flex-1" role="list" aria-labelledby="pinnedChatsSection">
-                    <h3 id="pinnedChatsSection" class="sr-only">Pinned Chats</h3>
+            <ChatList v-if="uiStore.mode === 'chat'" />
+
+            <div v-else class="p-0 m-0 flex-1 overflow-y-auto">
+                <div class="p-0 m-0 flex-1" role="list" aria-labelledby="pinnedTextpadsSection">
+                    <h3 id="pinnedTextpadsSection" class="sr-only">Pinned Textpads</h3>
                     <SidebarEntry v-for="chat of pinnedChats" :key="chat.id" :chat="chat" />
                 </div>
 
                 <div v-if="hasPinnedChats" class="w-full h-[1px] bg-txt-1/50" role="separator"></div>
 
-                <div class="p-0 m-0 flex-1" role="list" aria-labelledby="unpinnedChatsSection">
-                    <h3 id="unpinnedChatsSection" class="sr-only">Unpinned Chats</h3>
+                <div class="p-0 m-0 flex-1" role="list" aria-labelledby="unpinnedTextpadsSection">
+                    <h3 id="unpinnedTextpadsSection" class="sr-only">Unpinned Textpads</h3>
                     <SidebarEntry v-for="chat of unpinnedChats" :key="chat.id" :chat="chat" />
                 </div>
             </div>

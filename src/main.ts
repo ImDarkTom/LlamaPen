@@ -8,6 +8,7 @@ import SettingsWindow from "./components/SettingsWindow.vue";
 import Layout from "./components/Layout.vue";
 import mousedownOutside from "./directives/mousedownOutside";
 import GuideWindow from "./components/GuideWindow.vue";
+import TextpadWindow from './components/TextpadWindow.vue';
 
 const routes = [
     {
@@ -16,6 +17,8 @@ const routes = [
         children: [
             { path: "/", component: ChatWindow },
             { path: "/chat/:id", component: ChatWindow },
+            { path: "/textpad", component: TextpadWindow },
+            { path: "/textpad/:id", component: TextpadWindow },
             { path: "/settings", component: SettingsWindow },
             { path: '/guide', component: GuideWindow }
         ],

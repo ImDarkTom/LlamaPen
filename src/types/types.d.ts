@@ -18,3 +18,5 @@ type Chat = {
 interface AppMessage extends OllamaMessage {
     id: string;
 }
+
+type AppMode = 'chat' | 'textpad';
