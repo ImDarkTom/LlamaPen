@@ -136,8 +136,15 @@ const props = defineProps<{
                     <VscDebugDisconnect />
                     Disconnected
                 </p>
-                <BsChevronUp v-if="showSelect" class="w-4 h-full" />
-                <BsChevronDown v-else class="w-4 h-full" />
+                
+                <template v-if="props.direction === 'up'">
+                    <BsChevronUp v-if="showSelect" class="w-4 h-full" />
+                    <BsChevronDown v-else class="w-4 h-full" />
+                </template>
+                <template v-else>
+                    <BsChevronDown v-if="showSelect" class="w-4 h-full" />
+                    <BsChevronUp v-else class="w-4 h-full" />
+                </template>
             </div>
 
             <div v-if="showSelect"
