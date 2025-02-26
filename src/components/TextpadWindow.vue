@@ -78,6 +78,13 @@ function handleChangeLanguage(e: Event) {
 
 	updateVirtualTextArea();
 }
+
+function handleScroll() {
+  if (mainTextarea.value && virtualTextarea.value) {
+    virtualTextarea.value.scrollTop = mainTextarea.value.scrollTop;
+    virtualTextarea.value.scrollLeft = mainTextarea.value.scrollLeft;
+  }
+}
 </script>
 
 <template>
@@ -94,10 +101,11 @@ function handleChangeLanguage(e: Event) {
 				bg-radial from-txt-2/25 via-primary-500 via-[2px] to-primary-500 bg-[length:2rem_2rem] bg-[position:-1rem_-1rem]">
 			<div class="relative size-full">
 				<!-- no clue why we need py-1 to have it align, try properly fix it later -->
-				<pre ref="virtualTextarea" class="text-sm font-mono absolute top-0 left-0 size-full !leading-none outline-0 border-none whitespace-pre p-0 m-0 bg-transparent"></pre>
-				<textarea ref="mainTextarea" class="text-sm !font-mono absolute top-0 left-0 size-full !leading-none outline-0 border-none whitespace-pre p-0 m-0 text-transparent bg-transparent resize-none caret-txt-1 z-2"
+				<pre ref="virtualTextarea" class="text-sm font-mono absolute top-0 left-0 size-full !leading-4 outline-0 border-none whitespace-pre p-0 m-0 bg-transparent overflow-y-auto"></pre>
+				<textarea ref="mainTextarea" class="text-sm !font-mono absolute top-0 left-0 size-full !leading-4 outline-0 border-none whitespace-pre p-0 m-0 text-transparent bg-transparent resize-none caret-txt-1 z-2"
 					@keydown="handleKeyDown" 
 					@input="handleInput"
+					@scroll="handleScroll"
 					spellcheck="false"
 				></textarea>
 			</div>
