@@ -19,7 +19,7 @@ export const useTextpadStore = defineStore('textpad', {
         findTextpadIndexById(id: string) {
             return this.textpads.findIndex((textpad) => textpad.id === id);
         },
-		ensureChatInitialised(): string | null {
+		ensureTextpadInitialised(): string | null {
             this.loadTextpads();
 
             if (!this.openedId || !this.openedIdExists) {
@@ -80,6 +80,20 @@ export const useTextpadStore = defineStore('textpad', {
 
             this.textpads.splice(textpadToDeleteIndex, 1);
             
+            this.saveToLocalStorage();
+        },
+
+        // textpad-only
+        write(text: string) {
+            console.log("starting textpad write");
+            this.ensureTextpadInitialised();
+            console.log("ensured textpad initialised");
+
+            if (!this.openedTextpad) {
+                throw new Error('New textpad failed to initialise.')
+            }
+
+            this.openedTextpad.content = text;
             this.saveToLocalStorage();
         }
 	},
