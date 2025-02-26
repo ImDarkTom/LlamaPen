@@ -1,10 +1,11 @@
 <script setup lang="ts">
-import { onMounted, onUnmounted, ref, watch } from 'vue';
+import { computed, onMounted, onUnmounted, ref, watch } from 'vue';
 import ChatMessage from './ChatMessage.vue';
 import { useAllChatsStore } from '../../stores/allChats';
 import { useRoute } from 'vue-router';
 import { emitter } from '../../mitt';
 import { useUiStore } from '../../stores/uiStore';
+import GreetingText from './GreetingText.vue';
 
 const messageListRef = ref<HTMLElement | null>(null);
 
@@ -54,13 +55,18 @@ function handleScroll(_e: Event) {
 
     uiStore.setScrollingDown(elementHeight < userScrolled + 25) // 25px padding
 }
+
+const displayedMessages = computed<AppMessage[]>(() => {
+    return allChatStore.openedChat?.messages || [];
+})
 </script>
 
 <template>
-    <div class="w-dvw sm:w-dvw md:w-auto flex justify-center overflow-y-auto flex-1" ref="messageListRef" @scroll="handleScroll">
-        <div class="flex flex-col grow max-w-[48rem]" >
-            <ChatMessage v-for="message of (allChatStore.openedChat?.messages || [])" :key="message.id"
-                :message="message" />
+    <div v-if="displayedMessages.length > 0" class="w-dvw sm:w-dvw md:w-auto flex justify-center overflow-y-auto flex-1"
+        ref="messageListRef" @scroll="handleScroll">
+        <div class="flex flex-col grow max-w-[48rem]">
+            <ChatMessage v-for="message of (displayedMessages)" :key="message.id" :message="message" />
         </div>
     </div>
+    <GreetingText v-else />
 </template>
