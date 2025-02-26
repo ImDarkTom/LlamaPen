@@ -1,5 +1,4 @@
 <script setup lang="ts">
-import SidebarEntry from './SidebarEntry.vue';
 import { onMounted, onUnmounted, ref } from 'vue';
 import { TbLayoutSidebarLeftCollapse, TbLayoutSidebarLeftExpand } from 'vue-icons-plus/tb';
 import SidebarHeader from './SidebarHeader.vue';

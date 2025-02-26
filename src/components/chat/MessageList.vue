@@ -17,11 +17,13 @@ const uiStore = useUiStore();
 watch(() => route.params.id, (newId, oldId) => {
     if (newId !== oldId) {
         allChatStore.setOpened(newId as string);
+        uiStore.setLastOpenedChat(route.params.id as string);
     }
 });
 
 onMounted(() => {
     allChatStore.setOpened(route.params.id as string);
+    uiStore.setLastOpenedChat(route.params.id as string);
     emitter.on('scrollToBottom', scrollToBottom);
 });
 

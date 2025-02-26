@@ -3,8 +3,10 @@ import { onMounted, ref, watch } from 'vue';
 import { useTextpadStore } from '../stores/allTextpads';
 import ModelSelect from './chat/messageInput/ModelSelect.vue';
 import { useRoute } from 'vue-router';
+import { useUiStore } from '../stores/uiStore';
 
 const allTextpadsStore = useTextpadStore();
+const uiStore = useUiStore();
 
 const route = useRoute();
 
@@ -24,6 +26,7 @@ function loadTextpad() {
 	} 
 
 	mainTextarea.value.value = allTextpadsStore.openedTextpad?.content || "";
+	uiStore.setLastOpenedTextpad(route.params.id as string);
 }
 
 onMounted(() => {

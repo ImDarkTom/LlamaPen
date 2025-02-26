@@ -21,6 +21,24 @@ const newChat = () => {
 function search() {
     alert('to be added...');
 }
+
+function toggleMode() {
+    uiStore.toggleMode();
+
+    if (uiStore.mode === 'chat') {
+        if (!uiStore.lastOpenedChatId) {
+            router.push('/');
+        } else {
+            router.push(`/chat/${uiStore.lastOpenedChatId}`);
+        }
+    } else {
+        if (!uiStore.lastOpenedTextpadId) {
+            router.push('/textpad');
+        } else {
+            router.push(`/textpad/${uiStore.lastOpenedTextpadId}`);
+        }
+    }
+}
 </script>
 
 <template>
@@ -34,7 +52,7 @@ function search() {
                 class="h-6 w-auto m-auto cursor-pointer ml-2 p-2 box-content rounded-lg hover:bg-primary-300 hover:shadow-xs shadow-black/50"
                 @click="newChat()" />
         </div>
-        <div class="w-full h-12 flex flex-row hover:bg-primary-300 rounded-lg cursor-pointer transition-colors duration-100" @mousedown="uiStore.toggleMode">
+        <div class="w-full h-12 flex flex-row hover:bg-primary-300 rounded-lg cursor-pointer transition-colors duration-100" @mousedown="toggleMode">
             <div class="h-full w-12">
                 <BsChatLeft class="size-full p-3 box-border" v-if="uiStore.mode === 'chat'" />
                 <TiDocumentText class="size-full p-3 box-border" v-else />
