@@ -20,3 +20,12 @@ interface AppMessage extends OllamaMessage {
 }
 
 type AppMode = 'chat' | 'textpad';
+
+interface Textpad {
+    pinned?: boolean;
+	id: string;
+	label: string;
+	content: string;
+	created: number;
+	lastEdited: number;
+}

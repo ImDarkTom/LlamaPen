@@ -1,14 +1,6 @@
 import { defineStore } from 'pinia';
 import { v4 as generateUUID } from 'uuid';
 
-interface Textpad {
-	id: string;
-	label: string;
-	content: string;
-	created: number;
-	lastEdited: number;
-}
-
 interface AllTextpadsState {
 	textpads: Textpad[];
 	openedId: string | null;
@@ -24,13 +16,16 @@ export const useTextpadStore = defineStore('textpad', {
         openedIdExists: (state) => state.textpads.find(textpad => textpad.id === state.openedId) !== undefined,
 	},
 	actions: {
+        findTextpadIndexById(id: string) {
+            return this.textpads.findIndex((textpad) => textpad.id === id);
+        },
 		ensureChatInitialised(): string | null {
             this.loadTextpads();
 
             if (!this.openedId || !this.openedIdExists) {
                 const newUuid = this.openedId || generateUUID();
 
-                this.createChat(newUuid);
+                this.createTextpad(newUuid);
                 this.setOpened(newUuid);
                 this.saveToLocalStorage();
                 return newUuid;
@@ -55,10 +50,10 @@ export const useTextpadStore = defineStore('textpad', {
 		setOpened(id: string | null) {
             this.openedId = id;
         },
-        createChat(uuid: string) {
+        createTextpad(uuid: string) {
             this.textpads.push({
                 id: uuid,
-                label: 'New Chat',
+                label: 'New Textpad',
 				content: '',
                 created: Date.now(),
                 lastEdited: Date.now(),
@@ -66,5 +61,26 @@ export const useTextpadStore = defineStore('textpad', {
 
             this.saveToLocalStorage();
         },
+        editTextpadName(uuid: string, newName: string) {
+            const chatToEditIndex = this.findTextpadIndexById(uuid);
+
+            this.textpads[chatToEditIndex].label = newName;
+            this.saveToLocalStorage();
+        },
+        deleteTextpad(uuid: string) {
+            const textpadToDeleteIndex = this.findTextpadIndexById(uuid);
+
+            if (textpadToDeleteIndex === -1) {
+                return;
+            }
+
+            if (uuid === this.openedId) {
+                this.openedId = null;
+            }
+
+            this.textpads.splice(textpadToDeleteIndex, 1);
+            
+            this.saveToLocalStorage();
+        }
 	},
 });

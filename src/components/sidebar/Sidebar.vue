@@ -7,6 +7,7 @@ import SidebarOptions from './footer/SidebarFooter.vue';
 import { useConfigStore } from '../../stores/config';
 import { useUiStore } from '../../stores/uiStore';
 import ChatList from './ChatList.vue';
+import TextpadList from './TextpadList.vue';
 
 const uiStore = useUiStore();
 
@@ -51,19 +52,7 @@ onUnmounted(() => {
             <!-- Chats List -->
             <ChatList v-if="uiStore.mode === 'chat'" />
 
-            <div v-else class="p-0 m-0 flex-1 overflow-y-auto">
-                <div class="p-0 m-0 flex-1" role="list" aria-labelledby="pinnedTextpadsSection">
-                    <h3 id="pinnedTextpadsSection" class="sr-only">Pinned Textpads</h3>
-                    <SidebarEntry v-for="chat of pinnedChats" :key="chat.id" :chat="chat" />
-                </div>
-
-                <div v-if="hasPinnedChats" class="w-full h-[1px] bg-txt-1/50" role="separator"></div>
-
-                <div class="p-0 m-0 flex-1" role="list" aria-labelledby="unpinnedTextpadsSection">
-                    <h3 id="unpinnedTextpadsSection" class="sr-only">Unpinned Textpads</h3>
-                    <SidebarEntry v-for="chat of unpinnedChats" :key="chat.id" :chat="chat" />
-                </div>
-            </div>
+            <TextpadList v-else />
             <SidebarOptions />
         </div>
         <div class="absolute top-0 right-0 transform translate-x-full h-12 w-12 p-1">
