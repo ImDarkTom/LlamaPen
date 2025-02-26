@@ -26,6 +26,7 @@ interface Textpad {
 	id: string;
 	label: string;
 	content: string;
+    language: string;
 	created: number;
 	lastEdited: number;
 }

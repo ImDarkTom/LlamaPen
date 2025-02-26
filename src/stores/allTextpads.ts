@@ -8,7 +8,7 @@ interface AllTextpadsState {
 
 export const useTextpadStore = defineStore('textpad', {
 	state: (): AllTextpadsState => ({
-		textpads: [],
+		textpads: [] as Textpad[],
 		openedId: null,
 	}),
 	getters: {
@@ -55,6 +55,7 @@ export const useTextpadStore = defineStore('textpad', {
                 id: uuid,
                 label: 'New Textpad',
 				content: '',
+                language: 'plaintext',
                 created: Date.now(),
                 lastEdited: Date.now(),
             });
@@ -89,12 +90,22 @@ export const useTextpadStore = defineStore('textpad', {
             this.ensureTextpadInitialised();
 
             if (!this.openedTextpad) {
-                throw new Error('New textpad failed to initialise.')
+                throw new Error('New textpad failed to initialise in write.')
             }
 
             this.openedTextpad.content = text;
             this.saveToLocalStorage();
             console.timeEnd('textpad-write');
+        },
+        setLanguage(language: string) {
+            this.ensureTextpadInitialised();
+
+            if (!this.openedTextpad) {
+                throw new Error('New textpad failed to initialise in setlanguage.')
+            }
+
+            this.openedTextpad.language = language;
+            this.saveToLocalStorage();
         }
 	},
 });

@@ -11,6 +11,8 @@ const uiStore = useUiStore();
 
 const route = useRoute();
 
+const language = ref<string>('plaintext');
+
 const mainTextarea = ref<HTMLTextAreaElement | null>(null);
 const virtualTextarea = ref<HTMLElement | null>(null);
 
@@ -21,15 +23,17 @@ watch(() => route.params.id, (newId, oldId) => {
 });
 
 function loadTextpad() {
-	save();
 	allTextpadsStore.setOpened(route.params.id as string);
 
 	if (!mainTextarea.value) {
 		return;
-	} 
+	}
+
+	language.value = allTextpadsStore.openedTextpad?.language || "plaintext";
 
 	mainTextarea.value.value = allTextpadsStore.openedTextpad?.content || "";
 	updateVirtualTextArea();
+
 	uiStore.setLastOpenedTextpad(route.params.id as string);
 }
 
@@ -66,13 +70,19 @@ function handleInput() {
 	updateVirtualTextArea()
 }
 
-const language = ref<string>('plaintext');
+function handleChangeLanguage(e: Event) {
+	const newValue = (e.target as HTMLSelectElement).value;
+
+	allTextpadsStore.setLanguage(newValue);
+
+	updateVirtualTextArea();
+}
 </script>
 
 <template>
     <div class="w-full h-full flex flex-col p-2 box-border">
         <div class="pl-14 h-14 flex flex-row gap-1 bg-primary-400 mb-2 p-1 rounded-lg box-border">
-			<select @change="updateVirtualTextArea" v-model="language" class="h-full hover:bg-primary-500 p-2 rounded-lg text-txt-2 focus:text-txt-1 cursor-pointer">
+			<select @change="handleChangeLanguage" v-model="language" class="h-full hover:bg-primary-500 p-2 rounded-lg text-txt-2 focus:text-txt-1 cursor-pointer">
 				<option value="plaintext">Plaintext</option>
 				<option value="html">HTML</option>
 				<option value="js">JavaScript</option>
