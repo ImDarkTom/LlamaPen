@@ -22,7 +22,7 @@ function handleClick() {
         if (!props.canGenerate) {
             return;
         }
-        
+
         emit('startGeneration');
     }
 }
@@ -30,8 +30,7 @@ function handleClick() {
 </script>
 
 <template>
-    <component :is="allChats.isGenerating ? ImCancelCircle : BiSolidSend" 
-        class="bg-primary-100 p-2 box-content rounded-lg cursor-pointer"
-        :class="{ 'opacity-50 !cursor-default': !canGenerate && !allChats.isGenerating }"
-        @click="handleClick" />
+    <component :is="allChats.isGenerating ? ImCancelCircle : BiSolidSend"
+        class="absolute bottom-0 right-0 bg-primary-100 p-2 box-content rounded-lg cursor-pointer"
+        :class="{ 'opacity-40 !cursor-default': !canGenerate && !allChats.isGenerating }" @click="handleClick" />
 </template>

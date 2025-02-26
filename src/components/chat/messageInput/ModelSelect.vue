@@ -5,6 +5,7 @@ import { BsChevronDown, BsChevronUp } from 'vue-icons-plus/bs';
 import errorHandler from '../../../utils/errorHandler';
 import { useUiStore } from '../../../stores/uiStore';
 import { VscDebugDisconnect } from 'vue-icons-plus/vsc';
+import { AiOutlineArrowRight } from 'vue-icons-plus/ai';
 
 const config = useConfigStore();
 const uiStore = useUiStore();
@@ -122,7 +123,7 @@ function searchKeyDown(e: KeyboardEvent) {
     <div v-mousedown-outside="handleClickOutside">
         <div class="relative" id="modelselect">
             <div @click="toggleShowSelect"
-                class="bg-primary-400 hover:bg-primary-500 cursor-pointer p-3 box-border rounded-xl flex flex-row items-center gap-2 text-txt-2 hover:text-txt-1 transition-colors duration-150 select-none"
+                class="bg-primary-400 hover:bg-primary-500 cursor-pointer p-3 box-border rounded-lg flex flex-row items-center gap-2 text-txt-2 hover:text-txt-1 transition-colors duration-150 select-none"
                 aria-haspopup="listbox" :aria-expanded="showSelect">
                 <template v-if="uiStore.connectedToOllama">
                     {{ selectedModel }}
@@ -136,23 +137,33 @@ function searchKeyDown(e: KeyboardEvent) {
             </div>
 
             <div v-if="showSelect"
-                class="absolute left-0 bottom-full mb-2 bg-primary-300 p-1 rounded-xl w-[90dvw] sm:w-[90dvw] lg:w-[25rem] box-border"
+                class="absolute left-0 bottom-full mb-2 bg-primary-300 p-1.5 rounded-lg w-[90dvw] sm:w-[90dvw] lg:w-[25rem] box-border shadow-md shadow-black/50 transition-shadow duration-100 
+                motion-scale-in-[0.5] motion-translate-x-in-[-10%] motion-translate-y-in-[25%] motion-opacity-in-[0%] motion-duration-[0.10s]"
                 role="listbox">
                 <input ref="searchBarRef" v-model="searchQuery" @focus="searchFocused = true"
                     @blur="searchFocused = false" @keydown="searchKeyDown" type="search" placeholder="Search a model..."
-                    class="bg-primary-400 focus:bg-primary-500 w-full rounded-xl h-10 p-2 !mb-1 outline-0"
+                    class="bg-primary-400 focus:bg-primary-500 w-full rounded-lg p-3 !mb-2 outline-0"
                     :class="{ 'cursor-not-allowed': !uiStore.connectedToOllama }" aria-label="Search for a model..."
                     aria-controls="model-list" :disabled="!uiStore.connectedToOllama">
 
                 <ul role="list" class="max-h-80 overflow-y-auto">
-                    <li v-if="uiStore.connectedToOllama" role="listitem" v-for="(model, index) in queriedModelList"
-                        :key="model.name"
-                        class="flex flex-col cursor-pointer px-3 py-2 hover:bg-primary-400 rounded-xl overflow-x-hidden"
-                        :class="{ 'bg-primary-500': index === focusedItemIndex }" @click="setModel(model.name)"
-                        ref="listItemsRef" :aria-selected="index === focusedItemIndex">
-                        <span class="w-full text-md font-semibold text-ellipsis whitespace-nowrap overflow-hidden"
+                    <li v-if="uiStore.connectedToOllama && queriedModelList.length > 0" role="listitem"
+                        v-for="(model, index) in queriedModelList" :key="model.name"
+                        class="relative group flex flex-col cursor-pointer p-3 hover:bg-primary-400 transition-colors duration-75 rounded-lg overflow-x-hidden"
+                        :class="{ 'bg-primary-500 shadow-sm shadow-black/50': index === focusedItemIndex }"
+                        @click="setModel(model.name)" ref="listItemsRef" :aria-selected="index === focusedItemIndex">
+                        <span
+                            class="w-full text-md font-semibold text-ellipsis whitespace-nowrap overflow-hiddefont-bold"
                             :title="model.name">{{ model.name }}</span>
-                        <span class="text-sm text-txt-2">{{ model.details.parameter_size }}</span>
+                        <span class="text-sm text-txt-2 ">{{ model.details.parameter_size }}</span>
+                        <div class="absolute hidden items-center justify-center right-0 top-0 h-full w-16 bg-gradient-to-r from-transparent to-primary-400 group-hover:flex transition-colors duration-75"
+                            :class="{ '!flex not-group-hover:!to-primary-500': index === focusedItemIndex, 'text-txt-2 group-hover:text-txt-1': index === focusedItemIndex }">
+                            <AiOutlineArrowRight class="size-8 " />
+                        </div>
+                    </li>
+                    <li v-else-if="uiStore.connectedToOllama && queriedModelList.length === 0"
+                        class="flex w-full p-4 justify-center items-center">
+                        No results.
                     </li>
                     <li v-else class="h-24 flex px-3 py-2 roundex-xl justify-center items-center font-bold gap-2">
                         <VscDebugDisconnect />
