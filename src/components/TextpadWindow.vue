@@ -99,7 +99,7 @@ function handleScroll() {
 			<ModelSelect direction="down" />
 		</div>
 		<div class="grow size-full p-4 dot-bg rounded-lg border-[1px] border-txt-2/50 shadow-md shadow-black group
-				bg-radial from-txt-2/25 via-primary-500 via-[2px] to-primary-500 bg-[length:2rem_2rem] bg-[position:-1rem_-1rem]">
+				bg-radial from-txt-2/25 via-primary-600/75 via-[2px] to-primary-600/75 bg-[length:2rem_2rem] bg-[position:-1rem_-1rem]">
 			<div class="relative size-full">
 				<pre ref="virtualTextarea"
 					class="!text-base !font-mono absolute top-0 left-0 size-full !leading-4 outline-0 border-none whitespace-pre p-0 m-0 bg-transparent overflow-y-auto"></pre>
