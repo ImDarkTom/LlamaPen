@@ -1,5 +1,6 @@
 import { defineStore } from 'pinia';
 import { v4 as generateUUID } from 'uuid';
+import { useConfigStore } from './config';
 
 interface AllTextpadsState {
 	textpads: Textpad[];
@@ -106,6 +107,66 @@ export const useTextpadStore = defineStore('textpad', {
 
             this.openedTextpad.language = language;
             this.saveToLocalStorage();
+        },
+        async generateAutocompletion(text: string, maxWords: number = 1): Promise<string> {
+            const selectedModel = localStorage.getItem('selectedModel');
+
+            if (!selectedModel) throw new Error('No selected model found when generating autocompletions.');
+
+            const controller = new AbortController();
+            const signal = controller.signal;
+
+            const response = await fetch(useConfigStore().apiUrl('/api/generate'), {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json',
+                },
+                body: JSON.stringify({
+                    model: selectedModel,
+                    prompt: text,
+                    stream: true,
+                    template: '{{ .Prompt }}'
+                }),
+                signal: signal,
+            });
+
+            if (!response.body) {
+                throw new Error(`No response body recieved from sendMessage request, response code: ${response.status}`);
+            }
+
+            const reader = response.body.getReader();
+            const textDecoder = new TextDecoder();
+
+            let streamedResponseText = "";
+            while (true) {
+                const { done, value } = await reader.read();
+
+                if (done) {
+                    controller.abort('Finished response.');
+                    break;
+                }
+
+                const chunkText = textDecoder.decode(value).trim().split('\n');
+
+                for (const chunk of chunkText) {
+                    try {
+                        const chunkJson = JSON.parse(chunk);
+
+                        const messageChunk = chunkJson.response;
+
+                        streamedResponseText += messageChunk;
+
+                        if (streamedResponseText.split(' ').length > maxWords + 1) {
+                            controller.abort('Hit max words.');
+                            return streamedResponseText;
+                        }
+                    } catch (error: unknown) {
+                        console.error('Error parsing response chunk', error);
+                    }
+                }
+            }
+
+            return "";
         }
 	},
 });

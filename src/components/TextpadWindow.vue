@@ -13,6 +13,8 @@ const route = useRoute();
 
 const language = ref<string>('plaintext');
 
+const suggestionText = ref<string | null>(null);
+
 const mainTextarea = ref<HTMLTextAreaElement | null>(null);
 const virtualTextarea = ref<HTMLElement | null>(null);
 
@@ -55,15 +57,44 @@ async function updateVirtualTextArea() {
 
 	if (!realTextarea) return;
 
-	virtualTextarea.value!.innerHTML = hljs.highlight(realTextarea.value, {
+	let highlightedText = hljs.highlight(realTextarea.value, {
 		language: language.value,
 	}).value;
+
+	if (suggestionText.value) {
+		highlightedText += `<span class="text-txt-2/75">${suggestionText.value}</span>`;
+	} else {
+		highlightedText += `<kbd class="text-sm text-txt-2/75 border-[1px] border-txt-2/75 box-border rounded-md p-[1px] ml-2">Tab</kbd>`
+	}
+
+	virtualTextarea.value!.innerHTML = highlightedText;
 }
 
 async function handleKeyDown(e: KeyboardEvent) {
 	if (e.ctrlKey && e.key === "s") {
 		e.preventDefault();
 		save();
+	}
+
+	if (e.key === "Tab") {
+		e.preventDefault();
+
+		if (suggestionText.value) {
+			mainTextarea.value!.value += suggestionText.value;
+			suggestionText.value = "";
+			updateVirtualTextArea();
+			save();
+			return;
+		}
+
+		console.log("✨ Generating text suggestion...");
+
+		const currentValue = (e.target as HTMLInputElement).value;
+
+		suggestionText.value = await allTextpadsStore.generateAutocompletion(currentValue);
+		updateVirtualTextArea();
+	} else {
+		suggestionText.value = "";
 	}
 }
 
@@ -102,9 +133,9 @@ function handleScroll() {
 				bg-radial from-txt-2/25 via-primary-600/75 via-[2px] to-primary-600/75 bg-[length:2rem_2rem] bg-[position:-1rem_-1rem]">
 			<div class="relative size-full">
 				<pre ref="virtualTextarea"
-					class="!text-base !font-mono absolute top-0 left-0 size-full !leading-4 outline-0 border-none whitespace-pre p-0 m-0 bg-transparent overflow-y-auto"></pre>
+					class="!text-base !font-mono absolute top-0 left-0 size-full !leading-4 outline-0 border-none whitespace-pre-wrap p-0 m-0 bg-transparent overflow-y-auto"></pre>
 				<textarea ref="mainTextarea"
-					class="!text-base !font-mono absolute top-0 left-0 size-full !leading-4 outline-0 border-none whitespace-pre p-0 m-0 text-transparent bg-transparent resize-none caret-txt-1 z-2"
+					class="!text-base !font-mono absolute top-0 left-0 size-full !leading-4 outline-0 border-none whitespace-pre-wrap p-0 m-0 text-transparent bg-transparent resize-none caret-txt-1 z-2"
 					@keydown="handleKeyDown" @input="handleInput" @scroll="handleScroll" spellcheck="false"></textarea>
 			</div>
 		</div>
