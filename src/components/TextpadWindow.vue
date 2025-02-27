@@ -70,6 +70,10 @@ async function updateVirtualTextArea() {
 	virtualTextarea.value!.innerHTML = highlightedText;
 }
 
+function getUpToCurrentLine() {
+	return mainTextarea.value!.value.substring(0, mainTextarea.value!.selectionStart);
+}
+
 async function handleKeyDown(e: KeyboardEvent) {
 	if (e.ctrlKey && e.key === "s") {
 		e.preventDefault();
@@ -93,7 +97,7 @@ async function handleKeyDown(e: KeyboardEvent) {
 
 		console.log("✨ Generating text suggestion...");
 
-		const currentValue = (e.target as HTMLInputElement).value;
+		const currentValue = getUpToCurrentLine();
 
 		suggestionText.value = await allTextpadsStore.generateAutocompletion(currentValue);
 		updateVirtualTextArea();
