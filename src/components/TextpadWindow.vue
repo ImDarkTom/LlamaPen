@@ -133,7 +133,7 @@ function handleScroll() {
 				bg-radial from-txt-2/25 via-primary-600/75 via-[2px] to-primary-600/75 bg-[length:2rem_2rem] bg-[position:-1rem_-1rem]">
 			<div class="relative size-full">
 				<pre ref="virtualTextarea"
-					class="!text-base !font-mono absolute top-0 left-0 size-full !leading-4 outline-0 border-none whitespace-pre-wrap p-0 m-0 bg-transparent overflow-y-auto"></pre>
+					class="!text-base !font-mono absolute top-0 left-0 size-full !leading-4 outline-0 border-none whitespace-pre-wrap break-words p-0 m-0 bg-transparent overflow-y-auto"></pre>
 				<textarea ref="mainTextarea"
 					class="!text-base !font-mono absolute top-0 left-0 size-full !leading-4 outline-0 border-none whitespace-pre-wrap p-0 m-0 text-transparent bg-transparent resize-none caret-txt-1 z-2"
 					@keydown="handleKeyDown" @input="handleInput" @scroll="handleScroll" spellcheck="false"></textarea>
