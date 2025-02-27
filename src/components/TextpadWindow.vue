@@ -80,8 +80,12 @@ async function handleKeyDown(e: KeyboardEvent) {
 		e.preventDefault();
 
 		if (suggestionText.value) {
-			mainTextarea.value!.value += suggestionText.value;
+			mainTextarea.value?.focus();
+
+			// maybe later: https://developer.mozilla.org/en-US/docs/Web/API/InputEvent
+			document.execCommand('insertText', false, suggestionText.value);
 			suggestionText.value = "";
+
 			updateVirtualTextArea();
 			save();
 			return;
