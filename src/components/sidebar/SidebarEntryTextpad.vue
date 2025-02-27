@@ -1,9 +1,10 @@
 <script setup lang="ts">
 import { ref } from 'vue';
 import { AiOutlineClose } from 'vue-icons-plus/ai';
-import { BsChatLeft, BsFillPinAngleFill, BsPinAngle } from 'vue-icons-plus/bs';
+import { BsFillPinAngleFill, BsPinAngle } from 'vue-icons-plus/bs';
 import { RouterLink, useRouter } from 'vue-router';
 import { useTextpadStore } from '../../stores/allTextpads';
+import { PiNotepad } from 'vue-icons-plus/pi';
 
 const allTextpads = useTextpadStore();
 const router = useRouter();
@@ -115,7 +116,7 @@ function setPinned(value: boolean) {
                         @mousedown="setPinned(false)" />
                     <BsPinAngle v-else class="box-border p-0.5" @mousedown="setPinned(true)" />
                 </template>
-                <BsChatLeft v-else class="box-border p-0.5" />
+                <PiNotepad v-else class="box-border p-0.5" />
             </div>
             <input type="text"
                 class="border-none outline-none m-0 flex-1 px-2 box-border justify-center items-center cursor-pointer text-ellipsis"

@@ -3,9 +3,9 @@ import { useRouter } from 'vue-router';
 import { IpWrite } from 'vue-icons-plus/ip';
 import { AiOutlineSearch } from 'vue-icons-plus/ai';
 import { useUiStore } from '../../stores/uiStore';
-import { TiDocumentText } from 'vue-icons-plus/ti';
 import { BsChatLeft } from 'vue-icons-plus/bs';
 import { HiSwitchHorizontal } from 'vue-icons-plus/hi';
+import { PiNotepad } from 'vue-icons-plus/pi';
 
 const router = useRouter();
 const uiStore = useUiStore();
@@ -55,7 +55,7 @@ function toggleMode() {
         <div class="w-full h-12 flex flex-row hover:bg-primary-300 rounded-lg cursor-pointer transition-colors duration-100" @mousedown="toggleMode">
             <div class="h-full w-12">
                 <BsChatLeft class="size-full p-3 box-border" v-if="uiStore.mode === 'chat'" />
-                <TiDocumentText class="size-full p-3 box-border" v-else />
+                <PiNotepad class="size-full p-3 box-border" v-else />
             </div>
             <div class="grow text-lg flex items-center pl-1 select-none">
                 <template v-if="uiStore.mode === 'chat'">Chat</template>
