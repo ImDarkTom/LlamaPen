@@ -55,6 +55,7 @@ export const useTextpadStore = defineStore('textpad', {
             this.textpads.push({
                 id: uuid,
                 label: 'New Textpad',
+                labelSet: false,
 				content: '',
                 language: 'plaintext',
                 created: Date.now(),
@@ -67,6 +68,7 @@ export const useTextpadStore = defineStore('textpad', {
             const chatToEditIndex = this.findTextpadIndexById(uuid);
 
             this.textpads[chatToEditIndex].label = newName;
+            this.textpads[chatToEditIndex].labelSet = true;
             this.saveToLocalStorage();
         },
         deleteTextpad(uuid: string) {
@@ -95,6 +97,12 @@ export const useTextpadStore = defineStore('textpad', {
             }
 
             this.openedTextpad.content = text;
+
+            if (!this.openedTextpad.labelSet) {
+                const title = text.split('\n')[0] || 'New Textpad';
+                this.openedTextpad.label = title;
+            }
+
             this.saveToLocalStorage();
             console.timeEnd('textpad-write');
         },

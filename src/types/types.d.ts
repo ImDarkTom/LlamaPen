@@ -25,6 +25,7 @@ interface Textpad {
     pinned?: boolean;
 	id: string;
 	label: string;
+    labelSet?: boolean;
 	content: string;
     language: string;
 	created: number;
