@@ -1,10 +1,11 @@
 <script setup lang="ts">
-import Popup from './ui/Popup.vue';
 import Sidebar from './sidebar/Sidebar.vue';
+import NotConnectedPopup from './ui/popups/NotConnectedPopup.vue';
 </script>
 
 <template>
     <Sidebar />
     <RouterView />
-    <Popup />
+    <!-- todo: have it load all custom popups with one component -->
+    <NotConnectedPopup />
 </template>

@@ -2,10 +2,10 @@
 import { computed, nextTick, onBeforeUnmount, onMounted, ref } from 'vue';
 import { useConfigStore } from '../../../stores/config';
 import { BsChevronDown, BsChevronUp } from 'vue-icons-plus/bs';
-import errorHandler from '../../../utils/errorHandler';
 import { useUiStore } from '../../../stores/uiStore';
 import { VscDebugDisconnect } from 'vue-icons-plus/vsc';
 import { AiOutlineArrowRight } from 'vue-icons-plus/ai';
+import { emitter } from '../../../mitt';
 
 const config = useConfigStore();
 const uiStore = useUiStore();
@@ -36,7 +36,8 @@ onMounted(() => {
             }
         })
         .catch((error) => {
-            errorHandler.handleError(error, `Unable to connect to Ollama at '${config.ollamaUrl}'. Ensure Ollama is setup and running. For a guide on how to configure Ollama to work with this app press the '?' icon on the bottom left of the sidebar.'`, true);
+            console.log(error);
+            emitter.emit('popup:ollamanotconnected');
         });
 
     document.addEventListener('keydown', handleKeyboardShortcuts)

@@ -6,8 +6,9 @@ export enum PopupButtons {
 }
 
 interface Events extends Record<EventType, unknown> {
-    scrollToBottom: undefined,
+    scrollToBottom: void,
     showErrorPopup: string
+    'popup:ollamanotconnected': void,
 };
 
 export const emitter = mitt<Events>();
