@@ -5,7 +5,6 @@ import { BsChevronDown, BsChevronUp } from 'vue-icons-plus/bs';
 import { useUiStore } from '../../../stores/uiStore';
 import { VscDebugDisconnect } from 'vue-icons-plus/vsc';
 import { AiOutlineArrowRight } from 'vue-icons-plus/ai';
-import { emitter } from '../../../mitt';
 
 const config = useConfigStore();
 const uiStore = useUiStore();
@@ -37,7 +36,6 @@ onMounted(() => {
         })
         .catch((error) => {
             console.log(error);
-            emitter.emit('popup:ollamanotconnected');
         });
 
     document.addEventListener('keydown', handleKeyboardShortcuts)
@@ -137,7 +135,7 @@ const props = defineProps<{
                     <VscDebugDisconnect />
                     Disconnected
                 </p>
-                
+
                 <template v-if="props.direction === 'up'">
                     <BsChevronUp v-if="showSelect" class="w-4 h-full" />
                     <BsChevronDown v-else class="w-4 h-full" />
@@ -148,14 +146,12 @@ const props = defineProps<{
                 </template>
             </div>
 
-            <div v-if="showSelect"
-                class="absolute left-0 bg-primary-300 p-1.5 rounded-lg w-[90dvw] sm:w-[90dvw] lg:w-[25rem] box-border z-10 shadow-md shadow-black/50 transition-shadow duration-100 
+            <div v-if="showSelect" class="absolute left-0 bg-primary-300 p-1.5 rounded-lg w-[90dvw] sm:w-[90dvw] lg:w-[25rem] box-border z-10 shadow-md shadow-black/50 transition-shadow duration-100 
                 motion-scale-in-[0.5] motion-translate-x-in-[-10%] motion-opacity-in-[0%] motion-duration-[0.10s]"
                 :class="{
-                    'bottom-full mb-2 motion-translate-y-in-[25%]': props.direction === 'up' , 
+                    'bottom-full mb-2 motion-translate-y-in-[25%]': props.direction === 'up',
                     'top-full mt-2 motion-translate-y-in-[-25%]': props.direction === 'down'
-                }"
-                role="listbox">
+                }" role="listbox">
                 <input ref="searchBarRef" v-model="searchQuery" @focus="searchFocused = true"
                     @blur="searchFocused = false" @keydown="searchKeyDown" type="search" placeholder="Search a model..."
                     class="bg-primary-400 focus:bg-primary-500 w-full rounded-lg p-3 !mb-2 outline-0"

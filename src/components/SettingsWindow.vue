@@ -1,5 +1,5 @@
 <script setup lang="ts">
-import CustomUrlButton from './sidebar/footer/CustomUrlButton.vue';
+import CustomUrlButton from './settings/CustomUrlButton.vue';
 
 </script>
 

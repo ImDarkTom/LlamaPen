@@ -2,6 +2,7 @@
 import { onMounted, ref } from 'vue';
 import { useConfigStore } from '../../../stores/config';
 import { useUiStore } from '../../../stores/uiStore';
+import { emitter } from '../../../mitt';
 
 const config = useConfigStore();
 const uiStore = useUiStore();
@@ -27,14 +28,16 @@ onMounted(() => {
         .catch((error) => {
             statusMessageText.value = error;
             uiStore.setConnectedToOllama(false);
-        })
+            emitter.emit('popup:ollamanotconnected');
+        });
 });
 
 </script>
 
-<template>  
+<template>
     <div class="overflow-hidden overflow-ellipsis py-2">
-        <span class="text-amber-400" :class="{ 'text-emerald-400': uiStore.connectedToOllama, 'text-red-400': !uiStore.connectedToOllama }">
+        <span class="text-amber-400"
+            :class="{ 'text-emerald-400': uiStore.connectedToOllama, 'text-red-400': !uiStore.connectedToOllama }">
             Ollama status:
             <span ref="statusMessageElem" :title="statusMessageText">{{ statusMessageText }}</span>
         </span>
