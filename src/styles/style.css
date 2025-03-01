@@ -65,3 +65,28 @@
     flex-direction: row;
     overflow: hidden;
 }
+
+/* Transitions */
+.page-switch-enter-active,
+.page-switch-leave-active {
+    transition: opacity 0.125s ease, transform 0.125s ease, filter 0.125s ease;
+    z-index: -100;
+}
+
+.page-switch-enter-from,
+.page-switch-leave-to {
+    transform: translateY(50%) scale(0.75);
+    opacity: 0;
+    filter: blur(0.25rem);
+}
+
+
+.slide-left-enter-active,
+.slide-left-leave-active {
+    transition: transform 0.125s ease;
+}
+
+.slide-left-enter-from,
+.slide-left-leave-to {
+    transform: translateX(-100%);
+}
