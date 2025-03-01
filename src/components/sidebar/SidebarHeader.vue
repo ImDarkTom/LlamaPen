@@ -43,16 +43,19 @@ function toggleMode() {
 
 <template>
     <div class="flex flex-col">
-        <div class="flex flex-row p-0 box-border">
-            <span class="flex-1 text-2xl font-bold select-none">LlamaPen</span>
-            <AiOutlineSearch aria-label="Search"
-                class="h-6 w-auto m-auto cursor-pointer ml-2 p-2 box-content rounded-lg hover:bg-primary-300 hover:shadow-xs shadow-black/50"
-                @click="search" />
-            <IpWrite aria-label="New Chat"
-                class="h-6 w-auto m-auto cursor-pointer ml-2 p-2 box-content rounded-lg hover:bg-primary-300 hover:shadow-xs shadow-black/50"
-                @click="newChat()" />
+        <div class="flex flex-row p-0 box-border justify-between">
+            <RouterLink to="/" class="text-2xl font-bold select-none text-txt-1 hover:text-txt-2">LlamaPen</RouterLink>
+            <div class="flex flex-row">
+                <AiOutlineSearch aria-label="Search"
+                    class="h-6 w-auto m-auto cursor-pointer ml-2 p-2 box-content rounded-lg hover:bg-primary-300 hover:shadow-xs shadow-black/50"
+                    @click="search" />
+                <IpWrite aria-label="New Chat"
+                    class="h-6 w-auto m-auto cursor-pointer ml-2 p-2 box-content rounded-lg hover:bg-primary-300 hover:shadow-xs shadow-black/50"
+                    @click="newChat()" />
+            </div>
         </div>
-        <div class="w-full h-12 flex flex-row hover:bg-primary-300 rounded-lg cursor-pointer transition-colors duration-100" @mousedown="toggleMode">
+        <div class="w-full h-12 flex flex-row hover:bg-primary-300 rounded-lg cursor-pointer transition-colors duration-100"
+            @mousedown="toggleMode">
             <div class="h-full w-12">
                 <BsChatLeft class="size-full p-3 box-border" v-if="uiStore.mode === 'chat'" />
                 <PiNotepad class="size-full p-3 box-border" v-else />

@@ -22,5 +22,6 @@ function customUrlDialog() {
 </script>
 
 <template>
-    <input type="button" value="🔗" @click="customUrlDialog">
+    <input type="button" value="Set custom Ollama URL" @click="customUrlDialog"
+        class="bg-primary-300 p-4 w-min rounded-lg cursor-pointer hover:ring hover:shadow-sm shadow-black/50 !text-txt-1">
 </template>

@@ -1,13 +1,13 @@
 <script setup lang="ts">
-import OllamaUrl from './settings/OllamaUrl.vue';
+import CustomUrlButton from './sidebar/footer/CustomUrlButton.vue';
 
 </script>
 
 <template>
     <div class="w-full h-full flex flex-col py-4 px-12 box-border">
-        <h1>Settings</h1>
-        <h2>Ollama</h2>
-        <h3>Ollama URL</h3>
-        <OllamaUrl />
+        <h1 class="text-4xl font-extrabold">Settings</h1>
+        <h2 class="text-2xl font-bold mb-2">Ollama</h2>
+        <h3 class="text-xl font-semibold">Ollama URL</h3>
+        <CustomUrlButton />
     </div>
 </template>
