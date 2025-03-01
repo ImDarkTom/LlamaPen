@@ -58,6 +58,10 @@
     }
 }
 
+:root {
+    --transition-duration: 0.5s;
+}
+
 #app {
     width: 100svw;
     height: 100svh;
@@ -69,7 +73,7 @@
 /* Transitions */
 .page-switch-enter-active,
 .page-switch-leave-active {
-    transition: opacity 0.125s ease, transform 0.125s ease, filter 0.125s ease;
+    transition: opacity var(--transition-duration) ease, transform var(--transition-duration) ease, filter var(--transition-duration) ease;
     z-index: -100;
 }
 
@@ -83,7 +87,7 @@
 
 .slide-left-enter-active,
 .slide-left-leave-active {
-    transition: transform 0.125s ease;
+    transition: transform var(--transition-duration) ease;
 }
 
 .slide-left-enter-from,

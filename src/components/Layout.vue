@@ -5,11 +5,7 @@ import NotConnectedPopup from './ui/popups/NotConnectedPopup.vue';
 
 <template>
     <Sidebar />
-    <RouterView v-slot="{ Component }">
-        <Transition name="page-switch" mode="out-in">
-            <component :is="Component" />
-        </Transition>
-    </RouterView>
+    <RouterView />
     <!-- todo: have it load all custom popups with one component -->
     <NotConnectedPopup />
 </template>
