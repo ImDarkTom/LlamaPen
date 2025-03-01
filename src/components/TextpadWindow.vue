@@ -1,10 +1,10 @@
 <script setup lang="ts">
 import { onMounted, ref, watch } from 'vue';
 import { useTextpadStore } from '../stores/allTextpads';
-import ModelSelect from './chat/messageInput/ModelSelect.vue';
 import { useRoute } from 'vue-router';
 import { useUiStore } from '../stores/uiStore';
 import hljs from 'highlight.js';
+import TextpadHeader from './textpad/TextpadHeader.vue';
 
 const allTextpadsStore = useTextpadStore();
 const uiStore = useUiStore();
@@ -110,34 +110,28 @@ function handleInput() {
 	updateVirtualTextArea()
 }
 
-function handleChangeLanguage(e: Event) {
-	const newValue = (e.target as HTMLSelectElement).value;
-
-	allTextpadsStore.setLanguage(newValue);
-
-	updateVirtualTextArea();
-}
-
 function handleScroll() {
 	if (mainTextarea.value && virtualTextarea.value) {
 		virtualTextarea.value.scrollTop = mainTextarea.value.scrollTop;
 		virtualTextarea.value.scrollLeft = mainTextarea.value.scrollLeft;
 	}
 }
+
+function updateLanguage(newValue: string) {
+	language.value = newValue;
+
+	allTextpadsStore.setLanguage(newValue);
+
+	updateVirtualTextArea();
+	save();
+}
 </script>
 
 <template>
 	<div class="w-full h-full flex flex-col p-2 box-border">
-		<div class="pl-14 h-14 flex flex-row gap-1 bg-primary-400 mb-2 p-1 rounded-lg box-border">
-			<select @change="handleChangeLanguage" v-model="language"
-				class="h-full hover:bg-primary-500 p-2 rounded-lg text-txt-2 focus:text-txt-1 cursor-pointer">
-				<option value="plaintext">Plaintext</option>
-				<option value="html">HTML</option>
-				<option value="js">JavaScript</option>
-			</select>
-			<ModelSelect direction="down" />
-		</div>
-		<div class="grow size-full p-4 dot-bg rounded-lg border-[1px] border-txt-2/50 shadow-md shadow-black group
+		<TextpadHeader :updateVirtualTextArea="updateVirtualTextArea" @update:language="updateLanguage" />
+		<div
+			class="grow size-full p-4 dot-bg rounded-lg border-[1px] border-txt-2/50 shadow-md shadow-black group
 				bg-radial from-txt-2/25 via-primary-600/75 via-[2px] to-primary-600/75 bg-[length:2rem_2rem] bg-[position:-1rem_-1rem]">
 			<div class="relative size-full">
 				<pre ref="virtualTextarea"
