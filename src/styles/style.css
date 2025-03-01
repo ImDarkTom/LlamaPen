@@ -59,8 +59,8 @@
 }
 
 #app {
-    width: 100vw;
-    height: 100vh;
+    width: 100svw;
+    height: 100svh;
     display: flex;
     flex-direction: row;
     overflow: hidden;
