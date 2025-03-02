@@ -1,7 +1,7 @@
 <script setup lang="ts">
 import { ref, watch } from 'vue';
-import { emitter } from '../../../mitt';
-import { useUiStore } from '../../../stores/uiStore';
+import { emitter } from '@/mitt';
+import { useUiStore } from '@/stores/uiStore';
 
 const uiStore = useUiStore();
 

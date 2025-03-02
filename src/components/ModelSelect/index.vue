@@ -1,8 +1,8 @@
 <script setup lang="ts">
 import { computed, nextTick, onBeforeUnmount, onMounted, ref } from 'vue';
-import { useConfigStore } from '../../../stores/config';
+import { useConfigStore } from '../../stores/config';
 import { BsChevronDown, BsChevronUp } from 'vue-icons-plus/bs';
-import { useUiStore } from '../../../stores/uiStore';
+import { useUiStore } from '../../stores/uiStore';
 import { VscDebugDisconnect } from 'vue-icons-plus/vsc';
 import { AiOutlineArrowRight } from 'vue-icons-plus/ai';
 

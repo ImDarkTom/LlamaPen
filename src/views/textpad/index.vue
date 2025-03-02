@@ -1,10 +1,10 @@
 <script setup lang="ts">
 import { onMounted, ref, watch } from 'vue';
-import { useTextpadStore } from '../stores/allTextpads';
+import { useTextpadStore } from '../../stores/allTextpads';
 import { useRoute } from 'vue-router';
-import { useUiStore } from '../stores/uiStore';
+import { useUiStore } from '../../stores/uiStore';
 import hljs from 'highlight.js';
-import TextpadHeader from './textpad/TextpadHeader.vue';
+import TextpadHeader from './components/TextpadHeader.vue';
 
 const allTextpadsStore = useTextpadStore();
 const uiStore = useUiStore();

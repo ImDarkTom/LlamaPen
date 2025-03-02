@@ -1,9 +1,9 @@
 <script setup lang="ts">
 import { BiSolidErrorCircle } from 'vue-icons-plus/bi';
-import Popup from '../Popup.vue';
+import Popup from './Popup.vue';
 import { onMounted, onUnmounted, ref } from 'vue';
-import { emitter } from '../../../mitt';
-import { useConfigStore } from '../../../stores/config';
+import { emitter } from '../../mitt';
+import { useConfigStore } from '../../stores/config';
 import { useRouter } from 'vue-router';
 
 const config = useConfigStore();

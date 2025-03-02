@@ -1,6 +1,6 @@
 <script setup lang="ts">
-import Sidebar from './sidebar/Sidebar.vue';
-import NotConnectedPopup from './ui/popups/NotConnectedPopup.vue';
+import Sidebar from '@/components/Sidebar/index.vue';
+import NotConnectedPopup from '@/components/Popups/NotConnectedPopup.vue';
 </script>
 
 <template>

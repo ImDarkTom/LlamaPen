@@ -11,8 +11,8 @@ import { markedHighlight } from 'marked-highlight';
 import "highlight.js/styles/atom-one-dark.min.css";
 import hljs from 'highlight.js';
 import MessageEditor from './MessageEditor.vue';
-import { useAllChatsStore } from '../../stores/allChats';
-import { useConfigStore } from '../../stores/config';
+import { useAllChatsStore } from '@/stores/allChats';
+import { useConfigStore } from '@/stores/config';
 
 const allChats = useAllChatsStore();
 const config = useConfigStore();

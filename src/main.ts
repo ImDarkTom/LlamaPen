@@ -3,12 +3,14 @@ import "./styles/style.css";
 import App from "./App.vue";
 import { createPinia } from "pinia";
 import { createRouter, createWebHistory } from "vue-router";
-import ChatWindow from "./components/ChatWindow.vue";
-import SettingsWindow from "./components/SettingsWindow.vue";
-import Layout from "./components/Layout.vue";
+
+import ChatWindow from "@/views/chat/index.vue";
+import SettingsWindow from "@/views/settings/index.vue";
+import GuideWindow from "@/views/guide/index.vue";
+import TextpadWindow from '@/views/textpad/index.vue';
+
+import Layout from "./components/Layout/index.vue";
 import mousedownOutside from "./directives/mousedownOutside";
-import GuideWindow from "./components/GuideWindow.vue";
-import TextpadWindow from './components/TextpadWindow.vue';
 
 const routes = [
     {

@@ -1,9 +1,9 @@
 <script setup lang="ts">
 import { computed, ref } from 'vue';
-import { useAllChatsStore } from '../../../stores/allChats';
+import { useAllChatsStore } from '@/stores/allChats';
 import { useRoute } from 'vue-router';
-import ModelSelect from './ModelSelect.vue';
-import { useConfigStore } from '../../../stores/config';
+import ModelSelect from '@/components/ModelSelect/index.vue';
+import { useConfigStore } from '@/stores/config';
 import ActionButton from './ActionButton.vue';
 import ScrollToBottomButton from './ScrollToBottomButton.vue';
 

@@ -1,6 +1,5 @@
 <script setup lang="ts">
-import ModelSelect from '../chat/messageInput/ModelSelect.vue';
-
+import ModelSelect from '@/components/ModelSelect/index.vue';
 
 function handleChangeLanguage(e: Event) {
     const newValue = (e.target as HTMLSelectElement).value;
