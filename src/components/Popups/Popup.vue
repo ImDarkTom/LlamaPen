@@ -27,12 +27,16 @@ onBeforeUnmount(() => {
 
 function handleKeyUp(e: KeyboardEvent) {
     if (e.key === 'Escape') {
-        close();
+        emit('close');
     }
 }
 
 const props = defineProps<{
     showing: boolean,
+}>();
+
+const emit = defineEmits<{
+    close: []
 }>();
 </script>
 

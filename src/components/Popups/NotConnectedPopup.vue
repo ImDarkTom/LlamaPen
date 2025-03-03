@@ -51,7 +51,7 @@ function hide() {
 
 
 <template>
-	<Popup :showing="showing">
+	<Popup :showing="showing" @close="hide">
 		<template #title>
 			<BiSolidErrorCircle class="h-full w-auto" />
 			Ollama not connected
