@@ -9,7 +9,7 @@ import SettingsWindow from "@/views/settings/index.vue";
 import GuideWindow from "@/views/guide/index.vue";
 import TextpadWindow from '@/views/textpad/index.vue';
 
-import Layout from "./components/Layout/index.vue";
+import Layout from "./components/Layout/Layout.vue";
 import mousedownOutside from "./directives/mousedownOutside";
 
 const routes = [

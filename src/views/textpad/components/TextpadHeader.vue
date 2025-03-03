@@ -1,5 +1,5 @@
 <script setup lang="ts">
-import ModelSelect from '@/components/ModelSelect/index.vue';
+import ModelSelect from '@/components/ModelSelect/ModelSelect.vue';
 
 function handleChangeLanguage(e: Event) {
     const newValue = (e.target as HTMLSelectElement).value;

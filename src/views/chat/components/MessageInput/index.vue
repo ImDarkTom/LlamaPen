@@ -2,7 +2,7 @@
 import { computed, ref } from 'vue';
 import { useAllChatsStore } from '@/stores/allChats';
 import { useRoute } from 'vue-router';
-import ModelSelect from '@/components/ModelSelect/index.vue';
+import ModelSelect from '@/components/ModelSelect/ModelSelect.vue';
 import { useConfigStore } from '@/stores/config';
 import ActionButton from './ActionButton.vue';
 import ScrollToBottomButton from './ScrollToBottomButton.vue';

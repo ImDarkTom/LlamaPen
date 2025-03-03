@@ -1,5 +1,5 @@
 <script setup lang="ts">
-import Sidebar from '@/components/Sidebar/index.vue';
+import Sidebar from '@/components/Sidebar/Sidebar.vue';
 import NotConnectedPopup from '@/components/Popups/NotConnectedPopup.vue';
 </script>
 
