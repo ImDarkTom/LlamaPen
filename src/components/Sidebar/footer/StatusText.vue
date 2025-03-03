@@ -9,6 +9,7 @@ const uiStore = useUiStore();
 
 // UI State
 const statusMessageText = ref("Waiting for Ollama...");
+const waitingForResponse = ref<boolean>(true);
 
 // Refs
 const statusMessageElem = ref<HTMLElement | null>(null);
@@ -29,17 +30,25 @@ onMounted(() => {
             statusMessageText.value = error;
             uiStore.setConnectedToOllama(false);
             emitter.emit('popup:ollamanotconnected');
+        })
+        .finally(() => {
+            waitingForResponse.value = false;
         });
+        
 });
 
 </script>
 
 <template>
-    <div class="overflow-hidden overflow-ellipsis py-2">
-        <span class="text-amber-400"
-            :class="{ 'text-emerald-400': uiStore.connectedToOllama, 'text-red-400': !uiStore.connectedToOllama }">
+    <div class="overflow-hidden overflow-ellipsis py-2 font-semibold">
+        <span
+            :class="{ 
+                'text-amber-400': waitingForResponse,
+                'text-emerald-400': uiStore.connectedToOllama && !waitingForResponse, 
+                'text-red-400': !uiStore.connectedToOllama && !waitingForResponse
+                }">
             Ollama status:
-            <span ref="statusMessageElem" :title="statusMessageText">{{ statusMessageText }}</span>
+            <span class="font-normal" ref="statusMessageElem" :title="statusMessageText">{{ statusMessageText }}</span>
         </span>
     </div>
 </template>
