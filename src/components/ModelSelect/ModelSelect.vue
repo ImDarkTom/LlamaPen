@@ -4,7 +4,7 @@ import { useConfigStore } from '../../stores/config';
 import { BsChevronDown, BsChevronUp } from 'vue-icons-plus/bs';
 import { useUiStore } from '../../stores/uiStore';
 import { VscDebugDisconnect } from 'vue-icons-plus/vsc';
-import { AiOutlineArrowRight } from 'vue-icons-plus/ai';
+import ModelSelectItem from './ModelSelectItem.vue';
 
 const config = useConfigStore();
 const uiStore = useUiStore();
@@ -15,7 +15,7 @@ const selectedModel = ref<string | null>(localStorage.getItem('selectedModel'));
 
 // UI State
 const showSelect = ref<boolean>(false);
-const searchQuery = defineModel<string>('');
+const searchQuery = ref<string>('');
 const searchFocused = ref<boolean>(false);
 const focusedItemIndex = ref<number>(0);
 
@@ -159,20 +159,15 @@ const props = defineProps<{
                     aria-controls="model-list" :disabled="!uiStore.connectedToOllama">
 
                 <ul role="list" class="max-h-80 overflow-y-auto">
-                    <li v-if="uiStore.connectedToOllama && queriedModelList.length > 0" role="listitem"
-                        v-for="(model, index) in queriedModelList" :key="model.name"
-                        class="relative group flex flex-col cursor-pointer p-3 hover:bg-primary-400 transition-colors duration-75 rounded-lg overflow-x-hidden"
-                        :class="{ 'bg-primary-500 shadow-sm shadow-black/50': index === focusedItemIndex }"
-                        @click="setModel(model.name)" ref="listItemsRef" :aria-selected="index === focusedItemIndex">
-                        <span
-                            class="w-full text-md font-semibold text-ellipsis whitespace-nowrap overflow-hiddefont-bold"
-                            :title="model.name">{{ model.name }}</span>
-                        <span class="text-sm text-txt-2 ">{{ model.details.parameter_size }}</span>
-                        <div class="absolute hidden items-center justify-center right-0 top-0 h-full w-16 bg-gradient-to-r from-transparent to-primary-400 group-hover:flex transition-colors duration-75"
-                            :class="{ '!flex not-group-hover:!to-primary-500': index === focusedItemIndex, 'text-txt-2 group-hover:text-txt-1': index === focusedItemIndex }">
-                            <AiOutlineArrowRight class="size-8 " />
-                        </div>
-                    </li>
+                    <ModelSelectItem v-if="uiStore.connectedToOllama && queriedModelList.length > 0"
+                        v-for="(model, index) in queriedModelList" 
+                        :key="model.name" 
+                        :model="model"
+                        :index="index"
+                        :focusedItemIndex="focusedItemIndex"
+                        :queriedModelList="queriedModelList"
+                        @setModel="setModel"
+                         />
                     <li v-else-if="uiStore.connectedToOllama && queriedModelList.length === 0"
                         class="flex w-full p-4 justify-center items-center">
                         No results.
