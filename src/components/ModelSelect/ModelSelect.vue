@@ -146,7 +146,7 @@ const props = defineProps<{
                 </template>
             </div>
 
-            <div v-if="showSelect" class="absolute left-0 bg-primary-300 p-1.5 rounded-lg w-[90dvw] sm:w-[90dvw] lg:w-[25rem] box-border z-10 shadow-md shadow-black/50 transition-shadow duration-100 
+            <div v-if="showSelect" class="absolute left-0 bg-primary-300 p-1.5 rounded-lg w-[90dvw] sm:w-[90dvw] lg:w-[25rem] box-border z-20 shadow-md shadow-black/50 transition-shadow duration-100 
                 motion-scale-in-[0.5] motion-translate-x-in-[-10%] motion-opacity-in-[0%] motion-duration-[0.10s]"
                 :class="{
                     'bottom-full mb-2 motion-translate-y-in-[25%]': props.direction === 'up',

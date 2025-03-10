@@ -87,20 +87,21 @@ function finishEdit(newText: string) {
 </script>
 
 <template>
-    <div class="text-txt-1 box-border p-4 m-2 flex flex-col" :class="{
-        'ml-auto rounded-xl bg-primary-300 max-w-[70%] shadow-sm shadow-black': props.message.role === 'user' && !editing,
-        'w-full box-border !p-2 !m-0': props.message.role === 'assistant' || editing
-    }">
-        <MessageEditor v-if="editing" ref="messageEditorRef" :messageText="message.content"
-            @onCancelEdit="cancelEditing" @onFinishEditing="finishEdit" />
+    <div class="group m-2 flex flex-col">
+        <div class="text-txt-1 box-border p-4 flex flex-col" :class="{
+            'ml-auto rounded-2xl bg-primary-300 max-w-[70%] shadow-sm shadow-black': props.message.role === 'user' && !editing,
+            'w-full box-border !p-2 !m-0': props.message.role === 'assistant' || editing
+        }">
+            <MessageEditor v-if="editing" ref="messageEditorRef" :messageText="message.content"
+                @onCancelEdit="cancelEditing" @onFinishEditing="finishEdit" />
 
-        <template v-else>
-            <span v-if="message.role !== 'user'" v-html="marked.parse(message.content)"
-                class="max-w-none prose prose-invert"></span>
-            <div v-else class="max-w-none prose prose-invert">{{ message.content }}</div>
-
-            <MessageOptions :message="message" @editMessage="editMessage" />
-        </template>
+            <div class="relative" v-else>
+                <span v-if="message.role !== 'user'" v-html="marked.parse(message.content)"
+                    class="max-w-none prose prose-invert"></span>
+                <div v-else class="max-w-none prose prose-invert">{{ message.content }}</div>
+            </div>
+        </div>
+        <MessageOptions v-if="!editing" class="opacity-100 group-hover:opacity-100" :message="message" @editMessage="editMessage" />
     </div>
 </template>
 

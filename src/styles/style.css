@@ -58,6 +58,15 @@
     }
 }
 
+/* Z-Index Guidelines
+z-2: Virtual Textarea Overlay
+z-20: Model Selects
+z-30: Sidebar
+z-40: Tooltips
+z-99 - z-100: Popup
+
+*/
+
 :root {
     --transition-duration: 0.5s;
 }
