@@ -31,7 +31,7 @@ onMounted(() => {
 </script>
 
 <template>
-    <div class="w-full h-full flex flex-col py-4 px-36 box-border">
+    <div class="w-full h-full flex flex-col items-start py-4 px-2 sm:px-2 md:px-36 box-border">
         <h1 class="options-title">Settings</h1>
         <h2 class="options-category">Ollama</h2>
         <h3 class="options-option">Ollama URL</h3>
@@ -43,11 +43,13 @@ onMounted(() => {
             <input
                 class="accent-primary-200 w-full"
                 @change="updateTransitionSpeed" v-model="transitionSpeed" type="range" min="0" max = "1" step="0.025" />
-            <span>
-                <span class="bg-primary-300 w-fit p-2 rounded-lg text-txt-2 cursor-default">{{ transitionSpeedText }}</span>
+            <span class="py-2">
+                <span class="bg-primary-300 w-fit p-2 rounded-lg text-txt-2 cursor-default box-border">{{ transitionSpeedText }}</span>
                 <span class="pl-2 text-txt-2">{{ transitionSpeed == 0.125 ? '(Default)' : '' }}</span>
             </span>
         </div>
+        <h3 class="options-option"><i>Mobile</i>: Hide sidebar on navigate</h3>
+        <input class="size-6" type="checkbox" v-model="config.closeSidebarOnNavMobile" @change="config.saveCloseSidebarOnNavMobile" />
     </div>
 </template>
 
@@ -55,7 +57,7 @@ onMounted(() => {
 @reference "@/styles/style.css";
 
 .options-title {
-    @apply text-4xl font-extrabold;
+    @apply text-4xl font-extrabold mb-0;
 }
 
 .options-category {
@@ -63,6 +65,6 @@ onMounted(() => {
 }
 
 .options-option {
-    @apply text-xl pt-4;
+    @apply text-xl font-medium pt-4;
 }
 </style>

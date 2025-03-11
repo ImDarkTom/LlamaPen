@@ -4,6 +4,7 @@ interface Config {
     ollamaUrl: string,
     showSidebar: boolean,
     transitionSpeed: number,
+    closeSidebarOnNavMobile: boolean,
 };
 
 export const useConfigStore = defineStore('config', {
@@ -11,6 +12,7 @@ export const useConfigStore = defineStore('config', {
         ollamaUrl: localStorage.getItem('customUrl') || 'http://localhost:11434',
         showSidebar: localStorage.getItem('showSidebar') === 'true' || true,
         transitionSpeed: Number.parseFloat(localStorage.getItem('transitionSpeed') ?? "0.125"),
+        closeSidebarOnNavMobile: localStorage.getItem('closeSidebarOnNavMobile') === 'true' || true,
     }),
     getters: {
         apiUrl: (state) => (path: string) => `${state.ollamaUrl}${path}`,
@@ -45,6 +47,13 @@ export const useConfigStore = defineStore('config', {
                 document.documentElement.style.setProperty('--transition-duration', `${this.transitionSpeed}s`);
                 document.body.removeAttribute('data-reduce-motion');
             }
+        },
+        setCloseSidebarOnNavMobile(state: boolean) {
+            this.closeSidebarOnNavMobile = state;
+            localStorage.setItem('closeSidebarOnNavMobile', state.toString());
+        },
+        saveCloseSidebarOnNavMobile() {
+            localStorage.setItem('closeSidebarOnNavMobile', this.closeSidebarOnNavMobile.toString());
         }
     }
 })

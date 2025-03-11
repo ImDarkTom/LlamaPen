@@ -3,10 +3,12 @@ import { ref } from 'vue';
 import { AiOutlineClose } from 'vue-icons-plus/ai';
 import { BsChatLeft, BsFillPinAngleFill, BsPinAngle } from 'vue-icons-plus/bs';
 import { useAllChatsStore } from '../../stores/allChats';
-import { RouterLink, useRouter } from 'vue-router';
+import { useRouter } from 'vue-router';
+import SidebarRouterLink from './SidebarRouterLink.vue';
 
 const allChats = useAllChatsStore();
 const router = useRouter();
+
 const editing = ref<boolean>(false);
 
 const props = defineProps<{
@@ -67,11 +69,6 @@ function editKeyPressed(e: KeyboardEvent) {
     }
 }
 
-function navigateToChat(e: KeyboardEvent) {
-    if (e.metaKey || e.ctrlKey) return;
-    router.push(`/chat/${props.chat.id}`);
-}
-
 function getDateTimeString(timeInt: unknown) {
     if (typeof timeInt === 'number') {
         return new Date(timeInt).toLocaleString(undefined, {
@@ -104,7 +101,7 @@ function setPinned(value: boolean) {
 </script>
 
 <template>
-    <RouterLink :to="`/chat/${props.chat.id}`" @mousedown.prevent="navigateToChat" @dblclick="editChatName"
+    <SidebarRouterLink :to="`/chat/${props.chat.id}`" @dblclick="editChatName"
         class="my-2 flex flex-col" :title="hoverTitle" role="listitem">
         <div class="group w-full h-full flex flex-row p-2 relative rounded-lg hover:bg-primary-300 transition-all duration-150"
             :class="{ '!bg-primary-200 shadow-sm shadow-black/50': props.chat.id === allChats.openedId }">
@@ -125,5 +122,5 @@ function setPinned(value: boolean) {
                 class="hidden shrink-0 group-hover:block box-content pr-0 hover:text-red-400 transition-colors duration-150 ease-in-out"
                 @click="deleteChat" />
         </div>
-    </RouterLink>
+    </SidebarRouterLink>
 </template>

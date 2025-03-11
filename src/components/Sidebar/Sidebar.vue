@@ -7,6 +7,7 @@ import { useConfigStore } from '../../stores/config';
 import { useUiStore } from '../../stores/uiStore';
 import ChatList from './ChatList.vue';
 import TextpadList from './TextpadList.vue';
+import { emitter } from '@/mitt';
 
 const uiStore = useUiStore();
 
@@ -26,6 +27,11 @@ const toggleSidebar = () => {
     localStorage.setItem('showSidebar', String(showSidebar.value))
 }
 
+function setSidebar(value: boolean) {
+    showSidebar.value = value;
+    localStorage.setItem('showSidebar', String(value));
+}
+
 function shortcutListener(e: KeyboardEvent) {
     if (e.key === "S" && e.ctrlKey && e.shiftKey) {
         e.preventDefault();
@@ -34,10 +40,12 @@ function shortcutListener(e: KeyboardEvent) {
 }
 
 onMounted(() => {
+    emitter.on('hideSidebar', () => setSidebar(false));
     document.addEventListener('keydown', shortcutListener);
 });
 
 onUnmounted(() => {
+    emitter.off('hideSidebar', () => setSidebar(false));
     document.removeEventListener('keydown', shortcutListener);
 });
 </script>
