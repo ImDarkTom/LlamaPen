@@ -48,10 +48,12 @@ onUnmounted(() => {
             :class="{ 'hidden': !showSidebar }">
             <SidebarHeader />
 
-            <!-- Chats List -->
-            <ChatList v-if="uiStore.mode === 'chat'" />
-            <!-- Textpads List -->
-            <TextpadList v-else />
+            <Transition name="slide-left" mode="out-in">
+                <!-- Chats List -->
+                <ChatList v-if="uiStore.mode === 'chat'" />
+                <!-- Textpads List -->
+                <TextpadList v-else />
+            </Transition>
 
             <SidebarOptions />
         </div>

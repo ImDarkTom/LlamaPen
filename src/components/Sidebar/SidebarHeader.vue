@@ -54,7 +54,7 @@ function toggleMode() {
                     @click="newChat()" />
             </div>
         </div>
-        <div class="w-full h-12 flex flex-row hover:bg-primary-300 rounded-lg cursor-pointer transition-colors duration-100"
+        <div class="w-full h-12 flex flex-row hover:bg-primary-300 rounded-lg cursor-pointer transition-all duration-75 hover:scale-[98%] active:scale-95"
             @mousedown="toggleMode">
             <div class="h-full w-12">
                 <BsChatLeft class="size-full p-3 box-border" v-if="uiStore.mode === 'chat'" />
