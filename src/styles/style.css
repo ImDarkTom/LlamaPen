@@ -87,6 +87,12 @@ z-99 - z-100: Popup
     }
 }
 
+body[data-reduce-motion] {
+    * {
+        transition: none !important;
+    }
+}
+
 .page-switch-enter-active,
 .page-switch-leave-active {
     transition: opacity var(--transition-duration) ease, transform var(--transition-duration) ease, filter var(--transition-duration) ease;
