@@ -44,19 +44,22 @@ onUnmounted(() => {
 
 <template>
     <div class="relative">
-        <div class="flex flex-col h-full w-[calc(100vw-3rem)] sm:w-[calc(100vw-3rem)] md:w-[18vw] md:min-w-64 bg-primary-400 box-border p-2 shadow-lg shadow-black"
-            :class="{ 'hidden': !showSidebar }">
-            <SidebarHeader />
+        <Transition name="slide-left" mode="default">
+            <div v-if="showSidebar" class="flex flex-col h-full w-[calc(100vw-3rem)] sm:w-[calc(100vw-3rem)] md:w-[18vw] md:min-w-64 bg-primary-400 box-border p-2 shadow-lg shadow-black">
+                <SidebarHeader />
 
-            <Transition name="slide-left" mode="out-in">
-                <!-- Chats List -->
-                <ChatList v-if="uiStore.mode === 'chat'" />
-                <!-- Textpads List -->
-                <TextpadList v-else />
-            </Transition>
+                <Transition name="slide-left" mode="out-in">
+                    <!-- Chats List -->
+                    <ChatList v-if="uiStore.mode === 'chat'" />
+                    <!-- Textpads List -->
+                    <TextpadList v-else />
+                </Transition>
 
-            <SidebarOptions />
-        </div>
+                <SidebarOptions />
+            </div>
+            <div v-else></div>  
+            <!-- ^This has to be here otherwise it just applies a hidden class to the sidebar causing the transition to not play -->
+        </Transition>
         <div class="absolute top-0 right-0 transform translate-x-full h-12 w-12 p-1">
             <div class="h-10 w-10 p-1 cursor-pointer rounded-lg hover:bg-primary-300 hover:shadow-md shadow-black/50 transition-all duration-100"
                 @pointerdown="handlePointerDown" aria-label="Toggle Sidebar" :aria-expanded="showSidebar">
