@@ -43,6 +43,7 @@ export const useConfigStore = defineStore('config', {
             } else {
                 // set root attribute to the speed
                 document.documentElement.style.setProperty('--transition-duration', `${this.transitionSpeed}s`);
+                document.body.removeAttribute('data-reduce-motion');
             }
         }
     }
