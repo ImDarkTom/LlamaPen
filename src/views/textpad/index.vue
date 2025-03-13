@@ -5,9 +5,11 @@ import { useRoute } from 'vue-router';
 import { useUiStore } from '../../stores/uiStore';
 import hljs from 'highlight.js';
 import TextpadHeader from './components/TextpadHeader.vue';
+import { useConfigStore } from '@/stores/config';
 
 const allTextpadsStore = useTextpadStore();
 const uiStore = useUiStore();
+const config = useConfigStore();
 
 const route = useRoute();
 
@@ -35,7 +37,10 @@ function loadTextpad() {
 
 	mainTextarea.value.value = allTextpadsStore.openedTextpad?.content || '';
 	updateVirtualTextArea();
-	mainTextarea.value.focus();
+	
+	if (config.textpad.focusOnLoad) {
+		mainTextarea.value.focus();
+	}
 
 	uiStore.setLastOpenedTextpad(route.params.id as string);
 }

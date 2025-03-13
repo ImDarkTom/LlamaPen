@@ -5,6 +5,9 @@ interface Config {
     showSidebar: boolean,
     transitionSpeed: number,
     closeSidebarOnNavMobile: boolean,
+    textpad: {
+        focusOnLoad: boolean,
+    }
 };
 
 export const useConfigStore = defineStore('config', {
@@ -13,6 +16,9 @@ export const useConfigStore = defineStore('config', {
         showSidebar: localStorage.getItem('showSidebar') === 'true' || true,
         transitionSpeed: Number.parseFloat(localStorage.getItem('transitionSpeed') ?? "0.125"),
         closeSidebarOnNavMobile: localStorage.getItem('closeSidebarOnNavMobile') === 'true' || true,
+        textpad: {
+            focusOnLoad: localStorage.getItem('textpadFocusOnLoad') === 'true' || false,
+        }
     }),
     getters: {
         apiUrl: (state) => (path: string) => `${state.ollamaUrl}${path}`,
@@ -54,6 +60,9 @@ export const useConfigStore = defineStore('config', {
         },
         saveCloseSidebarOnNavMobile() {
             localStorage.setItem('closeSidebarOnNavMobile', this.closeSidebarOnNavMobile.toString());
+        },
+        saveTextpadFocusOnLoad() {
+            localStorage.setItem('textpadFocusOnLoad', this.textpad.focusOnLoad.toString());
         }
     }
 })

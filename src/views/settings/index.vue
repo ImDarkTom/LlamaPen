@@ -50,6 +50,9 @@ onMounted(() => {
         </div>
         <h3 class="options-option"><i>Mobile</i>: Hide sidebar on navigate</h3>
         <input class="size-6" type="checkbox" v-model="config.closeSidebarOnNavMobile" @change="config.saveCloseSidebarOnNavMobile" />
+
+        <h2 class="options-category">Textpad</h2>
+        <input class="size-6" type="checkbox" v-model="config.textpad.focusOnLoad" @change="config.saveTextpadFocusOnLoad" />
     </div>
 </template>
 
