@@ -125,9 +125,11 @@ const props = defineProps<{
 <template>
     <div v-mousedown-outside="handleClickOutside">
         <div class="relative" id="modelselect">
-            <div @click="toggleShowSelect"
-                class="bg-primary-400 hover:bg-primary-500 cursor-pointer p-3 box-border rounded-lg flex flex-row items-center gap-2 text-txt-2 hover:text-txt-1 transition-colors duration-150 select-none"
-                aria-haspopup="listbox" :aria-expanded="showSelect">
+            <div 
+                class="bg-primary-400 hover:bg-primary-500 cursor-pointer p-2 box-border rounded-lg flex flex-row items-center gap-2 text-txt-2 hover:text-txt-1 transition-colors duration-150 select-none ring-[1px] ring-txt-2/25"
+                @click="toggleShowSelect"
+                aria-haspopup="listbox" :aria-expanded="showSelect"
+            >
                 <template v-if="uiStore.connectedToOllama">
                     {{ selectedModel }}
                 </template>
