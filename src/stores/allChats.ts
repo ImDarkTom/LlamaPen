@@ -213,6 +213,11 @@ export const useAllChatsStore = defineStore('allchats', {
 
                         this.modifyMessage(responseMessageId, messageChunk, 'append');
                     } catch (error: unknown) {
+                        const errorMsg = JSON.parse(chunk).error;
+                        if (errorMsg) {
+                            emitter.emit('popup:error', {message: 'Error fetching response message', error: errorMsg});
+                        }
+
                         console.error('Error parsing response chunk', error);
                     }
                 }

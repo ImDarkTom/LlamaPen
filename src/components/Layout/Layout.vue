@@ -1,6 +1,7 @@
 <script setup lang="ts">
 import Sidebar from '@/components/Sidebar/Sidebar.vue';
 import NotConnectedPopup from '@/components/Popups/NotConnectedPopup.vue';
+import ErrorPopup from '../Popups/ErrorPopup.vue';
 </script>
 
 <template>
@@ -11,5 +12,6 @@ import NotConnectedPopup from '@/components/Popups/NotConnectedPopup.vue';
         </Transition>
     </RouterView>
     <!-- todo: have it load all custom popups with one component -->
+    <ErrorPopup />
     <NotConnectedPopup />
 </template>
