@@ -2,6 +2,7 @@
 import { computed, onMounted, ref } from 'vue';
 import CustomUrlButton from './components/CustomUrlButton.vue';
 import { useConfigStore } from '@/stores/config';
+import ToggleSetting from '@/components/Settings/ToggleSetting.vue';
 
 const config = useConfigStore();
 
@@ -48,12 +49,10 @@ onMounted(() => {
                 <span class="pl-2 text-txt-2">{{ transitionSpeed == 0.125 ? '(Default)' : '' }}</span>
             </span>
         </div>
-        <h3 class="options-option"><i>Mobile</i>: Hide sidebar on navigate</h3>
-        <input class="size-6" type="checkbox" v-model="config.closeSidebarOnNavMobile" @change="config.saveCloseSidebarOnNavMobile" />
+        <ToggleSetting v-model="config.closeSidebarOnNavMobile" @change="config.saveCloseSidebarOnNavMobile" label="Mobile: Hide sidebar on navigate"/>
 
         <h2 class="options-category">Textpad</h2>
-        <h3 class="options-option">Focus on load</h3>
-        <input class="size-6" type="checkbox" v-model="config.textpad.focusOnLoad" @change="config.saveTextpadFocusOnLoad" />
+        <ToggleSetting v-model="config.textpad.focusOnLoad" @change="config.saveTextpadFocusOnLoad" label="Focus on load" />
     </div>
 </template>
 
