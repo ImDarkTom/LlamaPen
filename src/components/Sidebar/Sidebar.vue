@@ -53,7 +53,7 @@ onUnmounted(() => {
 <template>
     <div class="relative">
         <Transition name="slide-left" mode="default">
-            <div v-if="showSidebar" class="flex flex-col h-full w-[calc(100vw-3rem)] sm:w-[calc(100vw-3rem)] md:w-[18vw] md:min-w-64 bg-primary-400 box-border p-2 shadow-lg shadow-black">
+            <div v-show="showSidebar" class="flex flex-col h-full w-[calc(100vw-3rem)] sm:w-[calc(100vw-3rem)] md:w-[18vw] md:min-w-64 bg-primary-400 box-border p-2 shadow-lg shadow-black">
                 <SidebarHeader />
 
                 <Transition name="slide-left" mode="out-in">
