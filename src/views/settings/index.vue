@@ -2,7 +2,7 @@
 import { computed, onBeforeUnmount, onMounted, ref } from 'vue';
 import CustomUrlButton from './components/CustomUrlButton.vue';
 import { useConfigStore } from '@/stores/config';
-import ToggleSetting from '@/components/Settings/ToggleSetting.vue';
+import ToggleSetting from '@/views/settings/components/ToggleSetting.vue';
 import OptionCategory from './components/OptionCategory.vue';
 import { AiOutlineClose } from 'vue-icons-plus/ai';
 import { useRouter } from 'vue-router';
