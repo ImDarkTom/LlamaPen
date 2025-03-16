@@ -1,11 +1,14 @@
 <script setup lang="ts">
-import { computed, onMounted, ref } from 'vue';
+import { computed, onBeforeUnmount, onMounted, ref } from 'vue';
 import CustomUrlButton from './components/CustomUrlButton.vue';
 import { useConfigStore } from '@/stores/config';
 import ToggleSetting from '@/components/Settings/ToggleSetting.vue';
 import OptionCategory from './components/OptionCategory.vue';
+import { AiOutlineClose } from 'vue-icons-plus/ai';
+import { useRouter } from 'vue-router';
 
 const config = useConfigStore();
+const router = useRouter();
 
 // transition speed
 const transitionSpeed = ref(0.125);
@@ -25,12 +28,24 @@ function updateTransitionSpeed() {
     config.setTransitionSpeed(newSpeed);
 }
 
+function handleEscape(e: KeyboardEvent) {
+    if (document.activeElement?.tagName === 'BODY') {
+        return;
+    }
+
+    if (e.key === 'Escape') {
+        router.back();
+    }
+}
+
 onMounted(() => {
     transitionSpeed.value = config.transitionSpeed;
+    document.addEventListener('keydown', handleEscape);
 });
 
-// const placeholder = ref(false);
-// const placeholder2 = ref(false);
+onBeforeUnmount(() => {
+    document.removeEventListener('keydown', handleEscape);
+});
 </script>
 
 <template>
@@ -38,9 +53,13 @@ onMounted(() => {
         class="w-full h-full flex flex-col items-center py-4 box-border overflow-y-auto px-2
             *:mx-auto *:md:w-3/5 *:lg:w-1/2"
     >
-        <div class="relative w-full flex justify-center">
-            <h1 class="text-4xl font-extrabold mt-2 px-6 bg-primary-500">Settings</h1>
+        <div class="relative w-full flex flex-row justify-between items-center">
+            <h1 class="text-4xl font-extrabold mt-2 pr-3 bg-primary-500">Settings</h1>
             <div class="w-full h-0.5 bg-txt-1 absolute top-1/2 translate-y-1/2 -z-1 rounded-full"></div>
+            <div class="bg-primary-500 pl-2 box-border">
+                <AiOutlineClose class="size-8 hover:bg-primary-300 cursor-pointer rounded-full p-1"
+                    @click="$router.back" />
+            </div>
         </div>
 
         <OptionCategory label="Ollama">
@@ -66,8 +85,6 @@ onMounted(() => {
 
         <OptionCategory label="Textpad">
             <ToggleSetting v-model="config.textpad.focusOnLoad" @change="config.saveTextpadFocusOnLoad" label="Focus on load" />
-            <!-- <ToggleSetting v-model="placeholder" label="Placeholder" />
-            <ToggleSetting v-model="placeholder2" label="Placeholder 2" /> -->
         </OptionCategory>
     </div>
 </template>
