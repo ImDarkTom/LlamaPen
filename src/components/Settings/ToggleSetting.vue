@@ -12,7 +12,7 @@ const updateValue = () => {
 </script>
 
 <template>
-	<label class="w-full flex flex-row justify-between mt-4" @click="updateValue">
+	<label class="w-full flex flex-row justify-between items-center cursor-pointer hover:bg-primary-500/50 transition-colors duration-150" @click="updateValue">
 		<span class="text-xl font-medium">{{ label }}</span>
 		
 		<input 
@@ -24,8 +24,8 @@ const updateValue = () => {
 		/>
 
 		<div
-			class="w-12 h-6 flex items-center bg-gray-300 rounded-full p-1 transition-all duration-150"
-			:class="{ 'bg-primary-300': modelValue }"
+			class="w-12 h-6 flex items-center bg-gray-500 rounded-full p-0.5 transition-all duration-150"
+			:class="{ 'bg-primary-200': modelValue }"
 			role="switch"
 			:aria-checked="modelValue"
 			tabindex="0"
