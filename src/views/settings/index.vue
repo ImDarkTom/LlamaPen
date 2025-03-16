@@ -25,7 +25,6 @@ function updateTransitionSpeed() {
 }
 
 onMounted(() => {
-    console.log(config.transitionSpeed)
     transitionSpeed.value = config.transitionSpeed;
 });
 
