@@ -165,10 +165,14 @@ export const useAllChatsStore = defineStore('allchats', {
             const responseMessageId = this.addMessage('assistant', '');
             emitter.emit('scrollToBottom');
 
+            const selectedPersona = JSON.parse(localStorage.getItem('persona') || 'null') as Persona | null;
+            const personaArgs = selectedPersona ? { system: selectedPersona?.systemPrompt } : {};
+
             const payload = JSON.stringify({
                 model: options.selectedModel,
                 messages: this.openedAsOllama,
                 stream: true,
+                ...personaArgs,
             });
 
             const controller = new AbortController();

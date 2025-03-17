@@ -1,9 +1,11 @@
 <script setup lang="ts">
 import { onMounted, ref } from 'vue';
 import Dropdown from '../Dropdown/Dropdown.vue';
+import { BsPersonFill } from 'vue-icons-plus/bs';
 
 const opened = ref<boolean>(false);
 const personaList = ref<Persona[]>([]);
+const selectedPersona = ref<Persona | null>(null);
 
 const defaultPersonas: Persona[] = [
 	{
@@ -73,18 +75,44 @@ const defaultPersonas: Persona[] = [
 
 onMounted(() => {
 	personaList.value = JSON.parse(localStorage.getItem('personas') || JSON.stringify(defaultPersonas));
+
+	const selectedPersona = JSON.parse(localStorage.getItem('persona') || 'null') as Persona | null;
+
+	selectPersona(selectedPersona);
 });
+
+function personaButtonPressed(persona: Persona | null) {
+	selectPersona(persona);
+	opened.value = false;
+}
+
+function selectPersona(persona: Persona | null) {
+	selectedPersona.value = persona;
+	localStorage.setItem('persona', JSON.stringify(persona));
+}
+
 </script>
 
 <template>
 	<Dropdown direction="up" anchor="center" v-model="opened">
-		<template #button>Persona</template>
+		<template #button>
+			<BsPersonFill />
+			<span :class="selectedPersona?.name ? 'italic' : ''">
+				{{ selectedPersona?.name || 'Persona' }}
+			</span>
+		</template>
 		<template #content>
 			<div class="flex flex-col gap-1 max-h-96 overflow-y-auto">
+				<div class="hover:bg-primary-200 transition-colors duration-100 rounded-lg cursor-pointer min-h-14 p-1 flex items-center justify-center font-semibold"
+					@click="personaButtonPressed(null)"
+				>
+					Default/None
+				</div>
 				<div
 					v-for="persona of personaList" 
 					:key="persona.id"
 					class="flex flex-row gap-2 items-center p-1 hover:bg-primary-200 rounded-lg cursor-pointer min-h-14 transition-colors duration-100"
+					@click="personaButtonPressed(persona)"
 				>
 					<div class="w-4/12 h-13 bg-primary-400 rounded-lg flex flex-row items-center">
 						<span class="text-xl p-1">{{ persona.icon }}</span>
