@@ -6,6 +6,7 @@ import ModelSelect from '@/components/ModelSelect/ModelSelect.vue';
 import { useConfigStore } from '@/stores/config';
 import ActionButton from './ActionButton.vue';
 import ScrollToBottomButton from './ScrollToBottomButton.vue';
+import PersonaSelect from '@/components/PersonaSelect/PersonaSelect.vue';
 
 const route = useRoute();
 const allChats = useAllChatsStore();
@@ -72,7 +73,10 @@ function updateTextAreaHeight() {
                 placeholder="Enter a message..."
                 class="w-full box-border text-base p-2 border-none outline-none resize-none overflow-y-auto break-words"></textarea>
             <div class="relative flex flex-row justify-between w-full">
-                <ModelSelect direction="up" />
+                <div class="flex flex-row gap-2">
+                    <ModelSelect direction="up" />
+                    <PersonaSelect direction="up" />
+                </div>
                 <ActionButton :canGenerate="canGenerate" @startGeneration="startGeneration" />
             </div>
         </div>

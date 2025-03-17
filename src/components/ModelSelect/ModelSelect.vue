@@ -1,10 +1,11 @@
 <script setup lang="ts">
 import { computed, nextTick, onBeforeUnmount, onMounted, ref } from 'vue';
 import { useConfigStore } from '../../stores/config';
-import { BsChevronDown, BsChevronUp } from 'vue-icons-plus/bs';
 import { useUiStore } from '../../stores/uiStore';
 import { VscDebugDisconnect } from 'vue-icons-plus/vsc';
 import ModelSelectItem from './ModelSelectItem.vue';
+import DropdownButton from '../Dropdown/DropdownButton.vue';
+import { LuBrainCircuit } from 'vue-icons-plus/lu';
 
 const config = useConfigStore();
 const uiStore = useUiStore();
@@ -117,42 +118,30 @@ function searchKeyDown(e: KeyboardEvent) {
     }
 }
 
-const props = defineProps<{
-    direction?: 'up' | 'down'
+defineProps<{
+    direction: 'up' | 'down'
 }>();
 </script>
 
 <template>
     <div v-mousedown-outside="handleClickOutside">
         <div class="relative" id="modelselect">
-            <div 
-                class="bg-primary-400 hover:bg-primary-500 cursor-pointer p-2 box-border rounded-lg flex flex-row items-center gap-2 text-txt-2 hover:text-txt-1 transition-colors duration-150 select-none ring-[1px] ring-txt-2/25"
-                @click="toggleShowSelect"
-                aria-haspopup="listbox" :aria-expanded="showSelect"
-            >
-                <template v-if="uiStore.connectedToOllama">
+            <DropdownButton :direction="direction" :opened="showSelect" @update:opened="toggleShowSelect">
+                <span v-if="uiStore.connectedToOllama" class="flex flex-row gap-2 items-center">
+                    <LuBrainCircuit />
                     {{ selectedModel }}
-                </template>
+                </span>
                 <p class="flex flex-row gap-2 items-center italic" v-else>
                     <VscDebugDisconnect />
                     Disconnected
                 </p>
+            </DropdownButton>
 
-                <template v-if="props.direction === 'up'">
-                    <BsChevronUp v-if="showSelect" class="w-4 h-full" />
-                    <BsChevronDown v-else class="w-4 h-full" />
-                </template>
-                <template v-else>
-                    <BsChevronDown v-if="showSelect" class="w-4 h-full" />
-                    <BsChevronUp v-else class="w-4 h-full" />
-                </template>
-            </div>
-
-            <div v-if="showSelect" class="absolute left-0 bg-primary-300 p-1.5 rounded-lg w-[90dvw] sm:w-[90dvw] lg:w-[25rem] box-border z-20 shadow-md shadow-black/50 transition-shadow duration-100 
+            <div v-if="showSelect" class="absolute left-0 bg-primary-300 p-1.5 rounded-lg max-w-dvw w-96 box-border z-20 shadow-md shadow-black/50 transition-shadow duration-100 
                 motion-scale-in-[0.5] motion-translate-x-in-[-10%] motion-opacity-in-[0%] motion-duration-[0.10s]"
                 :class="{
-                    'bottom-full mb-2 motion-translate-y-in-[25%]': props.direction === 'up',
-                    'top-full mt-2 motion-translate-y-in-[-25%]': props.direction === 'down'
+                    'bottom-full mb-2 motion-translate-y-in-[25%]': $props.direction === 'up',
+                    'top-full mt-2 motion-translate-y-in-[-25%]': $props.direction === 'down'
                 }" role="listbox">
                 <input ref="searchBarRef" v-model="searchQuery" @focus="searchFocused = true"
                     @blur="searchFocused = false" @keydown="searchKeyDown" type="search" placeholder="Search a model..."
@@ -162,14 +151,9 @@ const props = defineProps<{
 
                 <ul role="list" class="max-h-80 overflow-y-auto">
                     <ModelSelectItem v-if="uiStore.connectedToOllama && queriedModelList.length > 0"
-                        v-for="(model, index) in queriedModelList" 
-                        :key="model.name" 
-                        :model="model"
-                        :index="index"
-                        :focusedItemIndex="focusedItemIndex"
-                        :queriedModelList="queriedModelList"
-                        @setModel="setModel"
-                         />
+                        v-for="(model, index) in queriedModelList" :key="model.name" :model="model" :index="index"
+                        :focusedItemIndex="focusedItemIndex" :queriedModelList="queriedModelList"
+                        @setModel="setModel" />
                     <li v-else-if="uiStore.connectedToOllama && queriedModelList.length === 0"
                         class="flex w-full p-4 justify-center items-center">
                         No results.
@@ -179,7 +163,6 @@ const props = defineProps<{
                         Not connected to Ollama.
                     </li>
                 </ul>
-
             </div>
         </div>
     </div>
