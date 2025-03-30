@@ -7,3 +7,7 @@ interface Persona {
 	brief: string;
 	systemPrompt: string;
 }
+
+interface EditedPersona extends Persona {
+	created?: number;
+}
