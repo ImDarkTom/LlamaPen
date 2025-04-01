@@ -92,6 +92,9 @@ function finishEdit(newText: string) {
             'ml-auto rounded-2xl bg-primary-300 max-w-[70%] shadow-sm shadow-black': props.message.role === 'user' && !editing,
             'w-full box-border !p-2 !m-0': props.message.role === 'assistant' || editing
         }">
+            <img v-for="image of props.message.images" :key="image" :src="`data:image/png;base64,${image}`"
+                class="rounded-xl max-w-full max-h-full">
+
             <MessageEditor v-if="editing" ref="messageEditorRef" :messageText="message.content"
                 @onCancelEdit="cancelEditing" @onFinishEditing="finishEdit" />
 

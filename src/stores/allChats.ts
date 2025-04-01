@@ -20,7 +20,8 @@ export const useAllChatsStore = defineStore('allchats', {
         openedAsOllama: (state) => state.chats.find(chat => chat.id === state.openedId)?.messages.map((item) => {
             return {
                 role: item.role,
-                content: item.content
+                content: item.content,
+                images: item.images,
             }
         }),
         openedIdExists: (state) => state.chats.find(chat => chat.id === state.openedId) !== undefined,
@@ -90,7 +91,7 @@ export const useAllChatsStore = defineStore('allchats', {
             
             this.saveToLocalStorage();
         },
-        addMessage(role: MessageRole, content: string): string {
+        addMessage(role: MessageRole, content: string, images?: string[]): string {
             if (!this.openedChat) {
                 throw new Error('No opened chat to add message to.');
             }
@@ -100,7 +101,8 @@ export const useAllChatsStore = defineStore('allchats', {
             this.openedChat.messages.push({
                 id: newMessageId,
                 role: role,
-                content: content
+                content: content,
+                images: images,
             });
 
             this.openedChat.lastMessage = Date.now();
@@ -143,13 +145,16 @@ export const useAllChatsStore = defineStore('allchats', {
          * @param options.chatId The chat ID to add the message to.
          * @param options.requestUrl The url to send the request to.
          * @param options.selectedModel The model to use. Added into the request payload.
+         * @param options.images A list of base64 encoded images to send with the request.
          */
         async sendMessage(
             userMessage: string, 
             options: {
                 chatId: string,
                 requestUrl: string,
-                selectedModel: string }
+                selectedModel: string,
+                images?: string[],
+            }
         ) {
             let chatId = options.chatId;
             const chatInitialisedResult = this.ensureChatInitialised();
@@ -160,7 +165,7 @@ export const useAllChatsStore = defineStore('allchats', {
 
             this.isGenerating = false; // Ensure any other connections are stopped.
 
-            this.addMessage('user', userMessage);
+            this.addMessage('user', userMessage, options.images);
             
             const responseMessageId = this.addMessage('assistant', '');
             emitter.emit('scrollToBottom');

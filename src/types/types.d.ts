@@ -4,6 +4,7 @@ type MessageRole = 'system' | 'user' | 'assistant' | 'tool';
 interface OllamaMessage {
     role: MessageRole;
     content: string;
+    images?: string[];
 }
 
 type Chat = {
