@@ -4,10 +4,10 @@ import App from "./App.vue";
 import { createPinia } from "pinia";
 import { createRouter, createWebHistory } from "vue-router";
 
-import ChatWindow from "@/views/chat/index.vue";
-import SettingsWindow from "@/views/settings/index.vue";
-import GuideWindow from "@/views/guide/index.vue";
-import TextpadWindow from '@/views/textpad/index.vue';
+import ChatPage from "@/views/chat/ChatPage.vue";
+import SettingsPage from "@/views/settings/SettingsPage.vue";
+import GuidePage from "@/views/guide/GuidePage.vue";
+import TextpadPage from '@/views/textpad/TextpadPage.vue';
 
 import Layout from "./components/Layout/Layout.vue";
 import mousedownOutside from "./directives/mousedownOutside";
@@ -17,12 +17,12 @@ const routes = [
         path: "/",
         component: Layout,
         children: [
-            { path: "/", component: ChatWindow },
-            { path: "/chat/:id", component: ChatWindow },
-            { path: "/textpad", component: TextpadWindow },
-            { path: "/textpad/:id", component: TextpadWindow },
-            { path: "/settings", component: SettingsWindow },
-            { path: '/guide', component: GuideWindow }
+            { path: "/", component: ChatPage },
+            { path: "/chat/:id", component: ChatPage },
+            { path: "/textpad", component: TextpadPage },
+            { path: "/textpad/:id", component: TextpadPage },
+            { path: "/settings", component: SettingsPage },
+            { path: '/guide', component: GuidePage }
         ],
     },
 ];
