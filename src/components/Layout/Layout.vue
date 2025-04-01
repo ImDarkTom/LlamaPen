@@ -2,6 +2,7 @@
 import Sidebar from '@/components/Sidebar/Sidebar.vue';
 import NotConnectedPopup from '@/components/Popups/NotConnectedPopup.vue';
 import ErrorPopup from '../Popups/ErrorPopup.vue';
+import Lightbox from '../Lightbox/Lightbox.vue';
 </script>
 
 <template>
@@ -14,4 +15,5 @@ import ErrorPopup from '../Popups/ErrorPopup.vue';
     <!-- todo: have it load all custom popups with one component -->
     <ErrorPopup />
     <NotConnectedPopup />
+    <Lightbox />
 </template>

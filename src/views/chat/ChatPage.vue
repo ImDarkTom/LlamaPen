@@ -1,5 +1,5 @@
 <script setup lang="ts">
-import MessageInput from './components/MessageInput/index.vue';
+import MessageInput from './components/MessageInput/MessageInput.vue';
 import MessageList from './components/MessageList.vue';
 </script>
 

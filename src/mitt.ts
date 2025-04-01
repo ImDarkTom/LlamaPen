@@ -12,6 +12,10 @@ interface Events extends Record<EventType, unknown> {
     'popup:error': {
         message: string,
         error: string,
+    },
+    openLightbox: {
+        imageB64: string,
+        imageMime: string,
     }
 };
 

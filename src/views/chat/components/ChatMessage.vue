@@ -13,6 +13,7 @@ import hljs from 'highlight.js';
 import MessageEditor from './MessageEditor.vue';
 import { useAllChatsStore } from '@/stores/allChats';
 import { useConfigStore } from '@/stores/config';
+import { emitter } from '@/mitt';
 
 const allChats = useAllChatsStore();
 const config = useConfigStore();
@@ -93,7 +94,8 @@ function finishEdit(newText: string) {
             'w-full box-border !p-2 !m-0': props.message.role === 'assistant' || editing
         }">
             <img v-for="image of props.message.images" :key="image" :src="`data:image/png;base64,${image}`"
-                class="rounded-xl max-w-full max-h-full">
+                class="rounded-xl max-w-full max-h-full cursor-pointer mb-2"
+                @click="emitter.emit('openLightbox', { imageB64: image, imageMime: 'image/png' })" />
 
             <MessageEditor v-if="editing" ref="messageEditorRef" :messageText="message.content"
                 @onCancelEdit="cancelEditing" @onFinishEditing="finishEdit" />
@@ -104,7 +106,8 @@ function finishEdit(newText: string) {
                 <div v-else class="max-w-none prose prose-invert">{{ message.content }}</div>
             </div>
         </div>
-        <MessageOptions v-if="!editing" class="opacity-100 group-hover:opacity-100" :message="message" @editMessage="editMessage" />
+        <MessageOptions v-if="!editing" class="opacity-100 group-hover:opacity-100" :message="message"
+            @editMessage="editMessage" />
     </div>
 </template>
 
