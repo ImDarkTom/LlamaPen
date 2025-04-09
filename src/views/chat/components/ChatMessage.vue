@@ -95,7 +95,7 @@ const images = (props.message.attachments || []).map((file) => {
 <template>
     <div class="group m-2 flex flex-col">
         <div class="text-txt-1 box-border p-4 flex flex-col" :class="{
-            'ml-auto rounded-2xl bg-primary-300 max-w-[70%] shadow-sm shadow-black': props.message.type === 'user' && !editing,
+            'ml-auto rounded-2xl bg-primary-300 max-w-[70%] shadow-sm shadow-black/50': props.message.type === 'user' && !editing,
             'w-full box-border !p-2 !m-0': props.message.type === 'model' || editing
         }">
             <img v-for="image of images" :key="image.id" :src="image.blobSrc"

@@ -1,6 +1,6 @@
 <script setup lang="ts">
-import { onMounted, onUnmounted, ref } from 'vue';
-import { TbLayoutSidebarLeftCollapse, TbLayoutSidebarLeftExpand } from 'vue-icons-plus/tb';
+import { onMounted, onUnmounted } from 'vue';
+import { TbLayoutSidebarFilled } from 'vue-icons-plus/tb';
 import SidebarHeader from './SidebarHeader.vue';
 import SidebarOptions from './footer/SidebarFooter.vue';
 import { useConfigStore } from '../../stores/config';
@@ -12,7 +12,6 @@ import { emitter } from '@/mitt';
 const uiStore = useUiStore();
 
 const useConfig = useConfigStore();
-const showSidebar = ref<boolean>(useConfig.showSidebar);
 
 function handlePointerDown(e: MouseEvent) {
     if (e.button !== 0) {
@@ -23,13 +22,11 @@ function handlePointerDown(e: MouseEvent) {
 }
 
 const toggleSidebar = () => {
-    showSidebar.value = !showSidebar.value;
-    localStorage.setItem('showSidebar', String(showSidebar.value))
+    useConfig.showSidebar = !useConfig.showSidebar;
 }
 
 function setSidebar(value: boolean) {
-    showSidebar.value = value;
-    localStorage.setItem('showSidebar', String(value));
+    useConfig.showSidebar = value;
 }
 
 function shortcutListener(e: KeyboardEvent) {
@@ -51,9 +48,9 @@ onUnmounted(() => {
 </script>
 
 <template>
-    <div class="relative">
+    <div class="">
         <Transition name="slide-left" mode="default">
-            <div v-show="showSidebar" class="flex flex-col h-full w-[calc(100vw-3rem)] sm:w-[calc(100vw-3rem)] md:w-[18vw] md:min-w-64 bg-primary-400 box-border p-2 shadow-lg shadow-black">
+            <div v-show="useConfig.showSidebar" class="flex flex-col h-full w-[calc(100vw-3rem)] sm:w-[calc(100vw-3rem)] md:w-[18vw] md:min-w-64 bg-primary-500 box-border p-2">
                 <SidebarHeader />
 
                 <Transition name="slide-left" mode="out-in">
@@ -65,11 +62,10 @@ onUnmounted(() => {
                 <SidebarOptions />
             </div>
         </Transition>
-        <div class="absolute top-0 right-0 transform translate-x-full h-12 w-12 p-1 z-30">
-            <div class="h-10 w-10 p-1 cursor-pointer rounded-lg hover:bg-primary-300 hover:shadow-md shadow-black/50 transition-all duration-100"
-                @pointerdown="handlePointerDown" aria-label="Toggle Sidebar" :aria-expanded="showSidebar">
-                <TbLayoutSidebarLeftCollapse class="size-full" v-if="showSidebar" />
-                <TbLayoutSidebarLeftExpand class="size-full" v-else />
+        <div class="absolute top-0 left-0 h-12 w-12 p-2 z-30">
+            <div class="h-10 w-10 p-1.5 cursor-pointer rounded-lg hover:bg-primary-300 hover:shadow-md shadow-black/50 transition-all duration-100"
+                @pointerdown="handlePointerDown" aria-label="Toggle Sidebar">
+                <TbLayoutSidebarFilled class="size-full hover:brightness-75 hover:scale-90 active:scale-110 transition-all duration-100" />
             </div>
         </div>
     </div>

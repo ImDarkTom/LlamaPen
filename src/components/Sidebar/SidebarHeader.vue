@@ -1,6 +1,5 @@
 <script setup lang="ts">
 import { useRouter } from 'vue-router';
-import { IpWrite } from 'vue-icons-plus/ip';
 import { AiOutlineSearch } from 'vue-icons-plus/ai';
 import { useUiStore } from '../../stores/uiStore';
 import { BsChatLeft } from 'vue-icons-plus/bs';
@@ -10,13 +9,13 @@ import { PiNotepad } from 'vue-icons-plus/pi';
 const router = useRouter();
 const uiStore = useUiStore();
 
-const newChat = () => {
-    if (uiStore.mode === 'chat') {
-        router.push('/');
-    } else {
-        router.push('/textpad')
-    }
-}
+// const newChat = () => {
+//     if (uiStore.mode === 'chat') {
+//         router.push('/');
+//     } else {
+//         router.push('/textpad')
+//     }
+// }
 
 function search() {
     alert('to be added...');
@@ -43,18 +42,16 @@ function toggleMode() {
 
 <template>
     <div class="flex flex-col">
-        <div class="flex flex-row p-0 box-border justify-between">
-            <RouterLink to="/" class="text-2xl font-bold select-none text-txt-1 hover:text-txt-2">LlamaPen</RouterLink>
-            <div class="flex flex-row">
-                <AiOutlineSearch aria-label="Search"
-                    class="h-6 w-auto m-auto cursor-pointer ml-2 p-2 box-content rounded-lg hover:bg-primary-300 hover:shadow-xs shadow-black/50"
+        <div class="flex flex-row p-0 box-border justify-between items-center pb-2">
+            <div class="size-10 p-1"></div><!-- sidebar toggle space holder -->
+            <RouterLink to="/" class="max-h-10 w-1/2 flex justify-center items-center hover:brightness-75 hover:scale-90 active:scale-110 transition-all duration-100">
+                <img src="/favicon.svg" class="size-10 p-1" />
+            </RouterLink>
+            <AiOutlineSearch aria-label="Search"
+                    class="h-6 w-auto cursor-pointer p-2 box-content rounded-lg hover:bg-primary-300 hover:shadow-xs shadow-black/50"
                     @click="search" />
-                <IpWrite aria-label="New Chat"
-                    class="h-6 w-auto m-auto cursor-pointer ml-2 p-2 box-content rounded-lg hover:bg-primary-300 hover:shadow-xs shadow-black/50"
-                    @click="newChat()" />
-            </div>
         </div>
-        <div class="w-full h-12 flex flex-row hover:bg-primary-300 rounded-lg cursor-pointer transition-all duration-75 hover:scale-[98%] active:scale-95"
+        <div class="w-full h-12 flex flex-row bg-primary-400 hover:bg-primary-300 rounded-lg cursor-pointer transition-all duration-75 hover:scale-[98%] active:scale-95"
             @mousedown="toggleMode">
             <div class="h-full w-12">
                 <BsChatLeft class="size-full p-3 box-border" v-if="uiStore.mode === 'chat'" />

@@ -4,7 +4,7 @@ import ModelSelect from '@/components/ModelSelect/ModelSelect.vue';
 import ActionButton from './ActionButton.vue';
 import ScrollToBottomButton from './ScrollToBottomButton.vue';
 import PersonaSelect from '@/components/PersonaSelect/PersonaSelect.vue';
-import { AiFillCloseCircle, AiOutlineUpload } from 'vue-icons-plus/ai';
+import { AiFillCloseCircle, AiOutlinePlus } from 'vue-icons-plus/ai';
 import { emitter } from '@/mitt';
 import useMessagesStore from '@/stores/messagesStore';
 import logger from '@/utils/logger';
@@ -79,7 +79,7 @@ const createObjectUrl = (file: File) => URL.createObjectURL(file);
 <template>
     <div class="w-full flex flex-row justify-center">
         <div class="w-full sm:w-full lg:w-3xl mx-1 mb-1 sm:mx-1 sm:mb-1 md:mx-4 md:mb-2 p-2 
-                box-border flex flex-col items-center max-h-[48rem] relative bg-primary-400 rounded-xl">
+                box-border flex flex-col items-center max-h-[48rem] relative bg-primary-300 rounded-xl">
             <ScrollToBottomButton />
             <textarea ref="messageInput" v-model="messageInputValue" @keyup="inputKeyUp"
                 placeholder="Enter a message..."
@@ -98,10 +98,10 @@ const createObjectUrl = (file: File) => URL.createObjectURL(file);
             </div>
             <div class="relative flex flex-row justify-between w-full">
                 <div class="flex flex-row gap-2">
-                    <div class="aspect-square box-border bg-primary-400 hover:bg-primary-500 cursor-pointer rounded-lg text-txt-2 hover:text-txt-1 transition-colors duration-150 select-none ring-[1px] ring-txt-2/25"
+                    <div class="aspect-square box-border bg-primary-300 hover:bg-primary-400 cursor-pointer rounded-lg text-txt-1 hover:text-txt-2 transition-colors duration-150 select-none ring-1 ring-txt-1/25"
                         title="Upload file(s)">
                         <label for="file-upload" class="cursor-pointer size-full flex items-center justify-center">
-                            <AiOutlineUpload />
+                            <AiOutlinePlus />
                         </label>
                         <input type="file" id="file-upload" class="hidden" accept="image/*" multiple
                             @change="uploadFile" />
