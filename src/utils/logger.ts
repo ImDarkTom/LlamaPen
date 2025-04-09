@@ -1,17 +1,12 @@
 // Requirements:
-// - A logger that can log different things based off of levels.
 // - Not log certain things based off env (dev/prod).
-// - Only log to console.log() not file or other;
-// - Reference time and where it occured, like Java syntax. i.e. [2023-10-01 12:00:00] [src/utils/logger.ts] [INFO] Hello World
-// - Be able to pass objects/data
-
-import { useConfigStore } from '@/stores/config';
 
 class Logger {
-	private shouldLog = false;
+	private shouldLog: boolean;
 
 	constructor() {
-		this.shouldLog = useConfigStore().developer.infoLogs;
+		// TODO: make this env-dependent
+		this.shouldLog = false;
 	}
 
 	info(origin: string, ...data: any) {
