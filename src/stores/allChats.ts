@@ -4,7 +4,7 @@ import { emitter } from "../mitt";
 import { useConfigStore } from "./config";
 
 interface AllChatsState {
-    chats: Chat[],
+    chats: ChatOld[],
     openedId: string | null,
     isGenerating: boolean,
 };
@@ -266,12 +266,12 @@ export const useAllChatsStore = defineStore('allchats', {
             const generationPrompt = `Create a concise, 3-5 word title as a title for the chat history, in the given language. RESPOND ONLY WITH THE TITLE TEXT.
 
 Examples of titles:
-Stock Market Trends
-Perfect Chocolate Chip Recipe
+📉 Stock Market Trends
+🍪 Perfect Chocolate Chip Recipe
 Evolution of Music Streaming
 Remote Work Productivity Tips
 Artificial Intelligence in Healthcare
-Video Game Development Insights
+🎮 Video Game Development Insights
 
 <chat_history>
 ${firstTwoChatMessages.map((message) => {

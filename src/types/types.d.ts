@@ -7,7 +7,7 @@ interface OllamaMessage {
     images?: string[];
 }
 
-type Chat = {
+type ChatOld = {
     id: string;
     label: string;
     messages: AppMessage[];

@@ -1,19 +1,13 @@
 <script setup lang="ts">
 import { emitter } from '@/mitt';
-import { computed, onMounted, ref } from 'vue';
+import { onMounted, ref } from 'vue';
 
 const lightboxOpen = ref(false);
 
-const mimeType = ref<string>('image/png');
-const imageBase64 = ref<string>('');
+const imageSrc = ref<string>('');
 
-const imageSrc = computed(() => {
-    return `data:${mimeType.value};base64,${imageBase64.value}`;
-})
-
-function openLightbox(imageB64: string, imageMime = "image/png") {
-    imageBase64.value = imageB64;
-    mimeType.value = imageMime;
+function openLightbox(image: File | Blob) {
+    imageSrc.value = URL.createObjectURL(image);
 
     lightboxOpen.value = true;
 }
@@ -24,7 +18,7 @@ function closeLightbox() {
 
 onMounted(() => {
     emitter.on('openLightbox', (e) => {
-        openLightbox(e.imageB64, e.imageMime);
+        openLightbox(e.image);
     })
 });
 

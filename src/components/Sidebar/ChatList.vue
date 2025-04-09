@@ -1,22 +1,11 @@
 <script lang="ts" setup>
-import { computed } from 'vue';
-import { useAllChatsStore } from '../../stores/allChats';
-import SidebarEntry from './SidebarEntry.vue';
+import { storeToRefs } from 'pinia';
+import SidebarEntry from './SidebarChatEntry.vue';
+import useChatsStore from '@/stores/chatsStore';
 
-const allChats = useAllChatsStore();
-allChats.loadChats();
+const chatsStore = useChatsStore();
+const { pinnedChats, hasPinnedChats, unpinnedChatsByRecent } = storeToRefs(chatsStore);
 
-const pinnedChats = computed<Chat[]>(() => {
-    return allChats.chats.filter((chat) => (chat.pinned || false)).sort((a, b) => (b.lastMessage ?? 0) - (a.lastMessage ?? 0));
-});
-
-const hasPinnedChats = computed<boolean>(() => {
-    return pinnedChats.value.length !== 0;
-});
-
-const unpinnedChats = computed<Chat[]>(() => {
-    return allChats.chats.filter((chat) => !(chat.pinned || false)).sort((a, b) => (b.lastMessage ?? 0) - (a.lastMessage ?? 0));
-});
 </script>
 
 <template>
@@ -30,7 +19,7 @@ const unpinnedChats = computed<Chat[]>(() => {
 
 		<div class="p-0 m-0 flex-1" role="list" aria-labelledby="unpinnedChatsSection">
 			<h3 id="unpinnedChatsSection" class="sr-only">Unpinned Chats</h3>
-			<SidebarEntry v-for="chat of unpinnedChats" :key="chat.id" :chat="chat" />
+			<SidebarEntry v-for="chat of unpinnedChatsByRecent" :key="chat.id" :chat="chat" />
 		</div>
 	</div>
 </template>

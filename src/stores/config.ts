@@ -1,23 +1,34 @@
+import logger from '@/utils/logger';
 import { defineStore } from "pinia";
 
 interface Config {
     ollamaUrl: string,
+    selectedModel: string,
     showSidebar: boolean,
     transitionSpeed: number,
     closeSidebarOnNavMobile: boolean,
     textpad: {
         focusOnLoad: boolean,
+    },
+    developer: {
+        mockRequests: boolean,
+        infoLogs: boolean,
     }
 };
 
 export const useConfigStore = defineStore('config', {
     state: (): Config => ({
-        ollamaUrl: localStorage.getItem('customUrl') || 'http://localhost:11434',
-        showSidebar: localStorage.getItem('showSidebar') === 'true' || true,
-        transitionSpeed: Number.parseFloat(localStorage.getItem('transitionSpeed') ?? "0.125"),
-        closeSidebarOnNavMobile: localStorage.getItem('closeSidebarOnNavMobile') === 'true' || true,
+        ollamaUrl: 'http://localhost:11434',
+        selectedModel: '',
+        showSidebar: true,
+        transitionSpeed: 0.125,
+        closeSidebarOnNavMobile: true,
         textpad: {
-            focusOnLoad: localStorage.getItem('textpadFocusOnLoad') === 'true' || false,
+            focusOnLoad: false,
+        },
+        developer: {
+            mockRequests: false,
+            infoLogs: false,
         }
     }),
     getters: {
@@ -27,21 +38,17 @@ export const useConfigStore = defineStore('config', {
     actions: {
         setOllamaUrl(url: string) {
             this.ollamaUrl = url;
-            localStorage.setItem('customUrl', url);
         },
         setShowSidebar(state: boolean) {
             this.showSidebar = state;
-            localStorage.setItem('showSidebar', state.toString());
         },
         setTransitionSpeed(speed: number) {
             if (speed > 1 || speed < 0) {
                 throw new Error('Transition speed must be between 0 and 1');
             }
 
-            console.log('Setting transition speed to', speed);
-
+            logger.info('Config Store', 'Setting transition speed to', speed);
             this.transitionSpeed = speed;
-            localStorage.setItem('transitionSpeed', speed.toString());
 
             this.loadTransitionSpeed();
         },
@@ -54,15 +61,8 @@ export const useConfigStore = defineStore('config', {
                 document.body.removeAttribute('data-reduce-motion');
             }
         },
-        setCloseSidebarOnNavMobile(state: boolean) {
-            this.closeSidebarOnNavMobile = state;
-            localStorage.setItem('closeSidebarOnNavMobile', state.toString());
-        },
-        saveCloseSidebarOnNavMobile() {
-            localStorage.setItem('closeSidebarOnNavMobile', this.closeSidebarOnNavMobile.toString());
-        },
-        saveTextpadFocusOnLoad() {
-            localStorage.setItem('textpadFocusOnLoad', this.textpad.focusOnLoad.toString());
-        }
+    },
+    persist: {
+        storage: localStorage,
     }
 })

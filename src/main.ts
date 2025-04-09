@@ -3,6 +3,7 @@ import "./styles/style.css";
 import App from "./App.vue";
 import { createPinia } from "pinia";
 import { createRouter, createWebHistory } from "vue-router";
+import piniaPluginPersistedstate from "pinia-plugin-persistedstate";
 
 import ChatPage from "@/views/chat/ChatPage.vue";
 import SettingsPage from "@/views/settings/SettingsPage.vue";
@@ -32,9 +33,13 @@ const router = createRouter({
     routes,
 });
 
+const pinia = createPinia();
+
+pinia.use(piniaPluginPersistedstate);
+
 const app = createApp(App);
-app.use(createPinia());
 app.use(router);
+app.use(pinia);
 
 app.directive('mousedown-outside', mousedownOutside);
 

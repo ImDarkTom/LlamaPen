@@ -1,14 +1,19 @@
 <script setup lang="ts">
 import { computed, onBeforeUnmount, onMounted, ref } from 'vue';
-import CustomUrlButton from './components/CustomUrlButton.vue';
 import { useConfigStore } from '@/stores/config';
 import ToggleSetting from '@/views/settings/components/ToggleSetting.vue';
 import OptionCategory from './components/OptionCategory.vue';
 import { AiOutlineClose } from 'vue-icons-plus/ai';
 import { useRouter } from 'vue-router';
+import ButtonSetting from './components/ButtonSetting.vue';
+import useChatsStore from '@/stores/chatsStore';
+import useMessagesStore from '@/stores/messagesStore';
 
 const config = useConfigStore();
 const router = useRouter();
+
+const chatsStore = useChatsStore();
+const messagesStore = useMessagesStore();
 
 // transition speed
 const transitionSpeed = ref(0.125);
@@ -26,6 +31,32 @@ function updateTransitionSpeed() {
     const newSpeed = transitionSpeed.value;
 
     config.setTransitionSpeed(newSpeed);
+}
+
+//custom ollama url
+function customUrlDialog() {
+    const currentUrl = config.ollamaUrl;
+    const customUrl = prompt("Enter a custom URL to use as a Ollama instance, write in the format of an origin i.e. 'http://example.com:8080'. \n\n Leave blank to reset to default (http://localhost:11434): ", currentUrl);
+
+    if (customUrl === currentUrl) {
+        return;
+    }
+
+    if (!customUrl || customUrl == "") {
+        config.setOllamaUrl('http://localhost:11434')
+        return;
+    }
+
+    config.setOllamaUrl(customUrl);
+    location.reload();
+}
+
+// clear chats
+function clearChats() {
+    if (!confirm('Are you sure you want to clear all chats?')) return;
+
+    chatsStore.clearChats();
+    messagesStore.clearMessages();
 }
 
 function handleEscape(e: KeyboardEvent) {
@@ -58,15 +89,14 @@ onBeforeUnmount(() => {
             <div class="w-full h-0.5 bg-txt-1 absolute top-1/2 translate-y-1/2 -z-1 rounded-full"></div>
             <div class="bg-primary-500 pl-2 box-border">
                 <AiOutlineClose class="size-8 hover:bg-primary-300 cursor-pointer rounded-full p-1"
-                    @click="$router.back" />
+                    @click="router.back()" />
             </div>
         </div>
 
         <OptionCategory label="Ollama">
-            <div>
-                <h3 class="options-option">Ollama URL</h3>
-                <CustomUrlButton />
-            </div>
+            <ButtonSetting @click="customUrlDialog">
+                Set custom Ollama URL
+            </ButtonSetting>
         </OptionCategory>
 
         <OptionCategory label="Appearance">
@@ -80,11 +110,26 @@ onBeforeUnmount(() => {
                     <span class="pl-2 text-txt-2">{{ transitionSpeed == 0.125 ? '(Default)' : '' }}</span>
                 </span>
             </div>
-            <ToggleSetting v-model="config.closeSidebarOnNavMobile" @change="config.saveCloseSidebarOnNavMobile" label="Mobile: Hide sidebar on navigate"/>
+            <ToggleSetting v-model="config.closeSidebarOnNavMobile" label="Mobile: Hide sidebar on navigate"/>
+        </OptionCategory>
+
+        <OptionCategory label="Chat">
+            <ButtonSetting @click="clearChats">
+                Clear all chats
+            </ButtonSetting>
+            <ButtonSetting>
+                Configure title generation prompt... (TO BE ADDED)
+            </ButtonSetting>
         </OptionCategory>
 
         <OptionCategory label="Textpad">
-            <ToggleSetting v-model="config.textpad.focusOnLoad" @change="config.saveTextpadFocusOnLoad" label="Focus on load" />
+            <ToggleSetting v-model="config.textpad.focusOnLoad" label="Focus on load" />
+        </OptionCategory>
+
+        <OptionCategory label="Developer">
+            <span class="text-red-500/80">Do not change these settings unless you know what you're doing.</span>
+            <ToggleSetting v-model="config.developer.mockRequests" label="Mock requests" />
+            <ToggleSetting v-model="config.developer.infoLogs" label="Show info logs" />
         </OptionCategory>
     </div>
 </template>

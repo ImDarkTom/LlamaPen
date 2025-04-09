@@ -6,13 +6,13 @@ import { VscDebugDisconnect } from 'vue-icons-plus/vsc';
 import ModelSelectItem from './ModelSelectItem.vue';
 import DropdownButton from '../Dropdown/DropdownButton.vue';
 import { LuBrainCircuit } from 'vue-icons-plus/lu';
+import logger from '@/utils/logger';
 
 const config = useConfigStore();
 const uiStore = useUiStore();
 
 // State
 const modelsList = ref<ModelList>([]);
-const selectedModel = ref<string | null>(localStorage.getItem('selectedModel'));
 
 // UI State
 const showSelect = ref<boolean>(false);
@@ -26,13 +26,15 @@ const listItemsRef = ref<Array<HTMLElement | null>>([]);
 
 // Lifecycle hooks
 onMounted(() => {
+    logger.info('Model Select Component', 'Selected model is', config.selectedModel);
+
     fetch(config.apiUrl('/api/tags'))
         .then(response => response.json())
         .then(response => {
             modelsList.value = response.models;
 
-            if (!selectedModel.value || !modelsList.value.map((item) => item.name).includes(selectedModel.value)) {
-                selectedModel.value = response.models[0].model;
+            if (!config.selectedModel || !modelsList.value.map((item) => item.name).includes(config.selectedModel)) { 
+                config.selectedModel = response.models[0].model;
             }
         })
         .catch((error) => {
@@ -66,8 +68,8 @@ function handleClickOutside() {
 }
 
 function setModel(newModelName: string) {
-    selectedModel.value = newModelName;
-    localStorage.setItem('selectedModel', newModelName);
+    config.selectedModel = newModelName;
+
     toggleShowSelect();
     searchQuery.value = "";
 }
@@ -129,7 +131,7 @@ defineProps<{
             <DropdownButton :direction="direction" :opened="showSelect" @update:opened="toggleShowSelect">
                 <span v-if="uiStore.connectedToOllama" class="flex flex-row gap-2 items-center">
                     <LuBrainCircuit />
-                    {{ selectedModel }}
+                    {{ config.selectedModel }}
                 </span>
                 <p class="flex flex-row gap-2 items-center italic" v-else>
                     <VscDebugDisconnect />

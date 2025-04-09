@@ -1,18 +1,15 @@
 <script setup lang="ts">
 import { computed, ref } from 'vue';
-import { useAllChatsStore } from '@/stores/allChats';
-import { useRoute } from 'vue-router';
 import ModelSelect from '@/components/ModelSelect/ModelSelect.vue';
-import { useConfigStore } from '@/stores/config';
 import ActionButton from './ActionButton.vue';
 import ScrollToBottomButton from './ScrollToBottomButton.vue';
 import PersonaSelect from '@/components/PersonaSelect/PersonaSelect.vue';
 import { AiFillCloseCircle, AiOutlineUpload } from 'vue-icons-plus/ai';
 import { emitter } from '@/mitt';
+import useMessagesStore from '@/stores/messagesStore';
+import logger from '@/utils/logger';
 
-const route = useRoute();
-const allChats = useAllChatsStore();
-const config = useConfigStore();
+const messagesStore = useMessagesStore();
 
 const messageInput = ref<HTMLTextAreaElement | null>(null);
 const messageInputValue = ref('');
@@ -41,24 +38,11 @@ function inputKeyUp(e: KeyboardEvent) {
 
 async function startGeneration() {
     const message = messageInputValue.value.trim();
-    const images = await filesAsBase64(filesToUpload.value);
 
+    messagesStore.sendMessage(message, filesToUpload.value);
     messageInputValue.value = "";
     filesToUpload.value = [];
     updateTextAreaHeight();
-
-    const selectedModel = localStorage.getItem('selectedModel');
-
-    if (!selectedModel) {
-        throw new Error('No selected model found in localStorage.')
-    }
-
-    allChats.sendMessage(message, {
-        chatId: route.params.id as string,
-        requestUrl: config.apiUrl('/api/chat'),
-        selectedModel: selectedModel,
-        images: images,
-    });
 }
 
 function updateTextAreaHeight() {
@@ -72,29 +56,14 @@ function uploadFile(e: Event) {
     if (input.files) {
         for (const file of input.files) {
             filesToUpload.value.unshift(file);
+            logger.info('Message Input Component', 'Added file for upload', file, 'files to upload list now', filesToUpload.value);
         }
     }
-}
 
-function filesAsBase64(files: File[]): Promise<string[]> {
-    return Promise.all([...files].map(file => {
-        return new Promise<string>((resolve, reject) => {
-            const reader = new FileReader();
-
-            reader.readAsDataURL(file);
-            reader.onload = () => resolve(reader.result?.toString().split(',')[1] as string);
-            reader.onerror = (error) => reject(error);
-        });
-    }));
 }
 
 async function openInLightbox(file: File) {
-    const fileBase64 = (await filesAsBase64([file]))[0];
-
-    emitter.emit('openLightbox', {
-        imageB64: fileBase64,
-        imageMime: file.type,
-    });
+    emitter.emit('openLightbox', { image: file });
 }
 
 function removeFileFromUploadList(file: File) {

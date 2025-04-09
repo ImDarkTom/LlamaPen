@@ -11,15 +11,15 @@ import { markedHighlight } from 'marked-highlight';
 import "highlight.js/styles/atom-one-dark.min.css";
 import hljs from 'highlight.js';
 import MessageEditor from './MessageEditor.vue';
-import { useAllChatsStore } from '@/stores/allChats';
-import { useConfigStore } from '@/stores/config';
 import { emitter } from '@/mitt';
+import useMessagesStore from '@/stores/messagesStore';
 
-const allChats = useAllChatsStore();
-const config = useConfigStore();
+import { nanoid } from 'nanoid';
+
+const messagesStore = useMessagesStore();
 
 const props = defineProps<{
-    message: AppMessage;
+    message: ChatMessage;
 }>();
 
 const marked = new Marked();
@@ -80,28 +80,33 @@ function cancelEditing() {
 function finishEdit(newText: string) {
     editing.value = false;
 
-    allChats.editUserSentMessage(props.message.id, newText, {
-        requestUrl: config.apiUrl('/api/chat'),
-        selectedModel: localStorage.getItem('selectedModel')!
-    });
+    messagesStore.editMessage(props.message.id, newText);
 }
+
+const images = (props.message.attachments || []).map((file) => {
+    return {
+        id: nanoid(),
+        blobSrc: URL.createObjectURL(file),
+        file,
+    }
+});
 </script>
 
 <template>
     <div class="group m-2 flex flex-col">
         <div class="text-txt-1 box-border p-4 flex flex-col" :class="{
-            'ml-auto rounded-2xl bg-primary-300 max-w-[70%] shadow-sm shadow-black': props.message.role === 'user' && !editing,
-            'w-full box-border !p-2 !m-0': props.message.role === 'assistant' || editing
+            'ml-auto rounded-2xl bg-primary-300 max-w-[70%] shadow-sm shadow-black': props.message.type === 'user' && !editing,
+            'w-full box-border !p-2 !m-0': props.message.type === 'model' || editing
         }">
-            <img v-for="image of props.message.images" :key="image" :src="`data:image/png;base64,${image}`"
+            <img v-for="image of images" :key="image.id" :src="image.blobSrc"
                 class="rounded-xl max-w-full max-h-full cursor-pointer mb-2"
-                @click="emitter.emit('openLightbox', { imageB64: image, imageMime: 'image/png' })" />
+                @click="emitter.emit('openLightbox', { image: image.file })" />
 
             <MessageEditor v-if="editing" ref="messageEditorRef" :messageText="message.content"
                 @onCancelEdit="cancelEditing" @onFinishEditing="finishEdit" />
 
             <div class="relative" v-else>
-                <span v-if="message.role !== 'user'" v-html="marked.parse(message.content)"
+                <span v-if="message.type !== 'user'" v-html="marked.parse(message.content)"
                     class="max-w-none prose prose-invert"></span>
                 <div v-else class="max-w-none prose prose-invert">{{ message.content }}</div>
             </div>

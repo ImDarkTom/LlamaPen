@@ -14,8 +14,7 @@ interface Events extends Record<EventType, unknown> {
         error: string,
     },
     openLightbox: {
-        imageB64: string,
-        imageMime: string,
+        image: File | Blob,
     }
 };
 

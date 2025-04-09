@@ -2,12 +2,13 @@
 import { ref } from 'vue';
 import TooltipBottom from '@/components/Tooltip/Tooltip.vue';
 import { BsCopy, BsPen } from 'vue-icons-plus/bs';
+import logger from '@/utils/logger';
 
 defineProps<{
-    message: AppMessage,
+    message: ChatMessage,
 }>();
 
-function copyMessage(message: OllamaMessage) {
+function copyMessage(message: ChatMessage) {
     const tempElem = document.createElement('input');
     tempElem.value = message.content;
 
@@ -24,7 +25,9 @@ function copyMessage(message: OllamaMessage) {
 }
 
 const copyTooltipText = ref<string>("Copy text");
-function editMessage(_message: OllamaMessage) {
+function editMessage(_message: ChatMessage) {
+    logger.info('Message Options Component', 'Edit message clicked.');
+
     emit('editMessage');
 }
 
@@ -33,11 +36,11 @@ const emit = defineEmits(['editMessage']);
 
 <template>
     <div class="flex flex-row gap-2 pt-1"
-        :class="{ 'justify-end': message.role === 'user', 'justify-start': message.role !== 'user' }">
+        :class="{ 'justify-end': message.type === 'user', 'justify-start': message.type !== 'user' }">
         <TooltipBottom class="message-option" :text="copyTooltipText">
             <BsCopy class="size-full" title="Copy Text" @click="copyMessage(message)" />
         </TooltipBottom>
-        <TooltipBottom class="message-option" v-if="message.role === 'user'" text="Edit">
+        <TooltipBottom class="message-option" v-if="message.type === 'user'" text="Edit">
             <BsPen class="size-full" title="Edit" @click="editMessage(message)" />
         </TooltipBottom>
     </div>
