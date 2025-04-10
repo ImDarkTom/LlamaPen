@@ -26,7 +26,7 @@
         "@types/node": "^22.14.0",
         "@vitejs/plugin-vue": "^5.2.3",
         "@vue/tsconfig": "^0.7.0",
-        "tailwindcss": "0.0.0-insiders.ab9df29",
+        "tailwindcss": "^4.1.3",
         "tailwindcss-motion": "^1.1.0",
         "typescript": "~5.6.3",
         "vite": "^6.2.3",
@@ -419,7 +419,7 @@
 
     "strip-literal": ["strip-literal@3.0.0", "", { "dependencies": { "js-tokens": "^9.0.1" } }, "sha512-TcccoMhJOM3OebGhSBEmp3UZ2SfDMZUEBdRA/9ynfLi8yYajyWX3JiXArcJt4Umh4vISpspkQIY8ZZoCqjbviA=="],
 
-    "tailwindcss": ["tailwindcss@0.0.0-insiders.ab9df29", "", {}, "sha512-1hWYvUpWZ60VP3Us6gTfoZypwTGMHvk8w91QcyO+/OBWi8GSonCorzaLYZUbBB2kj0EgKLflljiZjvhv+lMuug=="],
+    "tailwindcss": ["tailwindcss@4.1.3", "", {}, "sha512-2Q+rw9vy1WFXu5cIxlvsabCwhU2qUwodGq03ODhLJ0jW4ek5BUtoCsnLB0qG+m8AHgEsSJcJGDSDe06FXlP74g=="],
 
     "tailwindcss-motion": ["tailwindcss-motion@1.1.0", "", { "peerDependencies": { "tailwindcss": ">=3.0.0 || insiders" } }, "sha512-0lK6rA4+367ffJdi1TtB72GlMCxJi2TP/xRiHc6An5pZSlU6WfIHhSvLxpcGilGZfBrOqc2q4woH1DEP/lCNbQ=="],
 
