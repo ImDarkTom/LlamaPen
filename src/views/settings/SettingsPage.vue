@@ -85,10 +85,10 @@ onBeforeUnmount(() => {
             *:mx-auto *:md:w-3/5 *:lg:w-1/2"
     >
         <div class="relative w-full flex flex-row justify-between items-center">
-            <h1 class="text-4xl font-extrabold mt-2 pr-3 bg-primary-500">Settings</h1>
+            <h1 class="text-4xl font-extrabold mt-2 pr-3 bg-primary-400">Settings</h1>
             <div class="w-full h-0.5 bg-txt-1 absolute top-1/2 translate-y-1/2 -z-1 rounded-full"></div>
-            <div class="bg-primary-500 pl-2 box-border">
-                <AiOutlineClose class="size-8 hover:bg-primary-300 cursor-pointer rounded-full p-1"
+            <div class="bg-primary-400 pl-2 box-border">
+                <AiOutlineClose class="size-10 hover:bg-primary-300 cursor-pointer rounded-full p-1 transition-colors duration-100"
                     @click="router.back()" />
             </div>
         </div>
@@ -101,12 +101,13 @@ onBeforeUnmount(() => {
 
         <OptionCategory label="Appearance">
             <div class="flex flex-col gap-2 w-full">
-                <h3 class="options-option">Transition Speed</h3>
+                <h3 class="text-xl font-medium py-2">Transition Speed</h3>
                 <input
-                class="accent-primary-200 w-full"
-                @change="updateTransitionSpeed" v-model="transitionSpeed" type="range" min="0" max = "1" step="0.025" />
+                    class="accent-primary-200 w-full"
+                    @change="updateTransitionSpeed" v-model="transitionSpeed" type="range" min="0" max = "1" step="0.025" 
+                />
                 <span class="py-2">
-                    <span class="bg-primary-300 w-fit p-2 rounded-lg text-txt-2 cursor-default box-border">{{ transitionSpeedText }}</span>
+                    <span class="bg-primary-200 w-fit p-2 rounded-lg text-txt-2 cursor-default box-border">{{ transitionSpeedText }}</span>
                     <span class="pl-2 text-txt-2">{{ transitionSpeed == 0.125 ? '(Default)' : '' }}</span>
                 </span>
             </div>
@@ -133,11 +134,3 @@ onBeforeUnmount(() => {
         </OptionCategory>
     </div>
 </template>
-
-<style>
-@reference "@/styles/style.css";
-
-.options-option {
-    @apply text-xl font-medium py-2;
-}
-</style>

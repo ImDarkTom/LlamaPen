@@ -12,7 +12,7 @@ const updateValue = () => {
 </script>
 
 <template>
-	<label class="w-full flex flex-row justify-between items-center cursor-pointer hover:bg-primary-500/50 transition-colors duration-150" @click="updateValue">
+	<label class="w-full flex flex-row justify-between items-center cursor-pointer hover:*:font-semibold transition-all duration-150" @click="updateValue">
 		<span class="text-xl font-medium">{{ label }}</span>
 		
 		<input 
