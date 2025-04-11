@@ -66,7 +66,7 @@ class OllamaAPI {
 							const jsonChunk = JSON.stringify(chunks[i]) + '\n';
 							controller.enqueue(encoder.encode(jsonChunk));
 							i++;
-							setTimeout(pushChunk, 500); // simulate delay between chunks
+							setTimeout(pushChunk, 1000); // simulate delay between chunks
 						} else {
 							controller.close();
 						}

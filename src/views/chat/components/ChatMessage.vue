@@ -15,6 +15,7 @@ import { emitter } from '@/mitt';
 import useMessagesStore from '@/stores/messagesStore';
 
 import { nanoid } from 'nanoid';
+import ThinkBlock from './ChatMessage/ThinkBlock.vue';
 
 const messagesStore = useMessagesStore();
 
@@ -23,31 +24,6 @@ const props = defineProps<{
 }>();
 
 const marked = new Marked();
-
-marked.use({
-    extensions: [{
-        name: 'thinkBlock',
-        level: 'block',
-        start(src) { return src.match(/<think>/i)?.index; },
-        tokenizer(src) {
-            const rule = /^<think>([\s\S]*?)<\/think>/i;
-            const match = rule.exec(src);
-            if (match) {
-                return {
-                    type: 'thinkBlock',
-                    raw: match[0],
-                    text: match[1].trim()
-                };
-            }
-        },
-        renderer(token) {
-            return `
-            <div class="thought-text-container">
-                <blockquote class="thought-text">\n${token.text}\n</blockquote>
-            </div>`;
-        }
-    }]
-});
 
 marked.use(markedKatex());
 
@@ -90,6 +66,17 @@ const images = (props.message.attachments || []).map((file) => {
         file,
     }
 });
+
+function renderText(text: string) {
+    if (!text.startsWith('<think>')) {
+        return marked.parse(text);
+    }
+
+    const afterThinkRegex = /(?<=<\/think>)([\s\S]*)/i;;
+    const allAfterThinkBlock = afterThinkRegex.exec(text)?.[1] || '';
+
+    return marked.parse(allAfterThinkBlock);
+}
 </script>
 
 <template>
@@ -106,25 +93,29 @@ const images = (props.message.attachments || []).map((file) => {
                 @onCancelEdit="cancelEditing" @onFinishEditing="finishEdit" />
 
             <div class="relative" v-else>
-                <span v-if="message.type !== 'user'" v-html="marked.parse(message.content)"
-                    class="max-w-none prose prose-invert"></span>
-                <div v-else class="max-w-none prose prose-invert">{{ message.content }}</div>
+                <div 
+                    v-if="message.type === 'user'" 
+                    class="max-w-none prose prose-invert"
+                >
+                    {{ message.content }}
+                </div>
+                <span v-else>
+                    <ThinkBlock :message="message" />
+                    <span 
+                        class="max-w-none prose prose-invert inline-block"
+                        v-html="renderText(message.content)"
+                    >
+                    </span>
+                    <div v-if="message.status === 'waiting' || message.status === 'generating'"
+                        class="animate-breathe rounded-full bg-txt-1 inline-block"
+                        :class="{ 
+                            'size-6': message.status === 'waiting',
+                            'size-4': message.status === 'generating',
+                        }"></div>
+                </span>
             </div>
         </div>
         <MessageOptions v-if="!editing" class="opacity-100 group-hover:opacity-100" :message="message"
             @editMessage="editMessage" />
     </div>
 </template>
-
-<style>
-@reference "@/styles/style.css";
-
-.thought-text-container,
-think {
-    @apply italic opacity-80 pb-4 flex bg-primary-200 rounded-lg p-2 box-border mb-4;
-}
-
-.hljs {
-    @apply mb-4 rounded-lg border border-txt-1/50;
-}
-</style>

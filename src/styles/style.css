@@ -16,6 +16,22 @@
 
     --color-txt-1: hsl(0, 0%, 94%);
     --color-txt-2: hsl(226, 23%, 82%);
+
+    --animate-breathe: breathe 2s ease-in-out infinite;
+
+    @keyframes breathe {
+        0%,
+        100% {
+            transform: scale(0.85);
+        }
+        50% {
+            transform: scale(1);
+        }   
+    }
+}
+
+.hljs {
+    @apply mb-4 rounded-lg border border-txt-1/50;
 }
 
 html {

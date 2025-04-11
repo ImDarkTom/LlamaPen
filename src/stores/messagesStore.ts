@@ -147,6 +147,8 @@ const useMessagesStore = defineStore('messages', () => {
 		if (selectedModel === '') {
 			throw new Error('No selected model found.')
 		}
+
+		const listBeforeModelMessage = await getMessagesInOllamaFormat();
 	
 		const ollamaMessageId = await db.messages.add({
 			chatId: openedChatId.value as number,
@@ -162,7 +164,7 @@ const useMessagesStore = defineStore('messages', () => {
 	
 		logger.info('Messages Store', 'Added ollama message', ollamaMessageId);
 		
-		const response = await ollamaApi.sendMessageRequest(await getMessagesInOllamaFormat());
+		const response = await ollamaApi.sendMessageRequest(listBeforeModelMessage);
 
 		if (!response.body) {
 			throw new Error('No response body found for Ollama message response.')
@@ -171,12 +173,15 @@ const useMessagesStore = defineStore('messages', () => {
 		const reader = response.body.getReader();
 		const textDecoder = new TextDecoder();
 
+		await db.messages.update(ollamaMessageId, { status: 'generating' });
+
 		let updatedMessage = ""; 
 		while (true) {
 			const { done, value } = await reader.read();
 
 			if (done) {
 				updateOllamaMessageInDB(ollamaMessageId, updatedMessage);
+				await db.messages.update(ollamaMessageId, { status: 'finished' });
 				logger.info('Messages Store', 'Finished generating response\n==========\n', updatedMessage);
 
 				break;
