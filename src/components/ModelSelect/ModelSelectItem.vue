@@ -17,7 +17,7 @@ defineEmits<{
 <template>
 	<li class="relative group flex flex-col cursor-pointer p-3 hover:bg-primary-400 transition-colors duration-75 rounded-lg overflow-x-hidden"
 	    :class="{ 'bg-primary-500 shadow-sm shadow-black/50': index === focusedItemIndex }"
-	    @click="$emit('setModel', model.name)" ref="listItemsRef" :aria-selected="index === focusedItemIndex">
+	    @click="$emit('setModel', model.model)" ref="listItemsRef" :aria-selected="index === focusedItemIndex">
 	    <span
 	        class="w-full text-md font-semibold text-ellipsis whitespace-nowrap overflow-hiddefont-bold"
 	        :title="model.name">{{ model.name }}</span>
