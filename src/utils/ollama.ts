@@ -23,7 +23,8 @@ class OllamaAPI {
 		}
 
 		const messagesFormatted = messages.map((message) => {
-			return `${message.type === 'user' ? 'User' : 'Assistant'}: ${message.content}`;
+			const hasAttachments = message.attachments && message.attachments.length > 0;
+			return `${message.type === 'user' ? 'User' : 'Assistant'}: ${hasAttachments ? `<${message.attachments?.length} Attachments>` : ''} ${message.content}`;
 		}).join('\n');
 
 		const generationPrompt = DEFAULT_TITLE_GENERATION_PROMPT(messagesFormatted);

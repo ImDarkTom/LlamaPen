@@ -266,7 +266,6 @@ const useMessagesStore = defineStore('messages', () => {
 	}
 
 	async function getMessagesInOllamaFormat() {
-		// TODO: Make this include attachments
 		const sortedMessages = await db.messages
 			.where('chatId')
 			.equals(openedChatId.value!)
