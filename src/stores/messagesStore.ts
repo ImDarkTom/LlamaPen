@@ -162,10 +162,21 @@ const useMessagesStore = defineStore('messages', () => {
 		});
 
 		await db.chats.update(openedChatId.value!, { lastestMessageDate: new Date() });
-	
 		logger.info('Messages Store', 'Added ollama message', ollamaMessageId);
+
+		const abortController = new AbortController();
+		let aborted = false;
 		
-		const response = await ollamaApi.sendMessageRequest(listBeforeModelMessage);
+		const cancelHandler = async () => {
+			await db.messages.update(ollamaMessageId, { status: 'cancelled' });
+			aborted = true;
+			abortController.abort("message generation cancelled by user.");
+		}
+
+		emitter.on('stopChatGeneration', cancelHandler);
+		logger.info('Messages Store', 'Added stop chat generation emit listener');
+		
+		const response = await ollamaApi.sendMessageRequest(listBeforeModelMessage, abortController.signal);
 
 		if (!response.body) {
 			throw new Error('No response body found for Ollama message response.')
@@ -178,6 +189,11 @@ const useMessagesStore = defineStore('messages', () => {
 
 		let updatedMessage = ""; 
 		while (true) {
+			if (aborted) {
+				logger.info('Messages Store', 'Message generation cancelled.');
+				break;
+			}
+
 			const { done, value } = await reader.read();
 
 			if (done) {
@@ -230,7 +246,9 @@ const useMessagesStore = defineStore('messages', () => {
 		}
 
 		// If chat name is not "New Chat", don't generate title.
-		if (!((await db.chats.where('id').equals(openedChatId.value!).first())?.title === 'New Chat')) return;
+		if (aborted || !((await db.chats.where('id').equals(openedChatId.value!).first())?.title === 'New Chat')) return;
+
+		emitter.off('stopChatGeneration', cancelHandler);
 
 		logger.info('Messages Store', 'Generating chat title for opened chat', openedChatId.value);
 

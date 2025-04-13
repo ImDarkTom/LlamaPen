@@ -3,6 +3,7 @@ interface Chat {
 	title: string;
 	createdAt: Date;
 	lastestMessageDate?: Date;
+	isGenerating?: boolean;
 	pinned: 0 | 1;
 }
 
@@ -17,7 +18,7 @@ interface BaseChatMessage {
 	attachments?: Blob[];
 	type: 'model' | 'user';
 	model?: string;
-	status?: 'waiting' | 'generating' | 'finished';
+	status?: 'waiting' | 'generating' | 'finished' | 'cancelled';
 }
 
 interface ModelChatMessage extends BaseChatMessage {

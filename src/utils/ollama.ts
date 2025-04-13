@@ -47,7 +47,7 @@ class OllamaAPI {
 		return generatedTitle;
 	}
 
-	async sendMessageRequest(messages: {role: string, content: string}[]): Promise<Response> {
+	async sendMessageRequest(messages: {role: string, content: string}[], abortSignal: AbortSignal): Promise<Response> {
 		if (useConfigStore().developer.mockRequests) {
 			// Simulated chunks
 			const chunks = [
@@ -63,6 +63,11 @@ class OllamaAPI {
 				start(controller) {
 					function pushChunk() {
 						if (i < chunks.length) {
+							if (abortSignal.aborted) {
+								controller.close();
+								return;
+							}
+
 							const jsonChunk = JSON.stringify(chunks[i]) + '\n';
 							controller.enqueue(encoder.encode(jsonChunk));
 							i++;
@@ -91,7 +96,8 @@ class OllamaAPI {
 			body: JSON.stringify({
 				model: useConfigStore().selectedModel,
 				messages,
-			})
+			}),
+			signal: abortSignal,
 		});
 	}
 }
