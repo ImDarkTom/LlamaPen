@@ -151,7 +151,7 @@ defineProps<{
                     :class="{ 'cursor-not-allowed': !uiStore.connectedToOllama }" aria-label="Search for a model..."
                     aria-controls="model-list" :disabled="!uiStore.connectedToOllama">
 
-                <ul role="list" class="max-h-80 overflow-y-auto">
+                <ul role="list" class="max-h-80 overflow-y-auto *:not-last:mb-2">
                     <ModelSelectItem v-if="uiStore.connectedToOllama && queriedModelList.length > 0"
                         v-for="(model, index) in queriedModelList" :key="model.name" :model="model" :index="index"
                         :focusedItemIndex="focusedItemIndex" :queriedModelList="queriedModelList"

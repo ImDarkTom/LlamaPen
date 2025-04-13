@@ -8,6 +8,7 @@ import { emitter } from '@/mitt';
 import ollamaApi from '@/utils/ollama';
 import { useConfigStore } from './config';
 import { filesAsBase64 } from '@/utils/conversion';
+import { useUiStore } from './uiStore';
 
 // ----
 // Init
@@ -80,15 +81,14 @@ const useMessagesStore = defineStore('messages', () => {
 		if (openedChatId.value === null) {
 			const newChatId = await useChatsStore().createNewChat();
 			openedChatId.value = newChatId;
-
+			
 			const newUrl = `/chat/${newChatId}`;
-
+			
 			logger.info('Messages Store', 'No opened chat, created new and navigating to', newUrl);
-
+			
 			logger.info('Messages Store', "Created new chat with id", openedChatId.value);
 		}
-
-
+	
 		const messageData = {
 			chatId: openedChatId.value,
 			content,
@@ -127,6 +127,7 @@ const useMessagesStore = defineStore('messages', () => {
 		logger.info('Messages Store', 'Opening chat with id', id);
 
 		openedChatId.value = id || null;
+		useUiStore().setScrollingDown(true);
 	}
 
 	// -----

@@ -1,12 +1,8 @@
-// Requirements:
-// - Not log certain things based off env (dev/prod).
-
 class Logger {
 	private shouldLog: boolean;
 
 	constructor() {
-		// TODO: make this env-dependent
-		this.shouldLog = false;
+		this.shouldLog = import.meta.env.MODE === 'development';
 	}
 
 	info(origin: string, ...data: any) {

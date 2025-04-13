@@ -4,7 +4,7 @@ import { defineStore } from 'pinia';
 import { computed, ref } from 'vue';
 import useMessagesStore from './messagesStore';
 import logger from '@/utils/logger';
-import { useRouter } from 'vue-router';
+import router from '@/router';
 
 // Init
 let liveSyncInitialised = false;
@@ -69,9 +69,7 @@ const useChatsStore = defineStore('chats', () => {
 			pinned: 0,
 		});
 
-		console.log(useRouter());
-
-		// useRouter().push(`/chat/${newChatId}`);
+		router.push(`/chat/${newChatId}`);
 
 		return newChatId;
 	}

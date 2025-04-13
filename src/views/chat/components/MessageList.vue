@@ -1,5 +1,5 @@
 <script setup lang="ts">
-import { onMounted, onUnmounted, ref, watch } from 'vue';
+import { nextTick, onMounted, onUnmounted, ref, watch } from 'vue';
 import ChatMessage from './ChatMessage.vue';
 import { useRoute } from 'vue-router';
 import { emitter } from '@/mitt';
@@ -7,6 +7,7 @@ import { useUiStore } from '@/stores/uiStore';
 import GreetingText from './GreetingText.vue';
 import useMessagesStore from '@/stores/messagesStore';
 import { storeToRefs } from 'pinia';
+import logger from '@/utils/logger';
 
 const messageListRef = ref<HTMLElement | null>(null);
 
@@ -15,7 +16,6 @@ const route = useRoute();
 const messagesStore = useMessagesStore();
 
 const { openedChatMessages } = storeToRefs(messagesStore);
-
 
 const uiStore = useUiStore();
 
@@ -27,28 +27,47 @@ watch(() => route.params.id, (newId, oldId) => {
 });
 
 onMounted(() => {
+    logger.info('Message List Component', 'Mounted message list component');
+
     messagesStore.openChat(parseInt(route.params.id as string));
     uiStore.setLastOpenedChat(route.params.id as string);
     emitter.on('scrollToBottom', scrollToBottom);
+
+    nextTick(() => {
+        scrollToBottom({ force: true });
+    });
 });
 
 onUnmounted(() => {
     emitter.off('scrollToBottom');
-})
+});
 
-function scrollToBottom() {
+watch(() => openedChatMessages.value, async () => {
+    if (uiStore.chatList.isScrollingDown) {
+        await nextTick();
+
+        scrollToBottom({ force: true });
+    }
+});
+
+function scrollToBottom(event: { force?: boolean } | undefined) {
     if (!messageListRef.value) {
         return;
     }
 
-    messageListRef.value.scrollTop = messageListRef.value.scrollHeight;
-}
+    if (event?.force || uiStore.chatList.isScrollingDown) {
+        const scrollPosition = messageListRef.value.scrollHeight;
+        const scrollHeight = messageListRef.value.scrollHeight;
 
-// allChatStore.$subscribe((_, _state) => {
-//     if (uiStore.chatList.isScrollingDown) {
-//         scrollToBottom();
-//     }
-// });
+        if (scrollPosition === scrollHeight) {
+            return;
+        }
+
+        logger.info('Message List Component', 'Scrolling to bottom', scrollPosition, scrollHeight);
+
+        messageListRef.value.scrollTop = messageListRef.value.scrollHeight;
+    }
+}
 
 function handleScroll(_e: Event) {
     if (!messageListRef.value) {

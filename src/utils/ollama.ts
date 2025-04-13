@@ -52,8 +52,8 @@ class OllamaAPI {
 			// Simulated chunks
 			const chunks = [
 				{ model: "mockmodel1", message: { role: "assistant", content: "Hello" }, done: false },
-				{ role: "mockmodel1", message: { role: "assistant", content: " there,", done: false } },
-				{ role: "mockmodel1", message: { role: "assistant", content: " how can I help?", done: false } },
+				{ model: "mockmodel1", message: { role: "assistant", content: " there,", done: false } },
+				{ model: "mockmodel1", message: { role: "assistant", content: " how can I help?", done: false } },
 			];
 
 			const encoder = new TextEncoder();

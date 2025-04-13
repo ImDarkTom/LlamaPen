@@ -6,7 +6,9 @@ export enum PopupButtons {
 }
 
 interface Events extends Record<EventType, unknown> {
-    scrollToBottom: void,
+    scrollToBottom?: {
+        force: boolean,
+    },
     showErrorPopup: string
     'popup:ollamanotconnected': void,
     'popup:error': {

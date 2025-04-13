@@ -13,7 +13,7 @@ watch(uiStore.chatList, () => {
 </script>
 
 <template>
-    <span v-if="showButton" @click="emitter.emit('scrollToBottom')"
+    <span v-if="showButton" @click="emitter.emit('scrollToBottom', { force: true })"
         class="absolute -top-12 -translate-x-0 bg-primary-300 p-2 rounded-lg select-none cursor-pointer shadow-sm shadow-black">Scroll
         to bottom ↓</span>
 </template>
