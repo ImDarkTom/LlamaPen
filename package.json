@@ -9,6 +9,7 @@
     "preview": "vite preview"
   },
   "dependencies": {
+    "@supabase/supabase-js": "^2.49.4",
     "dexie": "^4.0.11",
     "highlight.js": "^11.11.1",
     "katex": "^0.16.21",
@@ -20,6 +21,7 @@
     "path": "^0.12.7",
     "pinia": "^2.3.1",
     "pinia-plugin-persistedstate": "^4.2.0",
+    "stripe": "^18.0.0",
     "uuid": "^11.1.0",
     "vue": "^3.5.13",
     "vue-icons-plus": "^0.1.8",

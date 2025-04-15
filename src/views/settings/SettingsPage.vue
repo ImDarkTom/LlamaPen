@@ -8,12 +8,15 @@ import { useRouter } from 'vue-router';
 import ButtonSetting from './components/ButtonSetting.vue';
 import useChatsStore from '@/stores/chatsStore';
 import useMessagesStore from '@/stores/messagesStore';
+import supabase from '@/supabase';
+import useUserStore from '@/stores/user';
 
 const config = useConfigStore();
 const router = useRouter();
 
 const chatsStore = useChatsStore();
 const messagesStore = useMessagesStore();
+const userStore = useUserStore();
 
 // transition speed
 const transitionSpeed = ref(0.125);
@@ -69,7 +72,7 @@ function handleEscape(e: KeyboardEvent) {
     }
 }
 
-onMounted(() => {
+onMounted(async () => {
     transitionSpeed.value = config.transitionSpeed;
     document.addEventListener('keydown', handleEscape);
 });
@@ -77,6 +80,29 @@ onMounted(() => {
 onBeforeUnmount(() => {
     document.removeEventListener('keydown', handleEscape);
 });
+
+const showAccountSection = import.meta.env.VITE_SELFHOSTING === 'false';
+
+async function signIn() {
+    if (!supabase) { 
+        return;
+    }
+    
+    await supabase.auth.signInWithOAuth({
+        provider: 'google',
+    });
+}
+
+async function signOut() {
+    if (!supabase) { 
+        return;
+    }
+    
+    await supabase.auth.signOut();
+
+    location.reload();
+}
+
 </script>
 
 <template>
@@ -118,14 +144,32 @@ onBeforeUnmount(() => {
             <ButtonSetting @click="clearChats">
                 Clear all chats
             </ButtonSetting>
-            <ButtonSetting>
+            <!-- <ButtonSetting>
                 Configure title generation prompt... (TO BE ADDED)
-            </ButtonSetting>
+            </ButtonSetting> -->
         </OptionCategory>
 
         <OptionCategory label="Textpad">
             <ToggleSetting v-model="config.textpad.focusOnLoad" label="Focus on load" />
         </OptionCategory>
+
+        <div v-if="showAccountSection">
+            <OptionCategory label="Account">
+                <ButtonSetting v-if="!userStore.isSignedIn" 
+                    @click="signIn">Sign in with Google</ButtonSetting>
+                <template v-else>
+                    <span>Signed in as: {{ userStore.user?.email }}</span>
+                    <div class="flex flex-row gap-2">
+                        <ButtonSetting>
+                            <RouterLink to="/account">
+                                Manage account
+                            </RouterLink>
+                        </ButtonSetting>
+                        <ButtonSetting @click="signOut">Sign out</ButtonSetting>
+                    </div>
+                </template>
+            </OptionCategory>
+        </div>
 
         <OptionCategory label="Developer">
             <span class="text-red-500/80">Do not change these settings unless you know what you're doing.</span>
