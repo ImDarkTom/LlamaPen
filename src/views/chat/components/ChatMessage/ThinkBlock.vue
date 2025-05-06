@@ -1,13 +1,16 @@
 <script setup lang="ts">
+import { useConfigStore } from '@/stores/config';
 import { computed, ref } from 'vue';
 import { BiBrain } from 'vue-icons-plus/bi';
 import { BsChevronDown, BsChevronUp } from 'vue-icons-plus/bs';
+
+const config = useConfigStore();
 
 const props = defineProps<{
 	message: ChatMessage,
 }>();
 
-const opened = ref(true);
+const opened = ref(config.chat.reasoning.info_open_by_default);
 
 const thinkBlockText = computed<string | null>(() => {
 	const rule = /^<think>([\s\S]*?)(?=<\/think>|$)/i;

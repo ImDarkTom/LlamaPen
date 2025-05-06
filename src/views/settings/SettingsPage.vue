@@ -175,6 +175,7 @@ watch(
             <ButtonSetting @click="clearChats">
                 Clear all chats
             </ButtonSetting>
+            <ToggleSetting v-model="config.chat.reasoning.info_open_by_default" label="Reasoning text open by default" />
             <!-- <ButtonSetting>
                 Configure title generation prompt... (TO BE ADDED)
             </ButtonSetting> -->

@@ -12,6 +12,11 @@ interface Config {
         apiUrl: string,
         signoutBeforeDisable: boolean,
     },
+    chat: {
+        reasoning: {
+            info_open_by_default: boolean;
+        }
+    }
     textpad: {
         focusOnLoad: boolean,
     },
@@ -32,6 +37,11 @@ export const useConfigStore = defineStore('config', {
             enabled: false,
             apiUrl: import.meta.env.VITE_API_URL,
             signoutBeforeDisable: false,
+        },
+        chat: {
+            reasoning: {
+                info_open_by_default: false,
+            }
         },
         textpad: {
             focusOnLoad: false,
