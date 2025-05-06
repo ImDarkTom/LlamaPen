@@ -6,7 +6,7 @@ class SupabaseClient {
 	private client: ReturnType<typeof createClient> | null = null;
 
 	initialise() {
-		if (import.meta.env.VITE_SELFHOSTING === 'true') {
+		if (import.meta.env.VITE_PRODUCTION !== 'true') {
 			return null;
 		}
 

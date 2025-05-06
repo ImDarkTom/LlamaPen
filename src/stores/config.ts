@@ -7,6 +7,11 @@ interface Config {
     showSidebar: boolean,
     transitionSpeed: number,
     closeSidebarOnNavMobile: boolean,
+    api: {
+        enabled: boolean,
+        apiUrl: string,
+        signoutBeforeDisable: boolean,
+    },
     textpad: {
         focusOnLoad: boolean,
     },
@@ -23,6 +28,11 @@ export const useConfigStore = defineStore('config', {
         showSidebar: true,
         transitionSpeed: 0.125,
         closeSidebarOnNavMobile: true,
+        api: {
+            enabled: false,
+            apiUrl: import.meta.env.VITE_API_URL,
+            signoutBeforeDisable: false,
+        },
         textpad: {
             focusOnLoad: false,
         },
@@ -32,7 +42,7 @@ export const useConfigStore = defineStore('config', {
         }
     }),
     getters: {
-        apiUrl: (state) => (path: string) => `${state.ollamaUrl}${path}`,
+        apiUrl: (state) => (path: string) => `${state.api.enabled ? state.api.apiUrl : state.ollamaUrl}${path}`,
         transitionSpeedSec: (state) => state.transitionSpeed,
     },
     actions: {
