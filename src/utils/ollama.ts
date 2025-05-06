@@ -1,4 +1,5 @@
 import { useConfigStore } from '@/stores/config';
+import { authedFetch } from './auth';
 
 const DEFAULT_TITLE_GENERATION_PROMPT = (historyText: string) => `Create a concise, 3-5 word title as a title for the chat history, in the given language. RESPOND ONLY WITH THE TITLE TEXT.
 
@@ -29,7 +30,7 @@ class OllamaAPI {
 
 		const generationPrompt = DEFAULT_TITLE_GENERATION_PROMPT(messagesFormatted);
 
-		const response = await fetch(useConfigStore().apiUrl('/api/generate'), {
+		const response = await authedFetch(useConfigStore().apiUrl('/api/generate'), {
 			method: 'POST',
 			headers: {
 				'Content-Type': 'application/json',
@@ -89,7 +90,7 @@ class OllamaAPI {
 			});
 		}
 
-		return fetch(useConfigStore().apiUrl('/api/chat'), {
+		return authedFetch(useConfigStore().apiUrl('/api/chat'), {
 			method: 'POST',
 			headers: {
 				'Content-Type': 'application/json',

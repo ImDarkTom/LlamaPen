@@ -9,6 +9,7 @@ import ollamaApi from '@/utils/ollama';
 import { useConfigStore } from './config';
 import { filesAsBase64 } from '@/utils/conversion';
 import { useUiStore } from './uiStore';
+import { tryCatch } from '@/utils/tryCatch';
 
 // ----
 // Init
@@ -180,6 +181,28 @@ const useMessagesStore = defineStore('messages', () => {
 
 		if (!response.body) {
 			throw new Error('No response body found for Ollama message response.')
+		}
+
+		if (response.status === 401) {
+			const { data, error } = await tryCatch<{ error: { text: string, type: string } }>(await response.json());
+
+			if (error || !data.error) {
+				console.error('Error parsing 401 response.');
+				alert('Could not send message.');
+				cancelHandler();
+				return;
+			}
+
+			if (data.error.type === 'premium') {
+				alert('You need premium to use this model.');
+			} else if (data.error.type === 'auth') {
+				alert('You need to be signed in to use this model.');
+			} else {
+				alert('Unknown 401 error when sending message');
+			}
+
+			cancelHandler();
+			return;
 		}
 
 		const reader = response.body.getReader();

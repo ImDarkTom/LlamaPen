@@ -6,7 +6,7 @@ defineProps<{
 }>();
 
 let visible = ref<boolean>(false);
-let timeoutId: null | number = null;
+let timeoutId: null | NodeJS.Timeout = null;
 let timeoutDuration = 500; // todo: make configurable
 
 function showTooltip() {

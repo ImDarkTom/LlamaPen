@@ -5,6 +5,7 @@ import GuidePage from "@/views/guide/GuidePage.vue";
 import TextpadPage from '@/views/textpad/TextpadPage.vue';
 import Layout from "./components/Layout/Layout.vue";
 import { createRouter, createWebHistory } from 'vue-router';
+import AccountPage from './views/account/AccountPage.vue';
 
 const routes = [
     {
@@ -16,7 +17,8 @@ const routes = [
             { path: "/textpad", component: TextpadPage },
             { path: "/textpad/:id", component: TextpadPage },
             { path: "/settings", component: SettingsPage },
-            { path: '/guide', component: GuidePage }
+            { path: '/guide', component: GuidePage },
+            { path: '/account', component: AccountPage }
         ],
     },
 ];

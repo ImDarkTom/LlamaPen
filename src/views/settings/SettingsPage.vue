@@ -1,5 +1,5 @@
 <script setup lang="ts">
-import { computed, onBeforeUnmount, onMounted, ref } from 'vue';
+import { computed, onBeforeUnmount, onMounted, ref, watch } from 'vue';
 import { useConfigStore } from '@/stores/config';
 import ToggleSetting from '@/views/settings/components/ToggleSetting.vue';
 import OptionCategory from './components/OptionCategory.vue';
@@ -8,12 +8,17 @@ import { useRouter } from 'vue-router';
 import ButtonSetting from './components/ButtonSetting.vue';
 import useChatsStore from '@/stores/chatsStore';
 import useMessagesStore from '@/stores/messagesStore';
+import supabase from '@/supabase';
+import useUserStore from '@/stores/user';
+import TextInputSetting from './components/TextInputSetting.vue';
+import logger from '@/utils/logger';
 
 const config = useConfigStore();
 const router = useRouter();
 
 const chatsStore = useChatsStore();
 const messagesStore = useMessagesStore();
+const userStore = useUserStore();
 
 // transition speed
 const transitionSpeed = ref(0.125);
@@ -33,22 +38,15 @@ function updateTransitionSpeed() {
     config.setTransitionSpeed(newSpeed);
 }
 
-//custom ollama url
-function customUrlDialog() {
-    const currentUrl = config.ollamaUrl;
-    const customUrl = prompt("Enter a custom URL to use as a Ollama instance, write in the format of an origin i.e. 'http://example.com:8080'. \n\n Leave blank to reset to default (http://localhost:11434): ", currentUrl);
-
-    if (customUrl === currentUrl) {
-        return;
+function ollamaUrlCheck(url: string): string {
+    if (url.length === 0 || url === "") {
+        url = "http://localhost:11434";
     }
 
-    if (!customUrl || customUrl == "") {
-        config.setOllamaUrl('http://localhost:11434')
-        return;
-    }
-
-    config.setOllamaUrl(customUrl);
+    config.setOllamaUrl(url);
     location.reload();
+
+    return url;
 }
 
 // clear chats
@@ -69,7 +67,7 @@ function handleEscape(e: KeyboardEvent) {
     }
 }
 
-onMounted(() => {
+onMounted(async () => {
     transitionSpeed.value = config.transitionSpeed;
     document.addEventListener('keydown', handleEscape);
 });
@@ -77,26 +75,85 @@ onMounted(() => {
 onBeforeUnmount(() => {
     document.removeEventListener('keydown', handleEscape);
 });
+
+const inProduction = import.meta.env.VITE_PRODUCTION === 'true';
+
+async function signIn() {
+    if (!supabase) { 
+        return;
+    }
+    
+    const { data: _data, error } = await supabase.auth.signInWithOAuth({
+        provider: 'google',
+    });
+
+    if (error) {
+        alert('Error attempting sign in, ' + error);
+        return;
+    }
+}
+
+async function signOut() {
+    if (!supabase) { 
+        return;
+    }
+    
+    await supabase.auth.signOut();
+    location.reload();
+}
+
+watch(
+    () => config.api.enabled,   
+    async (newValue) => {
+        if (newValue === false && config.api.signoutBeforeDisable) {
+            // TODO: Fix/make this work
+            if (!supabase) return;
+
+            logger.info('Settings Page', 'Signing out before disabling API');
+            await supabase.auth.signOut();
+
+            location.reload();
+            return;
+        }
+
+        location.reload();
+    }
+);
 </script>
 
 <template>
     <div 
-        class="w-full h-full flex flex-col items-center py-4 box-border overflow-y-auto px-2
-            *:mx-auto *:md:w-3/5 *:lg:w-1/2"
+    class="w-full h-full flex flex-col items-center py-4 box-border overflow-y-auto px-2
+    *:mx-auto *:md:w-4/5 *:lg:w-3/5"
     >
-        <div class="relative w-full flex flex-row justify-between items-center">
-            <h1 class="text-4xl font-extrabold mt-2 pr-3 bg-primary-400">Settings</h1>
-            <div class="w-full h-0.5 bg-txt-1 absolute top-1/2 translate-y-1/2 -z-1 rounded-full"></div>
-            <div class="bg-primary-400 pl-2 box-border">
-                <AiOutlineClose class="size-10 hover:bg-primary-300 cursor-pointer rounded-full p-1 transition-colors duration-100"
-                    @click="router.back()" />
-            </div>
+    <div class="relative w-full flex flex-row justify-between items-center">
+        <h1 class="text-4xl font-extrabold mt-2 pr-3 bg-primary-400">Settings</h1>
+        <div class="w-full h-0.5 bg-txt-1 absolute top-1/2 translate-y-1/2 -z-1 rounded-full"></div>
+        <div class="bg-primary-400 pl-2 box-border">
+            <AiOutlineClose class="size-10 hover:bg-primary-300 cursor-pointer rounded-full p-1 transition-colors duration-100"
+            @click="router.back()" />
         </div>
+    </div>
 
-        <OptionCategory label="Ollama">
-            <ButtonSetting @click="customUrlDialog">
-                Set custom Ollama URL
-            </ButtonSetting>
+    <OptionCategory label="Account" v-if="inProduction">
+        <ToggleSetting v-model="config.api.enabled" label="Enable Llamapen Cloud" />
+        <template v-if="config.api.enabled">
+            <ButtonSetting v-if="!userStore.isSignedIn" 
+            @click="signIn">Sign in with Google</ButtonSetting>
+            <template v-else>
+                <!-- <ToggleSetting v-model="config.api.signoutBeforeDisable" label="Sign out before disable" /> -->
+                <div class="flex flex-row gap-2">
+                    <RouterLink to="/account" class="bg-primary-200! p-4 rounded-lg hover:ring-1 ring-txt-2/50 cursor-pointer transition-all duration-150 w-fit">
+                        Manage account
+                    </RouterLink>
+                    <ButtonSetting @click="signOut">Sign out</ButtonSetting>
+                </div>
+            </template>
+        </template>
+    </OptionCategory>
+    
+    <OptionCategory label="Ollama">
+        <TextInputSetting label="Ollama URL" v-model="config.ollamaUrl" default="http://localhost:11434" :check="ollamaUrlCheck" />
         </OptionCategory>
 
         <OptionCategory label="Appearance">
@@ -118,9 +175,9 @@ onBeforeUnmount(() => {
             <ButtonSetting @click="clearChats">
                 Clear all chats
             </ButtonSetting>
-            <ButtonSetting>
+            <!-- <ButtonSetting>
                 Configure title generation prompt... (TO BE ADDED)
-            </ButtonSetting>
+            </ButtonSetting> -->
         </OptionCategory>
 
         <OptionCategory label="Textpad">

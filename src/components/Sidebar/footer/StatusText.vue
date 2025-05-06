@@ -40,7 +40,7 @@ onMounted(() => {
 </script>
 
 <template>
-    <div class="overflow-hidden overflow-ellipsis py-2 font-semibold">
+    <div v-if="!config.api.enabled" class="overflow-hidden overflow-ellipsis py-2 font-semibold">
         <span
             :class="{ 
                 'text-amber-400': waitingForResponse,
