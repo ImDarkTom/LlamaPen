@@ -3,9 +3,15 @@ import { useConfigStore } from '@/stores/config';
 import useUserStore from '@/stores/user';
 import { authedFetch } from '@/utils/auth';
 import logger from '@/utils/logger';
+import setPageTitle from '@/utils/title';
+import { onMounted } from 'vue';
 
 const userStore = useUserStore();
 const config = useConfigStore();
+
+onMounted(() => {
+	setPageTitle('My Account');
+});
 
 async function subscriptionButtonClick() {
 	if (userStore.subscription.subscribed) {

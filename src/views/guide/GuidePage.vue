@@ -1,4 +1,5 @@
 <script setup lang="ts">
+import setPageTitle from '@/utils/title';
 import hljs from 'highlight.js';
 import { onMounted, ref } from 'vue';
 import { AiFillApple, AiFillWindows, AiOutlineLinux } from 'vue-icons-plus/ai';
@@ -6,6 +7,7 @@ import { AiFillApple, AiFillWindows, AiOutlineLinux } from 'vue-icons-plus/ai';
 const originUrl = ref<string>(window.location.origin);
 
 onMounted(() => {
+    setPageTitle('Setup Guide');
     hljs.highlightAll();
 });
 </script>

@@ -12,6 +12,7 @@ import supabase from '@/supabase';
 import useUserStore from '@/stores/user';
 import TextInputSetting from './components/TextInputSetting.vue';
 import logger from '@/utils/logger';
+import setPageTitle from '@/utils/title';
 
 const config = useConfigStore();
 const router = useRouter();
@@ -68,6 +69,8 @@ function handleEscape(e: KeyboardEvent) {
 }
 
 onMounted(async () => {
+    setPageTitle('Settings');
+
     transitionSpeed.value = config.transitionSpeed;
     document.addEventListener('keydown', handleEscape);
 });

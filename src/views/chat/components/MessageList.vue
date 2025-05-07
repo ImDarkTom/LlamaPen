@@ -8,12 +8,15 @@ import GreetingText from './GreetingText.vue';
 import useMessagesStore from '@/stores/messagesStore';
 import { storeToRefs } from 'pinia';
 import logger from '@/utils/logger';
+import setPageTitle from '@/utils/title';
+import useChatsStore from '@/stores/chatsStore';
 
 const messageListRef = ref<HTMLElement | null>(null);
 
 const route = useRoute();
 
 const messagesStore = useMessagesStore();
+const chatsStore = useChatsStore();
 
 const { openedChatMessages } = storeToRefs(messagesStore);
 
@@ -24,6 +27,14 @@ watch(() => route.params.id, (newId, oldId) => {
         messagesStore.openChat(parseInt(newId as string));
         uiStore.setLastOpenedChat(route.params.id as string);
     }
+
+    // TODO: make this also update on chat title update
+    if (!newId) {
+        setPageTitle('Chat');
+    } else {
+        chatsStore.getChatTitle(parseInt(newId as string))
+            .then(title => setPageTitle(`${title} | Chat`));
+    }
 });
 
 onMounted(() => {
@@ -31,6 +42,14 @@ onMounted(() => {
 
     messagesStore.openChat(parseInt(route.params.id as string));
     uiStore.setLastOpenedChat(route.params.id as string);
+
+    if (!route.params.id) {
+        setPageTitle('Chat');
+    } else {
+        chatsStore.getChatTitle(parseInt(route.params.id as string))
+            .then(title => setPageTitle(`${title} | Chat`));
+    }
+
     emitter.on('scrollToBottom', scrollToBottom);
 
     nextTick(() => {

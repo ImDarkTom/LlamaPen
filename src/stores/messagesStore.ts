@@ -72,7 +72,6 @@ const useMessagesStore = defineStore('messages', () => {
 
 	initLiveSync(messages, openedChatMessages, openedChatId);
 
-
 	async function sendMessage(content: string, attachments: File[] = []) {
 		if (content.length === 0) return;
 		
