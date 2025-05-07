@@ -1,5 +1,8 @@
 import { useConfigStore } from '@/stores/config';
 import { authedFetch } from './auth';
+import { tryCatch } from './tryCatch';
+import { Readable } from 'readable-stream';
+import type { ReadableOf } from '@/types/util';
 
 const DEFAULT_TITLE_GENERATION_PROMPT = (historyText: string) => `Create a concise, 3-5 word title as a title for the chat history, in the given language. RESPOND ONLY WITH THE TITLE TEXT.
 
@@ -15,7 +18,21 @@ Artificial Intelligence in Healthcare
 ${historyText}
 </chat_history>`;
 
+export type ChatIteratorError = {
+	error: {
+		type: '401-parse-fail' | 'no-response-body' | 'user-not-premium' | 'user-not-authed' | 'unknown-401'
+		message?: string;
+	};
+}
+
+export type ChatIteratorDone = {
+	stream_done: boolean;
+	reason?: 'stream-done' | 'user-aborted';
+}
+
 class OllamaAPI {
+	private modelList: ModelList = [];
+
 	constructor() {}
 
 	async generateChatTitle(messages: ChatMessage[]): Promise<string> {
@@ -101,6 +118,79 @@ class OllamaAPI {
 			}),
 			signal: abortSignal,
 		});
+	}
+
+	async* chatIterator(messages: OllamaMessage[], abortSignal: AbortSignal, modelOverride?: string): AsyncGenerator<OllamaChatResponseChunk, ChatIteratorError | ChatIteratorDone | undefined, unknown> {
+		const response = await authedFetch(useConfigStore().apiUrl('/api/chat'), {
+			method: 'POST',
+			headers: {
+				'Content-Type': 'application/json',
+			},
+			body: JSON.stringify({
+				model: modelOverride ?? useConfigStore().selectedModel,
+				messages,
+			}),
+			signal: abortSignal,
+		});
+
+		if (!response.body) {
+			return { error: { type: 'no-response-body' } };
+		}
+		
+		if (response.status === 401) {
+			const { data, error } = await tryCatch<{ error: { text: string, type: string } }>(await response.json());
+
+			if (error || !data.error) {
+				return { error: { type: '401-parse-fail' } };
+			}
+
+			if (data.error.type === 'premium') {
+				return { error: { type: 'user-not-premium' } };
+			} else if (data.error.type === 'auth') {
+				return { error: { type: 'user-not-authed' } }
+			} else {
+				return { error: { type: 'unknown-401' } }
+			}
+		}
+
+
+		const decoder = new TextDecoder();
+		const reader = response.body.getReader();
+		
+		while (true) {
+			if (abortSignal.aborted) return { stream_done: true, reason: 'user-aborted' };
+
+			const { done, value } = await reader.read();
+			if (done) return { stream_done: true, reason: 'stream-done' };
+
+			const chunkText = decoder.decode(value).trim().split('\n');
+
+			for (const chunk of chunkText) {
+				const { data, error } = await tryCatch<OllamaChatResponseChunk>(JSON.parse(chunk));
+
+				if (error) {
+					console.error('Error parsing message chunk', error);
+					continue;
+				}
+
+				yield data;
+			}
+		}
+	}
+
+	chat(messages: OllamaMessage[], abortSignal: AbortSignal, modelOverride?: string): ReadableOf<OllamaChatResponseChunk | ChatIteratorError | ChatIteratorDone> {
+		return Readable.from(this.chatIterator(messages, abortSignal, modelOverride));
+	}
+
+	async getModels() {
+		if (this.modelList.length !== 0) return this.modelList;
+
+		const response = await fetch(useConfigStore().apiUrl('/api/tags'));
+		const responseJson: { models: ModelList } = await response.json();
+
+		this.modelList = responseJson.models;
+
+		return this.modelList;
 	}
 }
 

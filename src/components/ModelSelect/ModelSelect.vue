@@ -7,6 +7,7 @@ import ModelSelectItem from './ModelSelectItem.vue';
 import DropdownButton from '../Dropdown/DropdownButton.vue';
 import { LuBrainCircuit } from 'vue-icons-plus/lu';
 import logger from '@/utils/logger';
+import ollamaApi from '@/utils/ollama';
 
 const config = useConfigStore();
 const uiStore = useUiStore();
@@ -25,21 +26,14 @@ const searchBarRef = ref<HTMLInputElement | null>(null);
 const listItemsRef = ref<Array<HTMLElement | null>>([]);
 
 // Lifecycle hooks
-onMounted(() => {
+onMounted(async () => {
     logger.info('Model Select Component', 'Selected model is', config.selectedModel);
 
-    fetch(config.apiUrl('/api/tags'))
-        .then(response => response.json())
-        .then(response => {
-            modelsList.value = response.models;
+    modelsList.value = await ollamaApi.getModels();
 
-            if (!config.selectedModel || !modelsList.value.map((item) => item.name).includes(config.selectedModel)) { 
-                config.selectedModel = response.models[0].model;
-            }
-        })
-        .catch((error) => {
-            console.log(error);
-        });
+    if (!config.selectedModel || !modelsList.value.map((item) => item.model).includes(config.selectedModel)) { 
+        config.selectedModel = modelsList.value[0].model;
+    }
 
     document.addEventListener('keydown', handleKeyboardShortcuts)
 });

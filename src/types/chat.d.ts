@@ -4,6 +4,7 @@ interface Chat {
 	createdAt: Date;
 	lastestMessageDate?: Date;
 	isGenerating?: boolean;
+	isGeneratingTitle?: boolean;
 	pinned: 0 | 1;
 }
 

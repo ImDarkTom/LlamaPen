@@ -94,6 +94,16 @@ const useChatsStore = defineStore('chats', () => {
 		db.chats.clear();
 	}
 
+	async function getChatTitle(id: number) {
+		const foundChat = await db.chats.where('id').equals(id).first();
+
+		if (!foundChat) {
+			throw new Error(`Chat with id ${id} was not found when getting chat title`);
+		}
+
+		return foundChat.title;
+	}
+
 	const pinnedChatsByRecent: ReturnType<typeof ref<Chat[]>> = computed((oldValue) => {
 		if (oldValue === unpinnedChats.value) return oldValue;
 
@@ -121,6 +131,7 @@ const useChatsStore = defineStore('chats', () => {
 		setPinned,
 		isOpened,
 		clearChats,
+		getChatTitle,
 	};
 });
 

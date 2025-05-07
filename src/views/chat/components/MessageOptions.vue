@@ -1,10 +1,14 @@
 <script setup lang="ts">
-import { ref } from 'vue';
+import { onMounted, ref } from 'vue';
 import TooltipBottom from '@/components/Tooltip/Tooltip.vue';
 import { BsCopy, BsPen } from 'vue-icons-plus/bs';
 import logger from '@/utils/logger';
+import ollamaApi from '@/utils/ollama';
+import useMessagesStore from '@/stores/messagesStore';
 
-defineProps<{
+const messagesStore = useMessagesStore();
+
+const props = defineProps<{
     message: ChatMessage,
 }>();
 
@@ -32,6 +36,24 @@ function editMessage(_message: ChatMessage) {
 }
 
 const emit = defineEmits(['editMessage']);
+
+const allModels = ref<ModelList>([]);
+onMounted(async () => {
+    allModels.value = await ollamaApi.getModels();
+});
+
+function changeMessageModel(e: Event) {
+    const newValue = (e.target as HTMLSelectElement).value;
+
+    console.log(props.message.id, newValue);
+
+    messagesStore.regenerateMessage(props.message.id, newValue);
+}
+
+function shouldShowRegenOption(message: ChatMessage) {
+    return message.type === 'model' && (message.status === 'finished' || message.status === 'cancelled');
+}
+
 </script>
 
 <template>
@@ -42,6 +64,17 @@ const emit = defineEmits(['editMessage']);
         </TooltipBottom>
         <TooltipBottom class="message-option" v-if="message.type === 'user'" text="Edit">
             <BsPen class="size-full" title="Edit" @click="editMessage(message)" />
+        </TooltipBottom>
+        <TooltipBottom class="box-border h-9 mt-1 rounded-lg cusror-pointer" v-if="shouldShowRegenOption(message)" text="Change model">
+            <div class="flex flex-row">
+                <select class="bg-primary-400 hover:bg-primary-300 text-txt-2 p-2 rounded-lg transition-all duration-100 cursor-pointer" @change="e => changeMessageModel(e)">
+                    <option :value="message.model" class="text-txt-1">↻ Retry with {{ message.model }}</option>
+                    <option v-for="model in allModels"
+                        :selected="model.model === message.model" :value="model.model">
+                        {{ model.name }}
+                    </option>
+                </select>
+            </div>
         </TooltipBottom>
     </div>
 </template>

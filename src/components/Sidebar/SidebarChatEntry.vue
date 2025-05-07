@@ -113,7 +113,7 @@ function setPinned(value: boolean) {
             <input type="text"
                 class="border-none outline-none m-0 flex-1 px-2 box-border justify-center items-center cursor-pointer text-ellipsis"
                 @blur="stopEditing()" @keydown="editKeyPressed" ref="chatTextRef" :value="props.chat.title" readonly
-                :class="{ '!bg-primary-500 rounded-sm': editing }">
+                :class="{ '!bg-primary-500 rounded-sm': editing, 'opacity-50': $props.chat.isGeneratingTitle }">
             <AiOutlineClose
                 class="hidden shrink-0 group-hover:block box-content pr-0 hover:text-red-400 transition-colors duration-150 ease-in-out"
                 @click="deleteChat" />
