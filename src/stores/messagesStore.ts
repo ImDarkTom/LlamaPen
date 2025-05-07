@@ -228,7 +228,7 @@ const useMessagesStore = defineStore('messages', () => {
 			const messageChunk = chunk.message.content;
 			openedChatMessages.value = openedChatMessages.value.map((message) => {
 				if (message.id === ollamaMessageId) {
-					updatedMessage = message.content + messageChunk;
+					updatedMessage = updatedMessage + messageChunk;
 					
 					return {
 						...message,
