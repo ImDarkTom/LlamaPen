@@ -89,7 +89,7 @@ function getIconComponent(modelName: string) {
 			'bg-primary-500 shadow-sm shadow-black/50': index === focusedItemIndex,
 			'opacity-75': !userStore.subscription.subscribed && model.llamapenMetadata?.premium
 		}" @click="setModel(model)" ref="listItemsRef" :aria-selected="index === focusedItemIndex">
-		<component :is="getIconComponent(model.model)" class="size-10 p-1 before:text-red-500 before:scale-110"
+		<component :is="getIconComponent(model.model)" class="size-10 p-1"
 			:class="{ 
 				'bg-primary-600 rounded-lg': config.ui.modelIconsBg && config.ui.modelIconsBgDark,
 				'bg-primary-50 rounded-lg': config.ui.modelIconsBg && !config.ui.modelIconsBgDark
