@@ -7,6 +7,11 @@ interface Config {
     showSidebar: boolean,
     transitionSpeed: number,
     closeSidebarOnNavMobile: boolean,
+    ui: {
+        monochromeModelIcons: boolean,
+        modelIconsBg: boolean,
+        modelIconsBgDark: boolean,
+    },
     api: {
         enabled: boolean,
         apiUrl: string,
@@ -33,6 +38,11 @@ export const useConfigStore = defineStore('config', {
         showSidebar: true,
         transitionSpeed: 0.125,
         closeSidebarOnNavMobile: true,
+        ui: {
+            monochromeModelIcons: false,
+            modelIconsBg: false,
+            modelIconsBgDark: false
+        },
         api: {
             enabled: false,
             apiUrl: import.meta.env.VITE_API_URL,

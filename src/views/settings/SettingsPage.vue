@@ -13,6 +13,7 @@ import useUserStore from '@/stores/user';
 import TextInputSetting from './components/TextInputSetting.vue';
 import logger from '@/utils/logger';
 import setPageTitle from '@/utils/title';
+import CategoryLabel from './components/CategoryLabel.vue';
 
 const config = useConfigStore();
 const router = useRouter();
@@ -161,7 +162,7 @@ watch(
 
         <OptionCategory label="Appearance">
             <div class="flex flex-col gap-2 w-full">
-                <h3 class="text-xl font-medium py-2">Transition Speed</h3>
+                <span class="text-lg text-txt-2">Transition Speed</span>
                 <input
                     class="accent-primary-200 w-full"
                     @change="updateTransitionSpeed" v-model="transitionSpeed" type="range" min="0" max = "1" step="0.025" 
@@ -171,7 +172,14 @@ watch(
                     <span class="pl-2 text-txt-2">{{ transitionSpeed == 0.125 ? '(Default)' : '' }}</span>
                 </span>
             </div>
-            <ToggleSetting v-model="config.closeSidebarOnNavMobile" label="Mobile: Hide sidebar on navigate"/>
+            <CategoryLabel>Model Select Icons</CategoryLabel>
+            <ToggleSetting v-model="config.ui.monochromeModelIcons" label="Monochrome model icons" />
+            <ToggleSetting v-model="config.ui.modelIconsBg" label="Model icons background" />
+            <div v-if="config.ui.modelIconsBg" class="border-l-[1px] border-txt-1 pl-3 ml-3">
+                <ToggleSetting  v-model="config.ui.modelIconsBgDark" label="Dark icon background"  />
+            </div>
+            <CategoryLabel>Mobile</CategoryLabel>
+            <ToggleSetting v-model="config.closeSidebarOnNavMobile" label="Hide sidebar on navigate"/>
         </OptionCategory>
 
         <OptionCategory label="Chat">

@@ -12,8 +12,8 @@ const updateValue = () => {
 </script>
 
 <template>
-	<label class="w-full flex flex-row justify-between items-center cursor-pointer hover:*:font-semibold transition-all duration-150" @click="updateValue">
-		<span class="text-xl font-medium">{{ label }}</span>
+	<label class="w-full flex flex-row justify-between items-center cursor-pointer hover:*:text-txt-1 transition-all duration-100" @click="updateValue">
+		<span class="text-lg text-txt-2">{{ label }}</span>
 		
 		<input 
 			class="sr-only"

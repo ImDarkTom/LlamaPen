@@ -39,7 +39,7 @@ const updateValue = () => {
 
 <template>
 	<label class="w-full flex flex-col justify-between items-start">
-		<span class="text-lg font-medium">{{ label }}</span>
+		<span class="text-lg font-medium text-txt-2">{{ label }}</span>
 		
 		<div class="w-full flex flex-row gap-2">
 			<input
