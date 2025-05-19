@@ -27,6 +27,8 @@ function initLiveSync(
 	let openedNoteSubscription: { unsubscribe: () => void } | null = null;
 
 	watch(openedNoteId, (newId) => {
+		logger.info('Notes Store', 'New openedNoteId value', openedNoteId.value, ' to new id', newId);
+
 		if (openedNoteSubscription) {
 			openedNoteSubscription.unsubscribe();
 			openedNoteSubscription = null;
@@ -73,6 +75,8 @@ const useNotesStore = defineStore('notes', () => {
 	}
 
 	async function saveNote(content: string, title: string): Promise<boolean> {
+		logger.info('Notes Store', 'Saving note with openedNoteId: ', openedNoteId.value);
+
 		let noteId = openedNoteId.value;
 		let isNewNote = false;
 
@@ -110,10 +114,16 @@ const useNotesStore = defineStore('notes', () => {
 	}
 
 	async function appendToNoteBody(id: number, textToAppend: string) {
+		// logger.info('Notes Store', 'Appending text to note body with note id', id);
+
 		await db.notes.where('id').equals(id).modify(item => {
 			item.content += textToAppend;
 		});
 	}
+
+	watch(openedNoteId, (val, oldVal) => {
+		console.log(`openedNoteId changed from ${oldVal} to ${val}`);
+	});
 
 	return { 
 		notes,

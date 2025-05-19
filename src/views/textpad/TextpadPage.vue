@@ -20,8 +20,6 @@ const noteTitleElem = ref<HTMLInputElement | null>(null);
 
 const starterPromptElem = ref<HTMLInputElement | null>(null);
 
-const generating = ref(false);
-
 onMounted(() => {
 	const routeId = route.params.id;
 	
@@ -44,6 +42,29 @@ function handleKeyDown(e: KeyboardEvent) {
 		e.preventDefault();
 		save();
 		return;
+	}
+
+	console.log(e);
+
+	if (e.key === 'O' && e.ctrlKey && e.shiftKey) {
+		e.preventDefault();
+		router.push('/textpad');
+		return;
+	}
+
+	if (e.key === 'Escape' && e.shiftKey) {
+		e.preventDefault();
+		noteEditorElem.value?.focus();
+		return;
+	}
+
+	if (e.key === 'Backspace' && e.shiftKey && e.ctrlKey) {
+		if (!openedNote.value) return;
+
+		if (confirm(`Are you sure you want to delete "${openedNote.value.title}"?`)) {
+			notesStore.deleteNote(openedNote.value.id);
+			router.push('/textpad');
+		}
 	}
 }
 
@@ -93,6 +114,11 @@ async function save() {
 	}, 500);
 }
 
+async function startFromScratch() {
+	await notesStore.saveNote('', 'Untitled');
+	router.push(`/textpad/${notesStore.openedNoteId}`);
+}
+
 async function generateStarter() {
 	console.log('generating note starter.');
 
@@ -133,7 +159,11 @@ async function generateStarter() {
 			throw new Error('No opened note when appending message chunk.')
 		}
 
-		notesStore.appendToNoteBody(newlyCreatedNoteId, chunk.message.content)
+		console.log(newlyCreatedNoteId, openedNote.value?.id);
+
+		notesStore.appendToNoteBody(newlyCreatedNoteId, chunk.message.content);
+
+		console.log(newlyCreatedNoteId, openedNote.value?.id);
 	}
 }
 </script>
@@ -149,19 +179,26 @@ async function generateStarter() {
 		<div v-if="openedNote" class="flex grow bg-primary-500 p-2 rounded-lg justify-center">
 			<div class="flex flex-col grow h-full max-w-2xl gap-2">
 				<div class="w-full flex flex-col">
-					<input ref="noteTitleElem" type="text" class="!text-4xl font-semibold outline-none" :value="openedNote?.title ?? 'Untitled'">
-					<i v-if="openedNote" class="text-txt-2 text-sm">Created: {{ openedNote?.createdAt.toLocaleString() }} - Edited: {{ openedNote?.lastEdited.toLocaleString() }}</i>
+					<input ref="noteTitleElem" type="text" class="!text-4xl font-semibold outline-none"
+						:value="openedNote.title">
+					<i class="text-txt-2 text-sm">Created: {{ openedNote.createdAt.toLocaleString()
+						}} - Edited: {{ openedNote.lastEdited.toLocaleString() }}</i>
 				</div>
-				<textarea ref="noteEditorElem" class="grow !text-lg text-txt-2 outline-none resize-none" :value="openedNote?.content"></textarea>
+				<textarea ref="noteEditorElem" class="grow !text-lg text-txt-2 outline-none resize-none"
+					:value="openedNote.content"></textarea>
 			</div>
 		</div>
-		<div v-else class="flex grow bg-primary-300 rounded-lg items-center justify-center">
-			<div class="relative">
-				<div class="absolute top-0 left-0 -translate-1/2 w-64 h-32 rounded-lg"
-					:class="{ 'ring-2 ring-txt-2 animate-pulse': generating }"></div>
-				<div class="absolute top-0 left-0 -translate-1/2 bg-primary-200 w-64 h-32 p-4 rounded-lg">
-					<span class="text-lg">Write...</span>
-					<input ref="starterPromptElem" type="text" class="w-full bg-primary-400 p-2 rounded-md" placeholder="about the key themes in..." @keyup.enter="generateStarter">
+		<div v-else class="flex grow bg-primary-500 rounded-lg items-center justify-center">
+			<div class="flex flex-col bg-primary-300 rounded-lg">
+				<div class="p-4 flex flex-row gap-1 items-center justify-center">
+					<span class="text-lg font-bold">Write</span>
+					<input ref="starterPromptElem" type="text" class="w-full bg-primary-400 p-2 rounded-md"
+						placeholder="a note about..." @keyup.enter="generateStarter">
+				</div>
+				<div class="w-full h-[1px] bg-txt-2"></div>
+				<div class="p-4 flex justify-center cursor-pointer text-txt-2 font-semibold hover:bg-primary-200 rounded-b-lg transition-colors duration-100"
+					@click="startFromScratch">
+					Or start from scratch
 				</div>
 			</div>
 		</div>
