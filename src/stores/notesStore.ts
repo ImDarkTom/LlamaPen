@@ -24,8 +24,9 @@ function initLiveSync(
 		}
 	});
 
+	// When a new note is opened, if we have an existing subscription to live update for
+	// another note, unsubscribe, and set it to track the newly opened note.
 	let openedNoteSubscription: { unsubscribe: () => void } | null = null;
-
 	watch(openedNoteId, (newId) => {
 		logger.info('Notes Store', 'New openedNoteId value', openedNoteId.value, ' to new id', newId);
 
@@ -39,7 +40,7 @@ function initLiveSync(
 			return;
 		}
 
-		openedNoteSubscription = liveQuery(() => db.notes.where('id').equals(newId).first())
+		openedNoteSubscription = liveQuery(() => db.notes.get(newId))
 			.subscribe({
 				next: data => {
 					openedNote.value = data ?? null;
