@@ -56,7 +56,7 @@ onUnmounted(() => {
                 <Transition name="slide-left" mode="out-in">
                     <!-- Chats List -->
                     <ChatList v-if="uiStore.mode === 'chat'" />
-                    <!-- Textpads List -->
+                    <!-- Note List -->
                     <NoteList v-else />
                 </Transition>
                 <SidebarOptions />

@@ -53,7 +53,7 @@ function handleKeyDown(e: KeyboardEvent) {
 
 	if (e.key === 'O' && e.ctrlKey && e.shiftKey) {
 		e.preventDefault();
-		router.push('/textpad');
+		router.push('/note');
 		return;
 	}
 
@@ -68,7 +68,7 @@ function handleKeyDown(e: KeyboardEvent) {
 
 		if (confirm(`Are you sure you want to delete "${openedNote.value.title}"?`)) {
 			notesStore.deleteNote(openedNote.value.id);
-			router.push('/textpad');
+			router.push('/note');
 		}
 	}
 }
@@ -96,7 +96,7 @@ function loadNote(newId?: string) {
 		notesStore.openedNoteId = parsedId;
 	}
 
-	if (config.textpad.focusOnLoad) {
+	if (config.note.focusOnLoad) {
 		noteEditorElem.value?.focus();
 	}
 }
@@ -110,7 +110,7 @@ async function save() {
 
 	if (isNewNote) {
 		console.log(openedNote.value);
-		router.push(`/textpad/${notesStore.openedNoteId}`);
+		router.push(`/note/${notesStore.openedNoteId}`);
 	}
 
 	saveButtonIcon.value = '✅';
@@ -121,7 +121,7 @@ async function save() {
 
 async function startFromScratch() {
 	await notesStore.saveNote('', 'Untitled');
-	router.push(`/textpad/${notesStore.openedNoteId}`);
+	router.push(`/note/${notesStore.openedNoteId}`);
 }
 
 async function generateStarter() {
@@ -139,7 +139,7 @@ async function generateStarter() {
 
 	await notesStore.saveNote('', prompt);
 	const newlyCreatedNoteId = notesStore.openedNoteId;
-	router.push(`/textpad/${newlyCreatedNoteId}`);
+	router.push(`/note/${newlyCreatedNoteId}`);
 
 	const chatRequest = ollamaApi.chat([
 		{

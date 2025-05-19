@@ -34,7 +34,7 @@ export const useUiStore = defineStore('uiStore', {
         },
         toggleMode() {
             if (this.mode === 'chat') {
-                this.setMode('textpad');
+                this.setMode('note');
             } else {
                 this.setMode('chat');
             }

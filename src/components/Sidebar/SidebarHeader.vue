@@ -13,7 +13,7 @@ function newBlank(): string {
     if (uiStore.mode === 'chat') {
         return '/';
     } else {
-        return '/textpad';
+        return '/note';
     }
 }
 
@@ -32,9 +32,9 @@ function toggleMode() {
         }
     } else {
         if (!uiStore.openedNoteId) {
-            router.push('/textpad');
+            router.push('/note');
         } else {
-            router.push(`/textpad/${uiStore.openedNoteId}`);
+            router.push(`/note/${uiStore.openedNoteId}`);
         }
     }
 }
@@ -58,8 +58,8 @@ function toggleMode() {
                 <PiNotepad class="size-full p-3 box-border" v-else />
             </div>
             <div class="grow text-lg flex items-center pl-1 select-none">
-                <template v-if="uiStore.mode === 'chat'">Chat</template>
-                <template v-else>Textpad</template>
+                <template v-if="uiStore.mode === 'chat'">Chats</template>
+                <template v-else>Notes</template>
             </div>
             <div class="h-full w-12">
                 <HiSwitchHorizontal class="size-full p-3 box-border" />

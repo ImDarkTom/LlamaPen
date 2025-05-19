@@ -1,6 +1,6 @@
 <script lang="ts" setup>
 import { computed } from 'vue';
-import SidebarEntryTextpad from './SidebarEntryTextpad.vue';
+import SidebarNoteEntry from './SidebarNoteEntry.vue';
 import useNotesStore from '@/stores/notesStore';
 
 const notesStore = useNotesStore();
@@ -22,14 +22,14 @@ const unpinnedNotes = computed<Note[]>(() => {
 	<div class="p-0 m-0 flex-1 overflow-y-auto">
 		<div class="p-0 m-0 flex-1" role="list" aria-labelledby="pinnedNotesSection">
 			<h3 id="pinnedNotesSection" class="sr-only">Pinned Notes</h3>
-			<SidebarEntryTextpad v-for="note of pinnedNotes" :key="note.id" :note="note" />
+			<SidebarNoteEntry v-for="note of pinnedNotes" :key="note.id" :note="note" />
 		</div>
 
 		<div v-if="hasPinnedNotes" class="w-full h-[1px] bg-txt-1/50" role="separator"></div>
 
 		<div class="p-0 m-0 flex-1" role="list" aria-labelledby="unpinnedNotesSection">
 			<h3 id="unpinnedNotesSection" class="sr-only">Unpinned Notes</h3>
-			<SidebarEntryTextpad v-for="note of unpinnedNotes" :key="note.id" :note="note" />
+			<SidebarNoteEntry v-for="note of unpinnedNotes" :key="note.id" :note="note" />
 		</div>
 	</div>
 </template>

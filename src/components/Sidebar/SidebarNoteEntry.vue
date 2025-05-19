@@ -14,50 +14,50 @@ const props = defineProps<{
     note: Note,
 }>();
 
-function deleteTextpad(e: MouseEvent) {
+function deleteNote(e: MouseEvent) {
     e.preventDefault();
 
     if (confirm(`Are you sure you want to delete "${props.note.title}"?`)) {
         notesStore.deleteNote(props.note.id);
-        router.push('/textpad');
+        router.push('/note');
     }
 }
 
-const textpadNameRef = ref<HTMLInputElement | null>(null);
+const noteNameRef = ref<HTMLInputElement | null>(null);
 
-function editTextpadName(e: MouseEvent) {
+function editNoteName(e: MouseEvent) {
     e.preventDefault();
-    const textpadNameElem = textpadNameRef.value;
+    const noteNameElem = noteNameRef.value;
 
-    if (!textpadNameElem) {
+    if (!noteNameElem) {
         return;
     }
 
-    textpadNameElem.setAttribute('data-originaltext', textpadNameElem.value);
-    textpadNameElem.removeAttribute('readonly');
-    textpadNameElem.focus();
-    textpadNameElem.select();
-    textpadNameElem.setSelectionRange(0, 999);
+    noteNameElem.setAttribute('data-originaltext', noteNameElem.value);
+    noteNameElem.removeAttribute('readonly');
+    noteNameElem.focus();
+    noteNameElem.select();
+    noteNameElem.setSelectionRange(0, 999);
     editing.value = true;
 }
 
 function stopEditing(save = true) {
-    const textpadNameElem = textpadNameRef.value;
+    const noteNameElem = noteNameRef.value;
 
-    if (!textpadNameElem) {
+    if (!noteNameElem) {
         return;
     }
 
-    textpadNameElem.setAttribute('readonly', '');
+    noteNameElem.setAttribute('readonly', '');
     editing.value = false;
 
     if (!save) {
-        textpadNameElem.value = textpadNameElem.getAttribute('data-originaltext') || "Unnamed chat";
-        textpadNameElem.removeAttribute('data-originaltext');
+        noteNameElem.value = noteNameElem.getAttribute('data-originaltext') || "Unnamed chat";
+        noteNameElem.removeAttribute('data-originaltext');
         return;
     }
 
-    notesStore.editNoteName(props.note.id, textpadNameElem.value);
+    notesStore.editNoteName(props.note.id, noteNameElem.value);
 }
 
 function editKeyPressed(e: KeyboardEvent) {
@@ -68,9 +68,9 @@ function editKeyPressed(e: KeyboardEvent) {
     }
 }
 
-function navigateToTextpad(e: KeyboardEvent) {
+function navigateToNote(e: KeyboardEvent) {
     if (e.metaKey || e.ctrlKey) return;
-    router.push(`/textpad/${props.note.id}`);
+    router.push(`/note/${props.note.id}`);
 }
 
 function getDateTimeString(timeInt: unknown) {
@@ -103,7 +103,7 @@ function setPinned(value: boolean) {
 </script>
 
 <template>
-    <RouterLink :to="`/textpad/${props.note.id}`" @mousedown.prevent="navigateToTextpad" @dblclick="editTextpadName"
+    <RouterLink :to="`/note/${props.note.id}`" @mousedown.prevent="navigateToNote" @dblclick="editNoteName"
         class="my-2 flex flex-col" :title="hoverTitle" role="listitem">
         <div class="group w-full h-full flex flex-row p-2 relative rounded-lg hover:bg-primary-300 transition-all duration-150"
             :class="{ '!bg-primary-200 shadow-sm shadow-black/50': props.note.id === notesStore.openedNoteId }">
@@ -118,11 +118,11 @@ function setPinned(value: boolean) {
             </div>
             <input type="text"
                 class="border-none outline-none m-0 flex-1 px-2 box-border justify-center items-center cursor-pointer text-ellipsis"
-                @blur="stopEditing()" @keydown="editKeyPressed" ref="textpadNameRef" :value="props.note.title" readonly
+                @blur="stopEditing()" @keydown="editKeyPressed" ref="noteNameRef" :value="props.note.title" readonly
                 :class="{ '!bg-primary-500 rounded-sm': editing }">
             <AiOutlineClose
                 class="hidden shrink-0 group-hover:block box-content pr-0 hover:text-red-400 transition-colors duration-150 ease-in-out"
-                @click="deleteTextpad" />
+                @click="deleteNote" />
         </div>
     </RouterLink>
 </template>
