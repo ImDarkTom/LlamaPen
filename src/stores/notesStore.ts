@@ -39,7 +39,7 @@ function initLiveSync(
 			return;
 		}
 
-		liveQuery(() => db.notes.where('id').equals(newId).first())
+		openedNoteSubscription = liveQuery(() => db.notes.where('id').equals(newId).first())
 			.subscribe({
 				next: data => {
 					openedNote.value = data ?? null;
