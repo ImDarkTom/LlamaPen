@@ -105,13 +105,25 @@ const useNotesStore = defineStore('notes', () => {
 		});
 	}
 
+	async function writeToNote(id: number, noteData: Note) {
+		await db.notes.update(id, noteData);
+	}
+
+	async function appendToNoteBody(id: number, textToAppend: string) {
+		await db.notes.where('id').equals(id).modify(item => {
+			item.content += textToAppend;
+		});
+	}
+
 	return { 
 		notes,
 		openedNote,
 		openedNoteId,
 		saveNote,
 		deleteNote,
-		editNoteName
+		editNoteName,
+		writeToNote,
+		appendToNoteBody
 	};
 });
 

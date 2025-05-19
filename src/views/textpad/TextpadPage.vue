@@ -94,13 +94,21 @@ async function save() {
 }
 
 async function generateStarter() {
+	console.log('generating note starter.');
+
 	const prompt = starterPromptElem.value?.value;
+
+	console.log(prompt);
 
 	if (!prompt || prompt === "") {
 		return;
 	}
 
 	const abortController = new AbortController();
+
+	await notesStore.saveNote('', prompt);
+	const newlyCreatedNoteId = notesStore.openedNoteId;
+	router.push(`/textpad/${newlyCreatedNoteId}`);
 
 	const chatRequest = ollamaApi.chat([
 		{
@@ -110,7 +118,22 @@ async function generateStarter() {
 	], abortController.signal);
 
 	for await (const chunk of chatRequest) {
-		chunk.
+		if ('error' in chunk) {
+			alert(chunk.error.message);
+			return;
+		}
+
+		if ('stream_done' in chunk) {
+			console.log('done');
+			save();
+			return;
+		}
+
+		if (!newlyCreatedNoteId) {
+			throw new Error('No opened note when appending message chunk.')
+		}
+
+		notesStore.appendToNoteBody(newlyCreatedNoteId, chunk.message.content)
 	}
 }
 </script>
@@ -138,7 +161,7 @@ async function generateStarter() {
 					:class="{ 'ring-2 ring-txt-2 animate-pulse': generating }"></div>
 				<div class="absolute top-0 left-0 -translate-1/2 bg-primary-200 w-64 h-32 p-4 rounded-lg">
 					<span class="text-lg">Write...</span>
-					<input ref="starterPrompt" type="text" class="w-full bg-primary-400 p-2 rounded-md" placeholder="about the key themes in..." @keydown.enter="generateStarter">
+					<input ref="starterPromptElem" type="text" class="w-full bg-primary-400 p-2 rounded-md" placeholder="about the key themes in..." @keyup.enter="generateStarter">
 				</div>
 			</div>
 		</div>
