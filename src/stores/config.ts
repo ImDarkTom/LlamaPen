@@ -22,7 +22,7 @@ interface Config {
             info_open_by_default: boolean;
         }
     }
-    textpad: {
+    note: {
         focusOnLoad: boolean,
     },
     developer: {
@@ -53,7 +53,7 @@ export const useConfigStore = defineStore('config', {
                 info_open_by_default: false,
             }
         },
-        textpad: {
+        note: {
             focusOnLoad: false,
         },
         developer: {

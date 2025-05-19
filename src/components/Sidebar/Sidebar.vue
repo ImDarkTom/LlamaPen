@@ -6,7 +6,7 @@ import SidebarOptions from './footer/SidebarFooter.vue';
 import { useConfigStore } from '../../stores/config';
 import { useUiStore } from '../../stores/uiStore';
 import ChatList from './ChatList.vue';
-import TextpadList from './TextpadList.vue';
+import NoteList from './NoteList.vue';
 import { emitter } from '@/mitt';
 
 const uiStore = useUiStore();
@@ -56,8 +56,8 @@ onUnmounted(() => {
                 <Transition name="slide-left" mode="out-in">
                     <!-- Chats List -->
                     <ChatList v-if="uiStore.mode === 'chat'" />
-                    <!-- Textpads List -->
-                    <TextpadList v-else />
+                    <!-- Note List -->
+                    <NoteList v-else />
                 </Transition>
                 <SidebarOptions />
             </div>

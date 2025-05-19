@@ -179,7 +179,7 @@ class OllamaAPI {
 	}
 
 	chat(messages: OllamaMessage[], abortSignal: AbortSignal, modelOverride?: string): ReadableOf<OllamaChatResponseChunk | ChatIteratorError | ChatIteratorDone> {
-		return Readable.from(this.chatIterator(messages, abortSignal, modelOverride));
+		return Readable.from(this.chatIterator(messages, abortSignal, modelOverride)) as ReadableOf<OllamaChatResponseChunk | ChatIteratorError | ChatIteratorDone>;
 	}
 
 	async getModels() {

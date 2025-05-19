@@ -115,14 +115,15 @@ function searchKeyDown(e: KeyboardEvent) {
 }
 
 defineProps<{
-    direction: 'up' | 'down'
+    direction: 'up' | 'down',
+    buttonClasses?: string
 }>();
 </script>
 
 <template>
     <div v-mousedown-outside="handleClickOutside">
         <div class="relative" id="modelselect">
-            <DropdownButton :direction="direction" :opened="showSelect" @update:opened="toggleShowSelect">
+            <DropdownButton :direction="direction" :opened="showSelect" :additional-classes="buttonClasses" @update:opened="toggleShowSelect">
                 <span v-if="uiStore.connectedToOllama" class="flex flex-row gap-2 items-center">
                     <LuBrainCircuit />
                     {{ config.selectedModel }}

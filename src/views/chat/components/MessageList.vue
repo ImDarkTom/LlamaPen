@@ -10,6 +10,7 @@ import { storeToRefs } from 'pinia';
 import logger from '@/utils/logger';
 import setPageTitle from '@/utils/title';
 import useChatsStore from '@/stores/chatsStore';
+import parseNumOrNull from '@/utils/parseNumber';
 
 const messageListRef = ref<HTMLElement | null>(null);
 
@@ -25,7 +26,7 @@ const uiStore = useUiStore();
 watch(() => route.params.id, (newId, oldId) => {
     if (newId !== oldId) {
         messagesStore.openChat(parseInt(newId as string));
-        uiStore.setLastOpenedChat(route.params.id as string);
+        uiStore.setOpenedChat(parseNumOrNull(route.params.id));
     }
 
     // TODO: make this also update on chat title update
@@ -41,7 +42,7 @@ onMounted(() => {
     logger.info('Message List Component', 'Mounted message list component');
 
     messagesStore.openChat(parseInt(route.params.id as string));
-    uiStore.setLastOpenedChat(route.params.id as string);
+    uiStore.setOpenedChat(route.params.id as string);
 
     if (!route.params.id) {
         setPageTitle('Chat');

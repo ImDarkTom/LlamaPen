@@ -11,7 +11,7 @@ onBeforeMount(() => {
     
     const mode = localStorage.getItem('mode');
 
-    if (mode === null || (mode !== 'chat' && mode !== 'textpad')) {
+    if (mode === null || (mode !== 'chat' && mode !== 'note')) {
         uiStore.setMode('chat');
         return;
     }

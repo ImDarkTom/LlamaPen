@@ -192,8 +192,8 @@ watch(
             </ButtonSetting> -->
         </OptionCategory>
 
-        <OptionCategory label="Textpad">
-            <ToggleSetting v-model="config.textpad.focusOnLoad" label="Focus on load" />
+        <OptionCategory label="Note">
+            <ToggleSetting v-model="config.note.focusOnLoad" label="Focus on load" />
         </OptionCategory>
 
         <OptionCategory label="Developer">
