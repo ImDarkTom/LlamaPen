@@ -1,149 +1,145 @@
 <script setup lang="ts">
-import { onMounted, ref, watch } from 'vue';
-import { useTextpadStore } from '../../stores/allTextpads';
+import { onBeforeUnmount, onMounted, ref, watch } from 'vue';
 import { useRoute } from 'vue-router';
-import { useUiStore } from '../../stores/uiStore';
-import hljs from 'highlight.js';
-import TextpadHeader from './components/TextpadHeader.vue';
+import useNotesStore from '@/stores/notesStore';
+import { storeToRefs } from 'pinia';
+import router from '@/router';
+import ModelSelect from '@/components/ModelSelect/ModelSelect.vue';
 import { useConfigStore } from '@/stores/config';
+import setPageTitle from '@/utils/title';
+import ollamaApi from '@/utils/ollama';
 
-const allTextpadsStore = useTextpadStore();
-const uiStore = useUiStore();
 const config = useConfigStore();
-
+const notesStore = useNotesStore();
 const route = useRoute();
 
-const language = ref<string>('plaintext');
+const { openedNote } = storeToRefs(notesStore);
 
-const suggestionText = ref<string | null>(null);
+const noteEditorElem = ref<HTMLTextAreaElement | null>(null);
+const noteTitleElem = ref<HTMLInputElement | null>(null);
 
-const mainTextarea = ref<HTMLTextAreaElement | null>(null);
-const virtualTextarea = ref<HTMLElement | null>(null);
+const starterPromptElem = ref<HTMLInputElement | null>(null);
 
-watch(() => route.params.id, (newId, oldId) => {
-	if (newId !== oldId) {
-		loadTextpad();
-	}
-});
-
-function loadTextpad() {
-	allTextpadsStore.setOpened(route.params.id as string);
-
-	if (!mainTextarea.value) {
-		return;
-	}
-
-	language.value = allTextpadsStore.openedTextpad?.language || "plaintext";
-
-	mainTextarea.value.value = allTextpadsStore.openedTextpad?.content || '';
-	updateVirtualTextArea();
-	
-	if (config.textpad.focusOnLoad) {
-		mainTextarea.value.focus();
-	}
-
-	uiStore.setLastOpenedTextpad(route.params.id as string);
-}
+const generating = ref(false);
 
 onMounted(() => {
-	loadTextpad();
-});
-
-function save() {
-	if (!mainTextarea.value) {
+	const routeId = route.params.id;
+	
+	if (typeof routeId === 'object') {
+		console.error('routeId appeared as object, not string', routeId);
 		return;
 	}
 
-	allTextpadsStore.write(mainTextarea.value.value);
-}
+	loadNote(routeId);
 
-async function updateVirtualTextArea() {
-	const realTextarea = mainTextarea.value;
+	document.addEventListener('keydown', handleKeyDown);
+});
 
-	if (!realTextarea) return;
+onBeforeUnmount(() => {
+	document.removeEventListener('keydown', handleKeyDown);
+});
 
-	let highlightedText = hljs.highlight(realTextarea.value, {
-		language: language.value,
-	}).value;
-
-	if (suggestionText.value) {
-		highlightedText += `<span class="text-txt-2/75">${suggestionText.value}</span>`;
-	} else {
-		highlightedText += `<kbd class="text-sm text-txt-2/75 border-[1px] border-txt-2/75 box-border rounded-md p-[1px] ml-2">Tab</kbd>`
-	}
-
-	virtualTextarea.value!.innerHTML = highlightedText;
-}
-
-function getUpToCurrentLine() {
-	return mainTextarea.value!.value.substring(0, mainTextarea.value!.selectionStart);
-}
-
-async function handleKeyDown(e: KeyboardEvent) {
-	if (e.ctrlKey && e.key === "s") {
+function handleKeyDown(e: KeyboardEvent) {
+	if (e.key === 's' && e.ctrlKey && openedNote.value) {
 		e.preventDefault();
 		save();
+		return;
+	}
+}
+
+watch(() => route.params.id, (newId) => {
+	if (typeof newId === 'object') {
+		console.error('newId appeared as object, not string', newId);
+		return;
 	}
 
-	if (e.key === "Tab") {
-		e.preventDefault();
+	loadNote(newId);
+});
 
-		if (suggestionText.value) {
-			mainTextarea.value?.focus();
+watch(() => openedNote.value, (newValue) => {
+	setPageTitle(`${newValue?.title ?? 'Untitled Note'} | Note`)
+});
 
-			// maybe later: https://developer.mozilla.org/en-US/docs/Web/API/InputEvent
-			document.execCommand('insertText', false, suggestionText.value);
-			suggestionText.value = "";
+function loadNote(newId?: string) {
+	console.log('loading note with id', newId);
 
-			updateVirtualTextArea();
-			save();
-			return;
-		}
-
-		console.log("✨ Generating text suggestion...");
-
-		const currentValue = getUpToCurrentLine();
-
-		suggestionText.value = await allTextpadsStore.generateAutocompletion(currentValue);
-		updateVirtualTextArea();
+	if (!newId) {
+		notesStore.openedNoteId = null;
 	} else {
-		suggestionText.value = "";
+		const parsedId = parseInt(newId);
+		notesStore.openedNoteId = parsedId;
+	}
+
+	if (config.textpad.focusOnLoad) {
+		noteEditorElem.value?.focus();
 	}
 }
 
-function handleInput() {
-	updateVirtualTextArea()
-}
+// Save button
+const saveButtonIcon = ref('💾');
 
-function handleScroll() {
-	if (mainTextarea.value && virtualTextarea.value) {
-		virtualTextarea.value.scrollTop = mainTextarea.value.scrollTop;
-		virtualTextarea.value.scrollLeft = mainTextarea.value.scrollLeft;
+async function save() {
+	// New note creation is handle inside `saveNote` so we do not need to handle that here.
+	const isNewNote = await notesStore.saveNote(noteEditorElem.value!.value, noteTitleElem.value!.value);
+
+	if (isNewNote) {
+		console.log(openedNote.value);
+		router.push(`/textpad/${notesStore.openedNoteId}`);
 	}
+
+	saveButtonIcon.value = '✅';
+	setTimeout(() => {
+		saveButtonIcon.value = '💾';
+	}, 500);
 }
 
-function updateLanguage(newValue: string) {
-	language.value = newValue;
+async function generateStarter() {
+	const prompt = starterPromptElem.value?.value;
 
-	allTextpadsStore.setLanguage(newValue);
+	if (!prompt || prompt === "") {
+		return;
+	}
 
-	updateVirtualTextArea();
-	save();
+	const abortController = new AbortController();
+
+	const chatRequest = ollamaApi.chat([
+		{
+			role: 'user',
+			content: prompt
+		}
+	], abortController.signal);
+
+	for await (const chunk of chatRequest) {
+		chunk.
+	}
 }
 </script>
 
 <template>
-	<div class="w-full h-full flex flex-col p-2 box-border">
-		<TextpadHeader :updateVirtualTextArea="updateVirtualTextArea" @update:language="updateLanguage" />
-		<div
-			class="grow size-full p-4 dot-bg rounded-lg border-[1px] border-txt-2/50 shadow-md shadow-black group
-				bg-radial from-txt-2/25 via-primary-600/75 via-[2px] to-primary-600/75 bg-[length:2rem_2rem] bg-[position:-1rem_-1rem]">
-			<div class="relative size-full">
-				<pre ref="virtualTextarea"
-					class="!text-base !font-mono absolute top-0 left-0 size-full !leading-4 outline-0 border-none whitespace-pre-wrap break-words p-0 m-0 bg-transparent overflow-y-auto"></pre>
-				<textarea ref="mainTextarea"
-					class="!text-base !font-mono absolute top-0 left-0 size-full !leading-4 outline-0 border-none whitespace-pre-wrap p-0 m-0 text-transparent bg-transparent resize-none caret-txt-1 z-2"
-					@keydown="handleKeyDown" @input="handleInput" @scroll="handleScroll" spellcheck="false"></textarea>
+	<div class="w-full h-full flex flex-col p-2 box-border gap-2">
+		<div class="w-full bg-primary-300 rounded-lg p-2 flex flex-row gap-2">
+			<button class="w-fit p-2 rounded-lg bg-primary-200 cursor-pointer" @click="save">
+				{{ saveButtonIcon }}
+			</button>
+			<ModelSelect button-classes="!bg-primary-200" direction="down" />
+		</div>
+		<div v-if="openedNote" class="flex grow bg-primary-500 p-2 rounded-lg justify-center">
+			<div class="flex flex-col grow h-full max-w-2xl gap-2">
+				<div class="w-full flex flex-col">
+					<input ref="noteTitleElem" type="text" class="!text-4xl font-semibold outline-none" :value="openedNote?.title ?? 'Untitled'">
+					<i v-if="openedNote" class="text-txt-2 text-sm">Created: {{ openedNote?.createdAt.toLocaleString() }} - Edited: {{ openedNote?.lastEdited.toLocaleString() }}</i>
+				</div>
+				<textarea ref="noteEditorElem" class="grow !text-lg text-txt-2 outline-none resize-none" :value="openedNote?.content"></textarea>
+			</div>
+		</div>
+		<div v-else class="flex grow bg-primary-300 rounded-lg items-center justify-center">
+			<div class="relative">
+				<div class="absolute top-0 left-0 -translate-1/2 w-64 h-32 rounded-lg"
+					:class="{ 'ring-2 ring-txt-2 animate-pulse': generating }"></div>
+				<div class="absolute top-0 left-0 -translate-1/2 bg-primary-200 w-64 h-32 p-4 rounded-lg">
+					<span class="text-lg">Write...</span>
+					<input ref="starterPrompt" type="text" class="w-full bg-primary-400 p-2 rounded-md" placeholder="about the key themes in..." @keydown.enter="generateStarter">
+				</div>
 			</div>
 		</div>
 	</div>

@@ -6,8 +6,8 @@ interface UIStore {
     },
     connectedToOllama: boolean,
     mode: AppMode,
-    lastOpenedChatId: string | null;
-    lastOpenedTextpadId: string | null;
+    openedChatId: number | null;
+    openedNoteId: number | null;
 }
 
 export const useUiStore = defineStore('uiStore', {
@@ -17,8 +17,8 @@ export const useUiStore = defineStore('uiStore', {
         },
         mode: 'chat',
         connectedToOllama: false,
-        lastOpenedChatId: null,
-        lastOpenedTextpadId: null,
+        openedChatId: null,
+        openedNoteId: null,
     }),
     getters: {},
     actions: {
@@ -26,11 +26,11 @@ export const useUiStore = defineStore('uiStore', {
             this.mode = newMode;
             localStorage.setItem('mode', newMode);
         },
-        setLastOpenedTextpad(id: string) {
-            this.lastOpenedTextpadId = id;
+        setOpenedNote(id: number | null) {
+            this.openedNoteId = id;
         },
-        setLastOpenedChat(id: string) {
-            this.lastOpenedChatId = id;
+        setOpenedChat(id: number | null) {
+            this.openedChatId = id;
         },
         toggleMode() {
             if (this.mode === 'chat') {

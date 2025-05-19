@@ -9,13 +9,13 @@ import { PiNotepad } from 'vue-icons-plus/pi';
 const router = useRouter();
 const uiStore = useUiStore();
 
-// const newChat = () => {
-//     if (uiStore.mode === 'chat') {
-//         router.push('/');
-//     } else {
-//         router.push('/textpad')
-//     }
-// }
+function newBlank(): string {
+    if (uiStore.mode === 'chat') {
+        return '/';
+    } else {
+        return '/textpad';
+    }
+}
 
 function search() {
     alert('to be added...');
@@ -25,16 +25,16 @@ function toggleMode() {
     uiStore.toggleMode();
 
     if (uiStore.mode === 'chat') {
-        if (!uiStore.lastOpenedChatId) {
+        if (!uiStore.openedChatId) {
             router.push('/');
         } else {
-            router.push(`/chat/${uiStore.lastOpenedChatId}`);
+            router.push(`/chat/${uiStore.openedChatId}`);
         }
     } else {
-        if (!uiStore.lastOpenedTextpadId) {
+        if (!uiStore.openedNoteId) {
             router.push('/textpad');
         } else {
-            router.push(`/textpad/${uiStore.lastOpenedTextpadId}`);
+            router.push(`/textpad/${uiStore.openedNoteId}`);
         }
     }
 }
@@ -44,7 +44,7 @@ function toggleMode() {
     <div class="flex flex-col">
         <div class="flex flex-row p-0 box-border justify-between items-center pb-2">
             <div class="size-10 p-1"></div><!-- sidebar toggle space holder -->
-            <RouterLink to="/" class="max-h-10 w-1/2 flex justify-center items-center hover:brightness-75 hover:scale-90 active:scale-110 transition-all duration-100">
+            <RouterLink :to="newBlank()" class="max-h-10 w-1/2 flex justify-center items-center hover:brightness-75 hover:scale-90 active:scale-110 transition-all duration-100">
                 <img src="/favicon.svg" class="size-10 p-1" />
             </RouterLink>
             <AiOutlineSearch aria-label="Search"

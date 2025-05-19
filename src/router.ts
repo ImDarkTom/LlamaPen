@@ -13,6 +13,7 @@ const routes = [
         component: Layout,
         children: [
             { path: "/", component: ChatPage },
+            { path: "/chat", component: ChatPage },
             { path: "/chat/:id", component: ChatPage },
             { path: "/textpad", component: TextpadPage },
             { path: "/textpad/:id", component: TextpadPage },
