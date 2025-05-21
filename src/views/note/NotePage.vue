@@ -10,6 +10,7 @@ import setPageTitle from '@/utils/title';
 import ollamaApi from '@/utils/ollama';
 import { useUiStore } from '@/stores/uiStore';
 import { VscDebugDisconnect } from 'vue-icons-plus/vsc';
+import logger from '@/utils/logger';
 
 const config = useConfigStore();
 const notesStore = useNotesStore();
@@ -40,9 +41,11 @@ onBeforeUnmount(() => {
 	document.removeEventListener('keydown', handleKeyDown);
 });
 
-function handleTitleInputKeyDown() {
-	save()
-	noteEditorElem.value?.focus();
+function handleTitleInputKeyDown(e: KeyboardEvent) {
+	if (e.key === 'Enter') {
+		save()
+		noteEditorElem.value?.focus();
+	}
 }
 
 function handleKeyDown(e: KeyboardEvent) {
@@ -51,8 +54,6 @@ function handleKeyDown(e: KeyboardEvent) {
 		save();
 		return;
 	}
-
-	console.log(e);
 
 	if (e.key === 'O' && e.ctrlKey && e.shiftKey) {
 		e.preventDefault();
@@ -90,7 +91,7 @@ watch(() => openedNote.value, (newValue) => {
 });
 
 function loadNote(newId?: string) {
-	console.log('loading note with id', newId);
+	logger.info('Note Page', 'Loading note with ID', newId);
 
 	if (!newId) {
 		notesStore.openedNoteId = null;
@@ -112,7 +113,6 @@ async function save() {
 	const isNewNote = await notesStore.saveNote(noteEditorElem.value!.value, noteTitleElem.value!.value);
 
 	if (isNewNote) {
-		console.log(openedNote.value);
 		router.push(`/note/${notesStore.openedNoteId}`);
 	}
 
@@ -128,12 +128,9 @@ async function startFromScratch() {
 }
 
 async function generateStarter() {
-	console.log('generating note starter.');
+	logger.info('Note Page', 'Generating note starter');
 
 	const prompt = starterPromptElem.value?.value;
-
-	console.log(prompt);
-
 	if (!prompt || prompt === "") {
 		return;
 	}
@@ -158,7 +155,7 @@ async function generateStarter() {
 		}
 
 		if ('stream_done' in chunk) {
-			console.log('done');
+			logger.info('Note Page', 'Generating note starter finished.')
 			save();
 			return;
 		}
@@ -167,11 +164,7 @@ async function generateStarter() {
 			throw new Error('No opened note when appending message chunk.')
 		}
 
-		console.log(newlyCreatedNoteId, openedNote.value?.id);
-
 		notesStore.appendToNoteBody(newlyCreatedNoteId, chunk.message.content);
-
-		console.log(newlyCreatedNoteId, openedNote.value?.id);
 	}
 }
 </script>
@@ -186,20 +179,20 @@ async function generateStarter() {
 			<ModelSelect button-classes="!bg-primary-200" direction="down" />
 		</div>
 		<div v-if="openedNote" class="flex grow bg-primary-500 p-2 rounded-lg justify-center">
-			<div class="flex flex-col grow h-full max-w-2xl gap-2">
+			<div class="flex flex-col grow h-full max-w-2xl w-full gap-2">
 				<div class="w-full flex flex-col">
 					<input ref="noteTitleElem" type="text" class="!text-4xl font-semibold outline-none"
 						:value="openedNote.title" @keydown="handleTitleInputKeyDown">
 					<i class="text-txt-2 text-sm">Created: {{ openedNote.createdAt.toLocaleString()
 						}} - Edited: {{ openedNote.lastEdited.toLocaleString() }}</i>
 				</div>
-				<textarea ref="noteEditorElem" class="grow !text-lg text-txt-2 outline-none resize-none"
+				<textarea ref="noteEditorElem" class="grow !text-base md:!text-lg text-txt-2 outline-none resize-none"
 					:value="openedNote.content"></textarea>
 			</div>
 		</div>
 		<div v-else class="flex grow bg-primary-500 rounded-lg items-center justify-center">
 			<div class="flex flex-col bg-primary-300 rounded-lg">
-				<div v-if="uiStore.connectedToOllama" class="p-4 flex flex-row gap-1 items-center justify-center">
+				<div v-if="uiStore.connectedToOllama" class="p-4 flex flex-row gap-2 items-center justify-center">
 					<span class="text-lg font-bold">Write</span>
 					<input ref="starterPromptElem" type="text" class="w-full bg-primary-400 p-2 rounded-md"
 						placeholder="a note about..." @keyup.enter="generateStarter">
