@@ -1,5 +1,5 @@
 import db from '@/utils/db';
-import { liveQuery } from 'dexie'; 
+import { liveQuery } from 'dexie';
 import { defineStore } from 'pinia';
 import { computed, ref } from 'vue';
 import useMessagesStore from './messagesStore';
@@ -104,6 +104,10 @@ const useChatsStore = defineStore('chats', () => {
 		return foundChat.title;
 	}
 
+	async function getChat(id: number) {
+		return await db.chats.get(id);
+	}
+
 	const pinnedChatsByRecent: ReturnType<typeof ref<Chat[]>> = computed((oldValue) => {
 		if (oldValue === unpinnedChats.value) return oldValue;
 
@@ -118,8 +122,8 @@ const useChatsStore = defineStore('chats', () => {
 		return unpinnedChats.value.sort((a, b) => (b.lastestMessageDate?.getTime() || 0) - (a.lastestMessageDate?.getTime() || 0));
 	});
 
-	return { 
-		chats, 
+	return {
+		chats,
 		pinnedChats,
 		hasPinnedChats,
 		unpinnedChats,
@@ -132,6 +136,7 @@ const useChatsStore = defineStore('chats', () => {
 		isOpened,
 		clearChats,
 		getChatTitle,
+		getChat
 	};
 });
 
