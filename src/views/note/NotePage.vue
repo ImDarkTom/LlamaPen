@@ -8,9 +8,12 @@ import ModelSelect from '@/components/ModelSelect/ModelSelect.vue';
 import { useConfigStore } from '@/stores/config';
 import setPageTitle from '@/utils/title';
 import ollamaApi from '@/utils/ollama';
+import { useUiStore } from '@/stores/uiStore';
+import { VscDebugDisconnect } from 'vue-icons-plus/vsc';
 
 const config = useConfigStore();
 const notesStore = useNotesStore();
+const uiStore = useUiStore();
 const route = useRoute();
 
 const { openedNote } = storeToRefs(notesStore);
@@ -196,10 +199,14 @@ async function generateStarter() {
 		</div>
 		<div v-else class="flex grow bg-primary-500 rounded-lg items-center justify-center">
 			<div class="flex flex-col bg-primary-300 rounded-lg">
-				<div class="p-4 flex flex-row gap-1 items-center justify-center">
+				<div v-if="uiStore.connectedToOllama" class="p-4 flex flex-row gap-1 items-center justify-center">
 					<span class="text-lg font-bold">Write</span>
 					<input ref="starterPromptElem" type="text" class="w-full bg-primary-400 p-2 rounded-md"
 						placeholder="a note about..." @keyup.enter="generateStarter">
+				</div>
+				<div v-else class="p-4 flex flex-row gap-1 items-center justify-center">
+					<VscDebugDisconnect /> 
+					<span class="text-lg font-semibold">Generation unavailable</span>
 				</div>
 				<div class="w-full h-[1px] bg-txt-2"></div>
 				<div class="p-4 flex justify-center cursor-pointer text-txt-2 font-semibold hover:bg-primary-200 rounded-b-lg transition-colors duration-100"
