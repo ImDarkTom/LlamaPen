@@ -1,5 +1,5 @@
 <script setup lang="ts">
-import { computed, ref } from 'vue';
+import { computed, onBeforeUnmount, onMounted, ref } from 'vue';
 import ModelSelect from '@/components/ModelSelect/ModelSelect.vue';
 import ActionButton from './ActionButton.vue';
 import ScrollToBottomButton from './ScrollToBottomButton.vue';
@@ -8,8 +8,12 @@ import { AiFillCloseCircle, AiOutlinePlus } from 'vue-icons-plus/ai';
 import { emitter } from '@/mitt';
 import useMessagesStore from '@/stores/messagesStore';
 import logger from '@/utils/logger';
+import { promptDelete } from '@/utils/chat';
+import useChatsStore from '@/stores/chatsStore';
+import router from '@/router';
 
 const messagesStore = useMessagesStore();
+const chatsStore = useChatsStore();
 
 const messageInput = ref<HTMLTextAreaElement | null>(null);
 const messageInputValue = ref('');
@@ -17,6 +21,52 @@ const messageInputValue = ref('');
 const canGenerate = computed<boolean>(() => {
     return messageInputValue.value.trim() !== '';
 });
+
+const focusInput = () => {
+    if (!messageInput.value) {
+        return;
+    }
+
+    messageInput.value.focus();
+};
+
+onMounted(() => {
+    document.addEventListener('keydown', handleKeyDown);
+});
+
+onBeforeUnmount(() => {
+    document.removeEventListener('keydown', handleKeyDown);
+});
+
+async function handleKeyDown(e: KeyboardEvent) {
+    if (e.key === 'Escape' && e.shiftKey) {
+        e.preventDefault();
+        focusInput();
+    }
+
+    if (e.ctrlKey && e.shiftKey && e.key === 'Backspace') {
+        e.preventDefault();
+
+        if (!messagesStore.openedChatId) {
+            logger.info('Message Input Component', 'No opnened chat id, unable to delete.');
+            return;
+        }
+
+        const openedChat = await chatsStore.getChat(messagesStore.openedChatId);
+        if (!openedChat) {
+            logger.info('Message Input Component', 'Opened chat not found, unable to delete.');
+            return;
+        }
+
+        promptDelete(openedChat);
+    }
+
+    if (e.key === 'O' && e.ctrlKey && e.shiftKey) {
+        e.preventDefault();
+        router.push('/chat');
+        return;
+    }
+}
 
 function inputKeyUp(e: KeyboardEvent) {
     updateTextAreaHeight();
@@ -73,7 +123,6 @@ function removeFileFromUploadList(file: File) {
 const filesToUpload = ref<File[]>([]);
 
 const createObjectUrl = (file: File) => URL.createObjectURL(file);
-
 </script>
 
 <template>

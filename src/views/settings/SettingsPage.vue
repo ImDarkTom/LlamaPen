@@ -161,6 +161,11 @@ watch(
         </OptionCategory>
 
         <OptionCategory label="Appearance">
+            <RouterLink
+                class="!bg-primary-200 text-txt-2 p-4 rounded-lg hover:ring-1 ring-txt-2/50 cursor-pointer transition-all duration-150 w-fit hover:text-txt-1"
+                to="/shortcuts">
+                View keyboard shortcuts
+            </RouterLink>
             <div class="flex flex-col gap-2 w-full">
                 <span class="text-lg text-txt-2">Transition Speed</span>
                 <input

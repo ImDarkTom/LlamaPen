@@ -26,7 +26,7 @@ const starterPromptElem = ref<HTMLInputElement | null>(null);
 
 onMounted(() => {
 	const routeId = route.params.id;
-	
+
 	if (typeof routeId === 'object') {
 		console.error('routeId appeared as object, not string', routeId);
 		return;
@@ -49,6 +49,7 @@ function handleTitleInputKeyDown(e: KeyboardEvent) {
 }
 
 function handleKeyDown(e: KeyboardEvent) {
+	// TODO: add duplicate note if holding shift
 	if (e.key === 's' && e.ctrlKey && openedNote.value) {
 		e.preventDefault();
 		save();
@@ -172,7 +173,7 @@ async function generateStarter() {
 <template>
 	<div class="w-full h-full flex flex-col p-2 box-border gap-2">
 		<div class="w-full bg-primary-300 rounded-lg p-2 flex flex-row gap-2"
-			:class="{ 'ml-12': !config.showSidebar }">
+		:class="{ 'ml-12': !config.showSidebar }">
 			<button class="w-fit p-2 rounded-lg bg-primary-200 cursor-pointer" @click="save">
 				{{ saveButtonIcon }}
 			</button>
@@ -184,7 +185,7 @@ async function generateStarter() {
 					<input ref="noteTitleElem" type="text" class="!text-4xl font-semibold outline-none"
 						:value="openedNote.title" @keydown="handleTitleInputKeyDown">
 					<i class="text-txt-2 text-sm">Created: {{ openedNote.createdAt.toLocaleString()
-						}} - Edited: {{ openedNote.lastEdited.toLocaleString() }}</i>
+					}} - Edited: {{ openedNote.lastEdited.toLocaleString() }}</i>
 				</div>
 				<textarea ref="noteEditorElem" class="grow !text-base md:!text-lg text-txt-2 outline-none resize-none"
 					:value="openedNote.content"></textarea>
