@@ -24,6 +24,7 @@ interface Config {
     }
     note: {
         focusOnLoad: boolean,
+        showHeaderLabels: boolean,
     },
     developer: {
         mockRequests: boolean,
@@ -55,6 +56,7 @@ export const useConfigStore = defineStore('config', {
         },
         note: {
             focusOnLoad: false,
+            showHeaderLabels: false,
         },
         developer: {
             mockRequests: false,

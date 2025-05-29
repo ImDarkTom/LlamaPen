@@ -199,6 +199,7 @@ watch(
 
         <OptionCategory label="Note">
             <ToggleSetting v-model="config.note.focusOnLoad" label="Focus on load" />
+            <ToggleSetting v-model="config.note.showHeaderLabels" label="Show header labels" />
         </OptionCategory>
 
         <OptionCategory label="Developer">

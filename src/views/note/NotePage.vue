@@ -1,5 +1,5 @@
 <script setup lang="ts">
-import { onBeforeUnmount, onMounted, ref, watch } from 'vue';
+import { computed, onBeforeUnmount, onMounted, ref, watch } from 'vue';
 import { useRoute } from 'vue-router';
 import useNotesStore from '@/stores/notesStore';
 import { storeToRefs } from 'pinia';
@@ -11,6 +11,8 @@ import ollamaApi from '@/utils/ollama';
 import { useUiStore } from '@/stores/uiStore';
 import { VscDebugDisconnect } from 'vue-icons-plus/vsc';
 import logger from '@/utils/logger';
+import HeaderButton from './components/HeaderButton.vue';
+import { BiText } from 'vue-icons-plus/bi';
 
 const config = useConfigStore();
 const notesStore = useNotesStore();
@@ -75,6 +77,11 @@ function handleKeyDown(e: KeyboardEvent) {
 			notesStore.deleteNote(openedNote.value.id);
 			router.push('/note');
 		}
+	}
+
+	if (e.key === 'Tab') {
+		e.preventDefault();
+		generateContinuation();
 	}
 }
 
@@ -168,17 +175,97 @@ async function generateStarter() {
 		notesStore.appendToNoteBody(newlyCreatedNoteId, chunk.message.content);
 	}
 }
+
+let isGeneratingContinuation = ref(false);
+const generateContinuationIcon = computed(() => {
+	return isGeneratingContinuation.value ? '⏳' : '▶️';
+});
+
+const abortController = new AbortController();
+
+async function generateContinuation() {
+	if (!openedNote.value) return;
+
+	await save();
+
+	const chatRequest = ollamaApi.chat([
+		{
+			role: 'system',
+			content: 'Continue any writing given yo you by the user.'
+		},
+		{
+			role: 'user',
+			content: openedNote.value.content ?? ''
+		}
+	], abortController.signal);
+
+	isGeneratingContinuation.value = true;
+	
+	for await (const chunk of chatRequest) {
+		if ('error' in chunk) {
+			alert(chunk.error.message);
+			return;
+		}
+
+		if ('stream_done' in chunk) {
+			logger.info('Note Page', 'Generating note starter finished.')
+			save();
+			return;
+		}
+
+		notesStore.appendToNoteBody(openedNote.value.id, chunk.message.content);
+	}
+}
+
+function cancelGenerateContinuation() {
+	if (!openedNote.value) return;
+	abortController.abort();
+
+	abortController.signal.onabort = () => {
+		logger.info('Note Page', 'Generation continuation aborted.');
+		isGeneratingContinuation.value = false;
+	};
+}
+
+function continueGenerationButtonPress() {
+	if (!openedNote.value) return;
+
+	if (isGeneratingContinuation.value) {
+		cancelGenerateContinuation();
+		return;
+	}
+
+	generateContinuation();
+}
+
+// Header Labels
+function toggleLabels() {
+	config.note.showHeaderLabels = !config.note.showHeaderLabels;
+}
 </script>
 
 <template>
 	<div class="w-full h-full flex flex-col p-2 box-border gap-2">
 		<div class="w-full bg-primary-300 rounded-lg p-2 flex flex-row gap-2"
 		:class="{ 'ml-12': !config.showSidebar }">
-			<button class="w-fit p-2 rounded-lg bg-primary-200 cursor-pointer" @click="save">
+			<HeaderButton @click="save" label="Save">
 				{{ saveButtonIcon }}
-			</button>
-			<ModelSelect button-classes="!bg-primary-200" direction="down" />
+			</HeaderButton>	
+			<ModelSelect button-classes="!bg-primary-200 !ring-0" direction="down" />
+			<HeaderButton @click="continueGenerationButtonPress" label="Continue">
+				{{ generateContinuationIcon }}
+			</HeaderButton>
+			<div class="grow"></div>
+			<HeaderButton @click="toggleLabels" label="Toggle Labels">
+				<BiText />
+			</HeaderButton>
 		</div>
+
+		<div class="w-full h-12 box-border bg-primary-300 rounded-lg p-1 flex flex-row gap-2">
+			<input type="text" placeholder="Modify..." class="grow bg-primary-400 p-2 rounded-md outline-none">
+			<button class="bg-primary-200 p-2 rounded-md cursor-pointer">✏️ Edit</button>
+		</div>
+
 		<div v-if="openedNote" class="flex grow bg-primary-500 p-2 rounded-lg justify-center">
 			<div class="flex flex-col grow h-full max-w-2xl w-full gap-2">
 				<div class="w-full flex flex-col">
