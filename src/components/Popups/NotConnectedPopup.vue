@@ -1,5 +1,5 @@
 <script setup lang="ts">
-import { BiSolidErrorCircle } from 'vue-icons-plus/bi';
+import { BiHelpCircle, BiSolidErrorCircle } from 'vue-icons-plus/bi';
 import Popup from './Popup.vue';
 import { onMounted, onUnmounted, ref } from 'vue';
 import { emitter } from '../../mitt';
@@ -51,7 +51,7 @@ function hide() {
 
 
 <template>
-	<Popup :showing="showing" @close="hide">
+	<Popup :showing @close="hide">
 		<template #title>
 			<BiSolidErrorCircle class="h-full w-auto" />
 			Ollama not connected
@@ -59,9 +59,11 @@ function hide() {
 		<template #body>
 			<div class="h-full flex flex-col">
 				<div class="grow">
-					Unable to connect to Ollama at <i>'{{config.ollamaUrl}}'</i>. Ensure Ollama is running and accepts connection requests from this site. 
-					For a guide on how to configure Ollama to accept requests from this page, press ''<i>More info</i>'
-					or the &nbsp;<kbd class="bg-primary-400 px-2 rounded-lg ring">?</kbd>&nbsp; icon in the bottom left of the sidebar;
+					Unable to connect to Ollama at <code>{{config.ollamaUrl}}</code>. Ensure Ollama is running and accepts connection requests from this site. 
+					<br>
+					<br>
+					For a guide on how to configure Ollama to connect from this page, press <b>Guide</b>
+					or the <BiHelpCircle class="inline" /> icon in the bottom left of the sidebar;
 				</div>
 				<div class="pb-4 flex flex-row items-center gap-2">
 					<input id="notconnected-dnsa" type="checkbox" ref="dnsaCheckbox" class="accent-txt-2">
@@ -70,7 +72,7 @@ function hide() {
 			</div>
 		</template>
 		<template #buttons>
-			<button @click="openGuide">More info</button>
+			<button @click="openGuide">Guide</button>
 			<button @click="hide">Close</button>
 		</template>
 	</Popup>
