@@ -261,10 +261,10 @@ function toggleLabels() {
 			</HeaderButton>
 		</div>
 
-		<div class="w-full h-12 box-border bg-primary-300 rounded-lg p-1 flex flex-row gap-2">
+		<!-- <div class="w-full h-12 box-border bg-primary-300 rounded-lg p-1 flex flex-row gap-2">
 			<input type="text" placeholder="Modify..." class="grow bg-primary-400 p-2 rounded-md outline-none">
 			<button class="bg-primary-200 p-2 rounded-md cursor-pointer">✏️ Edit</button>
-		</div>
+		</div> -->
 
 		<div v-if="openedNote" class="flex grow bg-primary-500 p-2 rounded-lg justify-center">
 			<div class="flex flex-col grow h-full max-w-2xl w-full gap-2">
