@@ -40,7 +40,7 @@ export const useConfigStore = defineStore('config', {
         transitionSpeed: 0.125,
         closeSidebarOnNavMobile: true,
         ui: {
-            monochromeModelIcons: false,
+            monochromeModelIcons: true,
             modelIconsBg: false,
             modelIconsBgDark: false
         },
