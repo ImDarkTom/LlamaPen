@@ -8,7 +8,7 @@ interface Chat {
 	pinned: 0 | 1;
 }
 
-// type ChatMessage = BaseChatMessage;
+
 type ChatMessage = ModelChatMessage | UserChatMessage;
 
 type BaseChatMessage = {

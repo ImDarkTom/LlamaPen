@@ -50,7 +50,7 @@ function changeMessageModel(e: Event) {
     messagesStore.regenerateMessage(props.message.id, newValue);
 }
 
-function shouldShowRegenOption(message: ChatMessage) {
+function shouldShowRegenOption(message: ChatMessage): message is ModelChatMessage {
     return message.type === 'model' && (message.status === 'finished' || message.status === 'cancelled');
 }
 

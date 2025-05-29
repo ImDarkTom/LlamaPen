@@ -11,7 +11,7 @@ const messagesStore = useMessagesStore();
 const isChatGenerating = computed<boolean>(() => {
     const lastestMessage = messagesStore.openedChatMessages[messagesStore.openedChatMessages.length - 1];
 
-    if (!lastestMessage) {
+    if (!lastestMessage || lastestMessage.type !== 'model') {
         return false;
     }
 
