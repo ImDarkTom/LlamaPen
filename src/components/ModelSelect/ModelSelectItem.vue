@@ -3,26 +3,9 @@ import router from '@/router';
 import useUserStore from '@/stores/user';
 import { AiFillStar, AiOutlineArrowRight, AiOutlineEye, AiOutlineTool } from 'vue-icons-plus/ai';
 import { BsGlobe } from 'vue-icons-plus/bs';
-
-import Unknown from '@/icons/unknown.svg';
-import { useConfigStore } from '@/stores/config';
-
-const allIcons = import.meta.glob('@/icons/*.svg', { eager: true });
-const availableIcons: Record<string, any> = {
-	'unknown': Unknown,
-	'unknown-color': Unknown
-};
-
-for (const path in allIcons) {
-	const match = path.match(/\/([\w-]+)\.svg$/);
-	if (match) {
-		const slug = match[1];
-		availableIcons[slug] = (allIcons[path] as any).default;
-	}
-}
+import ModelIcon from '../Icon/ModelIcon.vue';
 
 const userStore = useUserStore();
-const config = useConfigStore();
 
 defineProps<{
 	model: ModelListItem,
@@ -46,41 +29,6 @@ function setModel(model: ModelListItem) {
 		emit('setModel', model.model);
 	}
 }
-
-const modelIconMap: Record<string, string> = {
-	llama: 'meta',
-	gemma: 'gemma',
-	gemini: 'gemini',
-	deepseek: 'deepseek',
-	qwen: 'qwen',
-	qwq: 'qwen',
-	mistral: 'mistral',
-	mixtral: 'mistral',
-	codestral: 'mistral',
-	'gpt': 'openai',
-	'phi': 'microsoft',
-	llava: 'llava',
-	nemotron: 'nvidia',
-	deepcoder: 'together'
-};
-
-function getSlug(modelName: string) {
-	for (const key in modelIconMap) {
-		if (modelName.includes(key)) {
-			return modelIconMap[key];
-		}
-	}
-
-	return 'unknown';
-}
-
-function getIconComponent(modelName: string) {
-	const slug = getSlug(modelName);
-
-	const slugFormated = config.ui.monochromeModelIcons ? slug : `${slug}-color`;
-	
-	return availableIcons[slugFormated];
-}
 </script>
 
 <template>
@@ -89,11 +37,9 @@ function getIconComponent(modelName: string) {
 			'bg-primary-500 shadow-sm shadow-black/50': index === focusedItemIndex,
 			'opacity-75': !userStore.subscription.subscribed && model.llamapenMetadata?.premium
 		}" @click="setModel(model)" ref="listItemsRef" :aria-selected="index === focusedItemIndex">
-		<component :is="getIconComponent(model.model)" class="size-10 p-1"
-			:class="{ 
-				'bg-primary-600 rounded-lg': config.ui.modelIconsBg && config.ui.modelIconsBgDark,
-				'bg-primary-50 rounded-lg': config.ui.modelIconsBg && !config.ui.modelIconsBgDark
-			}" />
+
+		<ModelIcon :name="model.model" class="size-10 p-1" />
+
 		<div class="flex flex-col">
 			<div class="flex flex-row items-center justify-between">
 				<div class="flex flex-row">
