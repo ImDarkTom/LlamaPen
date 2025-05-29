@@ -1,6 +1,6 @@
 <script setup lang="ts">
-import MessageOptions from './MessageOptions.vue';
-import { computed, nextTick, ref } from 'vue';
+import MessageOptions from './ChatMessage/MessageOptions.vue';
+import { computed, nextTick, onMounted, ref } from 'vue';
 
 import MessageEditor from './MessageEditor.vue';
 import { emitter } from '@/mitt';
@@ -12,6 +12,9 @@ import messageMarked from '@/utils/chatMarked';
 import ModelIcon from '@/components/Icon/ModelIcon.vue';
 import { AiOutlineSwap } from 'vue-icons-plus/ai';
 import Tooltip from '@/components/Tooltip/Tooltip.vue';
+import ollamaApi from '@/utils/ollama';
+import { VscDebugRestart } from 'vue-icons-plus/vsc';
+import logger from '@/utils/logger';
 
 const messagesStore = useMessagesStore();
 
@@ -34,7 +37,21 @@ const images = (props.message.attachments || []).map((file) => {
 
 const isUserMessage = computed(() => props.message.type === 'user');
 const isModelMessage = computed(() => props.message.type === 'model');
+const modelMessageDone = computed(() => props.message.type === 'model' && 
+    (props.message.status === 'finished' || props.message.status === 'cancelled')
+);
 
+// === Hooks ===
+const allModels = ref<ModelList>([]);
+
+onMounted(async () => {
+    allModels.value = (await ollamaApi.getModels()).filter(model => props.message.type === 'model' && props.message.model !== model.name)
+});
+
+
+// === Functions ===
+
+// Editing
 function editMessage() {
     editing.value = true;
 
@@ -53,6 +70,7 @@ function finishEdit(newText: string) {
     messagesStore.editMessage(props.message.id, newText);
 }
 
+// Rendering
 function renderText(text: string) {
     if (!text.startsWith('<think>')) {
         return messageMarked.parse(text);
@@ -62,6 +80,28 @@ function renderText(text: string) {
     const allAfterThinkBlock = afterThinkRegex.exec(text)?.[1] || '';
 
     return messageMarked.parse(allAfterThinkBlock);
+}
+
+// Regeneration
+const modelSelectionOpened = ref<boolean>(false);
+
+function changeModel(e: MouseEvent) {
+    if (!modelMessageDone.value) return;
+    e.preventDefault();
+
+    modelSelectionOpened.value = !modelSelectionOpened.value;
+}
+
+function closeModelSelection() {
+    if (!modelSelectionOpened.value) return;
+
+    modelSelectionOpened.value = false;
+}
+
+function regenerateMessage(model: string) {
+    modelSelectionOpened.value = false;
+    logger.info('Message Options Component', `Regenerating message id ${props.message.id} with different model ${model}.`);
+    messagesStore.regenerateMessage(props.message.id, model);
 }
 </script>
 
@@ -77,13 +117,30 @@ function renderText(text: string) {
                     :ignore-styling="true" 
                     class="size-10 p-2 bg-primary-700 rounded-full ring-1 ring-txt-1" />
 
-                <Tooltip text="Change Model">
-                    <div class="flex flex-row p-1 gap-1 group/msg-model bg-transparent hover:bg-primary-300 cursor-pointer rounded-xl items-center
-                        transition-colors duration-100">
-                        <span class="font-semibold pl-1">{{ message.model }}</span>
-                        <AiOutlineSwap class="p-1 size-8 opacity-35 group-hover/msg-model:opacity-100 transition-opacity duration-100" />
+                <div class="relative" v-mousedown-outside="closeModelSelection">
+                    <Tooltip text="Regenerate" :disabled="!modelMessageDone">
+                        <div class="flex flex-row p-1 gap-1 group/msg-model bg-transparent rounded-xl items-center transition-colors duration-100"
+                            :class="{ 'hover:bg-primary-300 cursor-pointer': modelMessageDone }"
+                            @mousedown="changeModel">
+                            <span class="font-semibold pl-1 select-none">{{ message.model }}</span>
+                            <AiOutlineSwap v-if="modelMessageDone" class="p-1 size-8 opacity-35 group-hover/msg-model:opacity-100 transition-opacity duration-100" />
+                        </div>
+                    </Tooltip>
+                    <div v-if="modelSelectionOpened" class="absolute top-0 left-[50%] -translate-x-[50%] translate-y-12 flex flex-col bg-primary-300 z-20 p-2 rounded-xl gap-2">
+                        <button class="p-2 hover:scale-[98%] hover:bg-primary-200 rounded-lg w-full min-w-48 cursor-pointer transition-all duration-100 flex flex-row items-center justify-start"
+                            @mouseup="regenerateMessage(message.model)">
+                            <VscDebugRestart class="size-6 mr-2 p-0.5" />
+                            {{ message.model }}
+                        </button>
+
+                        <button v-for="model in allModels" :key="model.digest"
+                            class="p-2 hover:scale-[98%] hover:bg-primary-200 rounded-lg w-full min-w-48 cursor-pointer transition-all duration-100 flex flex-row items-center justify-start"
+                            @mouseup="regenerateMessage(model.model)">
+                            <ModelIcon :name="model.model" class="size-6 mr-2" />
+                            {{ model.name }}
+                        </button>
                     </div>
-                </Tooltip>
+                </div>
 
                 <div class="grow"></div>
 
@@ -119,7 +176,7 @@ function renderText(text: string) {
                 </span>
             </div>
         </div>
-        <MessageOptions v-if="!editing" class="opacity-100 group-hover/message:opacity-100" :message="message"
+        <MessageOptions v-if="!editing" :message="message" :done="modelMessageDone"
             @editMessage="editMessage" />
     </div>
 </template>

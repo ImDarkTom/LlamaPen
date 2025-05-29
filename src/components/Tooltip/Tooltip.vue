@@ -1,8 +1,9 @@
 <script setup lang="ts">
 import { onUnmounted, ref } from 'vue';
 
-defineProps<{
+const props = defineProps<{
     text: string;
+    disabled?: boolean;
 }>();
 
 let visible = ref<boolean>(false);
@@ -10,6 +11,8 @@ let timeoutId: null | NodeJS.Timeout = null;
 let timeoutDuration = 500; // todo: make configurable
 
 function showTooltip() {
+    if (props.disabled) return;
+
     timeoutId = setTimeout(() => {
         visible.value = true;
     }, timeoutDuration);
