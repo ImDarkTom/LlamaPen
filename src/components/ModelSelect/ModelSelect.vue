@@ -88,7 +88,7 @@ function searchKeyDown(e: KeyboardEvent) {
     let scrollDown = false;
     switch (e.key) {
         case "Enter":
-            setModel(queriedModelList.value[focusedItemIndex.value].name);
+            setModel(queriedModelList.value[focusedItemIndex.value].model);
             break;
 
         case "Escape":
