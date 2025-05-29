@@ -21,6 +21,7 @@ for (const path in allIcons) {
 const props = defineProps<{
 	name: string;
 	ignoreStyling?: boolean;
+	forceMonochrome?: boolean;
 }>();
 
 const modelIconMap: Record<string, string> = {
@@ -53,14 +54,14 @@ function getSlug(): string {
 function getIconComponent() {
 	const slug = getSlug();
 
-	const slugFormated = config.ui.monochromeModelIcons ? slug : `${slug}-color`;
-	
+	const slugFormated = config.ui.monochromeModelIcons || props.forceMonochrome ? slug : `${slug}-color`;
+
 	return availableIcons[slugFormated];
 }
 </script>
 
 <template>
-	<component :is="getIconComponent()" :class="{ 
+	<component :is="getIconComponent()" :class="{
 		'bg-primary-600 rounded-lg': !ignoreStyling && config.ui.modelIconsBg && config.ui.modelIconsBgDark,
 		'bg-primary-50 rounded-lg': !ignoreStyling && config.ui.modelIconsBg && !config.ui.modelIconsBgDark
 	}" />
