@@ -51,16 +51,15 @@ function handleEscape(e: KeyboardEvent) {
             <h3 class="text-2xl pb-2 pt-4 flex flex-row items-center">
                 <AiFillWindows />&nbsp;Windows
             </h3>
-            <p>On Windows you can do this by running this in command prompt or powershell</p>
+            <p>On Windows you can do this by running this command in <b>Command Prompt</b> or <b>PowerShell</b></p>
             <br>
 
             <pre
                 class="my-2"><code class="hljs language-bash !my-2">set OLLAMA_ORIGINS="{{ originUrl }}" & ollama serve</code></pre>
             <br>
 
-            <p>or, if you want to be able to connect every time without re-running this command each time, you can
-                instead run
-                this to persistently add this app URL to Ollama's trusted origins: </p>
+            <p>If you want to be able to connect without re-running this command each time, you can instead run
+                this to <b>persistently</b> add this app URL to Ollama's trusted origins: </p>
             <br>
 
             <pre class="my-2"><code class="hljs language-bash !my-2">setx OLLAMA_ORIGINS="{{ originUrl }}"</code></pre>
@@ -75,18 +74,18 @@ function handleEscape(e: KeyboardEvent) {
             <p>On linux or MacOS, you can run a similar command:</p>
             <br>
 
-            <pre
-                class="my-2"><code class="hljs language-bash !my-2">export OLLAMA_ORIGINS="{{ originUrl }}" && ollama serve</code></pre>
+            <pre class="my-2"><code class="hljs language-bash !my-2">export OLLAMA_ORIGINS="{{ originUrl }}" && ollama serve</code></pre>
             <br>
 
             <p>And similarly to persistently add to trusted origins you can do:</p>
             <br>
 
-            <pre>
-                <code class="hljs language-bash !my-2">echo 'export OLLAMA_ORIGINS="{{ originUrl }}"' >> ~/.bashrc && source ~/.bashrc</code>
-            </pre>
+            <pre class="my-2"><code class="hljs language-bash !my-2">echo '\nexport OLLAMA_ORIGINS="{{ originUrl }}"' >> ~/.bashrc && source ~/.bashrc</code></pre>
+            <br>
 
-            <h2 class="text-3xl font-semibold pb-2">Troubleshooting</h2>
+            <p>(This is assuming you are using <b>Bash</b>, other shells may have different ways of setting global variables)</p>
+
+            <h2 class="text-3xl font-semibold pb-2 pt-6">Troubleshooting</h2>
 
             <h3 class="text-2xl flex flex-row items-center">Common Issues</h3>
             <h4 class="text-xl pb-2 pt-4 flex flex-row items-center italic">Error: listen tcp

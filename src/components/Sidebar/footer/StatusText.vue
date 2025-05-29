@@ -27,7 +27,12 @@ onMounted(() => {
             uiStore.setConnectedToOllama(true);
         })
         .catch((error) => {
-            statusMessageText.value = error;
+            if (error instanceof TypeError) {
+                statusMessageText.value = "Network error, is Ollama running?";
+            } else {
+                statusMessageText.value = error.message;
+            }
+
             uiStore.setConnectedToOllama(false);
             emitter.emit('popup:ollamanotconnected');
         })
