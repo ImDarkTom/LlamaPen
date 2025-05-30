@@ -4,17 +4,21 @@ import useUserStore from '@/stores/user';
 import { authedFetch } from '@/utils/auth';
 import logger from '@/utils/logger';
 import setPageTitle from '@/utils/title';
-import { computed, onMounted } from 'vue';
+import { computed, onMounted, ref } from 'vue';
 import AccountSection from './components/AccountSection.vue';
+import supabase from '@/supabase';
 
 const userStore = useUserStore();
 const config = useConfigStore();
+
+const loadingSubButtonPage = ref(false);
 
 onMounted(() => {
 	setPageTitle('My Account');
 });
 
 async function subscriptionButtonClick() {
+	loadingSubButtonPage.value = true;
 	if (userStore.subscription.subscribed) {
 		const url = config.apiUrl('/stripe/manage');
 
@@ -38,15 +42,17 @@ async function subscriptionButtonClick() {
 
 async function deleteAccount() {
 	if (confirm('Are you sure you want to delete your account? This cannot be undone. Any subscriptions will be cancelled.')) {
+		
 		const response = await authedFetch(config.apiUrl('/user/delete-account'), {
 			method: 'POST'
 		});
-
+		
 		if (response.status !== 200) {
 			alert('An error occured deleting your account, try again later.');
 			return;
 		}
-
+		
+		supabase?.auth.signOut();
 		window.location.href = '/';
 	}
 }
@@ -75,7 +81,11 @@ const quotaUsedPercentage = computed(() => (userStore.subscription.remaining / u
 			</AccountSection>
 
 			<AccountSection title="Subscription" flex-direction="col">
-				<button class="w-fit bg-gradient-to-br from-primary-300 to-primary-400 ring-1 ring-txt-2 p-4 rounded-lg cursor-pointer" @click="subscriptionButtonClick">{{ userStore.subscription.subscribed ? 'Manage Subscription' : 'Subscribe to LlamaPen Explorer' }}</button>
+				<button class="w-fit bg-gradient-to-br from-primary-300 to-primary-400 ring-1 ring-txt-2 p-4 rounded-lg cursor-pointer" @click="subscriptionButtonClick">
+					{{ loadingSubButtonPage ? 
+						'Loading...' :
+						userStore.subscription.subscribed ? 'Manage Subscription' : 'Subscribe to LlamaPen Explorer' }}
+				</button>
 				<span class="text-2xl mt-4">Usage Limits</span>
 				<span v-if="userStore.subscription.name === 'Loading...'">Loading...</span>
 				<div v-else class="w-full">
@@ -86,10 +96,10 @@ const quotaUsedPercentage = computed(() => (userStore.subscription.remaining / u
 						<div class="grow"></div>
 						<span>Resets daily at 00:00 EST</span>
 					</span>
-					<div class="mt-2 h-8 w-full bg-txt-2 rounded-lg">
+					<div class="mt-2 h-8 w-full bg-txt-2 rounded-xl">
 						<div 
-							class="h-full bg-primary-50 rounded-lg"
-							:class="`w-[${quotaUsedPercentage}%]`"
+							class="h-full bg-primary-50 rounded-xl"
+							:style="`width: ${quotaUsedPercentage}%;`"
 						></div>
 					</div>
 				</div>
