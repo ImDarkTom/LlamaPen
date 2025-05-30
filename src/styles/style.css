@@ -53,21 +53,6 @@ html {
     -moz-osx-font-smoothing: grayscale;
 }
 
-
-@media (prefers-color-scheme: dark) {
-    :root {
-        --bg-1: #0d1a30;
-        --bg-2: #192a51;
-        --bg-3: #2a3a6a;
-        --bg-4: #3a4a8a;
-        --bg-accent: #967aa1;
-
-        --txt-1: #f0f0f0;
-        --txt-2: #c5cadb;
-        --txt-accent: #fffafa;
-    }
-}
-
 /* Z-Index Guidelines
 z-2: Virtual Textarea Overlay
 z-20: Model Selects
