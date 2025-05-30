@@ -26,7 +26,7 @@ const props = defineProps<{
 
 const modelIconMap: Record<string, string> = {
 	llama: 'meta',
-	gemma: 'gemma',
+	gemma: config.ui.modelIcons.alternateGemmaIcon ? 'google' : 'gemma',
 	gemini: 'gemini',
 	deepseek: 'deepseek',
 	qwen: 'qwen',
@@ -54,7 +54,7 @@ function getSlug(): string {
 function getIconComponent() {
 	const slug = getSlug();
 
-	const slugFormated = config.ui.monochromeModelIcons || props.forceMonochrome ? slug : `${slug}-color`;
+	const slugFormated = config.ui.modelIcons.monochrome || props.forceMonochrome ? slug : `${slug}-color`;
 
 	return availableIcons[slugFormated];
 }
@@ -62,7 +62,7 @@ function getIconComponent() {
 
 <template>
 	<component :is="getIconComponent()" :class="{
-		'bg-primary-600 rounded-lg': !ignoreStyling && config.ui.modelIconsBg && config.ui.modelIconsBgDark,
-		'bg-primary-50 rounded-lg': !ignoreStyling && config.ui.modelIconsBg && !config.ui.modelIconsBgDark
+		'bg-primary-600 rounded-lg': !ignoreStyling && config.ui.modelIcons.background && config.ui.modelIcons.backgroundDark,
+		'bg-primary-50 rounded-lg': !ignoreStyling && config.ui.modelIcons.background && !config.ui.modelIcons.backgroundDark
 	}" />
 </template>

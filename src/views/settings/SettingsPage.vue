@@ -183,11 +183,12 @@ watch(
                 </span>
             </div>
             <CategoryLabel>Model Select Icons</CategoryLabel>
-            <ToggleSetting v-model="config.ui.monochromeModelIcons" label="Monochrome model icons" />
-            <ToggleSetting v-model="config.ui.modelIconsBg" label="Model icons background" />
-            <div v-if="config.ui.modelIconsBg" class="border-l-[1px] border-txt-1 pl-3 ml-3">
-                <ToggleSetting v-model="config.ui.modelIconsBgDark" label="Dark icon background" />
+            <ToggleSetting v-model="config.ui.modelIcons.monochrome" label="Monochrome model icons" />
+            <ToggleSetting v-model="config.ui.modelIcons.background" label="Model icons background" />
+            <div v-if="config.ui.modelIcons.background" class="border-l-[1px] border-txt-1 pl-3 ml-3">
+                <ToggleSetting v-model="config.ui.modelIcons.backgroundDark" label="Dark icon background" />
             </div>
+            <ToggleSetting v-model="config.ui.modelIcons.alternateGemmaIcon" label="Alternate Gemma icon" />
             <CategoryLabel>Mobile</CategoryLabel>
             <ToggleSetting v-model="config.closeSidebarOnNavMobile" label="Hide sidebar on navigate" />
         </OptionCategory>

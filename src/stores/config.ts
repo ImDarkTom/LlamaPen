@@ -8,9 +8,12 @@ interface Config {
     transitionSpeed: number,
     closeSidebarOnNavMobile: boolean,
     ui: {
-        monochromeModelIcons: boolean,
-        modelIconsBg: boolean,
-        modelIconsBgDark: boolean,
+        modelIcons: {
+            monochrome: boolean,
+            background: boolean,
+            backgroundDark: boolean,
+            alternateGemmaIcon: boolean,
+        }
     },
     api: {
         enabled: boolean,
@@ -43,9 +46,12 @@ export const useConfigStore = defineStore('config', {
         transitionSpeed: 0.125,
         closeSidebarOnNavMobile: true,
         ui: {
-            monochromeModelIcons: true,
-            modelIconsBg: false,
-            modelIconsBgDark: false
+            modelIcons: {
+                monochrome: true,
+                background: false,
+                backgroundDark: false,
+                alternateGemmaIcon: false,
+            },
         },
         api: {
             enabled: false,
