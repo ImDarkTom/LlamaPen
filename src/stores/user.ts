@@ -33,11 +33,14 @@ async function fetchSubInfo() {
 
 const user = ref<User | null>(null);
 const session = ref<Session | null>(null);
-const subscriptionInfo = ref<{subscribed: boolean, name: string, ending?: number}>({
+const subscriptionInfo = ref<{ subscribed: boolean, name: string, ending?: number }>({
     subscribed: false,
     name: 'Loading...',
 });
 
+/**
+ * Store to manage auth with LlamaPen account.
+ */
 const useUserStore = defineStore('user', () => {
     if (user.value === null) {
         fetchUser();

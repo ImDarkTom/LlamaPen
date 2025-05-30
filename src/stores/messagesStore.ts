@@ -64,6 +64,10 @@ function initLiveSync(
 // -----
 // Store
 // -----
+
+/**
+ * Handles messages, opened chat messages, and opened chat ID. Seperate from chatsStore.
+ */
 const useMessagesStore = defineStore('messages', () => {
 	const messages = ref<ChatMessage[]>([]);
 	const openedChatMessages = ref<ChatMessage[]>([]);
@@ -74,20 +78,20 @@ const useMessagesStore = defineStore('messages', () => {
 
 	async function sendMessage(content: string, attachments: File[] = []) {
 		if (content.length === 0) return;
-		
+
 		logger.info('Messages Store', 'Sending message', content, attachments);
 
 		if (openedChatId.value === null) {
 			const newChatId = await useChatsStore().createNewChat();
 			openedChatId.value = newChatId;
-			
+
 			const newUrl = `/chat/${newChatId}`;
-			
+
 			logger.info('Messages Store', 'No opened chat, created new and navigating to', newUrl);
-			
+
 			logger.info('Messages Store', "Created new chat with id", openedChatId.value);
 		}
-	
+
 		const messageData = {
 			chatId: openedChatId.value,
 			content,
@@ -117,10 +121,10 @@ const useMessagesStore = defineStore('messages', () => {
 			.between([openedChatId.value, id], [openedChatId.value, Dexie.maxKey], false, true).delete();
 
 		logger.info('Messages Store', 'Deleted messages after edited message', id);
-		
+
 		getOllamaResponse();
 	}
-	
+
 
 	function openChat(id: number) {
 		logger.info('Messages Store', 'Opening chat with id', id);
@@ -139,17 +143,17 @@ const useMessagesStore = defineStore('messages', () => {
 
 		const TOTAL_MESSAGE_SAVE_INTERVAL = 5; // 5 tokens/chunks.
 		let saveCounter = 5;
-	
+
 		// We have verified that openedChatId is not null by this point
-	
-		const selectedModel =  modelOverride ?? useConfigStore().selectedModel;
-	
+
+		const selectedModel = modelOverride ?? useConfigStore().selectedModel;
+
 		if (selectedModel === '') {
 			throw new Error('No selected model found.')
 		}
 
 		const listBeforeModelMessage = await getMessagesInOllamaFormat();
-	
+
 		const ollamaMessageId = await db.messages.add({
 			chatId: openedChatId.value as number,
 			content: '',
@@ -164,7 +168,7 @@ const useMessagesStore = defineStore('messages', () => {
 		logger.info('Messages Store', 'Added ollama message', ollamaMessageId);
 
 		const abortController = new AbortController();
-		
+
 		const cancelHandler = async () => {
 			await db.messages.update(ollamaMessageId, { status: 'cancelled' } as Partial<ModelChatMessage>);
 			abortController.abort("message generation cancelled by user.");
@@ -174,28 +178,28 @@ const useMessagesStore = defineStore('messages', () => {
 		logger.info('Messages Store', 'Added stop chat generation emit listener');
 
 		function handleChunkError(chunk: ChatIteratorError) {
-			switch(chunk.error.type) {
+			switch (chunk.error.type) {
 				case '401-parse-fail':
 					alert('Error parsing 401 response');
 					break;
-				case 'no-response-body': 
+				case 'no-response-body':
 					alert('No response body found for message chunk');
 					break;
-				case 'unknown-401': 
+				case 'unknown-401':
 					alert('Unknown 401 error when recieving message');
 					break;
-				case 'user-not-authed': 
+				case 'user-not-authed':
 					alert('You need to be signed in to use this model.');
 					break;
-				case 'user-not-premium': 
+				case 'user-not-premium':
 					alert('You need premium to use this model.');
 					break;
-				default: 
+				default:
 					alert(`Unknown error when generating message: ${chunk.error.message}`);
 			}
 		}
-		
-		let updatedMessage = ""; 
+
+		let updatedMessage = "";
 		let messageGenerating = false;
 		for await (const chunk of ollamaApi.chat(listBeforeModelMessage, abortController.signal, selectedModel)) {
 			if ('error' in chunk) {
@@ -230,7 +234,7 @@ const useMessagesStore = defineStore('messages', () => {
 			openedChatMessages.value = openedChatMessages.value.map((message) => {
 				if (message.id === ollamaMessageId) {
 					updatedMessage = updatedMessage + messageChunk;
-					
+
 					return {
 						...message,
 						content: updatedMessage,
@@ -252,7 +256,7 @@ const useMessagesStore = defineStore('messages', () => {
 		emitter.off('stopChatGeneration', cancelHandler);
 		attemptGenerateTitle();
 	}
-	
+
 	async function attemptGenerateTitle() {
 		const chatId = openedChatId.value;
 		if (!chatId) {
@@ -285,7 +289,7 @@ const useMessagesStore = defineStore('messages', () => {
 			.where('chatId')
 			.equals(openedChatId.value!)
 			.sortBy('created');
-		
+
 		const formattedMessages = sortedMessages.map(async (message) => {
 			return {
 				role: message.type === 'user' ? 'user' : 'assistant' as 'user' | 'assistant',
@@ -309,14 +313,14 @@ const useMessagesStore = defineStore('messages', () => {
 			.between([openedChatId.value, id - 1], [openedChatId.value, Dexie.maxKey], false, true).delete();
 
 		logger.info('Messages Store', 'Deleted messages after message to be regenerated', id);
-		
+
 		const modelToUse = model === '' ? null : model;
 
 		getOllamaResponse(modelToUse);
 	}
 
-	return { 
-		openedChatMessages, 
+	return {
+		openedChatMessages,
 		openedChatId,
 		openChat,
 		sendMessage,

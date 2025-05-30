@@ -45,16 +45,19 @@ function initLiveSync(
 				next: data => {
 					openedNote.value = data ?? null;
 				},
-				
-			error: (e) => {
-				console.error('Error during liveQuery for opened note', e)
-			}
-		});
+
+				error: (e) => {
+					console.error('Error during liveQuery for opened note', e)
+				}
+			});
 	});
 
 	logger.info('Messages Store', 'Initialized live sync for notes store.');
 }
 
+/**
+ * Handles everything to do with notes, unlike messages/chats, this is centralised.
+ */
 const useNotesStore = defineStore('notes', () => {
 	const notes = ref<Note[]>([]);
 	const openedNote = ref<Note | null>(null);
@@ -126,7 +129,7 @@ const useNotesStore = defineStore('notes', () => {
 		console.log(`openedNoteId changed from ${oldVal} to ${val}`);
 	});
 
-	return { 
+	return {
 		notes,
 		openedNote,
 		openedNoteId,

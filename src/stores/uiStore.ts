@@ -10,6 +10,9 @@ interface UIStore {
     openedNoteId: number | null;
 }
 
+/**
+ * Misc util state variables used throughout UI.
+ */
 export const useUiStore = defineStore('uiStore', {
     state: (): UIStore => ({
         chatList: {

@@ -32,6 +32,9 @@ interface Config {
     }
 };
 
+/**
+ * Handles user configs. Still uses old way of defining pinia stores, but works for this scenario.
+ */
 export const useConfigStore = defineStore('config', {
     state: (): Config => ({
         ollamaUrl: 'http://localhost:11434',

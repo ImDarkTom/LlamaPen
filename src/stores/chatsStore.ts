@@ -53,6 +53,9 @@ function initLiveSync(
 	logger.info('Chats Store', 'Initialized live sync for chats store.');
 }
 
+/**
+ * Handles chats, but not messages, that is handled in messagesStore.
+ */
 const useChatsStore = defineStore('chats', () => {
 	const chats = ref<Chat[]>([]);
 
