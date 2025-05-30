@@ -33,9 +33,11 @@ async function fetchSubInfo() {
 
 const user = ref<User | null>(null);
 const session = ref<Session | null>(null);
-const subscriptionInfo = ref<{ subscribed: boolean, name: string, ending?: number }>({
+const subscriptionInfo = ref<{ subscribed: boolean, name: string, ending?: number, remaining: number, limit: number }>({
     subscribed: false,
     name: 'Loading...',
+    remaining: 20,
+    limit: 20,
 });
 
 /**

@@ -4,7 +4,8 @@ import useUserStore from '@/stores/user';
 import { authedFetch } from '@/utils/auth';
 import logger from '@/utils/logger';
 import setPageTitle from '@/utils/title';
-import { onMounted } from 'vue';
+import { computed, onMounted } from 'vue';
+import AccountSection from './components/AccountSection.vue';
 
 const userStore = useUserStore();
 const config = useConfigStore();
@@ -49,6 +50,8 @@ async function deleteAccount() {
 		window.location.href = '/';
 	}
 }
+
+const quotaUsedPercentage = computed(() => (userStore.subscription.remaining / userStore.subscription.limit) * 100)
 </script>
 
 <template>
@@ -59,30 +62,42 @@ async function deleteAccount() {
 		</div>
 		<div class="w-4/5" v-else>
 			<h1 class="font-bold text-4xl!">My Account</h1>
-			<div class="flex flex-col bg-primary-300 w-full p-4 rounded-xl">
-				<h2 class="text-3xl font-semibold pb-4">Details</h2>
-				<div class="flex flex-row">
-					<img :src="userStore.user.user_metadata.avatar_url" alt="User avatar" class="size-28 rounded-full mr-4">
-					<div class="flex flex-col gap-2 w-full">
-						<span class="text-2xl font-black">{{ userStore.user.user_metadata.full_name }}</span>
+			<AccountSection title="Details">
+				<img :src="userStore.user.user_metadata.avatar_url" alt="User avatar" class="size-28 rounded-full mr-4">
+				<div class="flex flex-col gap-2 w-full">
+					<span class="text-2xl font-black">{{ userStore.user.user_metadata.full_name }}</span>
+					<span>
+						{{ userStore.user.user_metadata.email }}
+						 • 
+						{{ userStore.subscription.name }}
+					</span>
+				</div>
+			</AccountSection>
+
+			<AccountSection title="Subscription" flex-direction="col">
+				<button class="w-fit bg-gradient-to-br from-primary-300 to-primary-400 ring-1 ring-txt-2 p-4 rounded-lg cursor-pointer" @click="subscriptionButtonClick">{{ userStore.subscription.subscribed ? 'Manage Subscription' : 'Subscribe to LlamaPen Explorer' }}</button>
+				<span class="text-2xl mt-4">Usage Limits</span>
+				<span v-if="userStore.subscription.name === 'Loading...'">Loading...</span>
+				<div v-else class="w-full">
+					<span class="flex flex-row">
 						<span>
-							{{ userStore.user.user_metadata.email }}
-							 • 
-							{{ userStore.subscription.name }}
+							Messages/edits remaining: <b>{{ userStore.subscription.remaining }}/{{ userStore.subscription.limit }}</b>
 						</span>
+						<div class="grow"></div>
+						<span>Resets daily at 00:00 EST</span>
+					</span>
+					<div class="mt-2 h-8 w-full bg-txt-2 rounded-lg">
+						<div 
+							class="h-full bg-primary-50 rounded-lg"
+							:class="`w-[${quotaUsedPercentage}%]`"
+						></div>
 					</div>
 				</div>
-			</div>
-			<div class="flex flex-col bg-primary-300 w-full p-4 rounded-xl mt-4">
-				<h2 class="text-3xl font-semibold pb-4">Billing</h2>
-				<div class="flex flex-row">
-					<button class="bg-gradient-to-br from-primary-300 to-primary-400 ring-1 ring-txt-2 p-4 rounded-lg cursor-pointer" @click="subscriptionButtonClick">{{ userStore.subscription.subscribed ? 'Manage Subscription' : 'Subscribe to LlamaPen Explorer' }}</button>
-				</div>
-			</div>
-			<div class="flex flex-col bg-primary-300 w-full p-4 rounded-xl mt-4">
-				<h2 class="text-3xl font-semibold pb-4">Actions</h2>
+			</AccountSection>
+
+			<AccountSection title="Actions">
 				<div class="bg-red-600 w-fit p-4 rounded-lg cursor-pointer" @click="deleteAccount">Delete Account</div>
-			</div>
+			</AccountSection>
 		</div>
 	</div>
 </template>
