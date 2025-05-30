@@ -67,7 +67,7 @@ function handleEscape(e: KeyboardEvent) {
 
             <p>After that, just open Ollama normally and you should be able to connect after refreshing this page.</p>
 
-            <h3 class="text-2xl pb-2 pt-4 flex flex-row items-center">
+            <h3 class="text-2xl pb-2 pt-8 flex flex-row items-center">
                 <AiOutlineLinux />/
                 <AiFillApple />&nbsp;Linux/MacOS
             </h3>
@@ -85,7 +85,7 @@ function handleEscape(e: KeyboardEvent) {
 
             <p>(This is assuming you are using <b>Bash</b>, other shells may have different ways of setting global variables)</p>
 
-            <h2 class="text-3xl font-semibold pb-2 pt-6">Troubleshooting</h2>
+            <h2 class="text-3xl font-semibold pb-2 pt-12">Troubleshooting</h2>
 
             <h3 class="text-2xl flex flex-row items-center">Common Issues</h3>
             <h4 class="text-xl pb-2 pt-4 flex flex-row items-center italic">Error: listen tcp

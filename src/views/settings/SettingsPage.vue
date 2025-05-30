@@ -14,6 +14,7 @@ import TextInputSetting from './components/TextInputSetting.vue';
 import logger from '@/utils/logger';
 import setPageTitle from '@/utils/title';
 import CategoryLabel from './components/CategoryLabel.vue';
+import { useUiStore } from '@/stores/uiStore';
 
 const config = useConfigStore();
 const router = useRouter();
@@ -21,6 +22,7 @@ const router = useRouter();
 const chatsStore = useChatsStore();
 const messagesStore = useMessagesStore();
 const userStore = useUserStore();
+const uiStore = useUiStore();
 
 // transition speed
 const transitionSpeed = ref(0.125);
@@ -83,10 +85,10 @@ onBeforeUnmount(() => {
 const inProduction = import.meta.env.VITE_PRODUCTION === 'true';
 
 async function signIn() {
-    if (!supabase) { 
+    if (!supabase) {
         return;
     }
-    
+
     const { data: _data, error } = await supabase.auth.signInWithOAuth({
         provider: 'google',
     });
@@ -98,16 +100,16 @@ async function signIn() {
 }
 
 async function signOut() {
-    if (!supabase) { 
+    if (!supabase) {
         return;
     }
-    
+
     await supabase.auth.signOut();
     location.reload();
 }
 
 watch(
-    () => config.api.enabled,   
+    () => config.api.enabled,
     async (newValue) => {
         if (newValue === false && config.api.signoutBeforeDisable) {
             // TODO: Fix/make this work
@@ -126,38 +128,42 @@ watch(
 </script>
 
 <template>
-    <div 
-    class="w-full h-full flex flex-col items-center py-4 box-border overflow-y-auto px-2
-    *:mx-auto *:md:w-4/5 *:lg:w-3/5"
-    >
-    <div class="relative w-full flex flex-row justify-between items-center">
-        <h1 class="text-4xl font-extrabold mt-2 pr-3 bg-primary-400">Settings</h1>
-        <div class="w-full h-0.5 bg-txt-1 absolute top-1/2 translate-y-1/2 -z-1 rounded-full"></div>
-        <div class="bg-primary-400 pl-2 box-border">
-            <AiOutlineClose class="size-10 hover:bg-primary-300 cursor-pointer rounded-full p-1 transition-colors duration-100"
-            @click="router.back()" />
+    <div class="w-full h-full flex flex-col items-center py-4 box-border overflow-y-auto px-2
+    *:mx-auto *:md:w-4/5 *:lg:w-3/5">
+        <div class="relative w-full flex flex-row justify-between items-center">
+            <h1 class="text-4xl font-extrabold mt-2 pr-3 bg-primary-400">Settings</h1>
+            <div class="w-full h-0.5 bg-txt-1 absolute top-1/2 translate-y-1/2 -z-1 rounded-full"></div>
+            <div class="bg-primary-400 pl-2 box-border">
+                <AiOutlineClose
+                    class="size-10 hover:bg-primary-300 cursor-pointer rounded-full p-1 transition-colors duration-100"
+                    @click="router.back()" />
+            </div>
         </div>
-    </div>
 
-    <OptionCategory label="Account" v-if="inProduction">
-        <ToggleSetting v-model="config.api.enabled" label="Enable Llamapen Cloud" />
-        <template v-if="config.api.enabled">
-            <ButtonSetting v-if="!userStore.isSignedIn" 
-            @click="signIn">Sign in with Google</ButtonSetting>
-            <template v-else>
-                <!-- <ToggleSetting v-model="config.api.signoutBeforeDisable" label="Sign out before disable" /> -->
-                <div class="flex flex-row gap-2">
-                    <RouterLink to="/account" class="bg-primary-200! p-4 rounded-lg hover:ring-1 ring-txt-2/50 cursor-pointer transition-all duration-150 w-fit">
-                        Manage account
-                    </RouterLink>
-                    <ButtonSetting @click="signOut">Sign out</ButtonSetting>
-                </div>
+        <OptionCategory label="Account" v-if="inProduction">
+            <ToggleSetting v-model="config.api.enabled" label="Enable Llamapen Cloud" />
+            <template v-if="config.api.enabled">
+                <ButtonSetting v-if="!userStore.isSignedIn" @click="signIn">Sign in with Google</ButtonSetting>
+                <template v-else>
+                    <!-- <ToggleSetting v-model="config.api.signoutBeforeDisable" label="Sign out before disable" /> -->
+                    <div class="flex flex-row gap-2">
+                        <RouterLink to="/account"
+                            class="bg-primary-200! p-4 rounded-lg hover:ring-1 ring-txt-2/50 cursor-pointer transition-all duration-150 w-fit">
+                            Manage account
+                        </RouterLink>
+                        <ButtonSetting @click="signOut">Sign out</ButtonSetting>
+                    </div>
+                </template>
             </template>
-        </template>
-    </OptionCategory>
-    
-    <OptionCategory label="Ollama">
-        <TextInputSetting label="Ollama URL" v-model="config.ollamaUrl" default="http://localhost:11434" :check="ollamaUrlCheck" />
+        </OptionCategory>
+
+        <OptionCategory label="Ollama">
+            <TextInputSetting label="Ollama URL" v-model="config.ollamaUrl" default="http://localhost:11434"
+                :check="ollamaUrlCheck" />
+            <span v-if="!uiStore.connectedToOllama" class="text-txt-2">
+                Can't connect? Checkout the
+                <RouterLink to="/guide" class="text-txt-1 underline">setup guide</RouterLink>.
+            </span>
         </OptionCategory>
 
         <OptionCategory label="Appearance">
@@ -168,12 +174,11 @@ watch(
             </RouterLink>
             <div class="flex flex-col gap-2 w-full">
                 <span class="text-lg text-txt-2">Transition Speed</span>
-                <input
-                    class="accent-primary-200 w-full"
-                    @change="updateTransitionSpeed" v-model="transitionSpeed" type="range" min="0" max = "1" step="0.025" 
-                />
+                <input class="accent-primary-200 w-full" @change="updateTransitionSpeed" v-model="transitionSpeed"
+                    type="range" min="0" max="1" step="0.025" />
                 <span class="py-2">
-                    <span class="bg-primary-200 w-fit p-2 rounded-lg text-txt-2 cursor-default box-border">{{ transitionSpeedText }}</span>
+                    <span class="bg-primary-200 w-fit p-2 rounded-lg text-txt-2 cursor-default box-border">{{
+                        transitionSpeedText }}</span>
                     <span class="pl-2 text-txt-2">{{ transitionSpeed == 0.125 ? '(Default)' : '' }}</span>
                 </span>
             </div>
@@ -181,17 +186,18 @@ watch(
             <ToggleSetting v-model="config.ui.monochromeModelIcons" label="Monochrome model icons" />
             <ToggleSetting v-model="config.ui.modelIconsBg" label="Model icons background" />
             <div v-if="config.ui.modelIconsBg" class="border-l-[1px] border-txt-1 pl-3 ml-3">
-                <ToggleSetting  v-model="config.ui.modelIconsBgDark" label="Dark icon background"  />
+                <ToggleSetting v-model="config.ui.modelIconsBgDark" label="Dark icon background" />
             </div>
             <CategoryLabel>Mobile</CategoryLabel>
-            <ToggleSetting v-model="config.closeSidebarOnNavMobile" label="Hide sidebar on navigate"/>
+            <ToggleSetting v-model="config.closeSidebarOnNavMobile" label="Hide sidebar on navigate" />
         </OptionCategory>
 
         <OptionCategory label="Chat">
             <ButtonSetting @click="clearChats">
                 Clear all chats
             </ButtonSetting>
-            <ToggleSetting v-model="config.chat.reasoning.info_open_by_default" label="Reasoning text open by default" />
+            <ToggleSetting v-model="config.chat.reasoning.info_open_by_default"
+                label="Reasoning text open by default" />
             <!-- <ButtonSetting>
                 Configure title generation prompt... (TO BE ADDED)
             </ButtonSetting> -->
