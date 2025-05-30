@@ -126,7 +126,7 @@ function regenerateMessage(model: string) {
                             <AiOutlineSwap v-if="modelMessageDone" class="p-1 size-8 opacity-35 group-hover/msg-model:opacity-100 transition-opacity duration-100" />
                         </div>
                     </Tooltip>
-                    <div v-if="modelSelectionOpened" class="absolute top-0 left-[50%] -translate-x-[50%] translate-y-12 flex flex-col bg-primary-300 z-20 p-2 rounded-xl gap-2">
+                    <div v-if="modelSelectionOpened" class="max-h-[50vh] overflow-y-auto absolute top-0 left-[50%] -translate-x-[50%] translate-y-12 flex flex-col bg-primary-300 z-20 p-2 rounded-xl gap-2">
                         <button class="p-2 hover:scale-[98%] hover:bg-primary-200 rounded-lg w-full min-w-48 cursor-pointer transition-all duration-100 flex flex-row items-center justify-start"
                             @mouseup="regenerateMessage(message.model)">
                             <VscDebugRestart class="size-6 mr-2 p-0.5" />
