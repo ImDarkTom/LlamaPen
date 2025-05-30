@@ -4,6 +4,7 @@ import useUserStore from '@/stores/user';
 import { AiFillStar, AiOutlineArrowRight, AiOutlineEye, AiOutlineTool } from 'vue-icons-plus/ai';
 import { BsGlobe } from 'vue-icons-plus/bs';
 import ModelIcon from '../Icon/ModelIcon.vue';
+import { ref } from 'vue';
 
 const userStore = useUserStore();
 
@@ -29,6 +30,11 @@ function setModel(model: ModelListItem) {
 		emit('setModel', model.model);
 	}
 }
+
+const listItemRef = ref<HTMLLIElement | null>(null);
+defineExpose({
+	listItemRef
+});
 </script>
 
 <template>
@@ -36,7 +42,7 @@ function setModel(model: ModelListItem) {
 		:class="{
 			'bg-primary-500 shadow-sm shadow-black/50': index === focusedItemIndex,
 			'opacity-75': !userStore.subscription.subscribed && model.llamapenMetadata?.premium
-		}" @click="setModel(model)" ref="listItemsRef" :aria-selected="index === focusedItemIndex">
+		}" @click="setModel(model)" ref="listItemRef" :aria-selected="index === focusedItemIndex">
 
 		<ModelIcon :name="model.model" class="size-10 p-1" />
 

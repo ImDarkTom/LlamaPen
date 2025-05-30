@@ -68,15 +68,8 @@ export const useConfigStore = defineStore('config', {
     }),
     getters: {
         apiUrl: (state) => (path: string) => `${state.api.enabled ? state.api.apiUrl : state.ollamaUrl}${path}`,
-        transitionSpeedSec: (state) => state.transitionSpeed,
     },
     actions: {
-        setOllamaUrl(url: string) {
-            this.ollamaUrl = url;
-        },
-        setShowSidebar(state: boolean) {
-            this.showSidebar = state;
-        },
         setTransitionSpeed(speed: number) {
             if (speed > 1 || speed < 0) {
                 throw new Error('Transition speed must be between 0 and 1');

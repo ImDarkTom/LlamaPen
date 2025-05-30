@@ -47,7 +47,7 @@ function ollamaUrlCheck(url: string): string {
         url = "http://localhost:11434";
     }
 
-    config.setOllamaUrl(url);
+    config.ollamaUrl = url;
     location.reload();
 
     return url;
