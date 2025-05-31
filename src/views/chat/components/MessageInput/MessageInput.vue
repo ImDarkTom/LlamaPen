@@ -32,10 +32,16 @@ const focusInput = () => {
 
 onMounted(() => {
     document.addEventListener('keydown', handleKeyDown);
+
+    if (!messageInput.value) return;
+    messageInput.value.addEventListener('paste', handleClipboardEvent);
 });
 
 onBeforeUnmount(() => {
     document.removeEventListener('keydown', handleKeyDown);
+
+    if (!messageInput.value) return;
+    messageInput.value.addEventListener('paste', handleClipboardEvent);
 });
 
 async function handleKeyDown(e: KeyboardEvent) {
@@ -123,6 +129,34 @@ function removeFileFromUploadList(file: File) {
 const filesToUpload = ref<File[]>([]);
 
 const createObjectUrl = (file: File) => URL.createObjectURL(file);
+
+function handleClipboardEvent(event: ClipboardEvent) {
+    if (!event.clipboardData) return;
+
+    for (const item of event.clipboardData.items) {
+        if (item.type.startsWith('image/')) {
+            const file = item.getAsFile();
+            if (!file) continue;
+
+            handlePastedImage(file);
+            event.preventDefault();
+        }
+    }
+}
+
+function handlePastedImage(file: File) {
+    const dataTransfer = new DataTransfer();
+    dataTransfer.items.add(file);
+
+    const fakeInput = document.createElement('input');
+    fakeInput.type = 'file';
+    fakeInput.files = dataTransfer.files;
+
+    const event = new Event('change', { bubbles: true });
+    fakeInput.dispatchEvent(event);
+
+    uploadFile({ target: fakeInput } as unknown as Event);
+}
 </script>
 
 <template>
