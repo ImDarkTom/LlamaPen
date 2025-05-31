@@ -23,7 +23,7 @@ async function subscriptionButtonClick() {
 		const url = config.apiUrl('/stripe/manage');
 
 		const response = await authedFetch(url)	;
-		const { url: redirect } = await response.json();
+		const { redirect } = await response.json();
 
 		logger.info('Account Page', 'Got subscription management url: ', redirect);	
 		
