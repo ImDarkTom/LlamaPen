@@ -63,7 +63,7 @@ class OllamaAPI {
 					},
 					required: ['title']
 				},
-				_llamapen: {
+				llamapen: {
 					intent: 'chat-title-generation'
 				}
 			})
@@ -143,6 +143,7 @@ class OllamaAPI {
 			},
 			body: JSON.stringify({
 				model: modelOverride ?? useConfigStore().selectedModel,
+				stream: true,
 				messages,
 			}),
 			signal: abortSignal,
