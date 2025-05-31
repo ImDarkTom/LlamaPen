@@ -3,20 +3,9 @@ import { authedFetch } from './auth';
 import { tryCatch } from './tryCatch';
 import { Readable } from 'readable-stream';
 import type { ReadableOf } from '@/types/util';
+import logger from './logger';
 
-const DEFAULT_TITLE_GENERATION_PROMPT = (historyText: string) => `Create a concise, 3-5 word title as a title for the chat history, in the given language. RESPOND ONLY WITH THE TITLE TEXT.
-
-Examples of titles:
-📉 Stock Market Trends
-🍪 Perfect Chocolate Chip Recipe
-Evolution of Music Streaming
-Remote Work Productivity Tips
-Artificial Intelligence in Healthcare
-🎮 Video Game Development Insights
-
-<chat_history>
-${historyText}
-</chat_history>`;
+const chatTitleExamples = `\nExamples of titles:\n📉 Stock Market Trends\n🍪 Perfect Chocolate Chip Recipe\nEvolution of Music Streaming\nRemote Work Productivity Tips\nArtificial Intelligence in Healthcare\n🎮 Video Game Development Insights`;
 
 export type ChatIteratorError = {
 	error: {
@@ -42,27 +31,53 @@ class OllamaAPI {
 
 		const messagesFormatted = messages.map((message) => {
 			const hasAttachments = message.attachments && message.attachments.length > 0;
-			return `${message.type === 'user' ? 'User' : 'Assistant'}: ${hasAttachments ? `<${message.attachments?.length} Attachments>` : ''} ${message.content}`;
-		}).join('\n');
 
-		const generationPrompt = DEFAULT_TITLE_GENERATION_PROMPT(messagesFormatted);
+			hasAttachments ? message.content += '\n<Attachment(s)>' : null;
 
-		const response = await authedFetch(useConfigStore().apiUrl('/api/generate'), {
+			return {
+				role: message.type === 'user'? 'user' : 'assistant',
+				content: message.content,
+			};
+		});
+
+		messagesFormatted.unshift({
+			role: 'system',
+			content: 'You are a helpful assistant that generates concise titles for chat histories. Use the following chat to generate a title based on the chat history in the chat\'s language.' + chatTitleExamples,
+		})
+
+		const response = await authedFetch(useConfigStore().apiUrl('/api/chat'), {
 			method: 'POST',
 			headers: {
 				'Content-Type': 'application/json',
 			},
 			body: JSON.stringify({
 				model: useConfigStore().selectedModel,
-				prompt: generationPrompt,
+				messages: messagesFormatted,
 				stream: false,
+				format: {
+					type: 'object',
+					properties: {
+						title: {
+							type: 'string'
+						}
+					},
+					required: ['title']
+				},
+				_llamapen: {
+					intent: 'chat-title-generation'
+				}
 			})
 		});
 
 		const data = await response.json();
 
-		const generatedTitle = data.response;
-		
+		const {data: generatedTitle, error} = await tryCatch<string>(JSON.parse(data.message.content).title);
+		if (error) {
+			logger.warn('OllamaAPI', 'Error generating chat title:', error);
+			return 'New Chat';
+		}
+
+		logger.info('OllamaAPI', 'Generated chat title:', generatedTitle);
 		return generatedTitle;
 	}
 
