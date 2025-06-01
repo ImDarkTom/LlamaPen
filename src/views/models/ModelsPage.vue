@@ -14,8 +14,14 @@ const modelList = ref<ModelList>([]);
 const selectedModel = ref<OllamaModelInfoResponse | null>(null);
 
 const modelFromRoute = computed<string | null>(() => router.currentRoute.value.params.model as string | null);
+const prevPagePath = ref<string | null>(null);
 
 onMounted(async () => {
+    const historyState = window.history.state;
+    if (historyState && historyState.back) {
+        prevPagePath.value = historyState.back;
+    }
+
     setPageTitle('Models');
     modelList.value = await ollamaApi.getModels();
     loadModel(modelFromRoute.value);
@@ -47,7 +53,7 @@ const modelPageMarked = new Marked();
     <div class="w-full h-full flex flex-col md:flex-row gap-2 py-8 px-2 box-border overflow-y-auto">
         <div
             class="h-4/12 md:h-full w-full md:w-3/12 bg-primary-300 rounded-lg flex flex-col gap-2 p-2 overflow-y-auto">
-            <div @click="router.back()"
+            <div @click="router.push(prevPagePath ?? '/')"
                 class="p-4 rounded-md flex flex-row items-center gap-2 font-semibold cursor-pointer select-none">
                 Back
             </div>

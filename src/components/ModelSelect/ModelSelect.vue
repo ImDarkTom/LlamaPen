@@ -128,7 +128,7 @@ const selectedModelInfo = computed(() => modelsList.value.find(model => model.mo
 
 <template>
     <div v-mousedown-outside="handleClickOutside">
-        <div class="relative" id="modelselect">
+        <div class="sm:relative" id="modelselect">
             <DropdownButton :direction="direction" :opened="showSelect" :additional-classes="buttonClasses"
                 @update:opened="toggleShowSelect">
 
@@ -143,7 +143,7 @@ const selectedModelInfo = computed(() => modelsList.value.find(model => model.mo
                 </p>
             </DropdownButton>
 
-            <div v-if="showSelect" class="absolute left-0 bg-primary-300 p-1.5 rounded-lg max-w-dvw w-96 box-border z-20 shadow-md shadow-black/50 transition-shadow duration-100 
+            <div v-if="showSelect" class="absolute left-0 bg-primary-300 p-1.5 rounded-lg max-w-[100dvw-3rem] w-full sm:w-96 box-border z-20 shadow-md shadow-black/50 transition-shadow duration-100 
                 motion-scale-in-[0.5] motion-translate-x-in-[-10%] motion-opacity-in-[0%] motion-duration-[0.10s]"
                 :class="{
                     'bottom-full mb-2 motion-translate-y-in-[25%]': $props.direction === 'up',
