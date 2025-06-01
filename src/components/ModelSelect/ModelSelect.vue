@@ -8,6 +8,7 @@ import DropdownButton from '../Dropdown/DropdownButton.vue';
 import logger from '@/utils/logger';
 import ollamaApi from '@/utils/ollama';
 import ModelIcon from '../Icon/ModelIcon.vue';
+import { AiFillInfoCircle } from 'vue-icons-plus/ai';
 
 const config = useConfigStore();
 const uiStore = useUiStore();
@@ -148,11 +149,18 @@ const selectedModelInfo = computed(() => modelsList.value.find(model => model.mo
                     'bottom-full mb-2 motion-translate-y-in-[25%]': $props.direction === 'up',
                     'top-full mt-2 motion-translate-y-in-[-25%]': $props.direction === 'down'
                 }" role="listbox">
-                <input ref="searchBarRef" v-model="searchQuery" @focus="searchFocused = true"
-                    @blur="searchFocused = false" @keydown="searchKeyDown" type="search" placeholder="Search a model..."
-                    class="bg-primary-400 focus:bg-primary-500 w-full rounded-lg p-3 !mb-2 outline-0"
-                    :class="{ 'cursor-not-allowed': !uiStore.connectedToOllama }" aria-label="Search for a model..."
-                    aria-controls="model-list" :disabled="!uiStore.connectedToOllama">
+                <div class="flex flex-row gap-2 items-center justify-center mb-2">
+                    <input ref="searchBarRef" v-model="searchQuery" @focus="searchFocused = true"
+                        @blur="searchFocused = false" @keydown="searchKeyDown" type="search"
+                        placeholder="Search a model..."
+                        class="bg-primary-400 focus:bg-primary-500 w-full rounded-lg h-6 box-content p-3 outline-0"
+                        :class="{ 'cursor-not-allowed': !uiStore.connectedToOllama }" aria-label="Search for a model..."
+                        aria-controls="model-list" :disabled="!uiStore.connectedToOllama">
+                    <RouterLink to="/models"
+                        class="h-6 p-3 box-content !bg-primary-400 hover:!bg-primary-500 cursor-pointer transition-colors duration-100 rounded-lg">
+                        <AiFillInfoCircle />
+                    </RouterLink>
+                </div>
 
                 <ul role="list" class="max-h-80 overflow-y-auto *:not-last:mb-2">
                     <ModelSelectItem v-if="uiStore.connectedToOllama && queriedModelList.length > 0"

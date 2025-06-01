@@ -8,6 +8,7 @@ import { createRouter, createWebHistory, type RouteRecordRaw } from 'vue-router'
 import AccountPage from './views/account/AccountPage.vue';
 import { useUiStore } from './stores/uiStore';
 import ShortcutsPage from "./views/shortcuts/ShortcutsPage.vue";
+import ModelsPage from "./views/models/ModelsPage.vue";
 
 const routes: RouteRecordRaw[] = [
     {
@@ -29,6 +30,8 @@ const routes: RouteRecordRaw[] = [
             { path: '/guide', component: GuidePage },
             { path: '/account', component: AccountPage },
             { path: "/shortcuts", component: ShortcutsPage },
+            { path: '/models', component: ModelsPage },
+            { path: '/models/:model', component: ModelsPage },
         ],
     },
 ];
