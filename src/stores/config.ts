@@ -35,6 +35,10 @@ interface Config {
     }
 };
 
+// Get current location and replace port with 11434
+// const { protocol, hostname } = window.location;
+// const defaultOllamaUrl = `${protocol}//${hostname}:11434`;
+
 /**
  * Handles user configs. Still uses old way of defining pinia stores, but works for this scenario.
  */
