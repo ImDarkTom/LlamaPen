@@ -22,7 +22,7 @@ export type ChatIteratorDone = {
 class OllamaAPI {
 	private modelList: ModelList = [];
 
-	constructor() {}
+	constructor() { }
 
 	async generateChatTitle(messages: ChatMessage[]): Promise<string> {
 		if (useConfigStore().developer.mockRequests) {
@@ -35,7 +35,7 @@ class OllamaAPI {
 			hasAttachments ? message.content += '\n<Attachment(s)>' : null;
 
 			return {
-				role: message.type === 'user'? 'user' : 'assistant',
+				role: message.type === 'user' ? 'user' : 'assistant',
 				content: message.content,
 			};
 		});
@@ -71,7 +71,7 @@ class OllamaAPI {
 
 		const data = await response.json();
 
-		const {data: generatedTitle, error} = await tryCatch<string>(JSON.parse(data.message.content).title);
+		const { data: generatedTitle, error } = await tryCatch<string>(JSON.parse(data.message.content).title);
 		if (error) {
 			logger.warn('OllamaAPI', 'Error generating chat title:', error);
 			return 'New Chat';
@@ -81,7 +81,7 @@ class OllamaAPI {
 		return generatedTitle;
 	}
 
-	async sendMessageRequest(messages: {role: string, content: string}[], abortSignal: AbortSignal): Promise<Response> {
+	async sendMessageRequest(messages: { role: string, content: string }[], abortSignal: AbortSignal): Promise<Response> {
 		if (useConfigStore().developer.mockRequests) {
 			// Simulated chunks
 			const chunks = [
@@ -152,7 +152,7 @@ class OllamaAPI {
 		if (!response.body) {
 			return { error: { type: 'no-response-body' } };
 		}
-		
+
 		if (response.status === 401) {
 			const { data, error } = await tryCatch<{ error: { text: string, type: string } }>(await response.json());
 
@@ -172,7 +172,7 @@ class OllamaAPI {
 
 		const decoder = new TextDecoder();
 		const reader = response.body.getReader();
-		
+
 		while (true) {
 			if (abortSignal.aborted) return { stream_done: true, reason: 'user-aborted' };
 
@@ -199,8 +199,8 @@ class OllamaAPI {
 		return Readable.from(this.chatIterator(messages, abortSignal, modelOverride)) as ReadableOf<OllamaChatResponseChunk | ChatIteratorError | ChatIteratorDone>;
 	}
 
-	async getModels() {
-		if (this.modelList.length !== 0) return this.modelList;
+	async getModels(force?: boolean) {
+		if (this.modelList.length !== 0 && !force) return this.modelList;
 
 		const response = await fetch(useConfigStore().apiUrl('/api/tags'));
 		const responseJson: { models: ModelList } = await response.json();
