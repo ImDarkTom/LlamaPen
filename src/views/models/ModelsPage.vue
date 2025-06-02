@@ -144,7 +144,7 @@ async function deleteModel() {
             </span>
 
             <h2 class="text-3xl pb-2 pt-4">Actions</h2>
-            <div class="flex flex-row gap-2">
+            <div class="flex flex-row gap-2 overflow-x-auto">
                 <ActionButton type="normal" @click="copyModel">Copy Model</ActionButton>
                 <ActionButton type="danger" @click="deleteModel">Delete Model</ActionButton>
             </div>
