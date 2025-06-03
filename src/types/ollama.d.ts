@@ -74,3 +74,24 @@ type OllamaModelInfoResponse = {
     capabilities: string[];
     modified_at: string;
 }
+
+type OllamaProcessesResponse = {
+    models: ModelProcessInfo[];
+}
+
+type ModelProcessInfo = {
+    name: string;
+    model: string;
+    size: number;
+    digest: string;
+    details: {
+        parent_model: string;
+        format: string;
+        family: string;
+        families: string[] | null;
+        parameter_size: string;
+        quantization_level: string;
+    };
+    expires_at: string; // ISO 8601 format
+    size_vram: number; // No. of bytes used in memory
+}

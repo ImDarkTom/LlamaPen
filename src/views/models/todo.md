@@ -8,4 +8,4 @@
 - pull a model
 - push a model (not planned)
 - generate embeddings (not planned)
-- list running models
+- list running models ✅

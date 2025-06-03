@@ -12,10 +12,16 @@ import ActionButton from './components/ActionButton.vue';
 import ollamaRequest from '@/utils/request';
 import logger from '@/utils/logger';
 import { AiOutlineArrowLeft } from 'vue-icons-plus/ai';
+import ModelLoadedIcon from '@/components/Icon/MemoryLoadIcon.vue';
+import Tooltip from '@/components/Tooltip/Tooltip.vue';
+import { Fa6Memory } from 'vue-icons-plus/fa6';
+import { BsCopy, BsFillTrash3Fill } from 'vue-icons-plus/bs';
+import MemoryUnloadIcon from '@/components/Icon/MemoryUnloadIcon.vue';
 
 const config = useConfigStore();
 
 const modelList = ref<ModelList>([]);
+const loadedModels = ref<string[]>([]);
 const selectedModel = ref<OllamaModelInfoResponse | null>(null);
 
 const modelFromRoute = computed<string | null>(() => router.currentRoute.value.params.model as string | null);
@@ -29,17 +35,26 @@ const refreshModelList = async () => {
     modelList.value = await ollamaApi.getModels(true);
 };
 
+const refreshLoadedModels = async () => {
+    logger.info('Models Page', 'Refreshing loaded models');
+    loadedModels.value = await ollamaApi.getLoadedModelIds();
+};
+
 onMounted(async () => {
     setPageTitle('Models');
+
     refreshModelList();
-    loadModel(modelFromRoute.value);
+    refreshLoadedModels();
+    console.log('Loaded models:', loadedModels.value);
+
+    loadModelInfo(modelFromRoute.value);
 });
 
 watch(router.currentRoute, () => {
-    loadModel(modelFromRoute.value);
+    loadModelInfo(modelFromRoute.value);
 });
 
-async function loadModel(modelName: string | null) {
+async function loadModelInfo(modelName: string | null) {
     if (!modelName) {
         return;
     }
@@ -106,6 +121,39 @@ async function deleteModel() {
     selectedModel.value = null;
     refreshModelList();
 }
+
+const loadModelText = ref('Load Model');
+
+async function loadModelIntoOllama() {
+    const modelName = modelFromRoute.value;
+    if (!modelName) {
+        alert('No model selected to load.');
+        return;
+    }
+
+    loadModelText.value = 'Loading...';
+
+    const success = await ollamaApi.loadModelIntoMemory(modelName);
+
+    if (!success) {
+        alert(`Failed to load model "${modelName}".`);
+        loadModelText.value = 'Load Model';
+        return;
+    }
+
+    refreshLoadedModels();
+}
+
+async function unloadModel() {
+    const modelName = modelFromRoute.value;
+    if (!modelName) {
+        alert('No model selected to unload.');
+        return;
+    }
+
+    await ollamaApi.unloadModel(modelName);
+    refreshLoadedModels();
+}
 </script>
 
 <template>
@@ -128,7 +176,15 @@ async function deleteModel() {
             <RouterLink v-else v-for="model in modelList" :to="`/models/${model.model}`"
                 class="p-4 rounded-md flex flex-row items-center gap-2" exactActiveClass="!bg-primary-200">
                 <ModelIcon :name="model.name ?? 'Unknown'" class="size-6" />
+
                 {{ model.name }}
+
+                <div class="grow"></div>
+
+                <Tooltip v-if="loadedModels.includes(model.model)" text="Loaded in memory"
+                    class="flex items-center justify-center">
+                    <ModelLoadedIcon class="h-full" />
+                </Tooltip>
             </RouterLink>
         </div>
         <div v-if="!selectedModel">
@@ -145,8 +201,19 @@ async function deleteModel() {
 
             <h2 class="text-3xl pb-2 pt-4">Actions</h2>
             <div class="flex flex-row gap-2 overflow-x-auto">
-                <ActionButton type="normal" @click="copyModel">Copy Model</ActionButton>
-                <ActionButton type="danger" @click="deleteModel">Delete Model</ActionButton>
+                <ActionButton type="toggled" @click="unloadModel"
+                    v-if="modelFromRoute && loadedModels.includes(modelFromRoute)">
+                    <MemoryUnloadIcon /> Unload Model
+                </ActionButton>
+                <ActionButton type="normal" @click="loadModelIntoOllama" v-else>
+                    <Fa6Memory /> {{ loadModelText }}
+                </ActionButton>
+                <ActionButton type="normal" @click="copyModel">
+                    <BsCopy /> Copy/duplicate Model
+                </ActionButton>
+                <ActionButton type="danger" @click="deleteModel">
+                    <BsFillTrash3Fill /> Delete Model
+                </ActionButton>
             </div>
 
             <h2 class="text-3xl pt-4 pb-2">Info</h2>

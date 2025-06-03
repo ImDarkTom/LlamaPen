@@ -4,6 +4,7 @@ import { tryCatch } from './tryCatch';
 import { Readable } from 'readable-stream';
 import type { ReadableOf } from '@/types/util';
 import logger from './logger';
+import ollamaRequest from './request';
 
 const chatTitleExamples = `\nExamples of titles:\n📉 Stock Market Trends\n🍪 Perfect Chocolate Chip Recipe\nEvolution of Music Streaming\nRemote Work Productivity Tips\nArtificial Intelligence in Healthcare\n🎮 Video Game Development Insights`;
 
@@ -208,6 +209,69 @@ class OllamaAPI {
 		this.modelList = responseJson.models;
 
 		return this.modelList;
+	}
+
+	/**
+	 * Loads a model into memory.
+	 * @param modelName The name of the model to load into memory.
+	 * @returns If the model was successfully loaded into memory.
+	 */
+	async loadModelIntoMemory(modelName: string): Promise<boolean> {
+		const { data: response, error } = await ollamaRequest('/api/generate', 'POST', {
+			model: modelName,
+		});
+
+		if (error) {
+			logger.warn('OllamaAPI', 'Error loading model into memory:', error);
+			return false;
+		}
+
+		if (response.status !== 200) {
+			return false;
+		}
+
+		return true;
+	}
+
+	async getLoadedModels() {
+		const { data: response, error } = await ollamaRequest('/api/ps', 'GET');
+
+		if (error) {
+			logger.warn('OllamaAPI', 'Error getting loaded models:', error);
+			return null;
+		}
+
+		if (response.status !== 200) {
+			return null;
+		}
+
+		const responseJson = await response.json() as OllamaProcessesResponse;
+		return responseJson.models;
+	}
+
+	async getLoadedModelIds() {
+		const loadedModels = await this.getLoadedModels();
+		if (!loadedModels) return [];
+
+		return loadedModels.map(model => model.model);
+	}
+
+	async unloadModel(modelName: string): Promise<boolean> {
+		const { data: response, error } = await ollamaRequest('/api/generate', 'POST', {
+			model: modelName,
+			keep_alive: 0
+		});
+
+		if (error) {
+			logger.warn('OllamaAPI', 'Error unloading model:', error);
+			return false;
+		}
+
+		if (response.status !== 200) {
+			return false;
+		}
+
+		return true;
 	}
 }
 
