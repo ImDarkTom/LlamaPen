@@ -8,7 +8,7 @@ import DropdownButton from '../Dropdown/DropdownButton.vue';
 import logger from '@/utils/logger';
 import ollamaApi from '@/utils/ollama';
 import ModelIcon from '../Icon/ModelIcon.vue';
-import { AiFillInfoCircle } from 'vue-icons-plus/ai';
+import { TbListDetails } from 'vue-icons-plus/tb';
 
 const config = useConfigStore();
 const uiStore = useUiStore();
@@ -158,7 +158,7 @@ const selectedModelInfo = computed(() => modelsList.value.find(model => model.mo
                         aria-controls="model-list" :disabled="!uiStore.connectedToOllama">
                     <RouterLink to="/models"
                         class="h-6 p-3 box-content !bg-primary-400 hover:!bg-primary-500 cursor-pointer transition-colors duration-100 rounded-lg">
-                        <AiFillInfoCircle />
+                        <TbListDetails />
                     </RouterLink>
                 </div>
 

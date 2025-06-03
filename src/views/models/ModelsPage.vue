@@ -51,6 +51,13 @@ onMounted(async () => {
 });
 
 watch(router.currentRoute, () => {
+    console.log('Route changed, loading model info for:', modelFromRoute.value);
+
+    if (!modelFromRoute.value) {
+        selectedModel.value = null;
+        return;
+    }
+
     loadModelInfo(modelFromRoute.value);
 });
 
@@ -174,7 +181,8 @@ async function unloadModel() {
                 No models found
             </div>
             <RouterLink v-else v-for="model in modelList" :to="`/models/${model.model}`"
-                class="p-4 rounded-md flex flex-row items-center gap-2" exactActiveClass="!bg-primary-200">
+                class="p-4 rounded-md flex flex-row items-center gap-2 hover:bg-primary-200/50! transition-all duration-100"
+                exactActiveClass="!bg-primary-200">
                 <ModelIcon :name="model.name ?? 'Unknown'" class="size-6" />
 
                 {{ model.name }}
@@ -187,7 +195,8 @@ async function unloadModel() {
                 </Tooltip>
             </RouterLink>
         </div>
-        <div v-if="!selectedModel">
+        <div v-if="!selectedModel"
+            class="h-8/12 md:h-full w-full md:w-9/12 bg-primary-300 rounded-lg p-2 flex items-center justify-center text-xl">
             Select a model to view its details, or, download a new model.
         </div>
         <div v-else class="h-8/12 md:h-full w-full md:w-9/12 bg-primary-300 rounded-lg p-2 overflow-y-auto">
