@@ -9,14 +9,15 @@ import { computed, onMounted, ref, watch } from 'vue';
 import InfoSection from './components/InfoSection.vue';
 import { useUiStore } from '@/stores/uiStore';
 import ActionButton from './components/ActionButton.vue';
-import ollamaRequest from '@/utils/request';
+import ollamaRequest from '@/utils/ollamaRequest';
 import logger from '@/utils/logger';
-import { AiOutlineArrowLeft } from 'vue-icons-plus/ai';
+import { AiOutlineArrowLeft, AiOutlineDownload, AiOutlineSearch } from 'vue-icons-plus/ai';
 import ModelLoadedIcon from '@/components/Icon/MemoryLoadIcon.vue';
 import Tooltip from '@/components/Tooltip/Tooltip.vue';
 import { Fa6Memory } from 'vue-icons-plus/fa6';
 import { BsCopy, BsFillTrash3Fill } from 'vue-icons-plus/bs';
 import MemoryUnloadIcon from '@/components/Icon/MemoryUnloadIcon.vue';
+import { streamChunks } from '@/utils/streamChunks';
 
 const config = useConfigStore();
 
@@ -161,6 +162,55 @@ async function unloadModel() {
     await ollamaApi.unloadModel(modelName);
     refreshLoadedModels();
 }
+
+// {
+//     'granite-embedding:30m': {
+//         status: "pulling 27d24c87a53d",
+//         digest: "sha256:27d24c87a53d110b95abecbff83f966206857a9dc0ba1efd336d08dbd0afc833",
+//         total: 62523136,
+//         completed: 9641984
+//     }
+// }
+const downloadingModels = ref<Record<string, OllamaPullResponseChunk>>({});
+async function downloadModel() {
+    const modelName = prompt('Enter model name and tag to download: ');
+    if (!modelName) {
+        return;
+    }
+
+    const { data: request, error } = await ollamaRequest('/api/pull', 'POST', {
+        model: modelName,
+    });
+
+    if (error) {
+        alert(`Error downloading model: ${error.message}`);
+        return;
+    }
+
+    for await (const { error, chunk } of streamChunks<OllamaPullResponseChunk>(request)) {
+        if (error) {
+            alert(`Error downloading model: ${error.message}`);
+            return;
+        }
+
+        logger.info('Models Page', `Downloading model ${modelName}`, chunk);
+        downloadingModels.value[modelName] = chunk;
+
+        if (chunk.error) {
+            alert(`Error downloading model: ${chunk.error}`);
+            delete downloadingModels.value[modelName];
+            return;
+        }
+
+        if (chunk.status === 'success') {
+            logger.info('Models Page', `Model ${modelName} downloaded successfully.`);
+            delete downloadingModels.value[modelName];
+            await refreshModelList();
+            await refreshLoadedModels();
+        }
+    }
+}
+
 </script>
 
 <template>
@@ -173,7 +223,48 @@ async function unloadModel() {
                 <AiOutlineArrowLeft class="size-6" />
                 Back to Chat/Notes
             </RouterLink>
+
             <div class="h-[1px] w-full bg-txt-2"></div>
+
+            <form action="https://ollama.com/search" target="_blank" class="flex flex-row gap-2 items-center">
+                <input type="text" name="q" placeholder="Search ollama.com..." required
+                    class="bg-primary-400 focus:bg-primary-500 w-full rounded-lg h-6 box-content p-3 outline-0"
+                    aria-label="Search Ollama models...">
+                <button type="submit" class="size-6 p-3 box-content rounded-lg bg-primary-200 cursor-pointer">
+                    <AiOutlineSearch />
+                </button>
+            </form>
+            <button
+                class="bg-primary-200 p-3 h-8 box-content rounded-lg cursor-pointer select-none hover:brightness-90 flex flex-row justify-center items-center gap-2"
+                @click="downloadModel">
+                <AiOutlineDownload />
+                Download
+            </button>
+
+            <div v-for="(status, modelName) in downloadingModels"
+                class="p-4 rounded-md flex flex-row items-center gap-2 bg-primary-200">
+                <ModelIcon :name="modelName" class="size-6" />
+                <div class="flex flex-col gap-2 w-full">
+                    <div>
+                        {{ modelName }}
+                    </div>
+                    <div class="text-txt-2 text-sm flex flex-col gap-1">
+                        <span>
+                            {{ status.status }}
+                        </span>
+                        <span class="flex flex-row gap-1 justify-between">
+                            <span>{{ status.completed ? `${(status.completed / 1024 / 1024).toFixed(2)}
+                                MB/${((status.total ??
+                                    0) / 1024 / 1024).toFixed(2)} MB` : 'Waiting...' }}</span>
+                            <span>{{ Math.round((status.completed ? status.completed / (status.total ?? 0) : 0) * 100)
+                                }}%</span>
+                        </span>
+                    </div>
+                </div>
+            </div>
+
+            <div class="h-[1px] w-full bg-txt-2"></div>
+
             <div v-if="!uiStore.connectedToOllama">
                 Not connected to Ollama
             </div>

@@ -95,3 +95,11 @@ type ModelProcessInfo = {
     expires_at: string; // ISO 8601 format
     size_vram: number; // No. of bytes used in memory
 }
+
+type OllamaPullResponseChunk = {
+    status: string | 'success'; // Various status messages like 'pulling manifest', 'downloading x', but the final chunk should always be 'success'
+    digest?: string; // Might not be present for first few chunks
+    total?: number; // Total size of the model in bytes
+    completed?: number; // Number of bytes downloaded so far, might not be present for first few chunks
+    error?: string; // Error message if any
+}

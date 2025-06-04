@@ -4,7 +4,7 @@ import { tryCatch } from './tryCatch';
 import { Readable } from 'readable-stream';
 import type { ReadableOf } from '@/types/util';
 import logger from './logger';
-import ollamaRequest from './request';
+import ollamaRequest from './ollamaRequest';
 
 const chatTitleExamples = `\nExamples of titles:\n📉 Stock Market Trends\n🍪 Perfect Chocolate Chip Recipe\nEvolution of Music Streaming\nRemote Work Productivity Tips\nArtificial Intelligence in Healthcare\n🎮 Video Game Development Insights`;
 
