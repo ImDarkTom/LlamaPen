@@ -18,6 +18,7 @@ import { Fa6Memory } from 'vue-icons-plus/fa6';
 import { BsCopy, BsFillTrash3Fill } from 'vue-icons-plus/bs';
 import MemoryUnloadIcon from '@/components/Icon/MemoryUnloadIcon.vue';
 import { streamChunks } from '@/utils/streamChunks';
+import { BiLinkExternal } from 'vue-icons-plus/bi';
 
 const config = useConfigStore();
 
@@ -301,6 +302,11 @@ async function downloadModel() {
 
             <h2 class="text-3xl pb-2 pt-4">Actions</h2>
             <div class="flex flex-row gap-2 overflow-x-auto">
+                <a :href="`https://ollama.com/library/${modelFromRoute}`" target="_blank"
+                    class="p-4 min-w-max rounded-lg cursor-pointer select-none flex items-center justify-center flex-row gap-2 bg-primary-200!">
+                    <BiLinkExternal />
+                    Open in Ollama Library
+                </a>
                 <ActionButton type="toggled" @click="unloadModel"
                     v-if="modelFromRoute && loadedModels.includes(modelFromRoute)">
                     <MemoryUnloadIcon /> Unload Model
