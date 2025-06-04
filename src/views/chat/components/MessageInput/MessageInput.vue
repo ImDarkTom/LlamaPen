@@ -161,8 +161,9 @@ function handlePastedImage(file: File) {
 
 <template>
     <div class="w-full flex flex-row justify-center">
-        <div class="w-full sm:w-full lg:w-3xl mx-1 mb-1 sm:mx-1 sm:mb-1 md:mx-4 md:mb-2 p-2 
-                box-border flex flex-col items-center max-h-[48rem] relative bg-primary-300 rounded-xl">
+        <div
+            class="w-full sm:w-full lg:w-3xl mx-1 mb-0 sm:mx-1 sm:mb-1 md:mx-4 md:mb-2 p-2 
+                box-border flex flex-col items-center max-h-[48rem] relative bg-primary-300 rounded-t-xl sm:rounded-b-lg">
             <ScrollToBottomButton />
             <textarea ref="messageInput" v-model="messageInputValue" @keyup="inputKeyUp"
                 placeholder="Enter a message..."
@@ -179,9 +180,9 @@ function handlePastedImage(file: File) {
                         @click="removeFileFromUploadList(file)" />
                 </div>
             </div>
-            <div class="relative flex flex-row justify-between w-full">
-                <div class="flex flex-row gap-2">
-                    <div class="aspect-square box-border bg-primary-300 hover:bg-primary-400 cursor-pointer rounded-lg text-txt-1 hover:text-txt-2 transition-colors duration-150 select-none ring-1 ring-txt-1/25"
+            <div class="relative flex flex-row gap-2 justify-between w-full">
+                <div class="flex flex-row gap-2 overflow-x-auto p-[1px]">
+                    <div class="aspect-square size-10 pointer-coarse:size-12 box-border bg-primary-300 hover:bg-primary-400 cursor-pointer rounded-lg text-txt-1 hover:text-txt-2 transition-colors duration-150 select-none ring-1 ring-txt-1/25"
                         title="Upload file(s)">
                         <label for="file-upload" class="cursor-pointer size-full flex items-center justify-center">
                             <AiOutlinePlus />

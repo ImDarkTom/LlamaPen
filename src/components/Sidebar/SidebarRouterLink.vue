@@ -3,6 +3,7 @@
 
 import { emitter } from '@/mitt';
 import { useConfigStore } from '@/stores/config';
+import isOnMobile from '@/utils/isOnMobile';
 import { computed, type PropType } from 'vue'
 import { RouterLink, type NavigationFailure, type RouteLocationPathRaw } from 'vue-router'
 
@@ -21,9 +22,9 @@ const props = defineProps({
 	// @ts-ignore
 	...RouterLink.props,
 	to: {
-        type: Object as PropType<RouteLocationPathRaw>,
-        required: true
-    },
+		type: Object as PropType<RouteLocationPathRaw>,
+		required: true
+	},
 	activeClass: String,
 	inactiveClass: String,
 })
@@ -33,9 +34,9 @@ const isExternalLink = computed(() => {
 });
 
 const handleNavigate = (navigate: (e?: MouseEvent) => Promise<void | NavigationFailure>) => {
-	if (window.innerWidth <= 384 && config.closeSidebarOnNavMobile) {
-        console.log("hiding sidebar");
-        emitter.emit('hideSidebar');
+	if (isOnMobile() && config.closeSidebarOnNavMobile) {
+		console.log("hiding sidebar");
+		emitter.emit('hideSidebar');
 	}
 
 	navigate();
@@ -48,13 +49,8 @@ const handleNavigate = (navigate: (e?: MouseEvent) => Promise<void | NavigationF
 		<slot></slot>
 	</a>
 	<router-link v-else to="" v-bind="$props" custom v-slot="{ isActive, href, navigate }">
-		<a 
-			v-bind="$attrs" 
-			:href="href" 
-			@click.prevent 
-			@mousedown.prevent="handleNavigate(navigate)" 
-			:class="isActive ? props.activeClass : props.inactiveClass"
-		>
+		<a v-bind="$attrs" :href="href" @click.prevent @mousedown.prevent="handleNavigate(navigate)"
+			:class="isActive ? props.activeClass : props.inactiveClass">
 			<slot></slot>
 		</a>
 	</router-link>

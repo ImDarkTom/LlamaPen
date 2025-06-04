@@ -9,6 +9,7 @@ import logger from '@/utils/logger';
 import ollamaApi from '@/utils/ollama';
 import ModelIcon from '../Icon/ModelIcon.vue';
 import { TbListDetails } from 'vue-icons-plus/tb';
+import isOnMobile from '@/utils/isOnMobile';
 
 const config = useConfigStore();
 const uiStore = useUiStore();
@@ -79,7 +80,12 @@ function toggleShowSelect() {
 
     if (showSelect) {
         nextTick(() => {
-            searchBarRef.value?.focus();
+            // QOL change for mobile users so keyboard doesn't pop up
+            if (!isOnMobile()) {
+                searchBarRef.value?.focus();
+            } else {
+                searchBarRef.value?.blur();
+            }
 
             const selectedItem = listItemsRef.value[focusedItemIndex.value];
             selectedItem.listItemRef?.scrollIntoView({ block: 'center' });
@@ -128,7 +134,7 @@ const selectedModelInfo = computed(() => modelsList.value.find(model => model.mo
 
 <template>
     <div v-mousedown-outside="handleClickOutside">
-        <div class="sm:relative" id="modelselect">
+        <div id="modelselect">
             <DropdownButton :direction="direction" :opened="showSelect" :additional-classes="buttonClasses"
                 @update:opened="toggleShowSelect">
 

@@ -94,6 +94,7 @@ function selectPersona(persona: Persona | null) {
 </script>
 
 <template>
+	<!-- todo: fix this -->
 	<Dropdown direction="up" anchor="center" v-model="opened">
 		<template #button>
 			<BsPersonFill />

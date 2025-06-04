@@ -41,6 +41,6 @@ function handleClick() {
 
 <template>
     <component :is="isChatGenerating ? ImCancelCircle : BiSolidSend"
-        class="bg-primary-100 p-2 box-content rounded-lg cursor-pointer"
+        class="bg-primary-100 p-2 pointer-coarse:p-3 box-content rounded-lg cursor-pointer"
         :class="{ 'opacity-40 !cursor-default': !canGenerate && !isChatGenerating }" @click="handleClick" />
 </template>
