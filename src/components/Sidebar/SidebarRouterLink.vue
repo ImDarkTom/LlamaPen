@@ -4,8 +4,8 @@
 import { emitter } from '@/mitt';
 import { useConfigStore } from '@/stores/config';
 import isOnMobile from '@/utils/isOnMobile';
-import { computed, type PropType } from 'vue'
-import { RouterLink, type NavigationFailure, type RouteLocationPathRaw } from 'vue-router'
+import { computed } from 'vue'
+import { RouterLink, type NavigationFailure } from 'vue-router'
 
 const config = useConfigStore();
 
@@ -21,10 +21,6 @@ defineSlots<{
 const props = defineProps({
 	// @ts-ignore
 	...RouterLink.props,
-	to: {
-		type: Object as PropType<RouteLocationPathRaw>,
-		required: true
-	},
 	activeClass: String,
 	inactiveClass: String,
 })

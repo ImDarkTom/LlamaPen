@@ -2,7 +2,7 @@
 import { onMounted, onUnmounted } from 'vue';
 import { TbLayoutSidebarFilled } from 'vue-icons-plus/tb';
 import SidebarHeader from './SidebarHeader.vue';
-import SidebarOptions from './footer/SidebarFooter.vue';
+import SidebarFooter from './footer/SidebarFooter.vue';
 import { useConfigStore } from '../../stores/config';
 import { useUiStore } from '../../stores/uiStore';
 import ChatList from './ChatList.vue';
@@ -50,7 +50,8 @@ onUnmounted(() => {
 <template>
     <div class="">
         <Transition name="slide-left" mode="default">
-            <div v-show="useConfig.showSidebar" class="flex flex-col h-full w-[calc(100vw-3rem)] sm:w-[calc(100vw-3rem)] md:w-[18vw] md:min-w-64 bg-primary-500 box-border p-2">
+            <div v-show="useConfig.showSidebar"
+                class="flex flex-col h-full w-[calc(100vw-3rem)] sm:w-[calc(100vw-3rem)] md:w-[18vw] md:min-w-64 bg-primary-500 box-border p-2">
                 <SidebarHeader />
 
                 <Transition name="slide-left" mode="out-in">
@@ -59,13 +60,14 @@ onUnmounted(() => {
                     <!-- Note List -->
                     <NoteList v-else />
                 </Transition>
-                <SidebarOptions />
+                <SidebarFooter />
             </div>
         </Transition>
         <div class="absolute top-0 left-0 h-12 w-12 p-2 z-30">
             <div class="h-10 w-10 p-1.5 cursor-pointer rounded-lg hover:bg-primary-300 hover:shadow-md shadow-black/50 transition-all duration-100"
                 @pointerdown="handlePointerDown" aria-label="Toggle Sidebar">
-                <TbLayoutSidebarFilled class="size-full hover:brightness-75 hover:scale-90 active:scale-110 transition-all duration-100" />
+                <TbLayoutSidebarFilled
+                    class="size-full hover:brightness-75 hover:scale-90 active:scale-110 transition-all duration-100" />
             </div>
         </div>
     </div>
