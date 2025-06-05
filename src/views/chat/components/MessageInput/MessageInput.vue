@@ -3,7 +3,6 @@ import { computed, onBeforeUnmount, onMounted, ref } from 'vue';
 import ModelSelect from '@/components/ModelSelect/ModelSelect.vue';
 import ActionButton from './ActionButton.vue';
 import ScrollToBottomButton from './ScrollToBottomButton.vue';
-import PersonaSelect from '@/components/PersonaSelect/PersonaSelect.vue';
 import { AiFillCloseCircle, AiOutlinePlus } from 'vue-icons-plus/ai';
 import { emitter } from '@/mitt';
 import useMessagesStore from '@/stores/messagesStore';
@@ -191,7 +190,7 @@ function handlePastedImage(file: File) {
                             @change="uploadFile" />
                     </div>
                     <ModelSelect direction="up" />
-                    <PersonaSelect direction="up" />
+                    <!-- we could revisit the persona selector later -->
                 </div>
                 <ActionButton :canGenerate="canGenerate" @startGeneration="startGeneration" />
             </div>
