@@ -1,27 +1,11 @@
 <script setup lang="ts">
-import { onBeforeUnmount, onMounted, ref } from 'vue';
-import { emitter, PopupButtons } from '../../mitt';
-
-const showing = ref<boolean>(false);
-const title = ref<string>('Popup');
-const message = ref<string>('...');
-const buttons = ref<PopupButtons>();
+import { onBeforeUnmount, onMounted } from 'vue';
 
 onMounted(() => {
-    // todo: actually use this
-    emitter.on('showErrorPopup', (newMessage) => {
-        title.value = "Error";
-        message.value = newMessage;
-        showing.value = true;
-        buttons.value = PopupButtons.CLOSE;
-    });
-
     document.addEventListener('keyup', handleKeyUp)
 });
 
 onBeforeUnmount(() => {
-    emitter.off('showErrorPopup');
-
     document.removeEventListener('keyup', handleKeyUp);
 });
 

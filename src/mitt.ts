@@ -9,12 +9,7 @@ interface Events extends Record<EventType, unknown> {
     scrollToBottom?: {
         force: boolean,
     },
-    showErrorPopup: string
     'popup:ollamanotconnected': void,
-    'popup:error': {
-        message: string,
-        error: string,
-    },
     openLightbox: {
         image: File | Blob,
     }

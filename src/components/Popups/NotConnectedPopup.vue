@@ -16,14 +16,14 @@ const showing = ref<boolean>(false);
 
 onMounted(() => {
 	emitter.on('popup:ollamanotconnected', () => {
-        const shouldHide = localStorage.getItem('hideConnectionWarning') || "false";
+		const shouldHide = localStorage.getItem('hideConnectionWarning') || "false";
 
 		if (shouldHide === "true") {
 			return;
 		}
 
-        showing.value = true;
-    });
+		showing.value = true;
+	});
 });
 
 onUnmounted(() => {
@@ -59,11 +59,13 @@ function hide() {
 		<template #body>
 			<div class="h-full flex flex-col">
 				<div class="grow">
-					Unable to connect to Ollama at <code>{{config.ollamaUrl}}</code>. Ensure Ollama is running and accepts connection requests from this site. 
+					Unable to connect to Ollama at <code>{{ config.ollamaUrl }}</code>. Ensure Ollama is running and
+					accepts connection requests from this site.
 					<br>
 					<br>
 					For a guide on how to configure Ollama to connect from this page, press <b>Guide</b>
-					or the <BiHelpCircle class="inline" /> icon in the bottom left of the sidebar;
+					or the
+					<BiHelpCircle class="inline" /> icon in the bottom left of the sidebar;
 				</div>
 				<div class="pb-4 flex flex-row items-center gap-2">
 					<input id="notconnected-dnsa" type="checkbox" ref="dnsaCheckbox" class="accent-txt-2">
