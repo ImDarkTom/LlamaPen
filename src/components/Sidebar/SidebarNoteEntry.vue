@@ -105,7 +105,7 @@ function setPinned(value: boolean) {
 <template>
     <RouterLink :to="`/note/${props.note.id}`" @mousedown.prevent="navigateToNote" @dblclick="editNoteName"
         class="my-2 flex flex-col" :title="hoverTitle" role="listitem">
-        <div class="group w-full h-full flex flex-row p-2 relative rounded-lg hover:bg-primary-300 transition-all duration-150"
+        <div class="group w-full h-full flex flex-row p-2 pointer-coarse:p-3 relative rounded-lg hover:bg-primary-300 transition-all duration-150"
             :class="{ '!bg-primary-200 shadow-sm shadow-black/50': props.note.id === notesStore.openedNoteId }">
             <div class="box-content shrink-0" @mouseenter="hoveringOverIcon = true"
                 @mouseleave="hoveringOverIcon = false">
