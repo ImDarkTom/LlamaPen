@@ -171,7 +171,7 @@ const useMessagesStore = defineStore('messages', () => {
 		const abortController = new AbortController();
 
 		const cancelHandler = async () => {
-			await db.messages.update(ollamaMessageId, { status: 'cancelled' } as Partial<ModelChatMessage>);
+			updateMessageStatus(ollamaMessageId, 'cancelled');
 			abortController.abort("message generation cancelled by user.");
 		}
 
@@ -213,22 +213,23 @@ const useMessagesStore = defineStore('messages', () => {
 				const status = chunk.reason === 'stream-done' ? 'finished' : 'cancelled'
 
 				updateOllamaMessageInDB(ollamaMessageId, updatedMessage);
-				// TODO: Make a helper function to update status.
-				await db.messages.update(ollamaMessageId, { status } as Partial<ModelChatMessage>);
+				updateMessageStatus(ollamaMessageId, status);
+
 				logger.info('Messages Store', 'Got stream_done chunk.');
 				break;
 			}
 
 			if ('done' in chunk && chunk.done) {
 				updateOllamaMessageInDB(ollamaMessageId, updatedMessage);
-				await db.messages.update(ollamaMessageId, { status: 'finished' } as Partial<ModelChatMessage>);
+				updateMessageStatus(ollamaMessageId, 'finished');
+
 				logger.info('Messages Store', 'Finished generating response\n==========\n', updatedMessage);
 				break;
 			}
 
 			if (messageGenerating === false) {
 				messageGenerating = true;
-				await db.messages.update(ollamaMessageId, { status: 'generating' } as Partial<ModelChatMessage>);
+				updateMessageStatus(ollamaMessageId, 'generating');
 			}
 
 			const messageChunk = chunk.message.content;
@@ -258,6 +259,10 @@ const useMessagesStore = defineStore('messages', () => {
 
 		const chatTitle = await attemptGenerateTitle();
 		setPageTitle(`${chatTitle} | Chat`);
+	}
+
+	async function updateMessageStatus(messageId: number, status: ModelMessageStatus) {
+		await db.messages.update(messageId, { status } as Partial<ModelChatMessage>);
 	}
 
 	/**

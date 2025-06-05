@@ -22,8 +22,10 @@ type BaseChatMessage = {
 interface ModelChatMessage extends BaseChatMessage {
 	type: 'model';
 	model: string;
-	status: 'waiting' | 'generating' | 'finished' | 'cancelled';
+	status: ModelMessageStatus;
 }
+
+type ModelMessageStatus = 'waiting' | 'generating' | 'finished' | 'cancelled';
 
 interface UserChatMessage extends BaseChatMessage {
 	type: 'user';
