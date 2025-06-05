@@ -5,6 +5,7 @@ import { useUiStore } from '../../stores/uiStore';
 import { BsChatLeft } from 'vue-icons-plus/bs';
 import { HiSwitchHorizontal } from 'vue-icons-plus/hi';
 import { PiNotepad } from 'vue-icons-plus/pi';
+import SidebarRouterLink from './SidebarRouterLink.vue';
 
 const router = useRouter();
 const uiStore = useUiStore();
@@ -44,10 +45,10 @@ function toggleMode() {
     <div class="flex flex-col">
         <div class="flex flex-row p-0 box-border justify-between items-center pb-2">
             <div class="size-10 p-1"></div><!-- sidebar toggle space holder -->
-            <RouterLink :to="newBlank()"
+            <SidebarRouterLink :to="newBlank()"
                 class="max-h-10 w-1/2 flex justify-center items-center hover:brightness-75 hover:scale-90 active:scale-110 transition-all duration-100">
-                <img src="/favicon.svg" class="size-10 p-1" />
-            </RouterLink>
+                <img src="/favicon.svg" alt="LlamaPen Logo" class="size-10 p-1" />
+            </SidebarRouterLink>
             <AiOutlineSearch aria-label="Search"
                 class="h-6 w-auto cursor-pointer p-2 box-content rounded-lg hover:bg-primary-300 hover:shadow-xs shadow-black/50"
                 @click="search" />
