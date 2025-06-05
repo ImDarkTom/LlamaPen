@@ -13,6 +13,9 @@ interface Config {
             background: boolean,
             backgroundDark: boolean,
             alternateGemmaIcon: boolean,
+        },
+        tooltip: {
+            waitTimeoutMs: number;
         }
     },
     api: {
@@ -56,6 +59,9 @@ export const useConfigStore = defineStore('config', {
                 backgroundDark: false,
                 alternateGemmaIcon: false,
             },
+            tooltip: {
+                waitTimeoutMs: 500, // Time before showing tooltip
+            }
         },
         api: {
             enabled: false,

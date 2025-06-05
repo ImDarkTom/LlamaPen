@@ -15,6 +15,7 @@ import logger from '@/utils/logger';
 import setPageTitle from '@/utils/title';
 import CategoryLabel from './components/CategoryLabel.vue';
 import { useUiStore } from '@/stores/uiStore';
+import NumberInputSetting from './components/NumberInputSetting.vue';
 
 const config = useConfigStore();
 const router = useRouter();
@@ -189,6 +190,9 @@ watch(
                 <ToggleSetting v-model="config.ui.modelIcons.backgroundDark" label="Dark icon background" />
             </div>
             <ToggleSetting v-model="config.ui.modelIcons.alternateGemmaIcon" label="Alternate Gemma icon" />
+            <CategoryLabel>Tooltip</CategoryLabel>
+            <NumberInputSetting v-model="config.ui.tooltip.waitTimeoutMs" :default="500" :min="0" :max="1000"
+                label="Hover delay (ms)" />
             <CategoryLabel>Mobile</CategoryLabel>
             <ToggleSetting v-model="config.closeSidebarOnNavMobile" label="Hide sidebar on navigate" />
         </OptionCategory>
