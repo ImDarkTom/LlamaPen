@@ -29,7 +29,6 @@ watch(() => route.params.id, (newId, oldId) => {
         uiStore.setOpenedChat(parseNumOrNull(route.params.id));
     }
 
-    // TODO: make this also update on chat title update
     if (!newId) {
         setPageTitle('Chat');
     } else {

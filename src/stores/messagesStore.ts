@@ -9,6 +9,7 @@ import ollamaApi, { type ChatIteratorError } from '@/utils/ollama';
 import { useConfigStore } from './config';
 import { filesAsBase64 } from '@/utils/conversion';
 import { useUiStore } from './uiStore';
+import setPageTitle from '@/utils/title';
 
 // ----
 // Init
@@ -254,10 +255,16 @@ const useMessagesStore = defineStore('messages', () => {
 		}
 
 		emitter.off('stopChatGeneration', cancelHandler);
-		attemptGenerateTitle();
+
+		const chatTitle = await attemptGenerateTitle();
+		setPageTitle(`${chatTitle} | Chat`);
 	}
 
-	async function attemptGenerateTitle() {
+	/**
+	 * Generates a title for the opened chat if the current title is "New Chat".
+	 * @returns The generated title for the opened chat, or the current title if it is not "New Chat".
+	 */
+	async function attemptGenerateTitle(): Promise<string> {
 		const chatId = openedChatId.value;
 		if (!chatId) {
 			throw new Error('No opened chatID found when generating title');
@@ -267,7 +274,7 @@ const useMessagesStore = defineStore('messages', () => {
 		const currentTitle = await chatsStore.getChatTitle(chatId);
 
 		// If chat name is not "New Chat", don't generate title.
-		if (currentTitle !== 'New Chat') return;
+		if (currentTitle !== 'New Chat') return currentTitle;
 
 		await db.chats.update(chatId, { isGeneratingTitle: true });
 
@@ -278,6 +285,8 @@ const useMessagesStore = defineStore('messages', () => {
 
 		useChatsStore().renameChat(chatId, newChatTitle);
 		await db.chats.update(chatId, { isGeneratingTitle: false });
+
+		return newChatTitle;
 	}
 
 	async function updateOllamaMessageInDB(id: number, content: string) {
