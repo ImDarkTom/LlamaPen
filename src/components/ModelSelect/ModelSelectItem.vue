@@ -15,9 +15,7 @@ defineProps<{
 	queriedModelList: ModelList,
 }>();
 
-const emit = defineEmits<{
-	(e: 'setModel', name: string): void,
-}>();
+const emit = defineEmits<(e: 'setModel', name: string) => void>();
 
 function setModel(model: ModelListItem) {
 	if (model.llamapenMetadata?.premium) {

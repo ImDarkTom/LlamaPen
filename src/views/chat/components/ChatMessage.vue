@@ -37,7 +37,7 @@ const images = (props.message.attachments || []).map((file) => {
 
 const isUserMessage = computed(() => props.message.type === 'user');
 const isModelMessage = computed(() => props.message.type === 'model');
-const modelMessageDone = computed(() => props.message.type === 'model' && 
+const modelMessageDone = computed(() => props.message.type === 'model' &&
     (props.message.status === 'finished' || props.message.status === 'cancelled')
 );
 
@@ -112,9 +112,7 @@ function regenerateMessage(model: string) {
             'w-full box-border !p-2 !m-0': isModelMessage || editing
         }">
             <div v-if="message.type === 'model'" class="group/msg-header flex flex-row items-center gap-2 mb-2">
-                <ModelIcon 
-                    :name="message.model" 
-                    :ignore-styling="true" 
+                <ModelIcon :name="message.model" :ignore-styling="true"
                     class="size-10 p-2 bg-primary-700 rounded-full ring-1 ring-txt-1" />
 
                 <div class="relative" v-mousedown-outside="closeModelSelection">
@@ -123,11 +121,14 @@ function regenerateMessage(model: string) {
                             :class="{ 'hover:bg-primary-300 cursor-pointer': modelMessageDone }"
                             @mousedown="changeModel">
                             <span class="font-semibold pl-1 select-none">{{ message.model }}</span>
-                            <AiOutlineSwap v-if="modelMessageDone" class="p-1 size-8 opacity-35 group-hover/msg-model:opacity-100 transition-opacity duration-100" />
+                            <AiOutlineSwap v-if="modelMessageDone"
+                                class="p-1 size-8 opacity-35 group-hover/msg-model:opacity-100 transition-opacity duration-100" />
                         </div>
                     </Tooltip>
-                    <div v-if="modelSelectionOpened" class="max-h-[50vh] overflow-y-auto absolute top-0 left-[50%] -translate-x-[50%] translate-y-12 flex flex-col bg-primary-300 z-20 p-2 rounded-xl gap-2">
-                        <button class="p-2 hover:scale-[98%] hover:bg-primary-200 rounded-lg w-full min-w-48 cursor-pointer transition-all duration-100 flex flex-row items-center justify-start"
+                    <div v-if="modelSelectionOpened"
+                        class="max-h-[50vh] overflow-y-auto absolute top-0 left-[50%] -translate-x-[50%] translate-y-12 flex flex-col bg-primary-300 z-20 p-2 rounded-xl gap-2">
+                        <button
+                            class="p-2 hover:scale-[98%] hover:bg-primary-200 rounded-lg w-full min-w-48 cursor-pointer transition-all duration-100 flex flex-row items-center justify-start"
                             @mouseup="regenerateMessage(message.model)">
                             <VscDebugRestart class="size-6 mr-2 p-0.5" />
                             {{ message.model }}
@@ -144,39 +145,32 @@ function regenerateMessage(model: string) {
 
                 <div class="grow"></div>
 
-                <span class="text-txt-2 opacity-0 group-hover/msg-header:opacity-100 transition-opacity duration-100">{{ message.created.toLocaleString() }}</span>
+                <span class="text-txt-2 opacity-0 group-hover/msg-header:opacity-100 transition-opacity duration-100">{{
+                    message.created.toLocaleString() }}</span>
             </div>
             <img v-for="image of images" :key="image.id" :src="image.blobSrc"
                 class="rounded-xl max-w-full max-h-full cursor-pointer mb-2"
-                @click="emitter.emit('openLightbox', { image: image.file })" />
+                @click="emitter.emit('openLightbox', { image: image.file })" alt="Message attached media" />
 
             <MessageEditor v-if="editing" ref="messageEditorRef" :messageText="message.content"
                 @onCancelEdit="cancelEditing" @onFinishEditing="finishEdit" />
 
             <div class="relative" v-else>
-                <div 
-                    v-if="isUserMessage" 
-                    class="max-w-none prose prose-invert"
-                >
+                <div v-if="isUserMessage" class="max-w-none prose prose-invert">
                     {{ message.content }}
                 </div>
                 <span v-else>
                     <ThinkBlock :message="message" />
-                    <span 
-                        class="max-w-none prose prose-invert inline-block"
-                        v-html="renderText(message.content)"
-                    >
+                    <span class="max-w-none prose prose-invert inline-block" v-html="renderText(message.content)">
                     </span>
-                    <div v-if="message.type === 'model'"
-                        class="animate-breathe rounded-full bg-txt-1 inline-block"
-                        :class="{ 
+                    <div v-if="message.type === 'model'" class="animate-breathe rounded-full bg-txt-1 inline-block"
+                        :class="{
                             'size-6': message.status === 'waiting',
                             'size-4': message.status === 'generating',
                         }"></div>
                 </span>
             </div>
         </div>
-        <MessageOptions v-if="!editing" :message="message" :done="modelMessageDone"
-            @editMessage="editMessage" />
+        <MessageOptions v-if="!editing" :message="message" :done="modelMessageDone" @editMessage="editMessage" />
     </div>
 </template>

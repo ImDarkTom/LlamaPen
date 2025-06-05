@@ -20,10 +20,12 @@
     --animate-breathe: breathe 2s ease-in-out infinite;
 
     @keyframes breathe {
+
         0%,
         100% {
             transform: scale(0.85);
         }
+
         50% {
             transform: scale(1);
         }
@@ -51,6 +53,8 @@ html {
     text-rendering: optimizeLegibility;
     -webkit-font-smoothing: antialiased;
     -moz-osx-font-smoothing: grayscale;
+
+    --transition-duration: 0.125s;
 }
 
 /* Z-Index Guidelines
@@ -71,9 +75,6 @@ z-99 - z-100: Popup
 }
 
 /* Transitions */
-:root {
-    --transition-duration: 0.125s;
-}
 
 /* @media all { */
 @media (prefers-reduced-motion: reduce) {

@@ -23,8 +23,6 @@ export type ChatIteratorDone = {
 class OllamaAPI {
 	private modelList: ModelList = [];
 
-	constructor() { }
-
 	async generateChatTitle(messages: ChatMessage[]): Promise<string> {
 		if (useConfigStore().developer.mockRequests) {
 			return 'Mock Chat Title';
@@ -33,11 +31,11 @@ class OllamaAPI {
 		const messagesFormatted = messages.map((message) => {
 			const hasAttachments = message.attachments && message.attachments.length > 0;
 
-			hasAttachments ? message.content += '\n<Attachment(s)>' : null;
+			const content = hasAttachments ? `${message.content}\n<Attachment(s)>` : message.content;
 
 			return {
 				role: message.type === 'user' ? 'user' : 'assistant',
-				content: message.content,
+				content,
 			};
 		});
 

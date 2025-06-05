@@ -96,7 +96,6 @@ async function signIn() {
 
     if (error) {
         alert('Error attempting sign in, ' + error);
-        return;
     }
 }
 
@@ -145,8 +144,8 @@ watch(
             <ToggleSetting v-model="config.api.enabled" label="Enable Llamapen Cloud" />
             <template v-if="config.api.enabled">
                 <ButtonSetting v-if="!userStore.isSignedIn" @click="signIn">Sign in with Google</ButtonSetting>
+                <!-- todo: add signout button regardless of whether the user has api enabled or not, just by checking jwt -->
                 <template v-else>
-                    <!-- <ToggleSetting v-model="config.api.signoutBeforeDisable" label="Sign out before disable" /> -->
                     <div class="flex flex-row gap-2">
                         <RouterLink to="/account"
                             class="bg-primary-200! p-4 rounded-lg hover:ring-1 ring-txt-2/50 cursor-pointer transition-all duration-150 w-fit">
@@ -203,9 +202,6 @@ watch(
             </ButtonSetting>
             <ToggleSetting v-model="config.chat.reasoning.info_open_by_default"
                 label="Reasoning text open by default" />
-            <!-- <ButtonSetting>
-                Configure title generation prompt... (TO BE ADDED)
-            </ButtonSetting> -->
         </OptionCategory>
 
         <OptionCategory label="Note">

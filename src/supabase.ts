@@ -1,8 +1,6 @@
 import { createClient } from '@supabase/supabase-js';
 
 class SupabaseClient {
-	constructor() {}
-
 	private client: ReturnType<typeof createClient> | null = null;
 
 	initialise() {

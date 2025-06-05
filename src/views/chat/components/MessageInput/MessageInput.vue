@@ -69,7 +69,6 @@ async function handleKeyDown(e: KeyboardEvent) {
     if (e.key === 'O' && e.ctrlKey && e.shiftKey) {
         e.preventDefault();
         router.push('/chat');
-        return;
     }
 }
 
@@ -173,7 +172,7 @@ function handlePastedImage(file: File) {
                 <div v-for="file in filesToUpload" :key="file.name" class="inline-block h-full p-2 pb-3 relative">
                     <img :src="createObjectUrl(file)"
                         class="ring-1 ring-txt-2 rounded-lg h-full cursor-pointer hover:brightness-115 transition-color duration-150"
-                        @click="openInLightbox(file)" />
+                        @click="openInLightbox(file)" alt="User attached image" />
                     <AiFillCloseCircle
                         class="absolute top-0 right-0 drop-shadow-[0_0_2px_black] hover:text-red-300 cursor-pointer transition-colors duration-150"
                         @click="removeFileFromUploadList(file)" />

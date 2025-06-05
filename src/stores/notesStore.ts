@@ -118,7 +118,7 @@ const useNotesStore = defineStore('notes', () => {
 	}
 
 	async function appendToNoteBody(id: number, textToAppend: string) {
-		// logger.info('Notes Store', 'Appending text to note body with note id', id);
+		logger.info('Notes Store', 'Appending text to note body with note id', id);
 
 		await db.notes.where('id').equals(id).modify(item => {
 			item.content += textToAppend;

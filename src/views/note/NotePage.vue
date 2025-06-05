@@ -200,7 +200,7 @@ async function generateContinuation() {
 	], abortController.signal);
 
 	isGeneratingContinuation.value = true;
-	
+
 	for await (const chunk of chatRequest) {
 		if ('error' in chunk) {
 			alert(chunk.error.message);
@@ -246,11 +246,10 @@ function toggleLabels() {
 
 <template>
 	<div class="w-full h-full flex flex-col p-2 box-border gap-2">
-		<div class="w-full bg-primary-300 rounded-lg p-2 flex flex-row gap-2"
-		:class="{ 'ml-12': !config.showSidebar }">
+		<div class="w-full bg-primary-300 rounded-lg p-2 flex flex-row gap-2" :class="{ 'ml-12': !config.showSidebar }">
 			<HeaderButton @click="save" label="Save">
 				{{ saveButtonIcon }}
-			</HeaderButton>	
+			</HeaderButton>
 			<ModelSelect button-classes="!bg-primary-200 !ring-0" direction="down" />
 			<HeaderButton @click="continueGenerationButtonPress" label="Continue">
 				{{ generateContinuationIcon }}
@@ -260,11 +259,6 @@ function toggleLabels() {
 				<BiText />
 			</HeaderButton>
 		</div>
-
-		<!-- <div class="w-full h-12 box-border bg-primary-300 rounded-lg p-1 flex flex-row gap-2">
-			<input type="text" placeholder="Modify..." class="grow bg-primary-400 p-2 rounded-md outline-none">
-			<button class="bg-primary-200 p-2 rounded-md cursor-pointer">✏️ Edit</button>
-		</div> -->
 
 		<div v-if="openedNote" class="flex grow bg-primary-500 p-2 rounded-lg justify-center">
 			<div class="flex flex-col grow h-full max-w-2xl w-full gap-2">
@@ -286,7 +280,7 @@ function toggleLabels() {
 						placeholder="a note about..." @keyup.enter="generateStarter">
 				</div>
 				<div v-else class="p-4 flex flex-row gap-1 items-center justify-center">
-					<VscDebugDisconnect /> 
+					<VscDebugDisconnect />
 					<span class="text-lg font-semibold">Generation unavailable</span>
 				</div>
 				<div class="w-full h-[1px] bg-txt-2"></div>
