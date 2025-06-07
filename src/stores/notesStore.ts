@@ -129,6 +129,10 @@ const useNotesStore = defineStore('notes', () => {
 		console.log(`openedNoteId changed from ${oldVal} to ${val}`);
 	});
 
+	function isOpened(id: number) {
+		return openedNoteId.value === id;
+	}
+
 	return {
 		notes,
 		openedNote,
@@ -137,7 +141,8 @@ const useNotesStore = defineStore('notes', () => {
 		deleteNote,
 		editNoteName,
 		writeToNote,
-		appendToNoteBody
+		appendToNoteBody,
+		isOpened,
 	};
 });
 

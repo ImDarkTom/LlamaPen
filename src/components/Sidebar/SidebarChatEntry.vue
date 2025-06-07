@@ -1,20 +1,26 @@
 <script setup lang="ts">
-import { ref } from 'vue';
-import { AiOutlineClose } from 'vue-icons-plus/ai';
-import { BsChatLeft, BsFillPinAngleFill, BsPinAngle } from 'vue-icons-plus/bs';
+import { onMounted, ref } from 'vue';
 import { useRouter } from 'vue-router';
-import SidebarRouterLink from './SidebarRouterLink.vue';
 import useChatsStore from '@/stores/chatsStore';
+import SidebarEntry from './SidebarEntry.vue';
+import { getDateTimeString } from '@/utils/time';
+import { BsChatLeft } from 'vue-icons-plus/bs';
 
 const chatsStore = useChatsStore();
-
 const router = useRouter();
-
-const editing = ref<boolean>(false);
 
 const props = defineProps<{
     chat: Chat,
 }>();
+
+const editing = ref<boolean>(false);
+
+const entryRef = ref<InstanceType<typeof SidebarEntry> | null>(null);
+const entryTextRef = ref<HTMLInputElement | null>(null);
+
+onMounted(() => {
+    entryTextRef.value = entryRef.value?.entryTextRef || null;
+});
 
 function deleteChat(e: MouseEvent) {
     e.preventDefault();
@@ -25,11 +31,9 @@ function deleteChat(e: MouseEvent) {
     }
 }
 
-const chatTextRef = ref<HTMLInputElement | null>(null);
-
 function editChatName(e: MouseEvent) {
     e.preventDefault();
-    const chatTextElem = chatTextRef.value;
+    const chatTextElem = entryTextRef.value;
 
     if (!chatTextElem) {
         return;
@@ -44,7 +48,7 @@ function editChatName(e: MouseEvent) {
 }
 
 function stopEditing(save = true) {
-    const chatTextElem = chatTextRef.value;
+    const chatTextElem = entryTextRef.value;
 
     if (!chatTextElem) {
         return;
@@ -62,34 +66,10 @@ function stopEditing(save = true) {
     chatsStore.renameChat(props.chat.id, chatTextElem.value);
 }
 
-function editKeyPressed(e: KeyboardEvent) {
-    if (e.key === "Enter") {
-        stopEditing();
-    } else if (e.key === "Escape") {
-        stopEditing(false);
-    }
-}
-
-function getDateTimeString(time: Date | undefined) {
-    if (time === undefined) return "Unknown";
-
-    return time.toLocaleString(undefined, {
-        day: '2-digit',
-        month: 'short',
-        year: 'numeric',
-        hour: '2-digit',
-        minute: '2-digit',
-        hour12: false,
-    });
-}
-
-
 const hoverTitle = `${props.chat.title}
 Last message: ${getDateTimeString(props.chat.lastestMessageDate)}
 Created: ${getDateTimeString(props.chat.createdAt)}`;
 
-const hoveringOverIcon = ref<boolean>(false);
-const pinned = ref<boolean>(props.chat.pinned === 1 || false);
 
 function setPinned(value: boolean) {
     chatsStore.setPinned(props.chat.id, value);
@@ -97,26 +77,20 @@ function setPinned(value: boolean) {
 </script>
 
 <template>
-    <SidebarRouterLink :to="`/chat/${props.chat.id}`" @dblclick="editChatName" class="my-2 flex flex-col"
-        :title="hoverTitle" role="listitem">
-        <div class="group w-full h-full flex flex-row p-2 pointer-coarse:p-3 relative rounded-lg hover:bg-primary-300 transition-all duration-150"
-            :class="{ '!bg-primary-300 ring-1 ring-inset ring-txt-1/50': chatsStore.isOpened(props.chat.id) }">
-            <div class="box-content shrink-0" @mouseenter="hoveringOverIcon = true"
-                @mouseleave="hoveringOverIcon = false">
-                <template v-if="hoveringOverIcon || pinned">
-                    <BsFillPinAngleFill v-if="pinned" class="box-border p-0.5 text-red-400"
-                        @mousedown="setPinned(false)" />
-                    <BsPinAngle v-else class="box-border p-0.5" @mousedown="setPinned(true)" />
-                </template>
-                <BsChatLeft v-else class="box-border p-0.5" />
-            </div>
-            <input type="text"
-                class="border-none outline-none m-0 flex-1 px-2 box-border justify-center items-center cursor-pointer text-ellipsis"
-                @blur="stopEditing()" @keydown="editKeyPressed" ref="chatTextRef" :value="props.chat.title" readonly
-                :class="{ '!bg-primary-500 rounded-sm': editing, 'opacity-50': $props.chat.isGeneratingTitle }">
-            <AiOutlineClose
-                class="hidden shrink-0 group-hover:block box-content pr-0 hover:text-red-400 transition-colors duration-150 ease-in-out"
-                @click="deleteChat" />
-        </div>
-    </SidebarRouterLink>
+    <SidebarEntry 
+        ref="entryRef"
+        :icon="BsChatLeft"
+        type="chat"
+        :id="props.chat.id"
+        :title="props.chat.title"
+        :pinned="props.chat.pinned" 
+        :hover-message="hoverTitle"
+        :editing="editing"
+        :is-generating-title="props.chat.isGeneratingTitle || false"
+        :is-opened="chatsStore.isOpened(props.chat.id)"
+        :set-pinned="setPinned" 
+        :edit-name="editChatName"
+        :stop-editing="stopEditing"
+        :delete-entry="deleteChat"
+    />
 </template>
