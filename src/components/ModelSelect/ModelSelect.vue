@@ -88,7 +88,7 @@ function toggleShowSelect() {
             }
 
             const selectedItem = listItemsRef.value[focusedItemIndex.value];
-            selectedItem.listItemRef?.scrollIntoView({ block: 'center' });
+            selectedItem?.listItemRef?.scrollIntoView({ block: 'center' });
         });
     }
 }
@@ -119,7 +119,7 @@ function searchKeyDown(e: KeyboardEvent) {
     if (scrollDown) {
         nextTick(() => {
             const selectedItem = listItemsRef.value[focusedItemIndex.value];
-            selectedItem.listItemRef?.scrollIntoView({ block: 'center', behavior: 'smooth' });
+            selectedItem?.listItemRef?.scrollIntoView({ block: 'center', behavior: 'smooth' });
         });
     }
 }
