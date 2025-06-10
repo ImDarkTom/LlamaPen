@@ -10,7 +10,7 @@ const chatTitleExamples = `\nExamples of titles:\n📉 Stock Market Trends\n🍪
 
 export type ChatIteratorError = {
 	error: {
-		type: '401-parse-fail' | 'no-response-body' | 'user-not-premium' | 'user-not-authed' | 'unknown-401'
+		type: '401-parse-fail' | 'no-response-body' | 'user-not-premium' | 'user-not-authed' | 'rate-limit' | 'unknown-401'
 		message?: string;
 	};
 }
@@ -166,6 +166,10 @@ class OllamaAPI {
 			} else {
 				return { error: { type: 'unknown-401' } }
 			}
+		}
+
+		if (response.status === 429) {
+			return { error: { type: 'rate-limit' } };
 		}
 
 

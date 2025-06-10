@@ -195,6 +195,9 @@ const useMessagesStore = defineStore('messages', () => {
 				case 'user-not-premium':
 					alert('You need premium to use this model.');
 					break;
+				case 'rate-limit': 
+					alert('Rate limit reached. Please choose a different model or try again later.');
+					break;
 				default:
 					alert(`Unknown error when generating message: ${chunk.error.message}`);
 			}
