@@ -1,5 +1,5 @@
 <script setup lang="ts">
-import router from '@/router';
+import router from '@/lib/router';
 import useUserStore from '@/stores/user';
 import { AiFillStar, AiOutlineArrowRight, AiOutlineEye, AiOutlineTool } from 'vue-icons-plus/ai';
 import { BsGlobe } from 'vue-icons-plus/bs';

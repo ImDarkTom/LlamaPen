@@ -2,7 +2,7 @@
 import { BiHelpCircle, BiSolidErrorCircle } from 'vue-icons-plus/bi';
 import Popup from './Popup.vue';
 import { onMounted, onUnmounted, ref } from 'vue';
-import { emitter } from '../../mitt';
+import { emitter } from '../../lib/mitt';
 import { useConfigStore } from '../../stores/config';
 import { useRouter } from 'vue-router';
 

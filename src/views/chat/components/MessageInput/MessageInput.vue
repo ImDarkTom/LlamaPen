@@ -4,12 +4,12 @@ import ModelSelect from '@/components/ModelSelect/ModelSelect.vue';
 import ActionButton from './ActionButton.vue';
 import ScrollToBottomButton from './ScrollToBottomButton.vue';
 import { AiFillCloseCircle, AiOutlinePlus } from 'vue-icons-plus/ai';
-import { emitter } from '@/mitt';
+import { emitter } from '@/lib/mitt';
 import useMessagesStore from '@/stores/messagesStore';
 import logger from '@/utils/logger';
 import { promptDelete } from '@/utils/chat';
 import useChatsStore from '@/stores/chatsStore';
-import router from '@/router';
+import router from '@/lib/router';
 
 const messagesStore = useMessagesStore();
 const chatsStore = useChatsStore();

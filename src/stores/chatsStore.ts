@@ -1,10 +1,10 @@
-import db from '@/utils/db';
+import db from '@/lib/db';
 import { liveQuery } from 'dexie';
 import { defineStore } from 'pinia';
 import { computed, ref } from 'vue';
 import useMessagesStore from './messagesStore';
 import logger from '@/utils/logger';
-import router from '@/router';
+import router from '@/lib/router';
 
 // Init
 let liveSyncInitialised = false;

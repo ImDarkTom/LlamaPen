@@ -5,7 +5,7 @@ import { createPinia } from "pinia";
 import piniaPluginPersistedstate from "pinia-plugin-persistedstate";
 
 import mousedownOutside from "./directives/mousedownOutside";
-import router from './router';
+import router from './lib/router';
 
 const pinia = createPinia();
 

@@ -1,14 +1,14 @@
 
+import { createRouter, createWebHistory, type RouteRecordRaw } from 'vue-router';
+import Layout from '@/components/Layout/Layout.vue';
 import ChatPage from "@/views/chat/ChatPage.vue";
 import SettingsPage from "@/views/settings/SettingsPage.vue";
 import GuidePage from "@/views/guide/GuidePage.vue";
 import NotePage from '@/views/note/NotePage.vue';
-import Layout from "./components/Layout/Layout.vue";
-import { createRouter, createWebHistory, type RouteRecordRaw } from 'vue-router';
-import AccountPage from './views/account/AccountPage.vue';
-import { useUiStore } from './stores/uiStore';
-import ShortcutsPage from "./views/shortcuts/ShortcutsPage.vue";
-import ModelsPage from "./views/models/ModelsPage.vue";
+import { useUiStore } from '@/stores/uiStore';
+import AccountPage from '@/views/account/AccountPage.vue';
+import ShortcutsPage from '@/views/shortcuts/ShortcutsPage.vue';
+import ModelsPage from '@/views/models/ModelsPage.vue';
 
 const routes: RouteRecordRaw[] = [
     {

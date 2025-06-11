@@ -1,5 +1,5 @@
 <script setup lang="ts">
-import router from '@/router';
+import router from '@/lib/router';
 import setPageTitle from '@/utils/title';
 import hljs from 'highlight.js';
 import { onBeforeUnmount, onMounted, ref } from 'vue';

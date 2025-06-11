@@ -3,7 +3,7 @@ import { ImCancelCircle } from 'vue-icons-plus/im';
 import { BiSolidSend } from 'vue-icons-plus/bi';
 import { computed } from 'vue';
 import useMessagesStore from '@/stores/messagesStore';
-import { emitter } from '@/mitt';
+import { emitter } from '@/lib/mitt';
 import logger from '@/utils/logger';
 
 const messagesStore = useMessagesStore();

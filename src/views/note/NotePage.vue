@@ -3,7 +3,7 @@ import { computed, onBeforeUnmount, onMounted, ref, watch } from 'vue';
 import { useRoute } from 'vue-router';
 import useNotesStore from '@/stores/notesStore';
 import { storeToRefs } from 'pinia';
-import router from '@/router';
+import router from '@/lib/router';
 import ModelSelect from '@/components/ModelSelect/ModelSelect.vue';
 import { useConfigStore } from '@/stores/config';
 import setPageTitle from '@/utils/title';

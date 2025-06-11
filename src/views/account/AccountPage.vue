@@ -6,7 +6,7 @@ import logger from '@/utils/logger';
 import setPageTitle from '@/utils/title';
 import { computed, onMounted, ref } from 'vue';
 import AccountSection from './components/AccountSection.vue';
-import supabase from '@/supabase';
+import supabase from '@/lib/supabase';
 
 const userStore = useUserStore();
 const config = useConfigStore();

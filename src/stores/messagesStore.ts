@@ -1,10 +1,10 @@
-import db from '@/utils/db';
+import db from '@/lib/db';
 import Dexie, { liveQuery } from 'dexie';
 import { defineStore } from 'pinia';
 import { ref, toRaw, watch, type Ref } from 'vue';
 import useChatsStore from './chatsStore';
 import logger from '@/utils/logger';
-import { emitter } from '@/mitt';
+import { emitter } from '@/lib/mitt';
 import ollamaApi, { type ChatIteratorError } from '@/utils/ollama';
 import { useConfigStore } from './config';
 import { filesAsBase64 } from '@/utils/conversion';

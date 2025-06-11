@@ -2,7 +2,7 @@
 import { onMounted, ref } from 'vue';
 import { useConfigStore } from '../../../stores/config';
 import { useUiStore } from '../../../stores/uiStore';
-import { emitter } from '../../../mitt';
+import { emitter } from '../../../lib/mitt';
 
 const config = useConfigStore();
 const uiStore = useUiStore();

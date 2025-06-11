@@ -7,7 +7,7 @@ import { useConfigStore } from '../../stores/config';
 import { useUiStore } from '../../stores/uiStore';
 import ChatList from './ChatList.vue';
 import NoteList from './NoteList.vue';
-import { emitter } from '@/mitt';
+import { emitter } from '@/lib/mitt';
 
 const uiStore = useUiStore();
 

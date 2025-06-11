@@ -1,7 +1,7 @@
 <script setup lang="ts">
 // https://router.vuejs.org/guide/advanced/extending-router-link.html
 
-import { emitter } from '@/mitt';
+import { emitter } from '@/lib/mitt';
 import { useConfigStore } from '@/stores/config';
 import isOnMobile from '@/utils/isOnMobile';
 import { computed } from 'vue'

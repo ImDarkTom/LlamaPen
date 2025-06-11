@@ -1,4 +1,4 @@
-import db from '@/utils/db';
+import db from '@/lib/db';
 import logger from '@/utils/logger';
 import { liveQuery } from 'dexie';
 import { defineStore } from 'pinia';

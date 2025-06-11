@@ -8,7 +8,7 @@ import { useRouter } from 'vue-router';
 import ButtonSetting from './components/ButtonSetting.vue';
 import useChatsStore from '@/stores/chatsStore';
 import useMessagesStore from '@/stores/messagesStore';
-import supabase from '@/supabase';
+import supabase from '@/lib/supabase';
 import useUserStore from '@/stores/user';
 import TextInputSetting from './components/TextInputSetting.vue';
 import logger from '@/utils/logger';

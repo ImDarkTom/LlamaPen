@@ -1,5 +1,5 @@
 <script setup lang="ts">
-import router from '@/router';
+import router from '@/lib/router';
 import setPageTitle from '@/utils/title';
 import { onBeforeUnmount, onMounted } from 'vue';
 import { AiOutlineClose } from 'vue-icons-plus/ai';

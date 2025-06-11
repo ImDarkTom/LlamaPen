@@ -3,7 +3,7 @@ import MessageOptions from './ChatMessage/MessageOptions.vue';
 import { computed, nextTick, onMounted, ref } from 'vue';
 
 import MessageEditor from './MessageEditor.vue';
-import { emitter } from '@/mitt';
+import { emitter } from '@/lib/mitt';
 import useMessagesStore from '@/stores/messagesStore';
 
 import { nanoid } from 'nanoid';

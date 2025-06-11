@@ -2,7 +2,7 @@
 import { nextTick, onMounted, onUnmounted, ref, watch } from 'vue';
 import ChatMessage from './ChatMessage.vue';
 import { useRoute } from 'vue-router';
-import { emitter } from '@/mitt';
+import { emitter } from '@/lib/mitt';
 import { useUiStore } from '@/stores/uiStore';
 import GreetingText from './GreetingText.vue';
 import useMessagesStore from '@/stores/messagesStore';

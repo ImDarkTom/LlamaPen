@@ -1,6 +1,6 @@
 <script setup lang="ts">
 import ModelIcon from '@/components/Icon/ModelIcon.vue';
-import router from '@/router';
+import router from '@/lib/router';
 import { useConfigStore } from '@/stores/config';
 import ollamaApi from '@/utils/ollama';
 import setPageTitle from '@/utils/title';

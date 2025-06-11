@@ -1,5 +1,5 @@
 <script setup lang="ts">
-import { emitter } from '@/mitt';
+import { emitter } from '@/lib/mitt';
 import { onMounted, ref } from 'vue';
 
 const lightboxOpen = ref(false);

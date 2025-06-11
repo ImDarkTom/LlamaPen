@@ -1,4 +1,4 @@
-import router from "@/router";
+import router from "@/lib/router";
 import useChatsStore from "@/stores/chatsStore";
 
 export function promptDelete(chat: Chat) {
