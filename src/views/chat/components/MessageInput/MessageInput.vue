@@ -6,8 +6,8 @@ import ScrollToBottomButton from './ScrollToBottomButton.vue';
 import { AiFillCloseCircle, AiOutlinePlus } from 'vue-icons-plus/ai';
 import { emitter } from '@/lib/mitt';
 import useMessagesStore from '@/stores/messagesStore';
-import logger from '@/utils/logger';
-import { promptDelete } from '@/utils/chat';
+import logger from '@/lib/logger';
+import { promptChatDeletion } from '@/utils/core/promptDeleteChat';
 import useChatsStore from '@/stores/chatsStore';
 import router from '@/lib/router';
 
@@ -63,7 +63,7 @@ async function handleKeyDown(e: KeyboardEvent) {
             return;
         }
 
-        promptDelete(openedChat);
+        promptChatDeletion(openedChat);
     }
 
     if (e.key === 'O' && e.ctrlKey && e.shiftKey) {

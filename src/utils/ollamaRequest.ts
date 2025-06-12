@@ -1,5 +1,5 @@
 import { useConfigStore } from "@/stores/config";
-import { tryCatch } from "./tryCatch";
+import { tryCatch } from "./core/tryCatch";
 
 export default async function ollamaRequest(
     route: string,

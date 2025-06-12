@@ -3,7 +3,7 @@ import { liveQuery } from 'dexie';
 import { defineStore } from 'pinia';
 import { computed, ref } from 'vue';
 import useMessagesStore from './messagesStore';
-import logger from '@/utils/logger';
+import logger from '@/lib/logger';
 import router from '@/lib/router';
 
 // Init

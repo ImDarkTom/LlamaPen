@@ -1,9 +1,9 @@
 <script setup lang="ts">
 import { useConfigStore } from '@/stores/config';
 import useUserStore from '@/stores/user';
-import { authedFetch } from '@/utils/auth';
-import logger from '@/utils/logger';
-import setPageTitle from '@/utils/title';
+import { authedFetch } from '@/utils/core/authedFetch';
+import logger from '@/lib/logger';
+import setPageTitle from '@/utils/core/setPageTitle';
 import { computed, onMounted, ref } from 'vue';
 import AccountSection from './components/AccountSection.vue';
 import supabase from '@/lib/supabase';

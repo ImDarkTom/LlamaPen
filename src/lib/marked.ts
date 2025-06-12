@@ -6,11 +6,11 @@ import markedKatex from 'marked-katex-extension';
 import "katex/dist/katex.min.css";
 import "highlight.js/styles/atom-one-dark.min.css";
 
-const messageMarked = new Marked();
+const fullMarked = new Marked();
 
-messageMarked.use(markedKatex());
+fullMarked.use(markedKatex());
 
-messageMarked.use(markedHighlight({
+fullMarked.use(markedHighlight({
     emptyLangClass: 'hljs',
     langPrefix: 'hljs language-',
     highlight(code, lang, _info) {
@@ -20,4 +20,9 @@ messageMarked.use(markedHighlight({
     }
 }));
 
-export default messageMarked;
+
+const simpleMarked = new Marked();
+
+// `fullMarked` is used for messages, where we need to render LaTeX with Katex and HLJS.
+// `simpleMarked` is an untouched marked instance for quick rendering such as the models page. 
+export { fullMarked, simpleMarked };

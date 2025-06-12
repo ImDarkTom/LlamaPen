@@ -3,7 +3,7 @@
 
 import { emitter } from '@/lib/mitt';
 import { useConfigStore } from '@/stores/config';
-import isOnMobile from '@/utils/isOnMobile';
+import isOnMobile from '@/utils/core/isOnMobile';
 import { computed } from 'vue'
 import { RouterLink, type NavigationFailure } from 'vue-router'
 

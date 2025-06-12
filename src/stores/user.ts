@@ -1,5 +1,5 @@
 import supabase from '@/lib/supabase';
-import { authedFetch } from '@/utils/auth';
+import { authedFetch } from '@/utils/core/authedFetch';
 import type { Session, User } from '@supabase/supabase-js';
 import { defineStore } from 'pinia';
 import { computed, ref } from 'vue';

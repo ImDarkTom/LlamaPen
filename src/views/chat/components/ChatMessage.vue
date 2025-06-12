@@ -8,13 +8,13 @@ import useMessagesStore from '@/stores/messagesStore';
 
 import { nanoid } from 'nanoid';
 import ThinkBlock from './ChatMessage/ThinkBlock.vue';
-import messageMarked from '@/utils/chatMarked';
 import ModelIcon from '@/components/Icon/ModelIcon.vue';
 import { AiOutlineSwap } from 'vue-icons-plus/ai';
 import Tooltip from '@/components/Tooltip/Tooltip.vue';
 import ollamaApi from '@/utils/ollama';
 import { VscDebugRestart } from 'vue-icons-plus/vsc';
-import logger from '@/utils/logger';
+import logger from '@/lib/logger';
+import { fullMarked } from '@/lib/marked';
 
 const messagesStore = useMessagesStore();
 
@@ -73,13 +73,13 @@ function finishEdit(newText: string) {
 // Rendering
 function renderText(text: string) {
     if (!text.startsWith('<think>')) {
-        return messageMarked.parse(text);
+        return fullMarked.parse(text);
     }
 
     const afterThinkRegex = /(?<=<\/think>)([\s\S]*)/i;;
     const allAfterThinkBlock = afterThinkRegex.exec(text)?.[1] || '';
 
-    return messageMarked.parse(allAfterThinkBlock);
+    return fullMarked.parse(allAfterThinkBlock);
 }
 
 // Regeneration

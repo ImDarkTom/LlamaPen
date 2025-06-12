@@ -6,11 +6,11 @@ import { storeToRefs } from 'pinia';
 import router from '@/lib/router';
 import ModelSelect from '@/components/ModelSelect/ModelSelect.vue';
 import { useConfigStore } from '@/stores/config';
-import setPageTitle from '@/utils/title';
+import setPageTitle from '@/utils/core/setPageTitle';
 import ollamaApi from '@/utils/ollama';
 import { useUiStore } from '@/stores/uiStore';
 import { VscDebugDisconnect } from 'vue-icons-plus/vsc';
-import logger from '@/utils/logger';
+import logger from '@/lib/logger';
 import HeaderButton from './components/HeaderButton.vue';
 import { BiText } from 'vue-icons-plus/bi';
 

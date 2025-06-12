@@ -4,7 +4,7 @@ import { BiSolidSend } from 'vue-icons-plus/bi';
 import { computed } from 'vue';
 import useMessagesStore from '@/stores/messagesStore';
 import { emitter } from '@/lib/mitt';
-import logger from '@/utils/logger';
+import logger from '@/lib/logger';
 
 const messagesStore = useMessagesStore();
 

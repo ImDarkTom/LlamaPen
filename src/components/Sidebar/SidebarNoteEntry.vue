@@ -4,7 +4,7 @@ import { useRouter } from 'vue-router';
 import { PiNotepad } from 'vue-icons-plus/pi';
 import useNotesStore from '@/stores/notesStore';
 import SidebarEntry from './SidebarEntry.vue';
-import { getDateTimeString } from '@/utils/time';
+import { getDateTimeString } from '@/utils/core/getDateTimeString';
 
 const notesStore = useNotesStore();
 const router = useRouter();

@@ -1,6 +1,6 @@
 <script setup lang="ts">
 import router from '@/lib/router';
-import setPageTitle from '@/utils/title';
+import setPageTitle from '@/utils/core/setPageTitle';
 import hljs from 'highlight.js';
 import { onBeforeUnmount, onMounted, ref } from 'vue';
 import { AiFillApple, AiFillWindows, AiOutlineClose, AiOutlineLinux } from 'vue-icons-plus/ai';

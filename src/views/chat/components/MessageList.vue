@@ -7,10 +7,10 @@ import { useUiStore } from '@/stores/uiStore';
 import GreetingText from './GreetingText.vue';
 import useMessagesStore from '@/stores/messagesStore';
 import { storeToRefs } from 'pinia';
-import logger from '@/utils/logger';
-import setPageTitle from '@/utils/title';
+import logger from '@/lib/logger';
+import setPageTitle from '@/utils/core/setPageTitle';
 import useChatsStore from '@/stores/chatsStore';
-import parseNumOrNull from '@/utils/parseNumber';
+import parseNumOrNull from '@/utils/core/parseNumOrNull';
 
 const messageListRef = ref<HTMLElement | null>(null);
 

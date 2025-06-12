@@ -3,13 +3,13 @@ import Dexie, { liveQuery } from 'dexie';
 import { defineStore } from 'pinia';
 import { ref, toRaw, watch, type Ref } from 'vue';
 import useChatsStore from './chatsStore';
-import logger from '@/utils/logger';
+import logger from '@/lib/logger';
 import { emitter } from '@/lib/mitt';
 import ollamaApi, { type ChatIteratorError } from '@/utils/ollama';
 import { useConfigStore } from './config';
-import { filesAsBase64 } from '@/utils/conversion';
+import { filesAsBase64 } from '@/utils/core/filesAsBase64';
 import { useUiStore } from './uiStore';
-import setPageTitle from '@/utils/title';
+import setPageTitle from '@/utils/core/setPageTitle';
 
 // ----
 // Init

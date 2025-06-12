@@ -5,11 +5,11 @@ import { useUiStore } from '../../stores/uiStore';
 import { VscDebugDisconnect } from 'vue-icons-plus/vsc';
 import ModelSelectItem from './ModelSelectItem.vue';
 import DropdownButton from '../Dropdown/DropdownButton.vue';
-import logger from '@/utils/logger';
+import logger from '@/lib/logger';
 import ollamaApi from '@/utils/ollama';
 import ModelIcon from '../Icon/ModelIcon.vue';
 import { TbListDetails } from 'vue-icons-plus/tb';
-import isOnMobile from '@/utils/isOnMobile';
+import isOnMobile from '@/utils/core/isOnMobile';
 
 const config = useConfigStore();
 const uiStore = useUiStore();

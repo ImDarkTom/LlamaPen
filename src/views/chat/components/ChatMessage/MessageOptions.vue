@@ -1,7 +1,7 @@
 <script setup lang="ts">
 import { ref } from 'vue';
 import { BsCopy, BsPen } from 'vue-icons-plus/bs';
-import logger from '@/utils/logger';
+import logger from '@/lib/logger';
 import MessageOptionButton from './MessageOptionButton.vue';
 
 const props = defineProps<{

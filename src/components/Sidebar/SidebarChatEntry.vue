@@ -3,7 +3,7 @@ import { onMounted, ref } from 'vue';
 import { useRouter } from 'vue-router';
 import useChatsStore from '@/stores/chatsStore';
 import SidebarEntry from './SidebarEntry.vue';
-import { getDateTimeString } from '@/utils/time';
+import { getDateTimeString } from '@/utils/core/getDateTimeString';
 import { BsChatLeft } from 'vue-icons-plus/bs';
 
 const chatsStore = useChatsStore();

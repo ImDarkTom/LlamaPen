@@ -3,14 +3,13 @@ import ModelIcon from '@/components/Icon/ModelIcon.vue';
 import router from '@/lib/router';
 import { useConfigStore } from '@/stores/config';
 import ollamaApi from '@/utils/ollama';
-import setPageTitle from '@/utils/title';
-import { Marked } from 'marked';
+import setPageTitle from '@/utils/core/setPageTitle';
 import { computed, onMounted, ref, watch } from 'vue';
 import InfoSection from './components/InfoSection.vue';
 import { useUiStore } from '@/stores/uiStore';
 import ActionButton from './components/ActionButton.vue';
 import ollamaRequest from '@/utils/ollamaRequest';
-import logger from '@/utils/logger';
+import logger from '@/lib/logger';
 import { AiOutlineArrowLeft, AiOutlineDownload, AiOutlineSearch } from 'vue-icons-plus/ai';
 import ModelLoadedIcon from '@/components/Icon/MemoryLoadIcon.vue';
 import Tooltip from '@/components/Tooltip/Tooltip.vue';
@@ -19,6 +18,7 @@ import { BsCopy, BsFillTrash3Fill } from 'vue-icons-plus/bs';
 import MemoryUnloadIcon from '@/components/Icon/MemoryUnloadIcon.vue';
 import { streamChunks } from '@/utils/streamChunks';
 import { BiLinkExternal } from 'vue-icons-plus/bi';
+import { simpleMarked } from '@/lib/marked';
 
 const config = useConfigStore();
 
@@ -27,8 +27,6 @@ const loadedModels = ref<string[]>([]);
 const selectedModel = ref<OllamaModelInfoResponse | null>(null);
 
 const modelFromRoute = computed<string | null>(() => router.currentRoute.value.params.model as string | null);
-
-const modelPageMarked = new Marked();
 
 const uiStore = useUiStore();
 
@@ -324,13 +322,13 @@ async function downloadModel() {
 
             <h2 class="text-3xl pt-4 pb-2">Info</h2>
             <InfoSection title="License">
-                {{ modelPageMarked.parse(selectedModel?.license ?? '') }}
+                {{ simpleMarked.parse(selectedModel?.license ?? '') }}
             </InfoSection>
             <InfoSection title="Modelfile">
-                {{ modelPageMarked.parse(selectedModel?.modelfile ?? '') }}
+                {{ simpleMarked.parse(selectedModel?.modelfile ?? '') }}
             </InfoSection>
             <InfoSection title="Template">
-                {{ modelPageMarked.parse(selectedModel?.template ?? '') }}
+                {{ simpleMarked.parse(selectedModel?.template ?? '') }}
             </InfoSection>
             <InfoSection title="Details" :kv-list="selectedModel?.details" />
             <InfoSection title="Model Info" :kv-list="selectedModel?.model_info" />

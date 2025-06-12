@@ -1,5 +1,5 @@
 import db from '@/lib/db';
-import logger from '@/utils/logger';
+import logger from '@/lib/logger';
 import { liveQuery } from 'dexie';
 import { defineStore } from 'pinia';
 import { ref, watch, type Ref } from 'vue';
