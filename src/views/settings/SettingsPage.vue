@@ -147,10 +147,7 @@ watch(
                 <!-- todo: add signout button regardless of whether the user has api enabled or not, just by checking jwt -->
                 <template v-else>
                     <div class="flex flex-row gap-2">
-                        <RouterLink to="/account"
-                            class="bg-primary-200! p-4 rounded-lg hover:ring-1 ring-txt-2/50 cursor-pointer transition-all duration-150 w-fit">
-                            Manage account
-                        </RouterLink>
+                        <ButtonSetting type="link" to="/account">Manage account</ButtonSetting>
                         <ButtonSetting @click="signOut">Sign out</ButtonSetting>
                     </div>
                 </template>
@@ -166,12 +163,18 @@ watch(
             </span>
         </OptionCategory>
 
+        <OptionCategory label="Models">
+            <ButtonSetting type="link" to="/models">Manage Models</ButtonSetting>
+            <ToggleSetting v-model="config.ui.modelIcons.monochrome" label="Monochrome model icons" />
+            <ToggleSetting v-model="config.ui.modelIcons.background" label="Model icons background" />
+            <div v-if="config.ui.modelIcons.background" class="border-l-[1px] border-txt-1 pl-3 ml-3">
+                <ToggleSetting v-model="config.ui.modelIcons.backgroundDark" label="Dark icon background" />
+            </div>
+            <ToggleSetting v-model="config.ui.modelIcons.alternateGemmaIcon" label="Alternate Gemma icon" />
+        </OptionCategory>
+
         <OptionCategory label="Appearance">
-            <RouterLink
-                class="!bg-primary-200 text-txt-2 p-4 rounded-lg hover:ring-1 ring-txt-2/50 cursor-pointer transition-all duration-150 w-fit hover:text-txt-1"
-                to="/shortcuts">
-                View keyboard shortcuts
-            </RouterLink>
+            <ButtonSetting type="link" to="/shortcuts">View keyboard shortcuts</ButtonSetting>
             <div class="flex flex-col gap-2 w-full">
                 <span class="text-lg text-txt-2">Transition Speed</span>
                 <input class="accent-primary-200 w-full" @change="updateTransitionSpeed" v-model="transitionSpeed"
@@ -182,13 +185,6 @@ watch(
                     <span class="pl-2 text-txt-2">{{ transitionSpeed == 0.125 ? '(Default)' : '' }}</span>
                 </span>
             </div>
-            <CategoryLabel>Model Select Icons</CategoryLabel>
-            <ToggleSetting v-model="config.ui.modelIcons.monochrome" label="Monochrome model icons" />
-            <ToggleSetting v-model="config.ui.modelIcons.background" label="Model icons background" />
-            <div v-if="config.ui.modelIcons.background" class="border-l-[1px] border-txt-1 pl-3 ml-3">
-                <ToggleSetting v-model="config.ui.modelIcons.backgroundDark" label="Dark icon background" />
-            </div>
-            <ToggleSetting v-model="config.ui.modelIcons.alternateGemmaIcon" label="Alternate Gemma icon" />
             <CategoryLabel>Tooltip</CategoryLabel>
             <NumberInputSetting v-model="config.ui.tooltip.waitTimeoutMs" :default="500" :min="0" :max="1000"
                 label="Hover delay (ms)" />

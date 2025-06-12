@@ -57,7 +57,26 @@ async function deleteAccount() {
 	}
 }
 
-const quotaUsedPercentage = computed(() => (userStore.subscription.remaining / userStore.subscription.limit) * 100)
+// API's used token amount only updates when the user sends a request, therefore we can otherwise assume that it is at limit.
+const realRemaining = computed(() => {
+	const lastUpdatedRaw = userStore.subscription.remaining_last_updated;
+	if (!lastUpdatedRaw) return userStore.subscription.remaining;
+
+	// The server gives us the last updated day as an ISO string, but the client time is in any timezone,
+	// so we get the current date, set time to midnight, convert to iso, and compare the dates string then.
+	const today = new Date();
+	today.setHours(0, 0, 0, 0);
+	const todayISOString = today.toISOString().slice(0, 10);
+
+	// dates are lexicographically sortable, meaning this works
+	if (todayISOString > lastUpdatedRaw) {
+		return userStore.subscription.limit;
+	} else {
+		return userStore.subscription.remaining;
+	}
+})
+
+const quotaUsedPercentage = computed(() => (realRemaining.value / userStore.subscription.limit) * 100)
 </script>
 
 <template>
@@ -91,7 +110,7 @@ const quotaUsedPercentage = computed(() => (userStore.subscription.remaining / u
 				<div v-else class="w-full">
 					<span class="flex flex-row">
 						<span>
-							Messages/edits remaining: <b>{{ userStore.subscription.remaining }}/{{ userStore.subscription.limit }}</b>
+							Messages/edits remaining: <b>{{ realRemaining }}/{{ userStore.subscription.limit }}</b>
 						</span>
 						<div class="grow"></div>
 						<span>Resets daily at 00:00 EST</span>

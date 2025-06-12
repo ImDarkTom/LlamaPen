@@ -234,8 +234,9 @@ async function downloadModel() {
                 </button>
             </form>
             <button
-                class="bg-primary-200 p-3 h-8 box-content rounded-lg cursor-pointer select-none hover:brightness-90 flex flex-row justify-center items-center gap-2"
-                @click="downloadModel">
+                class="bg-primary-200 p-3 h-8 box-content rounded-lg enabled:cursor-pointer select-none enabled:hover:brightness-90 flex flex-row justify-center items-center gap-2 disabled:opacity-75"
+                @click="downloadModel"
+                :disabled="!uiStore.connectedToOllama">
                 <AiOutlineDownload />
                 Download
             </button>
