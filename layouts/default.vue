@@ -1,0 +1,10 @@
+<template>
+    <div>
+        <aside>
+            <span>LlamaPen</span>
+        </aside>
+        <main>
+            <slot/>
+        </main>
+    </div>
+</template>
