@@ -1,8 +1,6 @@
 <template>
     <div>
-        <aside>
-            <span>LlamaPen</span>
-        </aside>
+        <AppSidebar />
         <main>
             <slot/>
         </main>
