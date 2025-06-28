@@ -7,6 +7,7 @@ import setPageTitle from '@/utils/core/setPageTitle';
 import { computed, onMounted, ref } from 'vue';
 import AccountSection from './components/AccountSection.vue';
 import supabase from '@/lib/supabase';
+import isDateBeforeToday from '@/utils/core/isDateBeforeToday';
 
 const userStore = useUserStore();
 const config = useConfigStore();
@@ -14,6 +15,7 @@ const config = useConfigStore();
 const loadingSubButtonPage = ref(false);
 
 onMounted(() => {
+	userStore.refreshSubInfo();
 	setPageTitle('My Account');
 });
 
@@ -62,14 +64,8 @@ const realRemaining = computed(() => {
 	const lastUpdatedRaw = userStore.subscription.remaining_last_updated;
 	if (!lastUpdatedRaw) return userStore.subscription.remaining;
 
-	// The server gives us the last updated day as an ISO string, but the client time is in any timezone,
-	// so we get the current date, set time to midnight, convert to iso, and compare the dates string then.
-	const today = new Date();
-	today.setHours(0, 0, 0, 0);
-	const todayISOString = today.toISOString().slice(0, 10);
-
-	// dates are lexicographically sortable, meaning this works
-	if (todayISOString > lastUpdatedRaw) {
+	if (isDateBeforeToday(lastUpdatedRaw)) {
+		// If the date was before today, that means the daily token reset must have happened. 
 		return userStore.subscription.limit;
 	} else {
 		return userStore.subscription.remaining;
@@ -113,7 +109,7 @@ const quotaUsedPercentage = computed(() => (realRemaining.value / userStore.subs
 							Messages/edits remaining: <b>{{ realRemaining }}/{{ userStore.subscription.limit }}</b>
 						</span>
 						<div class="grow"></div>
-						<span>Resets daily at 00:00 EST</span>
+						<span>Resets daily at 00:00 UTC</span>
 					</span>
 					<div class="mt-2 h-8 w-full bg-txt-2 rounded-xl">
 						<div 

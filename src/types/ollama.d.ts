@@ -24,6 +24,10 @@ type ModelListResponse = {
     models: ModelList;
 }
 
+type CustomErrorResponse = {
+    error: string;
+}
+
 type OllamaChatResponseChunk = {
     model: string;
     created_at: string;

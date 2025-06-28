@@ -59,7 +59,9 @@ const useUserStore = defineStore('user', () => {
     const isSignedIn = computed(() => user.value !== null);
     const subscription = computed(() => subscriptionInfo.value);
 
-    return { user, subscription, isSignedIn };
+    const refreshSubInfo = fetchSubInfo;
+
+    return { user, subscription, isSignedIn, refreshSubInfo };
 });
 
 export default useUserStore;

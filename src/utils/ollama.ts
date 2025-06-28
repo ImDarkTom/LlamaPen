@@ -185,11 +185,15 @@ class OllamaAPI {
 			const chunkText = decoder.decode(value).trim().split('\n');
 
 			for (const chunk of chunkText) {
-				console.log(chunk);
-				const { data, error } = await tryCatch<OllamaChatResponseChunk>(JSON.parse(chunk));
+				const { data, error } = await tryCatch<OllamaChatResponseChunk | CustomErrorResponse>(JSON.parse(chunk));
 
 				if (error) {
 					console.error('Error parsing message chunk', error);
+					continue;
+				}
+
+				if ('error' in data) {
+					alert(data.error);
 					continue;
 				}
 

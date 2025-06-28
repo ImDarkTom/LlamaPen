@@ -247,11 +247,11 @@ function toggleLabels() {
 <template>
 	<div class="w-full h-full flex flex-col p-2 box-border gap-2">
 		<div class="w-full bg-primary-300 rounded-lg p-2 flex flex-row gap-2" :class="{ 'ml-12': !config.showSidebar }">
-			<HeaderButton @click="save" label="Save">
+			<HeaderButton @click="save" label="Save (Ctrl+S)">
 				{{ saveButtonIcon }}
 			</HeaderButton>
 			<ModelSelect button-classes="!bg-primary-200 !ring-0" direction="down" />
-			<HeaderButton @click="continueGenerationButtonPress" label="Continue">
+			<HeaderButton @click="continueGenerationButtonPress" label="Continue (Tab)">
 				{{ generateContinuationIcon }}
 			</HeaderButton>
 			<div class="grow"></div>

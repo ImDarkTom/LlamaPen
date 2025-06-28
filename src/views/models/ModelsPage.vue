@@ -216,7 +216,11 @@ async function downloadModel() {
     <div class="w-full h-full flex flex-col md:flex-row gap-2 p-2 box-border overflow-y-auto"
         :class="{ 'pt-10': !config.showSidebar }">
         <div
-            class="h-4/12 md:h-full w-full md:w-3/12 bg-primary-300 rounded-lg flex flex-col gap-2 p-2 overflow-y-auto">
+            class="h-4/12 md:h-full w-full md:w-3/12 bg-primary-300 rounded-lg flex flex-col gap-2 p-2 overflow-y-auto relative"
+            :class="{ 'cursor-not-allowed select-none overflow-hidden!': config.api.enabled }">
+            <div v-if="config.api.enabled" class="w-full h-full absolute top-0 left-0 bg-primary-700 opacity-50">
+
+            </div>
             <RouterLink to="/"
                 class="p-4 rounded-md flex flex-row items-center gap-2 font-semibold cursor-pointer select-none">
                 <AiOutlineArrowLeft class="size-6" />
@@ -288,7 +292,9 @@ async function downloadModel() {
         </div>
         <div v-if="!selectedModel"
             class="h-8/12 md:h-full w-full md:w-9/12 bg-primary-300 rounded-lg p-2 flex items-center justify-center text-xl">
-            Select a model to view its details, or, download a new model.
+            {{ config.api.enabled ?
+                'Model management is only available without API mode.' :
+                'Select a model to view its details, or, download a new model.' }}
         </div>
         <div v-else class="h-8/12 md:h-full w-full md:w-9/12 bg-primary-300 rounded-lg p-2 overflow-y-auto">
             <span class="flex flex-row gap-2 items-center">

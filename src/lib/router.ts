@@ -31,7 +31,7 @@ const routes: RouteRecordRaw[] = [
             { path: '/account', component: AccountPage },
             { path: "/shortcuts", component: ShortcutsPage },
             { path: '/models', component: ModelsPage },
-            { path: '/models/:model', component: ModelsPage },
+            { path: '/models/:model(.*)', component: ModelsPage },
         ],
     },
 ];
