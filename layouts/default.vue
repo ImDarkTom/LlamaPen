@@ -1,8 +1,8 @@
 <template>
-    <div class="flex flex-row bg-background-dark text-text-muted size-full min-h-dvh">
+    <div class="flex flex-row bg-background text-text-muted  size-full min-h-dvh">
         <AppSidebar />
-        <main>
-            <slot/>
+        <main class="grow">
+            <slot />
         </main>
     </div>
 </template>

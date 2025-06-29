@@ -5,5 +5,12 @@ defineProps<{
 </script>
 
 <template>
-    <span>chat page {{ id ?? 'none' }}</span>
+    <div class="flex flex-col h-full">
+        <div class="grow">
+            test
+        </div>
+        <div class="w-full flex items-center justify-center p-2">
+            <ChatMessageInput />
+        </div>
+    </div>
 </template>

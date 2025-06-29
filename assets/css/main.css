@@ -36,3 +36,7 @@
 	--success: oklch(0.5 0.13 160);
 	--info: oklch(0.5 0.13 260); */
 }
+
+span.iconify {
+	@apply text-text;
+}

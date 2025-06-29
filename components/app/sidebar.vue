@@ -1,11 +1,34 @@
 <script setup lang="ts">
-const isSidebarOpen = useState('sidebar-open', () => true);
+import Row from '../row.vue';
+
+const uiStore = useUiStore();
 </script>
 
 <template>
-    <aside class="bg-background w-11/12 sm:w-1/3 lg:w-1/5 p-2 box-border">
-        <NuxtLink to="/">
-            <strong class="text-text">LlamaPen</strong>
-        </NuxtLink>
+    <div
+        class="absolute size-10 p-1.5 rounded-lg box-border cursor-pointer hover:bg-background-light m-1"
+        @click="uiStore.sidebarOpen = !uiStore.sidebarOpen"
+    >
+        <Icon
+            v-if="uiStore.sidebarOpen"
+            name="hugeicons:sidebar-left-01"
+            class="w-full! h-full!"
+        />
+        <Icon
+            v-else
+            name="hugeicons:sidebar-left"
+            class="w-full! h-full!"
+        />
+    </div>
+    <aside
+        v-show="uiStore.sidebarOpen"
+        class="bg-background-dark min-h-full w-[90vw] sm:w-[33vw] lg:w-[20vw] p-2 box-border"
+    >
+        <Row>
+            <div class="size-12" /> <!-- spacer for the icon -->
+            <NuxtLink to="/">
+                <strong class="text-text">LlamaPen</strong>
+            </NuxtLink>
+        </Row>
     </aside>
 </template>
