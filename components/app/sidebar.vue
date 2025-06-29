@@ -2,6 +2,7 @@
 import Row from '../row.vue';
 
 const uiStore = useUiStore();
+const chatsStore = useChatsStore();
 </script>
 
 <template>
@@ -26,9 +27,26 @@ const uiStore = useUiStore();
     >
         <Row>
             <div class="size-12" /> <!-- spacer for the icon -->
-            <NuxtLink to="/">
-                <strong class="text-text">LlamaPen</strong>
+            <NuxtLink
+                to="/"
+                class="size-10"
+            >
+                <img
+                    src="/favicon.svg"
+                    alt="LlamaPen Logo"
+                >
             </NuxtLink>
         </Row>
+        <ul>
+            <li
+                v-for="chat in chatsStore.chats"
+                :key="chat.id"
+            >
+                <SidebarListItem
+                    :chat
+                    :opened="chatsStore.openedChatId === chat.id"
+                />
+            </li>
+        </ul>
     </aside>
 </template>
