@@ -22,7 +22,13 @@ const toggleState = ref(false);
                     name="hugeicons:message-01"
                 />
             </div>
-            <span class="grow">{{ chat.title }}</span>
+            <span class="grow">
+                {{ chat.title }}
+                <strong
+                    v-if="chat.title === 'New Chat'"
+                    class="text-text-muted/50"
+                >#{{ chat.id }}</strong>
+            </span>
             <DropdownMenuRoot v-model:open="toggleState">
                 <DropdownMenuTrigger
                     class="size-8 p-2 rounded-lg cursor-pointer hover:bg-background-light"

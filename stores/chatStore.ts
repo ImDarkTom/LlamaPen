@@ -28,6 +28,8 @@ function initLiveSync(
         },
     });
 
+    console.log('✅ Setup liveQuery for chats store.');
+
     // Messages
     let openedChatMessagesSubscription: { unsubscribe: () => void } | null = null;
 
@@ -53,7 +55,6 @@ function initLiveSync(
             },
         });
     });
-    console.log('✅ Setup liveQuery for chats store.');
 }
 
 export const useChatsStore = defineStore('chats', () => {
