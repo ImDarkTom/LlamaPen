@@ -200,11 +200,6 @@ watch(
                 label="Reasoning text open by default" />
         </OptionCategory>
 
-        <OptionCategory label="Note">
-            <ToggleSetting v-model="config.note.focusOnLoad" label="Focus on load" />
-            <ToggleSetting v-model="config.note.showHeaderLabels" label="Show header labels" />
-        </OptionCategory>
-
         <OptionCategory label="Developer">
             <span class="text-red-500/80">Do not change these settings unless you know what you're doing.</span>
             <ToggleSetting v-model="config.developer.mockRequests" label="Mock requests" />

@@ -4,12 +4,8 @@ import { TbLayoutSidebarFilled } from 'vue-icons-plus/tb';
 import SidebarHeader from './SidebarHeader.vue';
 import SidebarFooter from './footer/SidebarFooter.vue';
 import { useConfigStore } from '../../stores/config';
-import { useUiStore } from '../../stores/uiStore';
-import ChatList from './ChatList.vue';
-import NoteList from './NoteList.vue';
 import { emitter } from '@/lib/mitt';
-
-const uiStore = useUiStore();
+import ChatList from './ChatList.vue';
 
 const useConfig = useConfigStore();
 
@@ -53,13 +49,7 @@ onUnmounted(() => {
             <div v-show="useConfig.showSidebar"
                 class="flex flex-col h-full w-[calc(100vw-3rem)] sm:w-[calc(100vw-3rem)] md:w-[18vw] md:min-w-64 bg-background-dark box-border p-2">
                 <SidebarHeader />
-
-                <Transition name="slide-left" mode="out-in">
-                    <!-- Chats List -->
-                    <ChatList v-if="uiStore.mode === 'chat'" />
-                    <!-- Note List -->
-                    <NoteList v-else />
-                </Transition>
+                <ChatList />
                 <SidebarFooter />
             </div>
         </Transition>

@@ -28,10 +28,6 @@ interface Config {
             info_open_by_default: boolean;
         }
     }
-    note: {
-        focusOnLoad: boolean,
-        showHeaderLabels: boolean,
-    },
     developer: {
         mockRequests: boolean,
         infoLogs: boolean,
@@ -72,10 +68,6 @@ export const useConfigStore = defineStore('config', {
             reasoning: {
                 info_open_by_default: false,
             }
-        },
-        note: {
-            focusOnLoad: false,
-            showHeaderLabels: false,
         },
         developer: {
             mockRequests: false,
