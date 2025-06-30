@@ -39,7 +39,6 @@ onMounted(() => {
         .finally(() => {
             waitingForResponse.value = false;
         });
-        
 });
 
 </script>
@@ -48,9 +47,9 @@ onMounted(() => {
     <div v-if="!config.api.enabled" class="overflow-hidden overflow-ellipsis py-2 font-semibold">
         <span
             :class="{ 
-                'text-amber-400': waitingForResponse,
-                'text-emerald-400': uiStore.connectedToOllama && !waitingForResponse, 
-                'text-red-400': !uiStore.connectedToOllama && !waitingForResponse
+                'text-warning': waitingForResponse,
+                'text-success': uiStore.connectedToOllama && !waitingForResponse, 
+                'text-danger': !uiStore.connectedToOllama && !waitingForResponse
                 }">
             Ollama status:
             <span class="font-normal" ref="statusMessageElem" :title="statusMessageText">{{ statusMessageText }}</span>

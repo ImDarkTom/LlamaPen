@@ -9,20 +9,16 @@ import ChatList from './ChatList.vue';
 
 const useConfig = useConfigStore();
 
+const toggleSidebar = () => {
+    useConfig.showSidebar = !useConfig.showSidebar;
+}
+
 function handlePointerDown(e: MouseEvent) {
     if (e.button !== 0) {
         return;
     }
 
     toggleSidebar();
-}
-
-const toggleSidebar = () => {
-    useConfig.showSidebar = !useConfig.showSidebar;
-}
-
-function setSidebar(value: boolean) {
-    useConfig.showSidebar = value;
 }
 
 function shortcutListener(e: KeyboardEvent) {
@@ -32,32 +28,38 @@ function shortcutListener(e: KeyboardEvent) {
     }
 }
 
+function hideSidebar() {
+    useConfig.showSidebar = false;
+}
+
 onMounted(() => {
-    emitter.on('hideSidebar', () => setSidebar(false));
+    emitter.on('hideSidebar', () => hideSidebar);
     document.addEventListener('keydown', shortcutListener);
 });
 
 onUnmounted(() => {
-    emitter.off('hideSidebar', () => setSidebar(false));
+    emitter.off('hideSidebar', () => hideSidebar);
     document.removeEventListener('keydown', shortcutListener);
 });
 </script>
 
 <template>
-    <div class="">
+    <!-- note: removing the wrapper breaks this -->
+    <div>
         <Transition name="slide-left" mode="default">
-            <div v-show="useConfig.showSidebar"
-                class="flex flex-col h-full w-[calc(100vw-3rem)] sm:w-[calc(100vw-3rem)] md:w-[18vw] md:min-w-64 bg-background-dark box-border p-2">
+            <aside 
+                v-show="useConfig.showSidebar"
+                class="flex flex-col h-full w-[calc(100vw-3rem)] sm:w-[calc(100vw-3rem)] md:w-[18vw] md:min-w-64 bg-background-dark box-border p-2"
+            >
                 <SidebarHeader />
                 <ChatList />
                 <SidebarFooter />
-            </div>
+            </aside>
         </Transition>
         <div class="absolute top-0 left-0 h-12 w-12 p-2 z-30">
-            <div class="h-10 w-10 p-1.5 cursor-pointer rounded-lg hover:bg-primary-300 hover:shadow-md shadow-black/50 transition-all duration-100"
+            <div class="size-10 p-1.5 cursor-pointer rounded-lg text-text hover:bg-surface hover:shadow-md shadow-background-dark transition-all duration-100"
                 @pointerdown="handlePointerDown" aria-label="Toggle Sidebar">
-                <TbLayoutSidebarFilled
-                    class="size-full hover:brightness-75 hover:scale-90 active:scale-110 transition-all duration-100" />
+                <TbLayoutSidebarFilled class="size-full" />
             </div>
         </div>
     </div>

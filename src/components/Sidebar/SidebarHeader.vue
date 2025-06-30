@@ -16,7 +16,7 @@ function search() {
                 <img src="/favicon.svg" alt="LlamaPen Logo" class="size-10 p-1" />
             </SidebarRouterLink>
             <AiOutlineSearch aria-label="Search"
-                class="h-6 w-auto cursor-pointer p-2 box-content rounded-lg hover:bg-background-light hover:shadow-xs shadow-black/50"
+                class="h-6 w-auto cursor-pointer p-2 box-content rounded-lg text-text hover:bg-background-light hover:shadow-xs shadow-black/50"
                 @click="search" />
         </div>
     </div>
