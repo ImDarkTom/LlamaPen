@@ -103,7 +103,10 @@ export const useChatsStore = defineStore('chats', () => {
         }
 
         // Add the message to the chat
-        addMessageToChat(openedChatId.value, 'user', contents);
+        await addMessageToChat(openedChatId.value, 'user', contents);
+        const assistantMessageId = await addMessageToChat(openedChatId.value, 'assistant', '');
+
+        useApiStore().generateMessage(assistantMessageId, openedChatId.value);
     }
 
     return {
