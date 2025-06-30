@@ -3,18 +3,19 @@ import { computed, onBeforeUnmount, onMounted, ref } from 'vue';
 import ModelSelect from '@/components/ModelSelect/ModelSelect.vue';
 import ActionButton from './ActionButton.vue';
 import ScrollToBottomButton from './ScrollToBottomButton.vue';
-import { AiFillCloseCircle, AiOutlinePlus } from 'vue-icons-plus/ai';
+import { AiFillCloseCircle } from 'vue-icons-plus/ai';
 import { emitter } from '@/lib/mitt';
 import useMessagesStore from '@/stores/messagesStore';
 import logger from '@/lib/logger';
 import { promptChatDeletion } from '@/utils/core/promptDeleteChat';
 import useChatsStore from '@/stores/chatsStore';
 import router from '@/lib/router';
+import FileUpload from './buttons/FileUpload.vue';
 
 const messagesStore = useMessagesStore();
 const chatsStore = useChatsStore();
 
-const messageInput = ref<HTMLTextAreaElement | null>(null);
+const messageInputRef = ref<HTMLTextAreaElement | null>(null);
 const messageInputValue = ref('');
 
 const canGenerate = computed<boolean>(() => {
@@ -22,25 +23,25 @@ const canGenerate = computed<boolean>(() => {
 });
 
 const focusInput = () => {
-    if (!messageInput.value) {
+    if (!messageInputRef.value) {
         return;
     }
 
-    messageInput.value.focus();
+    messageInputRef.value.focus();
 };
 
 onMounted(() => {
     document.addEventListener('keydown', handleKeyDown);
 
-    if (!messageInput.value) return;
-    messageInput.value.addEventListener('paste', handleClipboardEvent);
+    if (!messageInputRef.value) return;
+    messageInputRef.value.addEventListener('paste', handleClipboardEvent);
 });
 
 onBeforeUnmount(() => {
     document.removeEventListener('keydown', handleKeyDown);
 
-    if (!messageInput.value) return;
-    messageInput.value.addEventListener('paste', handleClipboardEvent);
+    if (!messageInputRef.value) return;
+    messageInputRef.value.addEventListener('paste', handleClipboardEvent);
 });
 
 async function handleKeyDown(e: KeyboardEvent) {
@@ -100,8 +101,8 @@ async function startGeneration() {
 }
 
 function updateTextAreaHeight() {
-    messageInput.value!.style.height = "auto";
-    messageInput.value!.style.height = (1 + messageInput.value!.scrollHeight) + "px";
+    messageInputRef.value!.style.height = "auto";
+    messageInputRef.value!.style.height = (1 + messageInputRef.value!.scrollHeight) + "px";
 }
 
 function uploadFile(e: Event) {
@@ -161,9 +162,9 @@ function handlePastedImage(file: File) {
     <div class="w-full flex flex-row justify-center">
         <div
             class="w-full sm:w-full lg:w-3xl mx-1 mb-0 sm:mx-1 sm:mb-1 md:mx-4 md:mb-2 p-2 
-                box-border flex flex-col items-center max-h-[48rem] relative bg-primary-300 rounded-t-xl sm:rounded-b-lg">
+                box-border flex flex-col items-center max-h-[48rem] relative bg-background-light rounded-t-xl sm:rounded-b-lg">
             <ScrollToBottomButton />
-            <textarea ref="messageInput" v-model="messageInputValue" @keyup="inputKeyUp"
+            <textarea ref="messageInputRef" v-model="messageInputValue" @keyup="inputKeyUp"
                 placeholder="Enter a message..."
                 class="w-full box-border text-base p-2 border-none outline-none resize-none overflow-y-auto break-words"></textarea>
 
@@ -171,23 +172,16 @@ function handlePastedImage(file: File) {
             <div class="w-full max-h-16">
                 <div v-for="file in filesToUpload" :key="file.name" class="inline-block h-full p-2 pb-3 relative">
                     <img :src="createObjectUrl(file)"
-                        class="ring-1 ring-txt-2 rounded-lg h-full cursor-pointer hover:brightness-115 transition-color duration-150"
+                        class="ring-1 ring-primary rounded-lg h-full cursor-pointer hover:brightness-115 transition-color duration-150"
                         @click="openInLightbox(file)" alt="User attached image" />
                     <AiFillCloseCircle
-                        class="absolute top-0 right-0 drop-shadow-[0_0_2px_black] hover:text-red-300 cursor-pointer transition-colors duration-150"
+                        class="absolute top-0 right-0 drop-shadow-sm drop-shadow-background hover:text-red-300 cursor-pointer transition-colors duration-150"
                         @click="removeFileFromUploadList(file)" />
                 </div>
             </div>
             <div class="relative flex flex-row gap-2 justify-between w-full">
                 <div class="flex flex-row gap-2 overflow-x-auto p-[1px]">
-                    <div class="aspect-square size-10 pointer-coarse:size-12 box-border bg-primary-300 hover:bg-primary-400 cursor-pointer rounded-lg text-txt-1 hover:text-txt-2 transition-colors duration-150 select-none ring-1 ring-txt-1/25"
-                        title="Upload file(s)">
-                        <label for="file-upload" class="cursor-pointer size-full flex items-center justify-center">
-                            <AiOutlinePlus />
-                        </label>
-                        <input type="file" id="file-upload" class="hidden" accept="image/*" multiple
-                            @change="uploadFile" />
-                    </div>
+                    <FileUpload :onChange="uploadFile" />
                     <ModelSelect direction="up" />
                     <!-- we could revisit the persona selector later -->
                 </div>

@@ -11,7 +11,8 @@ const userStore = useUserStore();
 defineProps<{
 	model: ModelListItem,
 	index: number,
-	focusedItemIndex: number,
+	isCurrentModel: boolean,
+	selected: boolean,
 	queriedModelList: ModelList,
 }>();
 
@@ -36,44 +37,50 @@ defineExpose({
 </script>
 
 <template>
-	<li class="relative group flex flex-row gap-3 cursor-pointer p-3 hover:bg-primary-400 transition-colors duration-75 rounded-lg overflow-x-hidden"
+	<li class="relative group flex flex-row gap-3 cursor-pointer p-3 hover:bg-surface-light transition-colors duration-75 rounded-lg overflow-x-hidden"
 		:class="{
-			'bg-primary-500 shadow-sm shadow-black/50': index === focusedItemIndex,
+			'bg-surface-light': selected && !isCurrentModel,
+			'bg-surface-light ring-2 ring-border ring-inset': isCurrentModel,
 			'opacity-75': !userStore.subscription.subscribed && model.llamapenMetadata?.premium
-		}" @click="setModel(model)" ref="listItemRef" :aria-selected="index === focusedItemIndex">
+		}" @click="setModel(model)" ref="listItemRef" :aria-selected="selected">
 
 		<ModelIcon :name="model.model" class="size-10 p-1" />
 
 		<div class="flex flex-col">
-			<div class="flex flex-row items-center justify-between">
-				<div class="flex flex-row">
-					<span class="text-md font-semibold text-ellipsis whitespace-nowrap overflow-hiddefont-bold"
-						:class="{ 'text-yellow-50': model.llamapenMetadata?.premium }" :title="model.name">{{ model.name
-						}}</span>
-					<span v-if="model.llamapenMetadata?.premium"
-						class="bg-yellow-400/25 rounded-sm ring-1 ring-yellow-400 size-5 ml-2 p-0.5">
+			<div class="flex flex-row items-center">
+				<span 
+					class="text-md font-semibold text-ellipsis whitespace-nowrap overflow-hidden text-text"
+					:title="model.name"
+				>
+					{{ model.name}}
+				</span>
+				<div class="flex flex-row gap-2 ml-2 shrink-0 min-w-fit">
+					<div v-if="model.llamapenMetadata?.premium"
+						class="bg-yellow-400/25 rounded-sm ring-1 ring-yellow-400 p-0.5">
 						<AiFillStar class="text-yellow-400 size-4" />
-					</span>
-				</div>
-				<div class="flex flex-row">
-					<span v-if="model.capabilities?.includes('vision')"
-						class="bg-green-400/25 rounded-sm ring-1 ring-green-400 size-5 ml-2 p-0.5">
+					</div>
+					<!-- Capability tags -->
+					<div v-if="model.capabilities?.includes('vision')"
+						class="bg-green-400/25 rounded-sm ring-1 ring-green-400 p-0.5">
 						<AiOutlineEye class="text-green-400 size-4" />
-					</span>
-					<span v-if="model.capabilities?.includes('tools')"
-						class="bg-blue-400/25 rounded-sm ring-1 ring-blue-400 size-5 ml-2 p-0.5">
+					</div>
+					<div v-if="model.capabilities?.includes('tools')"
+						class="bg-blue-400/25 rounded-sm ring-1 ring-blue-400 p-0.5">
 						<AiOutlineTool class="text-blue-400 size-4" />
-					</span>
-					<span v-if="model.capabilities?.includes('search')"
-						class="bg-violet-400/25 rounded-sm ring-1 ring-violet-400 size-5 ml-2 p-0.5">
+					</div>
+					<div v-if="model.capabilities?.includes('search')"
+						class="bg-violet-400/25 rounded-sm ring-1 ring-violet-400 p-0.5">
 						<BsGlobe class="text-violet-400 size-4" />
-					</span>
+					</div>
 				</div>
 			</div>
-			<span class="text-sm text-txt-2 ">{{ model.details.parameter_size }}</span>
-			<div class="absolute hidden items-center justify-center right-0 top-0 h-full w-16 bg-gradient-to-r from-transparent to-primary-400 group-hover:flex transition-colors duration-75"
-				:class="{ '!flex not-group-hover:!to-primary-500': index === focusedItemIndex, 'text-txt-2 group-hover:text-txt-1': index === focusedItemIndex }">
-				<AiOutlineArrowRight class="size-8 " />
+			<span class="text-sm text-text-muted">{{ model.details.parameter_size }}</span>
+			<div class="absolute text-text hidden items-center justify-center right-0 top-0 h-full w-16 bg-gradient-to-r from-transparent to-surface-light group-hover:flex"
+				:class="{ 
+					'!flex': selected,
+					'!to-border': isCurrentModel,
+				}">
+				<AiOutlineArrowRight class="size-8" />
 			</div>
 		</div>
 	</li>

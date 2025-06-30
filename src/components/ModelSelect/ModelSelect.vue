@@ -114,6 +114,10 @@ function searchKeyDown(e: KeyboardEvent) {
             focusedItemIndex.value = Math.min(focusedItemIndex.value + 1, queriedModelList.value.length - 1); // up 1 index or keep at max
             scrollDown = true;
             break;
+
+        default:
+            focusedItemIndex.value = 0;
+            break;
     }
 
     if (scrollDown) {
@@ -130,6 +134,10 @@ defineProps<{
 }>();
 
 const selectedModelInfo = computed(() => modelsList.value.find(model => model.model === config.selectedModel));
+
+function setFocused(index: number) {
+    focusedItemIndex.value = index;
+}
 </script>
 
 <template>
@@ -149,40 +157,67 @@ const selectedModelInfo = computed(() => modelsList.value.find(model => model.mo
                 </p>
             </DropdownButton>
 
-            <div v-if="showSelect" class="absolute left-0 bg-primary-300 p-1.5 rounded-lg max-w-[100dvw-3rem] w-full sm:w-96 box-border z-20 shadow-md shadow-black/50 transition-shadow duration-100 
-                motion-scale-in-[0.5] motion-translate-x-in-[-10%] motion-opacity-in-[0%] motion-duration-[0.10s]"
-                :class="{
-                    'bottom-full mb-2 motion-translate-y-in-[25%]': $props.direction === 'up',
-                    'top-full mt-2 motion-translate-y-in-[-25%]': $props.direction === 'down'
-                }" role="listbox">
-                <div class="flex flex-row gap-2 items-center justify-center mb-2">
-                    <input ref="searchBarRef" v-model="searchQuery" @focus="searchFocused = true"
-                        @blur="searchFocused = false" @keydown="searchKeyDown" type="search"
-                        placeholder="Search a model..."
-                        class="bg-primary-400 focus:bg-primary-500 w-full rounded-lg h-6 box-content p-3 outline-0"
-                        :class="{ 'cursor-not-allowed': !uiStore.connectedToOllama }" aria-label="Search for a model..."
-                        aria-controls="model-list" :disabled="!uiStore.connectedToOllama">
-                    <RouterLink to="/models"
-                        class="h-6 p-3 box-content !bg-primary-400 hover:!bg-primary-500 cursor-pointer transition-colors duration-100 rounded-lg">
-                        <TbListDetails />
-                    </RouterLink>
-                </div>
+            <Transition
+                :enter-active-class="[
+                    'motion-scale-in-[0.5]',
+                    direction === 'up' ? 'motion-translate-y-in-[25%]' : 'motion-translate-y-in-[-25%]',
+                    'motion-translate-x-in-[-10%]',
+                    'motion-opacity-in-[0%]',
+                    'motion-duration-[0.10s]'
+                ].join(' ')"
+                :leave-active-class="[
+                    'motion-scale-out-[0.5]',
+                    direction === 'up' ? 'motion-translate-y-out-[25%]' : 'motion-translate-y-out-[-25%]',
+                    'motion-translate-x-out-[-10%]',
+                    'motion-opacity-out-[0%]',
+                    'motion-duration-[0.10s]'
+                ].join(' ')"
+            >
 
-                <ul role="list" class="max-h-80 overflow-y-auto *:not-last:mb-2">
-                    <ModelSelectItem v-if="uiStore.connectedToOllama && queriedModelList.length > 0"
-                        v-for="(model, index) in queriedModelList" :key="model.name" :model="model" :index="index"
-                        :focusedItemIndex="focusedItemIndex" :queriedModelList="queriedModelList" @setModel="setModel"
-                        ref="listItemsRef" />
-                    <li v-else-if="uiStore.connectedToOllama && queriedModelList.length === 0"
-                        class="flex w-full p-4 justify-center items-center">
-                        No results.
-                    </li>
-                    <li v-else class="h-24 flex px-3 py-2 roundex-xl justify-center items-center font-bold gap-2">
-                        <VscDebugDisconnect />
-                        Not connected to Ollama.
-                    </li>
-                </ul>
-            </div>
+                <div v-if="showSelect" class="absolute flex flex-col gap-2 left-0 bg-surface p-1.5 rounded-lg max-w-[100dvw-3rem] w-full sm:w-96 box-border z-20 shadow-md shadow-background"
+                    :class="{
+                        'bottom-full mb-2': direction === 'up',
+                        'top-full mt-2': direction === 'down'
+                    }" role="listbox">
+                    <div class="flex flex-row gap-2 items-center justify-center">
+                        <!-- Search bar -->
+                        <input ref="searchBarRef" v-model="searchQuery" @focus="searchFocused = true"
+                            @blur="searchFocused = false" @keydown="searchKeyDown" type="search"
+                            placeholder="Search a model..."
+                            class="border-2 border-primary focus:border-border w-full rounded-lg h-6 box-content p-3 outline-0"
+                            :class="{ 'cursor-not-allowed': !uiStore.connectedToOllama }"
+                            aria-label="Search for a model..." aria-controls="model-list"
+                            :disabled="!uiStore.connectedToOllama">
+                        <RouterLink to="/models"
+                            class="h-6 p-3 box-content text-background !bg-primary hover:!bg-border cursor-pointer transition-colors duration-100 rounded-lg">
+                            <TbListDetails />
+                        </RouterLink>
+                    </div>
+
+                    <ul role="list" class="max-h-80 overflow-y-auto *:not-last:mb-2">
+                        <ModelSelectItem 
+                            v-if="uiStore.connectedToOllama && queriedModelList.length > 0"
+                            v-for="(model, index) in queriedModelList" :key="model.name" 
+                            :model="model" 
+                            :index="index"
+                            :isCurrentModel="model.model === selectedModelInfo?.model"
+                            :selected="index === focusedItemIndex" 
+                            :queriedModelList="queriedModelList"
+                            @setModel="setModel" 
+                            @mouseover="setFocused(index)" 
+                            ref="listItemsRef" 
+                        />
+                        <li v-else-if="uiStore.connectedToOllama && queriedModelList.length === 0"
+                            class="flex w-full p-4 justify-center items-center">
+                            No results.
+                        </li>
+                        <li v-else class="h-24 flex px-3 py-2 roundex-xl justify-center items-center font-bold gap-2">
+                            <VscDebugDisconnect />
+                            Not connected to Ollama.
+                        </li>
+                    </ul>
+                </div>
+            </Transition>
         </div>
     </div>
 </template>

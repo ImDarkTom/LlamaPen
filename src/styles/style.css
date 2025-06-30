@@ -5,6 +5,28 @@
 @config "@/../tailwind.config.js";
 
 @theme {
+    --color-background-dark: oklch(0.1 0.065 266);
+    --color-background: oklch(0.15 0.065 266);
+    --color-background-light: oklch(0.2 0.065 266);
+
+    --color-surface: oklch(0.23 0.065 266);
+    --color-surface-light: oklch(0.26 0.065 266);
+
+    --color-text: oklch(0.96 0.1 266);
+    --color-text-muted: oklch(0.76 0.1 266);
+
+    --color-highlight: oklch(0.5 0.13 266);
+    --color-border: oklch(0.4 0.13 266);
+    --color-border-muted: oklch(0.3 0.13 266);
+
+    --color-primary: oklch(0.76 0.13 266);
+    --color-secondary: oklch(0.76 0.13 86);
+
+    --color-danger: oklch(0.7 0.13 30);
+    --color-warning: oklch(0.7 0.13 100);
+    --color-success: oklch(0.7 0.13 160);
+    --color-info: oklch(0.7 0.13 260);
+
     --color-primary-50: hsl(218, 57%, 55%);
     --color-primary-100: hsl(218, 58%, 48%);
     --color-primary-200: hsl(218, 57%, 37%);
@@ -32,6 +54,12 @@
     }
 }
 
+.msg-input-secondary-btn {
+    @apply select-none cursor-pointer rounded-lg transition-all duration-150 
+        text-text-muted hover:text-text ring-1 ring-text-muted hover:ring-text
+        h-10 p-2 pointer-coarse:h-12 pointer-coarse:p-3 box-border;
+}
+
 .hljs {
     @apply mb-4 rounded-lg border border-txt-1/50;
 }
@@ -46,8 +74,8 @@ html {
     font-weight: 400;
 
     color-scheme: light dark;
-    color: var(--color-txt-1);
-    background-color: var(--color-primary-400);
+    color: var(--color-text-muted);
+    background-color: var(--color-background);
 
     font-synthesis: none;
     text-rendering: optimizeLegibility;

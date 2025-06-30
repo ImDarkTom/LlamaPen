@@ -25,9 +25,9 @@ function getTimeInHHmm() {
 
 <template>
     <div class="flex flex-col justify-center md:justify-end items-center w-full h-full md:h-1/2 mb-2">
-        <span class="text-2xl text-txt-2">{{ getGreetingMessage() }},</span>
-        <span class="text-4xl font-semibold text-center">What can I help you with?</span>
-        <span class="text-txt-2 pt-1">
+        <span class="text-2xl">{{ getGreetingMessage() }},</span>
+        <span class="text-4xl font-semibold text-center text-text">What can I help you with?</span>
+        <span class="pt-1">
             <span>{{ getTimeInHHmm() }}</span>
             &middot;
             <span>{{ new Date().toLocaleDateString() }}</span>

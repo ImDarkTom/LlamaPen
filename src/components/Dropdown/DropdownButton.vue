@@ -16,7 +16,7 @@ const toggleOpened = () => {
 </script>
 
 <template>
-	<div class="bg-primary-300 hover:bg-primary-400 cursor-pointer p-2 pointer-coarse:p-3 box-border rounded-lg flex flex-row items-center gap-2 text-txt-1 hover:text-txt-2 transition-colors duration-150 select-none ring-1 ring-txt-1/25
+	<div class="flex flex-row items-center gap-2 msg-input-secondary-btn
 		w-max overflow-ellipsis" :class="additionalClasses" @click="toggleOpened" aria-haspopup="listbox"
 		:aria-expanded="opened">
 		<slot></slot>

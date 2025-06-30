@@ -51,7 +51,7 @@ onUnmounted(() => {
     <div class="">
         <Transition name="slide-left" mode="default">
             <div v-show="useConfig.showSidebar"
-                class="flex flex-col h-full w-[calc(100vw-3rem)] sm:w-[calc(100vw-3rem)] md:w-[18vw] md:min-w-64 bg-primary-500 box-border p-2">
+                class="flex flex-col h-full w-[calc(100vw-3rem)] sm:w-[calc(100vw-3rem)] md:w-[18vw] md:min-w-64 bg-background-dark box-border p-2">
                 <SidebarHeader />
 
                 <Transition name="slide-left" mode="out-in">
