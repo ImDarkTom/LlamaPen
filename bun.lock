@@ -9,7 +9,7 @@
         "@pinia/nuxt": "^0.11.1",
         "@tailwindcss/vite": "^4.1.11",
         "dexie": "^4.0.11",
-        "eslint": "^9.0.0",
+        "eslint": "^9.30.0",
         "nuxt": "^3.17.5",
         "pinia": "^3.0.3",
         "pinia-plugin-persistedstate": "^4.4.0",
@@ -18,7 +18,13 @@
         "vue": "^3.5.17",
         "vue-router": "^4.5.1",
       },
+      "devDependencies": {
+        "css-select": "5.1.0",
+      },
     },
+  },
+  "overrides": {
+    "css-select": "5.1.0",
   },
   "packages": {
     "@ampproject/remapping": ["@ampproject/remapping@2.3.0", "", { "dependencies": { "@jridgewell/gen-mapping": "^0.3.5", "@jridgewell/trace-mapping": "^0.3.24" } }, "sha512-30iZtAPgz+LTIYoeivqYo853f02jBYSd5uGnGpkFV0M3xOt9aN73erkgYAmZU43x4VfqcnLxW9Kpg3R5LC4YYw=="],
@@ -757,7 +763,7 @@
 
     "css-declaration-sorter": ["css-declaration-sorter@7.2.0", "", { "peerDependencies": { "postcss": "^8.0.9" } }, "sha512-h70rUM+3PNFuaBDTLe8wF/cdWu+dOZmb7pJt8Z2sedYbAcQVQV/tEchueg3GWxwqS0cxtbxmaHEdkNACqcvsow=="],
 
-    "css-select": ["css-select@5.2.1", "", { "dependencies": { "boolbase": "^1.0.0", "css-what": "^6.1.0", "domhandler": "^5.0.3", "domutils": "^3.2.2", "nth-check": "^2.1.1" } }, "sha512-O5tBe98mNUxm2ovZAqJ6uZqo1qVWrKAMQMf9uTK+M321MKKYX+cOORH3xvu17tYRuRM3mjJclcp/y4PNoI3U/A=="],
+    "css-select": ["css-select@5.1.0", "", { "dependencies": { "boolbase": "^1.0.0", "css-what": "^6.1.0", "domhandler": "^5.0.2", "domutils": "^3.0.1", "nth-check": "^2.0.1" } }, "sha512-nwoRF1rvRRnnCqqY7updORDsuqKzqYJ28+oSMaJMMgOauh3fvwHqMS7EZpIPqK8GL+g9mKxF1vP/ZjSeNjEVHg=="],
 
     "css-tree": ["css-tree@2.3.1", "", { "dependencies": { "mdn-data": "2.0.30", "source-map-js": "^1.0.1" } }, "sha512-6Fv1DV/TYw//QF5IzQdqsNDjx/wc8TrMBZsqjL9eW01tWb7R7k/mq+/VXfJCl7SoD5emsJop9cOByJZfs8hYIw=="],
 
