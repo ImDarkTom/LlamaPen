@@ -4,7 +4,6 @@ import Layout from '@/components/Layout/Layout.vue';
 import ChatPage from "@/views/chat/ChatPage.vue";
 import SettingsPage from "@/views/settings/SettingsPage.vue";
 import GuidePage from "@/views/guide/GuidePage.vue";
-import NotePage from '@/views/note/NotePage.vue';
 import { useUiStore } from '@/stores/uiStore';
 import AccountPage from '@/views/account/AccountPage.vue';
 import ShortcutsPage from '@/views/shortcuts/ShortcutsPage.vue';
@@ -24,8 +23,6 @@ const routes: RouteRecordRaw[] = [
             },
             { path: "/chat", component: ChatPage },
             { path: "/chat/:id", component: ChatPage },
-            { path: "/note", component: NotePage },
-            { path: "/note/:id", component: NotePage },
             { path: "/settings", component: SettingsPage },
             { path: '/guide', component: GuidePage },
             { path: '/account', component: AccountPage },

@@ -224,7 +224,7 @@ async function downloadModel() {
             <RouterLink to="/"
                 class="p-4 rounded-md flex flex-row items-center gap-2 font-semibold cursor-pointer select-none">
                 <AiOutlineArrowLeft class="size-6" />
-                Back to Chat/Notes
+                Back to Chat
             </RouterLink>
 
             <div class="h-[1px] w-full bg-txt-2"></div>
