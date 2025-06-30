@@ -1,6 +1,9 @@
-import { liveQuery } from 'dexie';
+import Dexie from 'dexie';
 import { defineStore } from 'pinia';
 import { db, type Chat, type ChatMessage, type ChatMessageRole } from '~/lib/dexie';
+
+// Fix for import error
+const { liveQuery } = Dexie;
 
 type RefReturn<T> = ReturnType<typeof ref<T>>;
 
