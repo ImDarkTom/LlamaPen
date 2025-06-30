@@ -58,12 +58,12 @@ const updateValue = () => {
 
 <template>
     <label class="w-full flex flex-col justify-between items-start">
-        <span class="text-lg font-medium text-txt-2">{{ label }}</span>
+        <span class="text-lg font-medium text-text-muted hover:text-text">{{ label }}</span>
 
         <div class="w-full flex flex-row gap-2">
             <input type="number" v-model="inputValue" :placeholder="defaultString" :aria-label="label" :min :max
-                @keyup.enter="updateValue" class="w-full bg-primary-200 p-2 rounded-lg" />
-            <div class="w-fit p-2 rounded-lg bg-primary-100 cursor-pointer" @click="updateValue">
+                @keyup.enter="updateValue" class="w-full border-2 border-border-muted p-2 rounded-lg outline-none focus:border-border" />
+            <div class="w-fit p-2 rounded-lg bg-border-muted hover:bg-border cursor-pointer" @click="updateValue">
                 {{ saveText }}
             </div>
         </div>

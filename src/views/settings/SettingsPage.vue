@@ -131,11 +131,11 @@ watch(
     <div class="w-full h-full flex flex-col items-center py-4 box-border overflow-y-auto px-2
     *:mx-auto *:md:w-4/5 *:lg:w-3/5">
         <div class="relative w-full flex flex-row justify-between items-center">
-            <h1 class="text-4xl font-extrabold mt-2 pr-3 bg-primary-400">Settings</h1>
-            <div class="w-full h-0.5 bg-txt-1 absolute top-1/2 translate-y-1/2 -z-1 rounded-full"></div>
-            <div class="bg-primary-400 pl-2 box-border">
+            <h1 class="text-4xl font-extrabold mt-2 pr-3 bg-background text-text">Settings</h1>
+            <div class="w-full h-0.5 bg-text absolute top-1/2 translate-y-1/2 -z-1 rounded-full"></div>
+            <div class="bg-background pl-2 box-border">
                 <AiOutlineClose
-                    class="size-10 hover:bg-primary-300 cursor-pointer rounded-full p-1 transition-colors duration-100"
+                    class="size-10 hover:bg-background-light text-text hover:text-text-muted cursor-pointer rounded-full p-1 transition-colors duration-100"
                     @click="router.back()" />
             </div>
         </div>
@@ -157,9 +157,9 @@ watch(
         <OptionCategory label="Ollama">
             <TextInputSetting label="Ollama URL" v-model="config.ollamaUrl" default="http://localhost:11434"
                 :check="ollamaUrlCheck" />
-            <span v-if="!uiStore.connectedToOllama" class="text-txt-2">
+            <span v-if="!uiStore.connectedToOllama">
                 Can't connect? Checkout the
-                <RouterLink to="/guide" class="text-txt-1 underline">setup guide</RouterLink>.
+                <RouterLink to="/guide" class="text-text underline">setup guide</RouterLink>.
             </span>
         </OptionCategory>
 
@@ -167,7 +167,7 @@ watch(
             <ButtonSetting type="link" to="/models">Manage Models</ButtonSetting>
             <ToggleSetting v-model="config.ui.modelIcons.monochrome" label="Monochrome model icons" />
             <ToggleSetting v-model="config.ui.modelIcons.background" label="Model icons background" />
-            <div v-if="config.ui.modelIcons.background" class="border-l-[1px] border-txt-1 pl-3 ml-3">
+            <div v-if="config.ui.modelIcons.background" class="border-l-[1px] border-text pl-3 ml-3">
                 <ToggleSetting v-model="config.ui.modelIcons.backgroundDark" label="Dark icon background" />
             </div>
             <ToggleSetting v-model="config.ui.modelIcons.alternateGemmaIcon" label="Alternate Gemma icon" />
@@ -176,13 +176,13 @@ watch(
         <OptionCategory label="Appearance">
             <ButtonSetting type="link" to="/shortcuts">View keyboard shortcuts</ButtonSetting>
             <div class="flex flex-col gap-2 w-full">
-                <span class="text-lg text-txt-2">Transition Speed</span>
-                <input class="accent-primary-200 w-full" @change="updateTransitionSpeed" v-model="transitionSpeed"
+                <span class="text-lg">Transition Speed</span>
+                <input class="accent-primary w-full" @change="updateTransitionSpeed" v-model="transitionSpeed"
                     type="range" min="0" max="1" step="0.025" />
                 <span class="py-2">
-                    <span class="bg-primary-200 w-fit p-2 rounded-lg text-txt-2 cursor-default box-border">{{
+                    <span class="border-2 border-border-muted w-fit p-2 rounded-lg cursor-default box-border">{{
                         transitionSpeedText }}</span>
-                    <span class="pl-2 text-txt-2">{{ transitionSpeed == 0.125 ? '(Default)' : '' }}</span>
+                    <span class="pl-2">{{ transitionSpeed == 0.125 ? '(Default)' : '' }}</span>
                 </span>
             </div>
             <CategoryLabel>Tooltip</CategoryLabel>
@@ -201,7 +201,7 @@ watch(
         </OptionCategory>
 
         <OptionCategory label="Developer">
-            <span class="text-red-500/80">Do not change these settings unless you know what you're doing.</span>
+            <span class="text-danger">Do not change these settings unless you know what you're doing.</span>
             <ToggleSetting v-model="config.developer.mockRequests" label="Mock requests" />
             <ToggleSetting v-model="config.developer.infoLogs" label="Show info logs" />
         </OptionCategory>
