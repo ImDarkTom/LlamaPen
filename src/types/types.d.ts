@@ -19,5 +19,3 @@ type ChatOld = {
 interface AppMessage extends OllamaMessage {
     id: string;
 }
-
-type AppMode = 'chat' | 'note';

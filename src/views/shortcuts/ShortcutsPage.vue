@@ -47,12 +47,6 @@ function handleEscape(e: KeyboardEvent) {
             <ShortcutDisplay label="New chat" shortcut="ctrl shift o" />
             <ShortcutDisplay label="Focus chat input" shortcut="shift esc" />
             <ShortcutDisplay label="Delete chat" shortcut="ctrl shift ⌫" />
-            <h2 class="text-3xl font-semibold pb-2">Notes</h2>
-            <ShortcutDisplay label="New note" shortcut="ctrl shift o" />
-            <ShortcutDisplay label="Save note" shortcut="ctrl s" />
-            <ShortcutDisplay label="Continue note" shortcut="tab" />
-            <ShortcutDisplay label="Focus note textarea" shortcut="shift esc" />
-            <ShortcutDisplay label="Delete note" shortcut="ctrl shift ⌫" />
         </div>
     </div>
 </template>
