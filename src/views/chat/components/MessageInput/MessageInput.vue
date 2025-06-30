@@ -73,18 +73,17 @@ async function handleKeyDown(e: KeyboardEvent) {
     }
 }
 
-function inputKeyUp(e: KeyboardEvent) {
-    updateTextAreaHeight();
-
-    if (!canGenerate) {
-        return;
-    }
-
+function inputKeyDown(e: KeyboardEvent) {
     if (e.key !== 'Enter') {
         return;
     }
 
     if (e.shiftKey) {
+        return;
+    }
+    
+    e.preventDefault();
+    if (!canGenerate) {
         return;
     }
 
@@ -97,12 +96,6 @@ async function startGeneration() {
     messagesStore.sendMessage(message, filesToUpload.value);
     messageInputValue.value = "";
     filesToUpload.value = [];
-    updateTextAreaHeight();
-}
-
-function updateTextAreaHeight() {
-    messageInputRef.value!.style.height = "auto";
-    messageInputRef.value!.style.height = (1 + messageInputRef.value!.scrollHeight) + "px";
 }
 
 function uploadFile(e: Event) {
@@ -156,17 +149,24 @@ function handlePastedImage(file: File) {
 
     uploadFile({ target: fakeInput } as unknown as Event);
 }
+
 </script>
 
 <template>
-    <div class="w-full flex flex-row justify-center">
+    <div class="w-full flex justify-center">
         <div
             class="w-full sm:w-full lg:w-3xl mx-1 mb-0 sm:mx-1 sm:mb-1 md:mx-4 md:mb-2 p-2 
                 box-border flex flex-col items-center max-h-[48rem] relative bg-background-light rounded-t-xl sm:rounded-b-lg">
             <ScrollToBottomButton />
-            <textarea ref="messageInputRef" v-model="messageInputValue" @keyup="inputKeyUp"
+            <!-- todo: make this a contenteditable div so we can auto-resize it on line break -->
+            <textarea 
+                class="w-full box-border p-2 pb-6 text-base border-none outline-none resize-none overflow-y-auto break-words"
+                :rows="Math.min(messageInputValue.split('\n').length, 12)"
+                v-model="messageInputValue" 
                 placeholder="Enter a message..."
-                class="w-full box-border text-base p-2 border-none outline-none resize-none overflow-y-auto break-words"></textarea>
+                @keydown="inputKeyDown"
+                ref="messageInputRef" 
+                ></textarea>
 
             <!-- List of uploaded files -->
             <div class="w-full max-h-16">
