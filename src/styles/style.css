@@ -61,7 +61,7 @@
 }
 
 .hljs {
-    @apply mb-4 rounded-lg border border-txt-1/50;
+    @apply mb-4 rounded-lg;
 }
 
 html {
@@ -130,7 +130,7 @@ body[data-reduce-motion] {
     filter: blur(0.25rem);
 }
 
-
+/* slide-left */
 .slide-left-enter-active,
 .slide-left-leave-active {
     transition: transform var(--transition-duration) ease;
@@ -139,4 +139,17 @@ body[data-reduce-motion] {
 .slide-left-enter-from,
 .slide-left-leave-to {
     transform: translateX(-115%);
+}
+
+/* open */
+.expand-height-enter-active,
+.expand-height-leave-active {
+    transition: transform var(--transition-duration) ease;
+    transform-origin: top;
+}
+
+.expand-height-enter-from,
+.expand-height-leave-to {
+    transform: scaleY(0) translateY(-10%);
+    transform-origin: top;
 }

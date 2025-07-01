@@ -20,23 +20,25 @@ const thinkBlockText = computed<string | null>(() => {
 </script>
 
 <template>
-	<div v-if="thinkBlockText !== null" class="flex flex-col bg-primary-200 p-4 rounded-xl mb-4 cursor-pointer"
-		@click="opened = !opened">
-		<div class="flex flex-row items-center justify-between">
+	<div v-if="thinkBlockText !== null" class="flex flex-col bg-surface *:p-4 rounded-xl mb-4">
+		<div 
+			class="flex flex-row items-center justify-between cursor-pointer" 
+			:class="{ '!pb-0': opened }"
+			@click="opened = !opened">
 			<div class="flex flex-row items-center gap-2">
 				<BiBrain />
-				<span class="text-lg font-bold select-none">Thoughts</span>
+				<span class="text-lg font-semibold select-none">Thoughts</span>
 			</div>
-			<div class="cursor-pointer">
-				<BsChevronUp v-if="opened" />
-				<BsChevronDown v-else />
-			</div>
+			<BsChevronUp v-if="opened" />
+			<BsChevronDown v-else />
 		</div>
-		<template v-if="opened">
-			<div class="w-full h-[1px] bg-txt-1 mt-4 mb-2"></div>
-			<div class="whitespace-pre-wrap text-txt-2 italic">
-				{{ thinkBlockText }}
+		<Transition name="expand-height">
+			<div v-if="opened" class="!pt-0">
+				<div class="w-full h-[1px] bg-text-muted mt-4 mb-2"></div>
+				<div class="whitespace-pre-wrap text-text-muted italic">
+					{{ thinkBlockText }}
+				</div>
 			</div>
-		</template>
+		</Transition>
 	</div>
 </template>

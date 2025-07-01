@@ -3,7 +3,6 @@ import { computed, onBeforeUnmount, onMounted, ref, watch } from 'vue';
 import { useConfigStore } from '@/stores/config';
 import ToggleSetting from '@/views/settings/components/ToggleSetting.vue';
 import OptionCategory from './components/OptionCategory.vue';
-import { AiOutlineClose } from 'vue-icons-plus/ai';
 import { useRouter } from 'vue-router';
 import ButtonSetting from './components/ButtonSetting.vue';
 import useChatsStore from '@/stores/chatsStore';
@@ -16,6 +15,7 @@ import setPageTitle from '@/utils/core/setPageTitle';
 import CategoryLabel from './components/CategoryLabel.vue';
 import { useUiStore } from '@/stores/uiStore';
 import NumberInputSetting from './components/NumberInputSetting.vue';
+import PageHeader from '@/components/Page/PageHeader.vue';
 
 const config = useConfigStore();
 const router = useRouter();
@@ -130,15 +130,7 @@ watch(
 <template>
     <div class="w-full h-full flex flex-col items-center py-4 box-border overflow-y-auto px-2
     *:mx-auto *:md:w-4/5 *:lg:w-3/5">
-        <div class="relative w-full flex flex-row justify-between items-center">
-            <h1 class="text-4xl font-extrabold mt-2 pr-3 bg-background text-text">Settings</h1>
-            <div class="w-full h-0.5 bg-text absolute top-1/2 translate-y-1/2 -z-1 rounded-full"></div>
-            <div class="bg-background pl-2 box-border">
-                <AiOutlineClose
-                    class="size-10 hover:bg-background-light text-text hover:text-text-muted cursor-pointer rounded-full p-1 transition-colors duration-100"
-                    @click="router.back()" />
-            </div>
-        </div>
+        <PageHeader text="Settings" />
 
         <OptionCategory label="Account" v-if="inProduction">
             <ToggleSetting v-model="config.api.enabled" label="Enable Llamapen Cloud" />

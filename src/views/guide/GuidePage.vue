@@ -1,9 +1,10 @@
 <script setup lang="ts">
+import PageHeader from '@/components/Page/PageHeader.vue';
 import router from '@/lib/router';
 import setPageTitle from '@/utils/core/setPageTitle';
 import hljs from 'highlight.js';
 import { onBeforeUnmount, onMounted, ref } from 'vue';
-import { AiFillApple, AiFillWindows, AiOutlineClose, AiOutlineLinux } from 'vue-icons-plus/ai';
+import { AiFillApple, AiFillWindows, AiOutlineLinux } from 'vue-icons-plus/ai';
 
 const originUrl = ref<string>(window.location.origin);
 
@@ -32,18 +33,10 @@ function handleEscape(e: KeyboardEvent) {
 <template>
     <div class="w-full h-full flex flex-col items-center py-4 box-border overflow-y-auto px-2
     *:mx-auto *:md:w-4/5 *:lg:w-3/5">
-        <div class="relative w-full flex flex-row justify-between items-center">
-            <h1 class="text-4xl font-extrabold mt-2 pr-3 bg-primary-400">Setup Guide</h1>
-            <div class="w-full h-0.5 bg-txt-1 absolute top-1/2 translate-y-1/2 -z-1 rounded-full"></div>
-            <div class="bg-primary-400 pl-2 box-border">
-                <AiOutlineClose
-                    class="size-10 hover:bg-primary-300 cursor-pointer rounded-full p-1 transition-colors duration-100"
-                    @click="router.back()" />
-            </div>
-        </div>
+        <PageHeader text="Setup Guide" />
 
         <div class="flex flex-col h-full box-border">
-            <h2 class="text-3xl font-semibold pb-2">Connecting to your local Ollama instance</h2>
+            <h2 class="text-3xl font-semibold pb-2 text-text">Connecting to your local Ollama instance</h2>
             <p>Ollama does not allow external connections by default, for this app to work you need to add this URL to
                 Ollama's
                 trusted origins and re-launch it. </p>
@@ -85,7 +78,7 @@ function handleEscape(e: KeyboardEvent) {
 
             <p>(This is assuming you are using <b>Bash</b>, other shells may have different ways of setting global variables)</p>
 
-            <h2 class="text-3xl font-semibold pb-2 pt-12">Troubleshooting</h2>
+            <h2 class="text-3xl font-semibold pb-2 pt-12 text-text">Troubleshooting</h2>
 
             <h3 class="text-2xl flex flex-row items-center">Common Issues</h3>
             <h4 class="text-xl pb-2 pt-4 flex flex-row items-center italic">Error: listen tcp

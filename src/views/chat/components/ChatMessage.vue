@@ -108,7 +108,7 @@ function regenerateMessage(model: string) {
 <template>
     <div class="group/message m-2 flex flex-col">
         <div class="text-txt-1 box-border p-4 flex flex-col" :class="{
-            'ml-auto rounded-2xl bg-primary-300 max-w-[70%] shadow-sm shadow-black/50': isUserMessage && !editing,
+            'ml-auto rounded-2xl bg-surface max-w-[70%] shadow-sm shadow-black/50': isUserMessage && !editing,
             'w-full box-border !p-2 !m-0': isModelMessage || editing
         }">
             <div v-if="message.type === 'model'" class="group/msg-header flex flex-row items-center gap-2 mb-2">
@@ -161,7 +161,7 @@ function regenerateMessage(model: string) {
                 </div>
                 <span v-else>
                     <ThinkBlock :message="message" />
-                    <span class="max-w-none prose prose-invert inline-block" v-html="renderText(message.content)">
+                    <span class="max-w-none prose prose-red inline-block" v-html="renderText(message.content)">
                     </span>
                     <div v-if="message.type === 'model'" class="animate-breathe rounded-full bg-txt-1 inline-block"
                         :class="{
