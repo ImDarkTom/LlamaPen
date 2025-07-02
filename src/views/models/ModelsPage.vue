@@ -18,7 +18,7 @@ import { BsCopy, BsFillTrash3Fill } from 'vue-icons-plus/bs';
 import MemoryUnloadIcon from '@/components/Icon/MemoryUnloadIcon.vue';
 import { streamChunks } from '@/utils/streamChunks';
 import { BiLinkExternal } from 'vue-icons-plus/bi';
-import { simpleMarked } from '@/lib/marked';
+import DOMPurify from 'dompurify';
 
 const config = useConfigStore();
 
@@ -212,6 +212,10 @@ async function downloadModel() {
     }
 }
 
+function sanitizeSection(text: string | null) {
+    return DOMPurify.sanitize(text ?? '')
+}
+
 </script>
 
 <template>
@@ -330,15 +334,9 @@ async function downloadModel() {
             </div>
 
             <h2 class="text-3xl pt-4 pb-2 text-text">Info</h2>
-            <InfoSection title="License">
-                {{ simpleMarked.parse(selectedModel?.license ?? '') }}
-            </InfoSection>
-            <InfoSection title="Modelfile">
-                {{ simpleMarked.parse(selectedModel?.modelfile ?? '') }}
-            </InfoSection>
-            <InfoSection title="Template">
-                {{ simpleMarked.parse(selectedModel?.template ?? '') }}
-            </InfoSection>
+            <InfoSection title="License" :content="sanitizeSection(selectedModel?.license)" />
+            <InfoSection title="Modelfile" :content="sanitizeSection(selectedModel?.template)" />
+            <InfoSection title="Template" :content="sanitizeSection(selectedModel?.template)" />
             <InfoSection title="Details" :kv-list="selectedModel?.details" />
             <InfoSection title="Model Info" :kv-list="selectedModel?.model_info" />
         </div>

@@ -14,8 +14,8 @@ import Tooltip from '@/components/Tooltip/Tooltip.vue';
 import ollamaApi from '@/utils/ollama';
 import { VscDebugRestart } from 'vue-icons-plus/vsc';
 import logger from '@/lib/logger';
-import { fullMarked } from '@/lib/marked';
 import { BiTimeFive } from 'vue-icons-plus/bi';
+import { renderMarkdown } from '@/lib/marked';
 
 const messagesStore = useMessagesStore();
 
@@ -74,13 +74,13 @@ function finishEdit(newText: string) {
 // Rendering
 function renderText(text: string) {
     if (!text.startsWith('<think>')) {
-        return fullMarked.parse(text);
+        return renderMarkdown(text);
     }
 
     const afterThinkRegex = /(?<=<\/think>)([\s\S]*)/i;;
     const allAfterThinkBlock = afterThinkRegex.exec(text)?.[1] || '';
 
-    return fullMarked.parse(allAfterThinkBlock);
+    return renderMarkdown(allAfterThinkBlock);
 }
 
 // Regeneration
@@ -159,12 +159,12 @@ function regenerateMessage(model: string) {
                 @onCancelEdit="cancelEditing" @onFinishEditing="finishEdit" />
 
             <div class="relative" v-else>
-                <div v-if="isUserMessage" class="max-w-none prose prose-appdark! dark:prose-invert">
+                <div v-if="isUserMessage" class="max-w-none prose prose-app! dark:prose-invert">
                     {{ message.content }}
                 </div>
                 <span class="flex flex-col" v-else>
                     <ThinkBlock :message="message" />
-                    <span class="max-w-none prose prose-appdark! dark:prose-invert inline-block" v-html="renderText(message.content)">
+                    <span class="max-w-none prose prose-app! dark:prose-invert inline-block" v-html="renderText(message.content)">
                     </span>
                     <div v-if="message.type === 'model'" class="animate-breathe rounded-full bg-text inline-block"
                         :class="{

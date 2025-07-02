@@ -172,7 +172,7 @@ watch(
                 v-model="config.ui.theme" 
                 label="Theme" 
                 :items="['auto', 'dark', 'light', 'mono-dark', 'mono-light']" 
-                :itemNames="['System default', 'Dark (default)', 'Light', 'Monochrome Dark', 'Monochrome Light']"
+                :itemNames="['System default', 'Dark', 'Light', 'Monochrome Dark', 'Monochrome Light']"
                 @update:model-value="config.loadTheme()" 
             />
             <div class="flex flex-col gap-2 w-full">
