@@ -59,7 +59,7 @@ export const useConfigStore = defineStore('config', {
             tooltip: {
                 waitTimeoutMs: 500, // Time before showing tooltip
             },
-            theme: 'dark',
+            theme: 'auto',
         },
         api: {
             enabled: false,
