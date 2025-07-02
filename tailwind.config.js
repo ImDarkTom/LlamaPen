@@ -6,7 +6,7 @@ module.exports = {
     ],
     theme: {
         extend: {
-            typography: {
+            typography: () => ({
                 DEFAULT: {
                     css: {
                         pre: false,
@@ -15,8 +15,17 @@ module.exports = {
                         'code::before': false,
                         'code::after': false
                     }
+                },
+                appdark: {
+                    css: {
+                        color: 'var(--color-text-muted)',
+                        '--tw-prose-body': 'var(--color-text-muted)',
+                        '--tw-prose-headings': 'var(--color-text)',
+                        '--tw-prose-bold': 'var(--color-text-muted)',
+                        '--tw-prose-lead': 'var(--color-text)',
+                    }
                 }
-            }
+            }),
         }
     },
     plugins: [require("@tailwindcss/typography"), require('tailwindcss-motion')],
