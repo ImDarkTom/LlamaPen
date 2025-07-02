@@ -170,8 +170,8 @@ watch(
             <SelectionSetting 
                 v-model="config.ui.theme" 
                 label="Theme" 
-                :items="['dark', 'light', 'mono-dark', 'mono-light']" 
-                :itemNames="['Dark (default)', 'Light', 'Monochrome Dark', 'Monochrome Light']"
+                :items="['auto', 'dark', 'light', 'mono-dark', 'mono-light']" 
+                :itemNames="['System default', 'Dark (default)', 'Light', 'Monochrome Dark', 'Monochrome Light']"
                 @update:model-value="config.loadTheme()" 
             />
             <ButtonSetting type="link" to="/shortcuts">View keyboard shortcuts</ButtonSetting>

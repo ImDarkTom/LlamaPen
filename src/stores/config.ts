@@ -100,7 +100,13 @@ export const useConfigStore = defineStore('config', {
             }
         },
         loadTheme() {
-            document.documentElement.setAttribute('theme', this.ui.theme ?? 'dark');
+            if (this.ui.theme !== 'auto') {
+                document.documentElement.setAttribute('theme', this.ui.theme ?? 'dark');
+                return;
+            }
+
+            const prefersDark = window.matchMedia('(prefers-color-scheme: dark)').matches;
+            document.documentElement.setAttribute('theme', prefersDark ? 'dark' : 'light');
         }
     },
     persist: {
