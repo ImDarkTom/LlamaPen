@@ -16,6 +16,7 @@ import CategoryLabel from './components/CategoryLabel.vue';
 import { useUiStore } from '@/stores/uiStore';
 import NumberInputSetting from './components/NumberInputSetting.vue';
 import PageHeader from '@/components/Page/PageHeader.vue';
+import SelectionSetting from './components/SelectionSetting.vue';
 
 const config = useConfigStore();
 const router = useRouter();
@@ -166,6 +167,13 @@ watch(
         </OptionCategory>
 
         <OptionCategory label="Appearance">
+            <SelectionSetting 
+                v-model="config.ui.theme" 
+                label="Theme" 
+                :items="['dark', 'light', 'mono-dark', 'mono-light']" 
+                :itemNames="['Dark (default)', 'Light', 'Monochrome Dark', 'Monochrome Light']"
+                @update:model-value="config.loadTheme()" 
+            />
             <ButtonSetting type="link" to="/shortcuts">View keyboard shortcuts</ButtonSetting>
             <div class="flex flex-col gap-2 w-full">
                 <span class="text-lg">Transition Speed</span>

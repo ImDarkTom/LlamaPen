@@ -5,6 +5,7 @@ import { useConfigStore } from './stores/config';
 const configStore = useConfigStore();
 
 onBeforeMount(() => {
+    configStore.loadTheme();
     configStore.loadTransitionSpeed();
 });
 </script>

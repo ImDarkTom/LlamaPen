@@ -4,6 +4,65 @@
 @plugin "@tailwindcss/typography";
 @config "@/../tailwind.config.js";
 
+@layer base {
+    html[theme='light'] {
+        --color-background-dark: oklch(0.85 0.065 266);
+        --color-background: oklch(0.89 0.065 266);
+        --color-background-light: oklch(0.93 0.065 266);
+        --color-surface: oklch(0.97 0.065 266);
+        --color-surface-light: oklch(1 0.065 266);
+        --color-text: oklch(0.15 0.13 266);
+        --color-text-muted: oklch(0.4 0.13 266);
+        --color-highlight: oklch(1 0.13 266);
+        --color-border: oklch(0.6 0.13 266);
+        --color-border-muted: oklch(0.7 0.13 266);
+        --color-primary: oklch(0.4 0.13 266);
+        --color-secondary: oklch(0.4 0.13 86);
+        --color-danger: oklch(0.5 0.13 30);
+        --color-warning: oklch(0.5 0.13 100);
+        --color-success: oklch(0.5 0.13 160);
+        --color-info: oklch(0.5 0.13 260);
+    }
+
+    html[theme='mono-dark'] {
+        --color-background-dark: oklch(0.1 0.005 266);
+        --color-background: oklch(0.15 0.005 266);
+        --color-background-light: oklch(0.2 0.005 266);
+        --color-surface: oklch(0.23 0.005 266);
+        --color-surface-light: oklch(0.26 0.005 266);
+        --color-text: oklch(0.96 0.01 266);
+        --color-text-muted: oklch(0.76 0.01 266);
+        --color-highlight: oklch(0.5 0.01 266);
+        --color-border: oklch(0.4 0.01 266);
+        --color-border-muted: oklch(0.3 0.01 266);
+        --color-primary: oklch(0.76 0.1 266);
+        --color-secondary: oklch(0.76 0.1 86);
+        --color-danger: oklch(0.7 0.05 30);
+        --color-warning: oklch(0.7 0.05 100);
+        --color-success: oklch(0.7 0.05 160);
+        --color-info: oklch(0.7 0.05 260);
+    }
+
+    html[theme='mono-light'] {
+        --color-background-dark: oklch(0.85 0.005 266);
+        --color-background: oklch(0.89 0.005 266);
+        --color-background-light: oklch(0.93 0.005 266);
+        --color-surface: oklch(0.97 0.005 266);
+        --color-surface-light: oklch(1 0.005 266);
+        --color-text: oklch(0.15 0.01 266);
+        --color-text-muted: oklch(0.4 0.01 266);
+        --color-highlight: oklch(1 0.01 266);
+        --color-border: oklch(0.6 0.01 266);
+        --color-border-muted: oklch(0.7 0.01 266);
+        --color-primary: oklch(0.4 0.1 266);
+        --color-secondary: oklch(0.4 0.1 86);
+        --color-danger: oklch(0.5 0.05 30);
+        --color-warning: oklch(0.5 0.05 100);
+        --color-success: oklch(0.5 0.05 160);
+        --color-info: oklch(0.5 0.05 260);
+    }
+}
+
 @theme {
     --color-background-dark: oklch(0.1 0.065 266);
     --color-background: oklch(0.15 0.065 266);
@@ -27,22 +86,9 @@
     --color-success: oklch(0.7 0.13 160);
     --color-info: oklch(0.7 0.13 260);
 
-    --color-primary-50: hsl(218, 57%, 55%);
-    --color-primary-100: hsl(218, 58%, 48%);
-    --color-primary-200: hsl(218, 57%, 37%);
-    --color-primary-300: hsl(218, 57%, 24%);
-    --color-primary-400: hsl(218, 57%, 15%);
-    --color-primary-500: hsl(218, 57%, 10%);
-    --color-primary-600: hsl(220, 60%, 5%);
-    --color-primary-700: hsl(0, 0%, 0%);
-
-    --color-txt-1: hsl(0, 0%, 94%);
-    --color-txt-2: hsl(226, 23%, 82%);
-
     --animate-breathe: breathe 2s ease-in-out infinite;
 
     @keyframes breathe {
-
         0%,
         100% {
             transform: scale(0.85);

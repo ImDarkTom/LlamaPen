@@ -16,7 +16,8 @@ interface Config {
         },
         tooltip: {
             waitTimeoutMs: number;
-        }
+        },
+        theme: string;
     },
     api: {
         enabled: boolean,
@@ -57,7 +58,8 @@ export const useConfigStore = defineStore('config', {
             },
             tooltip: {
                 waitTimeoutMs: 500, // Time before showing tooltip
-            }
+            },
+            theme: 'dark',
         },
         api: {
             enabled: false,
@@ -97,6 +99,9 @@ export const useConfigStore = defineStore('config', {
                 document.body.removeAttribute('data-reduce-motion');
             }
         },
+        loadTheme() {
+            document.documentElement.setAttribute('theme', this.ui.theme ?? 'dark');
+        }
     },
     persist: {
         storage: localStorage,
