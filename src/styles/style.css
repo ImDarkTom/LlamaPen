@@ -4,6 +4,13 @@
 @plugin "@tailwindcss/typography";
 @config "@/../tailwind.config.js";
 
+@layer utilities {
+    /* tailwind utility: duration-dynamic */
+    .duration-dynamic {
+        transition-duration: var(--transition-duration);
+    }
+}
+
 @layer base {
     html[theme='light'] {
         --color-background-dark: oklch(0.85 0.065 266);
@@ -101,6 +108,7 @@
 }
 
 .msg-input-secondary-btn {
+    /* fix duration here */
     @apply select-none cursor-pointer rounded-lg transition-all duration-150 
         text-text-muted hover:text-text ring-1 ring-text-muted hover:ring-text
         h-10 p-2 pointer-coarse:h-12 pointer-coarse:p-3 box-border;
@@ -154,12 +162,14 @@ z-99 - z-100: Popup
 @media (prefers-reduced-motion: reduce) {
     * {
         transition: none !important;
+        transition-duration: 0s;
     }
 }
 
 body[data-reduce-motion] {
     * {
         transition: none !important;
+        transition-duration: 0s;
     }
 }
 

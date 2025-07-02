@@ -47,7 +47,7 @@ defineExpose({
         @dblclick="editName" 
         role="listitem"
     >
-        <div class="group w-full h-10 flex flex-row gap-2 p-2 pointer-coarse:p-3 relative rounded-lg hover:text-text transition-all duration-150"
+        <div class="group w-full h-10 flex flex-row gap-2 p-2 pointer-coarse:p-3 relative rounded-lg hover:text-text hover:bg-background transition-all duration-dynamic"
             :class="{ '!bg-background-light ring-1 ring-inset ring-border': props.isOpened }">
             <div class="box-content aspect-square" @mouseenter="hoveringOverIcon = true"
                 @mouseleave="hoveringOverIcon = false">
@@ -67,7 +67,7 @@ defineExpose({
                     'opacity-50': props.isGeneratingTitle
                     }">
             <div 
-                class="hidden group-hover:block hover:text-danger transition-colors duration-150 ease-in-out" 
+                class="hidden group-hover:block hover:text-danger transition-colors duration-dynamic ease-in-out" 
                 @click="deleteEntry">
                 <AiOutlineClose/>
             </div>

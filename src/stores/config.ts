@@ -93,6 +93,7 @@ export const useConfigStore = defineStore('config', {
         loadTransitionSpeed() {
             if (this.transitionSpeed == 0) {
                 document.body.setAttribute('data-reduce-motion', '1');
+                document.documentElement.style.setProperty('--transition-duration', '0s');
             } else {
                 // set root attribute to the speed
                 document.documentElement.style.setProperty('--transition-duration', `${this.transitionSpeed}s`);

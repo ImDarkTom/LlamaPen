@@ -12,7 +12,7 @@ const updateValue = () => {
 </script>
 
 <template>
-	<label class="w-full flex flex-row justify-between items-center cursor-pointer transition-all duration-100" @click="updateValue">
+	<label class="w-full flex flex-row justify-between items-center cursor-pointer transition-all duration-dynamic" @click="updateValue">
 		<span class="text-lg text-text-muted hover:text-text">{{ label }}</span>
 		
 		<input 
@@ -24,7 +24,7 @@ const updateValue = () => {
 		/>
 
 		<div
-			class="w-12 h-6 flex items-center bg-background-dark rounded-full p-0.5 transition-all duration-150"
+			class="w-12 h-6 flex items-center bg-background-dark rounded-full p-0.5 transition-all duration-dynamic"
 			:class="{ 'bg-primary': modelValue }"
 			role="switch"
 			:aria-checked="modelValue"
@@ -32,7 +32,7 @@ const updateValue = () => {
 			@keydown.space.prevent="updateValue"
 		>
 			<div
-				class="size-5 bg-text rounded-full transition-transform duration-300"
+				class="size-5 bg-text rounded-full transition-transform duration-dynamic"
 				:class="{ 'translate-x-6': modelValue }"
 			></div>
 		</div>

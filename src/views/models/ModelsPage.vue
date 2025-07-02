@@ -178,6 +178,7 @@ async function downloadModel() {
         return;
     }
 
+    // todo: add an abortController to make this cancellable
     const { data: request, error } = await ollamaRequest('/api/pull', 'POST', {
         model: modelName,
     });
@@ -223,7 +224,7 @@ async function downloadModel() {
             <!-- overlay -->
             <div v-if="config.api.enabled" class="w-full h-full absolute top-0 left-0 bg-black/50"></div>
             <RouterLink to="/"
-                class="p-4 rounded-md flex flex-row items-center gap-2 font-semibold cursor-pointer select-none">
+                class="p-4 rounded-md flex flex-row items-center gap-2 font-semibold cursor-pointer hover:bg-surface! hover:text-text transition-colors duration-dynamic select-none">
                 <AiOutlineArrowLeft class="size-6" />
                 Back to Chat
             </RouterLink>
@@ -277,7 +278,7 @@ async function downloadModel() {
                 No models found
             </div>
             <RouterLink v-else-if="!config.api.enabled" v-for="model in modelList" :to="`/models/${model.model}`"
-                class="p-4 rounded-md flex flex-row items-center gap-2 hover:bg-surface! hover:text-text transition-all duration-100"
+                class="p-4 rounded-md flex flex-row items-center gap-2 hover:bg-surface! hover:text-text transition-all duration-dynamic"
                 exactActiveClass="!bg-surface-light ring-2 ring-border ring-inset">
                 <ModelIcon :name="model.name ?? 'Unknown'" class="size-6" />
 

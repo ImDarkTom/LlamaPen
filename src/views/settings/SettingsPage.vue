@@ -167,6 +167,7 @@ watch(
         </OptionCategory>
 
         <OptionCategory label="Appearance">
+            <ButtonSetting type="link" to="/shortcuts">View keyboard shortcuts</ButtonSetting>
             <SelectionSetting 
                 v-model="config.ui.theme" 
                 label="Theme" 
@@ -174,9 +175,8 @@ watch(
                 :itemNames="['System default', 'Dark (default)', 'Light', 'Monochrome Dark', 'Monochrome Light']"
                 @update:model-value="config.loadTheme()" 
             />
-            <ButtonSetting type="link" to="/shortcuts">View keyboard shortcuts</ButtonSetting>
             <div class="flex flex-col gap-2 w-full">
-                <span class="text-lg">Transition Speed</span>
+                <span class="text-lg">Animation Speed</span>
                 <input class="accent-primary w-full" @change="updateTransitionSpeed" v-model="transitionSpeed"
                     type="range" min="0" max="1" step="0.025" />
                 <span class="py-2">

@@ -118,25 +118,25 @@ function regenerateMessage(model: string) {
 
                 <div class="relative" v-mousedown-outside="closeModelSelection">
                     <Tooltip text="Regenerate" :disabled="!modelMessageDone">
-                        <div class="flex flex-row p-1 gap-1 group/msg-model bg-transparent rounded-xl items-center transition-colors duration-100"
+                        <div class="flex flex-row p-1 gap-1 group/msg-model bg-transparent rounded-xl items-center transition-colors duration-dynamic"
                             :class="{ 'hover:bg-background-light cursor-pointer': modelMessageDone }"
                             @mousedown="changeModel">
                             <span class="font-semibold pl-1 select-none">{{ message.model }}</span>
                             <AiOutlineSwap v-if="modelMessageDone"
-                                class="p-1 size-8 opacity-35 group-hover/msg-model:opacity-100 transition-opacity duration-100" />
+                                class="p-1 size-8 opacity-35 group-hover/msg-model:opacity-100 transition-opacity duration-dynamic" />
                         </div>
                     </Tooltip>
                     <div v-if="modelSelectionOpened"
                         class="max-h-[50vh] overflow-y-auto absolute top-0 left-[50%] -translate-x-[50%] translate-y-12 flex flex-col bg-surface z-20 p-2 rounded-xl gap-2">
                         <button
-                            class="p-2 hover:scale-[98%] hover:bg-surface-light hover:text-text rounded-lg w-full min-w-48 cursor-pointer transition-all duration-100 flex flex-row items-center justify-start"
+                            class="p-2 hover:scale-[98%] hover:bg-surface-light hover:text-text rounded-lg w-full min-w-48 cursor-pointer transition-all duration-dynamic flex flex-row items-center justify-start"
                             @mouseup="regenerateMessage(message.model)">
                             <VscDebugRestart class="size-6 mr-2 p-0.5" />
                             {{ message.model }}
                         </button>
 
                         <button v-for="model in allModels" :key="model.digest"
-                            class="p-2 hover:scale-[98%] hover:bg-surface-light hover:text-text rounded-lg w-full min-w-48 cursor-pointer transition-all duration-100 flex flex-row items-center justify-start"
+                            class="p-2 hover:scale-[98%] hover:bg-surface-light hover:text-text rounded-lg w-full min-w-48 cursor-pointer transition-all duration-dynamic flex flex-row items-center justify-start"
                             @mouseup="regenerateMessage(model.model)">
                             <ModelIcon :name="model.model" class="size-6 mr-2" />
                             {{ model.name }}
@@ -146,7 +146,7 @@ function regenerateMessage(model: string) {
 
                 <div class="grow"></div>
 
-                <span class="flex flex-row gap-1 items-center opacity-0 group-hover/msg-header:opacity-100 transition-opacity duration-100">
+                <span class="flex flex-row gap-1 items-center opacity-0 group-hover/msg-header:opacity-100 transition-opacity duration-dynamic">
                     <BiTimeFive />
                     {{message.created.toLocaleString() }}
                 </span>

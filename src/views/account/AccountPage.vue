@@ -97,7 +97,7 @@ const quotaUsedPercentage = computed(() => (realRemaining.value / userStore.subs
 			</AccountSection>
 
 			<AccountSection title="Subscription" flex-direction="col">
-				<button class="w-fit text-background bg-primary hover:bg-secondary transition-colors duration-100 p-4 rounded-lg cursor-pointer" @click="subscriptionButtonClick">
+				<button class="w-fit text-background bg-primary hover:bg-secondary transition-colors duration-dynamic p-4 rounded-lg cursor-pointer" @click="subscriptionButtonClick">
 					{{ loadingSubButtonPage ? 
 						'Loading...' :
 						userStore.subscription.subscribed ? 'Manage Subscription' : 'Subscribe to LlamaPen Explorer' }}

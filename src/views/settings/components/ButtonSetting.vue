@@ -8,7 +8,7 @@ defineProps<{
 </script>
 
 <template>
-	<component :is="type === 'link' ? RouterLink : 'button'" class="!bg-primary text-background hover:!bg-secondary p-4 rounded-lg cursor-pointer transition-all duration-150 w-fit min-w-1/3 text-center">
+	<component :is="type === 'link' ? RouterLink : 'button'" class="!bg-primary text-background hover:!bg-secondary p-4 rounded-lg cursor-pointer transition-all duration-dynamic w-fit min-w-1/3 text-center">
 		<slot></slot>
 	</component>
 </template>

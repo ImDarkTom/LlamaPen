@@ -172,10 +172,10 @@ function handlePastedImage(file: File) {
             <div class="w-full max-h-16">
                 <div v-for="file in filesToUpload" :key="file.name" class="inline-block h-full p-2 pb-3 relative">
                     <img :src="createObjectUrl(file)"
-                        class="ring-1 ring-primary rounded-lg h-full cursor-pointer hover:brightness-115 transition-color duration-150"
+                        class="ring-1 ring-primary rounded-lg h-full cursor-pointer hover:brightness-115 transition-color duration-dynamic"
                         @click="openInLightbox(file)" alt="User attached image" />
                     <AiFillCloseCircle
-                        class="absolute top-0 right-0 drop-shadow-sm drop-shadow-background hover:text-red-300 cursor-pointer transition-colors duration-150"
+                        class="absolute top-0 right-0 drop-shadow-sm drop-shadow-background hover:text-red-300 cursor-pointer transition-colors duration-dynamic"
                         @click="removeFileFromUploadList(file)" />
                 </div>
             </div>

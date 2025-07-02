@@ -163,14 +163,14 @@ function setFocused(index: number) {
                     direction === 'up' ? 'motion-translate-y-in-[25%]' : 'motion-translate-y-in-[-25%]',
                     'motion-translate-x-in-[-10%]',
                     'motion-opacity-in-[0%]',
-                    'motion-duration-[0.10s]'
+                    'motion-duration-[var(--transition-duration)]'
                 ].join(' ')"
                 :leave-active-class="[
                     'motion-scale-out-[0.5]',
                     direction === 'up' ? 'motion-translate-y-out-[25%]' : 'motion-translate-y-out-[-25%]',
                     'motion-translate-x-out-[-10%]',
                     'motion-opacity-out-[0%]',
-                    'motion-duration-[0.10s]'
+                    'motion-duration-[var(--transition-duration)]'
                 ].join(' ')"
             >
 
@@ -189,7 +189,7 @@ function setFocused(index: number) {
                             aria-label="Search for a model..." aria-controls="model-list"
                             :disabled="!uiStore.connectedToOllama">
                         <RouterLink to="/models"
-                            class="h-6 p-3 box-content text-background !bg-primary hover:!bg-border cursor-pointer transition-colors duration-100 rounded-lg">
+                            class="h-6 p-3 box-content text-background !bg-primary hover:!bg-border cursor-pointer transition-colors duration-dynamic rounded-lg">
                             <TbListDetails />
                         </RouterLink>
                     </div>
