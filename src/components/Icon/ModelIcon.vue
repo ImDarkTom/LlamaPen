@@ -62,7 +62,7 @@ function getIconComponent() {
 
 <template>
 	<component :is="getIconComponent()" :class="{
-		'bg-primary-600 rounded-lg': !ignoreStyling && config.ui.modelIcons.background && config.ui.modelIcons.backgroundDark,
-		'bg-primary-50 rounded-lg': !ignoreStyling && config.ui.modelIcons.background && !config.ui.modelIcons.backgroundDark
+		'bg-border-muted rounded-lg': !ignoreStyling && config.ui.modelIcons.background && config.ui.modelIcons.backgroundDark,
+		'bg-border rounded-lg': !ignoreStyling && config.ui.modelIcons.background && !config.ui.modelIcons.backgroundDark
 	}" />
 </template>

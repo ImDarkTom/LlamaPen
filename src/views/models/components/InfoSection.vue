@@ -25,7 +25,7 @@ function formatValue(value: unknown | null) {
 
 <template>
     <div class="w-full mb-6">
-        <div class="flex flex-row items-center justify-center w-full cursor-pointer bg-primary-200 p-2 rounded-lg gap-2"
+        <div class="flex flex-row items-center justify-center w-full cursor-pointer bg-surface hover:bg-surface-light hover:text-text p-2 rounded-lg gap-2"
             @click="showingFull = !showingFull">
             <span class="text-2xl w-full select-none">{{ title }}</span>
             <BsChevronUp class="h-full w-8 p-1" v-if="showingFull" />
@@ -34,13 +34,11 @@ function formatValue(value: unknown | null) {
 
         <div v-if="showingFull" class="p-2 flex flex-col gap-2">
             <div v-if="kvList" v-for="(value, key) in kvList" class="flex flex-row">
-                <div class="bg-primary-100 p-2 rounded-l-lg">{{ key }}</div>
-                <div class="bg-primary-200 p-2 rounded-r-lg" :class="{ 'text-txt-2': !value }">{{ formatValue(value) }}
+                <div class="bg-surface-light p-2 rounded-l-lg">{{ key }}</div>
+                <div class="bg-primary text-background-light p-2 rounded-r-lg" :class="{ 'italic': value === null || (typeof value === 'string' && value.length === 0) }">{{ formatValue(value) }}
                 </div>
             </div>
-            <pre v-else class="prose prose-invert w-full min-w-full whitespace-pre-wrap break-all">
-    <slot></slot>
-</pre>
+            <pre v-else class="prose prose-appdark! prose-invert w-full min-w-full whitespace-pre-wrap break-all"><slot></slot></pre>
         </div>
     </div>
 </template>

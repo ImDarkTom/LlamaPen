@@ -15,6 +15,7 @@ import ollamaApi from '@/utils/ollama';
 import { VscDebugRestart } from 'vue-icons-plus/vsc';
 import logger from '@/lib/logger';
 import { fullMarked } from '@/lib/marked';
+import { BiTimeFive } from 'vue-icons-plus/bi';
 
 const messagesStore = useMessagesStore();
 
@@ -107,18 +108,18 @@ function regenerateMessage(model: string) {
 
 <template>
     <div class="group/message m-2 flex flex-col">
-        <div class="text-txt-1 box-border p-4 flex flex-col" :class="{
-            'ml-auto rounded-2xl bg-surface max-w-[70%] shadow-sm shadow-black/50': isUserMessage && !editing,
+        <div class="box-border p-4 flex flex-col" :class="{
+            'ml-auto rounded-2xl bg-background-light max-w-[70%] shadow-md shadow-background-dark/50': isUserMessage && !editing,
             'w-full box-border !p-2 !m-0': isModelMessage || editing
         }">
             <div v-if="message.type === 'model'" class="group/msg-header flex flex-row items-center gap-2 mb-2">
                 <ModelIcon :name="message.model" :ignore-styling="true"
-                    class="size-10 p-2 bg-primary-700 rounded-full ring-1 ring-txt-1" />
+                    class="size-10 p-2 bg-border-muted rounded-full ring-1 ring-border" />
 
                 <div class="relative" v-mousedown-outside="closeModelSelection">
                     <Tooltip text="Regenerate" :disabled="!modelMessageDone">
                         <div class="flex flex-row p-1 gap-1 group/msg-model bg-transparent rounded-xl items-center transition-colors duration-100"
-                            :class="{ 'hover:bg-primary-300 cursor-pointer': modelMessageDone }"
+                            :class="{ 'hover:bg-background-light cursor-pointer': modelMessageDone }"
                             @mousedown="changeModel">
                             <span class="font-semibold pl-1 select-none">{{ message.model }}</span>
                             <AiOutlineSwap v-if="modelMessageDone"
@@ -126,16 +127,16 @@ function regenerateMessage(model: string) {
                         </div>
                     </Tooltip>
                     <div v-if="modelSelectionOpened"
-                        class="max-h-[50vh] overflow-y-auto absolute top-0 left-[50%] -translate-x-[50%] translate-y-12 flex flex-col bg-primary-300 z-20 p-2 rounded-xl gap-2">
+                        class="max-h-[50vh] overflow-y-auto absolute top-0 left-[50%] -translate-x-[50%] translate-y-12 flex flex-col bg-surface z-20 p-2 rounded-xl gap-2">
                         <button
-                            class="p-2 hover:scale-[98%] hover:bg-primary-200 rounded-lg w-full min-w-48 cursor-pointer transition-all duration-100 flex flex-row items-center justify-start"
+                            class="p-2 hover:scale-[98%] hover:bg-surface-light hover:text-text rounded-lg w-full min-w-48 cursor-pointer transition-all duration-100 flex flex-row items-center justify-start"
                             @mouseup="regenerateMessage(message.model)">
                             <VscDebugRestart class="size-6 mr-2 p-0.5" />
                             {{ message.model }}
                         </button>
 
                         <button v-for="model in allModels" :key="model.digest"
-                            class="p-2 hover:scale-[98%] hover:bg-primary-200 rounded-lg w-full min-w-48 cursor-pointer transition-all duration-100 flex flex-row items-center justify-start"
+                            class="p-2 hover:scale-[98%] hover:bg-surface-light hover:text-text rounded-lg w-full min-w-48 cursor-pointer transition-all duration-100 flex flex-row items-center justify-start"
                             @mouseup="regenerateMessage(model.model)">
                             <ModelIcon :name="model.model" class="size-6 mr-2" />
                             {{ model.name }}
@@ -145,8 +146,10 @@ function regenerateMessage(model: string) {
 
                 <div class="grow"></div>
 
-                <span class="text-txt-2 opacity-0 group-hover/msg-header:opacity-100 transition-opacity duration-100">{{
-                    message.created.toLocaleString() }}</span>
+                <span class="flex flex-row gap-1 items-center opacity-0 group-hover/msg-header:opacity-100 transition-opacity duration-100">
+                    <BiTimeFive />
+                    {{message.created.toLocaleString() }}
+                </span>
             </div>
             <img v-for="image of images" :key="image.id" :src="image.blobSrc"
                 class="rounded-xl max-w-full max-h-full cursor-pointer mb-2"
@@ -156,14 +159,14 @@ function regenerateMessage(model: string) {
                 @onCancelEdit="cancelEditing" @onFinishEditing="finishEdit" />
 
             <div class="relative" v-else>
-                <div v-if="isUserMessage" class="max-w-none prose prose-invert">
+                <div v-if="isUserMessage" class="max-w-none prose prose-appdark! dark:prose-invert">
                     {{ message.content }}
                 </div>
-                <span v-else>
+                <span class="flex flex-col" v-else>
                     <ThinkBlock :message="message" />
-                    <span class="max-w-none prose prose-red inline-block" v-html="renderText(message.content)">
+                    <span class="max-w-none prose prose-appdark! dark:prose-invert inline-block" v-html="renderText(message.content)">
                     </span>
-                    <div v-if="message.type === 'model'" class="animate-breathe rounded-full bg-txt-1 inline-block"
+                    <div v-if="message.type === 'model'" class="animate-breathe rounded-full bg-text inline-block"
                         :class="{
                             'size-6': message.status === 'waiting',
                             'size-4': message.status === 'generating',

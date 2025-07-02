@@ -68,7 +68,7 @@ function hide() {
 					<BiHelpCircle class="inline" /> icon in the bottom left of the sidebar;
 				</div>
 				<div class="pb-4 flex flex-row items-center gap-2">
-					<input id="notconnected-dnsa" type="checkbox" ref="dnsaCheckbox" class="accent-txt-2">
+					<input id="notconnected-dnsa" type="checkbox" ref="dnsaCheckbox" class="accent-secondary">
 					<label for="notconnected-dnsa">Do not show again</label>
 				</div>
 			</div>

@@ -84,7 +84,8 @@ const quotaUsedPercentage = computed(() => (realRemaining.value / userStore.subs
 		<div class="w-4/5" v-else>
 			<h1 class="font-bold text-4xl!">My Account</h1>
 			<AccountSection title="Details">
-				<img :src="userStore.user.user_metadata.avatar_url" alt="User avatar" class="size-28 rounded-full mr-4">
+				<img :src="userStore.user.user_metadata.avatar_url" alt="User avatar" 
+					class="size-28 rounded-full mr-4 outline-2 outline-border-muted">
 				<div class="flex flex-col gap-2 w-full">
 					<span class="text-2xl font-black">{{ userStore.user.user_metadata.full_name }}</span>
 					<span>
@@ -96,7 +97,7 @@ const quotaUsedPercentage = computed(() => (realRemaining.value / userStore.subs
 			</AccountSection>
 
 			<AccountSection title="Subscription" flex-direction="col">
-				<button class="w-fit bg-gradient-to-br from-primary-300 to-primary-400 ring-1 ring-txt-2 p-4 rounded-lg cursor-pointer" @click="subscriptionButtonClick">
+				<button class="w-fit text-background bg-primary hover:bg-secondary transition-colors duration-100 p-4 rounded-lg cursor-pointer" @click="subscriptionButtonClick">
 					{{ loadingSubButtonPage ? 
 						'Loading...' :
 						userStore.subscription.subscribed ? 'Manage Subscription' : 'Subscribe to LlamaPen Explorer' }}
@@ -111,9 +112,9 @@ const quotaUsedPercentage = computed(() => (realRemaining.value / userStore.subs
 						<div class="grow"></div>
 						<span>Resets daily at 00:00 UTC</span>
 					</span>
-					<div class="mt-2 h-8 w-full bg-txt-2 rounded-xl">
+					<div class="mt-2 h-8 w-full bg-surface-light rounded-xl">
 						<div 
-							class="h-full bg-primary-50 rounded-xl"
+							class="h-full bg-primary rounded-xl"
 							:style="`width: ${quotaUsedPercentage}%;`"
 						></div>
 					</div>
@@ -121,7 +122,7 @@ const quotaUsedPercentage = computed(() => (realRemaining.value / userStore.subs
 			</AccountSection>
 
 			<AccountSection title="Actions">
-				<div class="bg-red-600 w-fit p-4 rounded-lg cursor-pointer" @click="deleteAccount">Delete Account</div>
+				<div class="bg-danger text-background w-fit p-4 rounded-lg cursor-pointer" @click="deleteAccount">Delete Account</div>
 			</AccountSection>
 		</div>
 	</div>
