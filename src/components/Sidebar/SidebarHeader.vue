@@ -1,12 +1,13 @@
 <script setup lang="ts">
 import { AiOutlineSearch } from 'vue-icons-plus/ai';
 import SidebarRouterLink from './SidebarRouterLink.vue';
+import { emitter } from '@/lib/mitt';
 
 const logoFile = import.meta.glob('@/icons/llamapen/favicon.svg', { eager: true });
 const logo = Object.values(logoFile)[0];
 
 function search() {
-    alert('to be added...');
+    emitter.emit('openSearchbox');
 }
 </script>
 

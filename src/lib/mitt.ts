@@ -12,7 +12,9 @@ interface Events extends Record<EventType, unknown> {
     'popup:ollamanotconnected': void,
     openLightbox: {
         image: File | Blob,
-    }
+    },
+    openSearchbox: void,
+    openChat: string,
 };
 
 export const emitter = mitt<Events>();

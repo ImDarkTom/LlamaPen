@@ -35,6 +35,7 @@ function handleEscape(e: KeyboardEvent) {
             <h2 class="text-3xl font-semibold pb-2 text-text">Interface</h2>
             <ShortcutDisplay label="Toggle sidebar" shortcut="ctrl shift s" />
             <ShortcutDisplay label="Open model selector" shortcut="ctrl shift m" />
+            <ShortcutDisplay label="Search chats" shortcut="ctrl k" />
             <h2 class="text-3xl font-semibold pb-2 text-text">Chat</h2>
             <ShortcutDisplay label="New chat" shortcut="ctrl shift o" />
             <ShortcutDisplay label="Focus chat input" shortcut="shift esc" />

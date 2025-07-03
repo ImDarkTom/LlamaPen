@@ -23,7 +23,7 @@ const { openedChatMessages } = storeToRefs(messagesStore);
 
 const uiStore = useUiStore();
 
-watch(() => route.params.id, (newId, oldId) => {
+function openChat(newId: string | string[], oldId?: string | string[]) {
     if (newId !== oldId) {
         messagesStore.openChat(parseInt(newId as string));
         uiStore.setOpenedChat(parseNumOrNull(route.params.id));
@@ -35,7 +35,9 @@ watch(() => route.params.id, (newId, oldId) => {
         chatsStore.getChatTitle(parseInt(newId as string))
             .then(title => setPageTitle(`${title} | Chat`));
     }
-});
+}
+
+watch(() => route.params.id, (newId, oldId) => openChat(newId, oldId));
 
 onMounted(() => {
     logger.info('Message List Component', 'Mounted message list component');
@@ -51,6 +53,7 @@ onMounted(() => {
     }
 
     emitter.on('scrollToBottom', scrollToBottom);
+    emitter.on('openChat', (id) => openChat(id))
 
     nextTick(() => {
         scrollToBottom({ force: true });
@@ -59,6 +62,7 @@ onMounted(() => {
 
 onUnmounted(() => {
     emitter.off('scrollToBottom');
+    emitter.off('openChat');
 });
 
 watch(() => openedChatMessages.value, async () => {
