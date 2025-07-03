@@ -20,5 +20,9 @@ const { pinnedChats, hasPinnedChats, unpinnedChatsByRecent } = storeToRefs(chats
 			<h3 id="unpinnedChatsSection" class="sr-only">Unpinned Chats</h3>
 			<SidebarChatEntry v-for="chat of unpinnedChatsByRecent" :key="chat.id" :chat="chat" />
 		</div>
+
+		<div v-if="unpinnedChatsByRecent?.length === 0 && !hasPinnedChats" class="flex h-full items-center justify-center">
+			No chats yet...
+		</div>
 	</div>
 </template>
