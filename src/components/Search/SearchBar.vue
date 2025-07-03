@@ -45,14 +45,6 @@ onBeforeUnmount(() => {
     document.removeEventListener('keydown', handleKeyDown);
 });
 
-const filteredChats = computed(() => {
-    return chatsStore.chats
-        .sort((a, b) => (b.lastestMessageDate?.getTime() || 0) - (a.lastestMessageDate?.getTime() || 0))
-        .filter((chat) => 
-            chat.title.toLowerCase().includes(searchQuery.value.toLowerCase())
-        )
-});
-
 function openChat(id: number) {
     showing.value = false;
     router.push(`/chat/${id}`);
@@ -98,18 +90,77 @@ function onInputKeyDown(e: KeyboardEvent) {
         });
     }
 }
+
+const showFilters = ref(false);
+
+type SearchSortTypes = 'latest-activity' | 'created' | 'alphabetically';
+const sortType = ref<SearchSortTypes>('latest-activity');
+const reverseSort = ref(false);
+
+const sortTypeMap: Record<SearchSortTypes, (a: Chat, b: Chat) => number> = {
+    'latest-activity': (a, b) => (b.lastestMessageDate?.getTime() || 0) - (a.lastestMessageDate?.getTime() || 0),
+    'created': (a, b) => b.createdAt.getTime() - a.createdAt.getTime(),
+    'alphabetically': (a, b) => a.title.localeCompare(b.title, undefined, { sensitivity: 'base' }),
+}
+
+const userFilter = ref<'all' | 'pinned' | 'unpinned'>('all');
+
+const userFilterMap: Record<'all' | 'pinned'| 'unpinned', (chat: Chat) => boolean> = {
+    'all': () => true,
+    'pinned': (chat) => chat.pinned === 1,
+    'unpinned': (chat) => chat.pinned === 0,
+}
+
+const filteredChats = computed(() => {
+    const sortedChats = chatsStore.chats
+        .sort((a, b) => sortTypeMap[sortType.value](a, b))
+        .filter((chat) => userFilterMap[userFilter.value](chat))
+        .filter((chat) => 
+            chat.title.toLowerCase().includes(searchQuery.value.toLowerCase())
+        );  
+
+    if (reverseSort.value) {
+        sortedChats.reverse();
+    }
+
+    return sortedChats;
+});
 </script>
 
 <template>
     <div v-if="showing" class="absolute box-border flex items-top pt-16 justify-center top-0 left-0 w-full h-svh bg-black/50 z-[99]" @click.self="showing = false">
-        <div class="flex flex-col w-[calc(100dvw-1rem)] max-w-xl h-min max-h-2/3 p-2 bg-surface rounded-xl border-border border-2 shadow-md shadow-background-dark">
+        <div class="flex flex-col gap-2 w-[calc(100dvw-1rem)] max-w-xl h-min max-h-2/3 p-2 bg-surface rounded-xl border-border border-2 shadow-md shadow-background-dark">
             <div class="flex flex-row gap-2">
                 <input ref="queryInputRef" @keydown="onInputKeyDown" type="text" placeholder="Search chats…" v-model="searchQuery" class="p-3 w-full outline-none border-border rounded-lg focus:border-border-muted border-2">
-                <button class="aspect-square bg-border hover:bg-border-muted p-2 flex items-center justify-center rounded-lg cursor-pointer">
-                    <AiFillFilter />
-                </button>
+                
+                <input type="checkbox" id="toggle-search-filters" v-model="showFilters" class="sr-only">
+                <label for="toggle-search-filters" class="aspect-square bg-primary text-background hover:bg-border p-2 flex items-center justify-center rounded-lg cursor-pointer"
+                    :class="{ 'hover:bg-border! text-text-muted bg-border-muted!': showFilters }">
+                        <AiFillFilter />
+                </label>
             </div>
-            <ul v-if="filteredChats.length > 0" class="overflow-y-auto flex flex-col gap-2 mt-2">
+            <div v-if="showFilters" class="flex flex-row items-center gap-2 pt-5 pb-6 overflow-x-auto">
+                <label for="search-sort-type" class="text-text font-semibold">By:</label>
+                <select id="search-sort-type" v-model="sortType" class="bg-surface-light p-2 border-2 border-border-muted rounded-lg">
+                    <option value="latest-activity">Latest activity (default)</option>
+                    <option value="created">Creation date</option>
+                    <option value="alphabetically">Alphabetically</option>
+                </select>
+
+                <label for="search-sort-direction" class="text-text font-semibold">Direction:</label>
+                <select id="search-sort-direction" v-model="reverseSort" class="bg-surface-light p-2 border-2 border-border-muted rounded-lg">
+                    <option :value="false">Forwards</option>
+                    <option :value="true">Reverse</option>
+                </select>
+
+                <label for="search-userFilter" class="text-text font-semibold">Filter:</label>
+                <select id="search-user-filter" v-model="userFilter" class="bg-surface-light p-2 border-2 border-border-muted rounded-lg">
+                    <option value="all">All</option>
+                    <option value="pinned">Pinned</option>
+                    <option value="unpinned">Unpinned</option>
+                </select>
+            </div>
+            <ul v-if="filteredChats.length > 0" class="overflow-y-auto flex flex-col gap-2">
                 <li 
                     v-for="(chat, index) in filteredChats"
                     ref="queryItemsRef"
