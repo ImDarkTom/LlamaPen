@@ -15,8 +15,8 @@ const buttonClasses = 'w-full border-none p-1.5 m-0 box-border rounded-lg h-8 bg
 
 <template>
     <div class="flex flex-col max-w-full">
-        <StatusText />
-        <RouterLink v-if="userStore.user && config.api.enabled" to="/account">
+        <StatusText v-if="!config.api.enabled" />
+        <RouterLink v-else-if="userStore.user" to="/account">
             <div class="flex w-full h-16 bg-background-light ring-1 ring-border-muted rounded-xl my-2 p-2 hover:ring-primary transition-all duration-dynamic">
                 <div class="flex items-center mr-3 p-1">
                     <img :src="userStore.user.user_metadata.avatar_url" alt="User avatar"
