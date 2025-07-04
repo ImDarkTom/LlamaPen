@@ -31,6 +31,7 @@ function handleKeyDown(e: KeyboardEvent) {
     };
 
     if (e.key === 'Escape') {
+        e.preventDefault();
         showing.value = false;
     }
 }
