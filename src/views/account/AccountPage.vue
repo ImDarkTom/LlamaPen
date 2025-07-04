@@ -83,26 +83,18 @@ const quotaUsedPercentage = computed(() => (realRemaining.value / userStore.subs
 		</div>
 		<div class="w-4/5" v-else>
 			<h1 class="font-bold text-4xl!">My Account</h1>
-			<AccountSection title="Details">
+			<AccountSection flex-direction="row">
 				<img :src="userStore.user.user_metadata.avatar_url" alt="User avatar" 
-					class="size-28 rounded-full mr-4 outline-2 outline-border-muted">
-				<div class="flex flex-col gap-2 w-full">
-					<span class="text-2xl font-black">{{ userStore.user.user_metadata.full_name }}</span>
-					<span>
-						{{ userStore.user.user_metadata.email }}
-						 • 
-						{{ userStore.subscription.name }}
-					</span>
+				class="size-28 rounded-full outline-2 outline-border-muted">
+				<div class="flex flex-col gap-2">
+					<span class="text-text text-2xl font-semibold">{{ userStore.user.user_metadata.full_name }}</span>
+					<span>{{ userStore.user.user_metadata.email }}</span>
+					<span>{{ userStore.subscription.name }} Tier</span>
 				</div>
 			</AccountSection>
-
-			<AccountSection title="Subscription" flex-direction="col">
-				<button class="w-fit text-background bg-primary hover:bg-secondary transition-colors duration-dynamic p-4 rounded-lg cursor-pointer" @click="subscriptionButtonClick">
-					{{ loadingSubButtonPage ? 
-						'Loading...' :
-						userStore.subscription.subscribed ? 'Manage Subscription' : 'Subscribe to LlamaPen Explorer' }}
-				</button>
-				<span class="text-2xl mt-4">Usage Limits</span>
+			
+			<AccountSection title="Plan & Usage" flex-direction="col">
+				<h3 class="text-2xl">Usage Limits</h3>
 				<span v-if="userStore.subscription.name === 'Loading...'">Loading...</span>
 				<div v-else class="w-full">
 					<span class="flex flex-row">
@@ -119,9 +111,34 @@ const quotaUsedPercentage = computed(() => (realRemaining.value / userStore.subs
 						></div>
 					</div>
 				</div>
+				<h3 class="text-2xl">Plan</h3>
+				<div class="w-full flex justify-center">
+					<button class="w-fit text-background bg-primary hover:bg-secondary transition-colors duration-dynamic p-4 rounded-lg cursor-pointer" @click="subscriptionButtonClick">
+						{{ loadingSubButtonPage ? 
+							'Waiting for checkout session...' :
+							userStore.subscription.subscribed ? 'Manage Subscription' : 'Subscribe to LlamaPen Explorer - €8/mo' }}
+					</button>
+				</div>
+				<div v-if="userStore.subscription.name !== 'Premium'" class="flex flex-row gap-2">
+					<div class="w-1/2 border-2 border-border-muted rounded-lg">
+						<h4 class="text-xl font-semibold bg-border-muted text-center select-none p-2">Free (current plan)</h4>
+						<ul class="p-4 flex flex-col gap-1">
+							<li>✅ 20 message tokens/day</li>
+							<li>✅ Access to standard models</li>
+						</ul>
+					</div>
+					<div class="w-1/2 border-2 border-primary rounded-lg bg-surface">
+						<h4 class="text-xl font-semibold text-center bg-primary text-background select-none p-2">Premium</h4>
+						<ul class="p-4 flex flex-col gap-1">
+							<li>✅ 100 message tokens/day</li>
+							<li>✅ Access to premium models</li>
+							<li>❤️ Developer support</li>
+						</ul>
+					</div>
+				</div>
 			</AccountSection>
 
-			<AccountSection title="Actions">
+			<AccountSection title="Danger Zone">
 				<div class="bg-danger text-background w-fit p-4 rounded-lg cursor-pointer" @click="deleteAccount">Delete Account</div>
 			</AccountSection>
 		</div>

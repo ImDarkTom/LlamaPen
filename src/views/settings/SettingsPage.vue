@@ -137,7 +137,6 @@ watch(
             <ToggleSetting v-model="config.api.enabled" label="Enable Llamapen Cloud" />
             <template v-if="config.api.enabled">
                 <ButtonSetting v-if="!userStore.isSignedIn" @click="signIn">Sign in with Google</ButtonSetting>
-                <!-- todo: add signout button regardless of whether the user has api enabled or not, just by checking jwt -->
                 <template v-else>
                     <div class="flex flex-row gap-2">
                         <ButtonSetting type="link" to="/account">Manage account</ButtonSetting>
