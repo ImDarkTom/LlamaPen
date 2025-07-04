@@ -148,22 +148,16 @@ watch(
         </OptionCategory>
 
         <OptionCategory label="Ollama">
-            <TextInputSetting label="Ollama URL" v-model="config.ollamaUrl" default="http://localhost:11434"
-                :check="ollamaUrlCheck" />
-            <span v-if="!uiStore.connectedToOllama">
-                Can't connect? Checkout the
-                <RouterLink to="/guide" class="text-text underline">setup guide</RouterLink>.
-            </span>
-        </OptionCategory>
-
-        <OptionCategory label="Models">
-            <ButtonSetting type="link" to="/models">Manage Models</ButtonSetting>
-            <ToggleSetting v-model="config.ui.modelIcons.monochrome" label="Monochrome model icons" />
-            <ToggleSetting v-model="config.ui.modelIcons.background" label="Model icons background" />
-            <div v-if="config.ui.modelIcons.background" class="border-l-[1px] border-text pl-3 ml-3">
-                <ToggleSetting v-model="config.ui.modelIcons.backgroundDark" label="Dark icon background" />
-            </div>
-            <ToggleSetting v-model="config.ui.modelIcons.alternateGemmaIcon" label="Alternate Gemma icon" />
+            <div v-if="config.api.enabled">Ollama not available while LlamaPen Cloud is enabled.</div>
+            <template v-else>
+                <TextInputSetting label="Ollama URL" v-model="config.ollamaUrl" default="http://localhost:11434"
+                    :check="ollamaUrlCheck" />
+                <span v-if="!uiStore.connectedToOllama">
+                    Can't connect? Checkout the
+                    <RouterLink to="/guide" class="text-text underline">setup guide</RouterLink>.
+                </span>
+                <ButtonSetting type="link" to="/models">Manage Models</ButtonSetting>
+            </template>
         </OptionCategory>
 
         <OptionCategory label="Appearance">
@@ -185,6 +179,13 @@ watch(
                     <span class="pl-2">{{ transitionSpeed == 0.125 ? '(Default)' : '' }}</span>
                 </span>
             </div>
+            <CategoryLabel>Model Icons</CategoryLabel>
+            <ToggleSetting v-model="config.ui.modelIcons.monochrome" label="Monochrome model icons" />
+            <ToggleSetting v-model="config.ui.modelIcons.background" label="Model icons background" />
+            <div v-if="config.ui.modelIcons.background" class="border-l-[1px] border-text pl-3 ml-3">
+                <ToggleSetting v-model="config.ui.modelIcons.backgroundDark" label="Dark icon background" />
+            </div>
+            <ToggleSetting v-model="config.ui.modelIcons.alternateGemmaIcon" label="Alternate Gemma icon" />
             <CategoryLabel>Tooltip</CategoryLabel>
             <NumberInputSetting v-model="config.ui.tooltip.waitTimeoutMs" :default="500" :min="0" :max="1000"
                 label="Hover delay (ms)" />
