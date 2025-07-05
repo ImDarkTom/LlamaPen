@@ -204,8 +204,11 @@ const useMessagesStore = defineStore('messages', () => {
 		}
 
 		let updatedMessage = "";
+		let updatedMessageThoughts = ""; 
 		let messageGenerating = false;
 		for await (const chunk of ollamaApi.chat(listBeforeModelMessage, abortController.signal, selectedModel)) {
+			// console.log(chunk);
+
 			if ('error' in chunk) {
 				handleChunkError(chunk);
 				cancelHandler();
@@ -226,23 +229,27 @@ const useMessagesStore = defineStore('messages', () => {
 				updateOllamaMessageInDB(ollamaMessageId, updatedMessage);
 				updateMessageStatus(ollamaMessageId, 'finished');
 
-				logger.info('Messages Store', 'Finished generating response\n==========\n', updatedMessage);
+				logger.info('Messages Store', 'Finished generating response.');
 				break;
 			}
 
+			// If message is not an error or stream end chunk.
 			if (messageGenerating === false) {
 				messageGenerating = true;
 				updateMessageStatus(ollamaMessageId, 'generating');
 			}
 
 			const messageChunk = chunk.message.content;
+			const thoughtsChunk = chunk.message.thinking || '';
 			openedChatMessages.value = openedChatMessages.value.map((message) => {
 				if (message.id === ollamaMessageId) {
-					updatedMessage = updatedMessage + messageChunk;
+					updatedMessage += messageChunk;
+					updatedMessageThoughts += thoughtsChunk;
 
 					return {
 						...message,
 						content: updatedMessage,
+						thinking: updatedMessageThoughts,
 					};
 				}
 
@@ -252,9 +259,9 @@ const useMessagesStore = defineStore('messages', () => {
 			saveCounter--;
 
 			if (saveCounter <= 0) {
-				updateOllamaMessageInDB(ollamaMessageId, updatedMessage);
+				updateOllamaMessageInDB(ollamaMessageId, updatedMessage, updatedMessageThoughts);
 				saveCounter = TOTAL_MESSAGE_SAVE_INTERVAL;
-				logger.info('Messages Store', 'Updated ollama message in DB\n=======\n', updatedMessage);
+				// logger.info('Messages Store', 'Updated ollama message in DB\n=======\n', updatedMessage);
 			}
 		}
 
@@ -297,7 +304,12 @@ const useMessagesStore = defineStore('messages', () => {
 		return newChatTitle;
 	}
 
-	async function updateOllamaMessageInDB(id: number, content: string) {
+	async function updateOllamaMessageInDB(id: number, content: string, thinking?: string) {
+		if (thinking) {
+			await db.messages.update(id, { content, thinking } as ModelChatMessage);
+			return;
+		}
+
 		await db.messages.update(id, { content });
 	}
 

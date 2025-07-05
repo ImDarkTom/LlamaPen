@@ -196,7 +196,7 @@ watch(
             <ButtonSetting @click="clearChats">
                 Clear all chats
             </ButtonSetting>
-            <ToggleSetting v-model="config.chat.reasoning.info_open_by_default"
+            <ToggleSetting v-model="config.chat.thinking.infoOpenByDefault"
                 label="Reasoning text open by default" />
         </OptionCategory>
 

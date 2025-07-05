@@ -11,9 +11,12 @@ import { promptChatDeletion } from '@/utils/core/promptDeleteChat';
 import useChatsStore from '@/stores/chatsStore';
 import router from '@/lib/router';
 import FileUpload from './buttons/FileUpload.vue';
+import ThinkingButton from './buttons/ThinkingButton.vue';
+import { useConfigStore } from '@/stores/config';
 
 const messagesStore = useMessagesStore();
 const chatsStore = useChatsStore();
+const config = useConfigStore();
 
 const messageInputRef = ref<HTMLTextAreaElement | null>(null);
 const messageInputValue = ref('');
@@ -183,6 +186,7 @@ function handlePastedImage(file: File) {
                 <div class="flex flex-row gap-2 overflow-x-auto p-[1px]">
                     <FileUpload :onChange="uploadFile" />
                     <ModelSelect direction="up" />
+                    <ThinkingButton v-model="config.chat.thinking.enabled" />
                     <!-- we could revisit the persona selector later -->
                 </div>
                 <ActionButton :canGenerate="canGenerate" @startGeneration="startGeneration" />

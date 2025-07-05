@@ -22,6 +22,7 @@ type BaseChatMessage = {
 interface ModelChatMessage extends BaseChatMessage {
 	type: 'model';
 	model: string;
+	thinking?: string;
 	status: ModelMessageStatus;
 }
 

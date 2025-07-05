@@ -142,6 +142,7 @@ class OllamaAPI {
 			},
 			body: JSON.stringify({
 				model: modelOverride ?? useConfigStore().selectedModel,
+				think: useConfigStore().chat.thinking.enabled,
 				stream: true,
 				messages,
 			}),

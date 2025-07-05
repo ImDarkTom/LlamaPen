@@ -34,6 +34,7 @@ type OllamaChatResponseChunk = {
     message: {
         role: 'assistant' | 'user';
         content: string;
+        thinking?: string;
     };
     done: boolean;
     done_reason?: 'stop' | string;

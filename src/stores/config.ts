@@ -25,8 +25,9 @@ interface Config {
         signoutBeforeDisable: boolean,
     },
     chat: {
-        reasoning: {
-            info_open_by_default: boolean;
+        thinking: {
+            enabled: false;
+            infoOpenByDefault: boolean;
         }
     }
     developer: {
@@ -67,8 +68,10 @@ export const useConfigStore = defineStore('config', {
             signoutBeforeDisable: false,
         },
         chat: {
-            reasoning: {
-                info_open_by_default: false,
+            thinking: {
+                // Enabled is toggled by the input box icon
+                enabled: false,
+                infoOpenByDefault: false,
             }
         },
         developer: {

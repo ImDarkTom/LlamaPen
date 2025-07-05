@@ -7,16 +7,15 @@ import { BsChevronDown, BsChevronUp } from 'vue-icons-plus/bs';
 const config = useConfigStore();
 
 const props = defineProps<{
-	message: ChatMessage,
+	message: ModelChatMessage,
 }>();
 
-const opened = ref(config.chat.reasoning.info_open_by_default);
+const opened = ref(config.chat.thinking.infoOpenByDefault);
 
 const thinkBlockText = computed<string | null>(() => {
 	const rule = /^<think>([\s\S]*?)(?=<\/think>|$)/i;
-	return rule.exec(props.message.content)?.[1].trim() || null;
+	return rule.exec(props.message.content)?.[1].trim() || props.message.thinking || null;
 });
-
 </script>
 
 <template>

@@ -3,6 +3,7 @@ import { ref } from 'vue';
 import { BsCopy, BsPen } from 'vue-icons-plus/bs';
 import logger from '@/lib/logger';
 import MessageOptionButton from './MessageOptionButton.vue';
+import { AiFillInfoCircle } from 'vue-icons-plus/ai';
 
 const props = defineProps<{
     message: ChatMessage;
@@ -34,6 +35,10 @@ function editMessage() {
 
     emit('editMessage');
 }
+
+function openInfo() {
+    alert(JSON.stringify(props.message, null, 2));
+}
 </script>
 
 <template>
@@ -44,6 +49,9 @@ function editMessage() {
         </MessageOptionButton>
         <MessageOptionButton v-if="message.type === 'user'" text="Edit">
             <BsPen class="size-full" title="Edit" @click="editMessage" />
+        </MessageOptionButton>
+        <MessageOptionButton v-if="done" text="Message Info">
+            <AiFillInfoCircle class="size-full" title="Message Info" @click="openInfo" />
         </MessageOptionButton>
     </div>
 </template>

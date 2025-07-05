@@ -162,8 +162,8 @@ function regenerateMessage(model: string) {
                 <div v-if="isUserMessage" class="max-w-none prose prose-app! dark:prose-invert">
                     {{ message.content }}
                 </div>
-                <span class="flex flex-col" v-else>
-                    <ThinkBlock :message="message" />
+                <span v-else-if="isModelMessage" class="flex flex-col">
+                    <ThinkBlock :message="(message as ModelChatMessage)" />
                     <span class="max-w-none prose prose-app! dark:prose-invert inline-block" v-html="renderText(message.content)">
                     </span>
                     <div v-if="message.type === 'model'" class="animate-breathe rounded-full bg-text inline-block"
