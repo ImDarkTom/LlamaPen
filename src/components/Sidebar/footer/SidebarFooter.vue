@@ -14,10 +14,10 @@ const buttonClasses = 'w-full border-none p-1.5 m-0 box-border rounded-lg h-8 bg
 </script>
 
 <template>
-    <div class="flex flex-col max-w-full">
+    <div class="flex flex-col max-w-full gap-2 pt-2">
         <StatusText v-if="!config.api.enabled" />
         <RouterLink v-else-if="userStore.user" to="/account">
-            <div class="flex w-full h-16 bg-background-light ring-1 ring-border-muted rounded-xl my-2 p-2 hover:ring-primary transition-all duration-dynamic">
+            <div class="flex w-full h-16 bg-background-light ring-1 ring-border-muted rounded-xl p-2 hover:ring-primary transition-all duration-dynamic">
                 <div class="flex items-center mr-3 p-1">
                     <img :src="userStore.user.user_metadata.avatar_url" alt="User avatar"
                         class="size-10 rounded-full">

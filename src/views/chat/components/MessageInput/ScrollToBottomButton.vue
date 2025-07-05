@@ -7,9 +7,9 @@ const uiStore = useUiStore();
 
 const showButton = ref<boolean>(false);
 
-watch(uiStore.chatList, () => {
-    showButton.value = !uiStore.chatList.isScrollingDown;
-}); 
+watch(uiStore.chat, () => {
+    showButton.value = !uiStore.chat.isScrollingDown;
+});
 </script>
 
 <template>

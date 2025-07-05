@@ -127,11 +127,11 @@ const useMessagesStore = defineStore('messages', () => {
 	}
 
 
-	function openChat(id: number) {
+	function openChat(id: number | null) {
 		logger.info('Messages Store', 'Opening chat with id', id);
 
 		openedChatId.value = id || null;
-		useUiStore().setScrollingDown(true);
+		useUiStore().chat.isScrollingDown = true;
 	}
 
 	// -----

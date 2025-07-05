@@ -1,11 +1,11 @@
 import { defineStore } from "pinia";
+import { useConfigStore } from './config';
 
 interface UIStore {
-    chatList: {
+    chat: {
         isScrollingDown: boolean,
     },
-    connectedToOllama: boolean,
-    openedChatId: number | null;
+    setConnectedToOllama: boolean,
 }
 
 /**
@@ -13,22 +13,16 @@ interface UIStore {
  */
 export const useUiStore = defineStore('uiStore', {
     state: (): UIStore => ({
-        chatList: {
+        chat: {
             isScrollingDown: false,
         },
-        connectedToOllama: false,
-        openedChatId: null,
+        setConnectedToOllama: false,
     }),
-    getters: {},
-    actions: {
-        setOpenedChat(id: number | null) {
-            this.openedChatId = id;
-        },
-        setScrollingDown(status: boolean) {
-            this.chatList.isScrollingDown = status;
-        },
-        setConnectedToOllama(status: boolean) {
-            this.connectedToOllama = status;
+    getters: {
+        isConnectedToOllama(): boolean {
+            const configStore = useConfigStore();
+            return configStore.api.enabled || this.setConnectedToOllama;
         }
-    }
-})
+    },
+    actions: {}
+});

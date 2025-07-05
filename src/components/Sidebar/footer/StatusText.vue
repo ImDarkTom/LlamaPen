@@ -24,7 +24,7 @@ onMounted(() => {
         })
         .then(response => {
             statusMessageText.value = response;
-            uiStore.setConnectedToOllama(true);
+            uiStore.setConnectedToOllama = true;
         })
         .catch((error) => {
             if (error instanceof TypeError) {
@@ -33,7 +33,7 @@ onMounted(() => {
                 statusMessageText.value = error.message;
             }
 
-            uiStore.setConnectedToOllama(false);
+            uiStore.setConnectedToOllama = false;
             emitter.emit('popup:ollamanotconnected');
         })
         .finally(() => {
@@ -44,12 +44,12 @@ onMounted(() => {
 </script>
 
 <template>
-    <div class="overflow-hidden overflow-ellipsis py-2 font-semibold">
+    <div class="overflow-hidden overflow-ellipsis font-semibold">
         <span
             :class="{ 
                 'text-warning': waitingForResponse,
-                'text-success': uiStore.connectedToOllama && !waitingForResponse, 
-                'text-danger': !uiStore.connectedToOllama && !waitingForResponse
+                'text-success': uiStore.isConnectedToOllama && !waitingForResponse, 
+                'text-danger': !uiStore.isConnectedToOllama && !waitingForResponse
                 }">
             Ollama status:
             <span class="font-normal" ref="statusMessageElem" :title="statusMessageText">{{ statusMessageText }}</span>

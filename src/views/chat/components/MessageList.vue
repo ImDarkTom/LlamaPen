@@ -25,8 +25,7 @@ const uiStore = useUiStore();
 
 function openChat(newId: string | string[], oldId?: string | string[]) {
     if (newId !== oldId) {
-        messagesStore.openChat(parseInt(newId as string));
-        uiStore.setOpenedChat(parseNumOrNull(route.params.id));
+        messagesStore.openChat(parseNumOrNull(newId));
     }
 
     if (!newId) {
@@ -42,8 +41,7 @@ watch(() => route.params.id, (newId, oldId) => openChat(newId, oldId));
 onMounted(() => {
     logger.info('Message List Component', 'Mounted message list component');
 
-    messagesStore.openChat(parseInt(route.params.id as string));
-    uiStore.setOpenedChat(parseNumOrNull(route.params.id));
+    messagesStore.openChat(parseNumOrNull(route.params.id));
 
     if (!route.params.id) {
         setPageTitle('Chat');
@@ -66,7 +64,7 @@ onUnmounted(() => {
 });
 
 watch(() => openedChatMessages.value, async () => {
-    if (uiStore.chatList.isScrollingDown) {
+    if (uiStore.chat.isScrollingDown) {
         await nextTick();
 
         scrollToBottom({ force: true });
@@ -78,7 +76,7 @@ function scrollToBottom(event: { force?: boolean } | undefined) {
         return;
     }
 
-    if (event?.force || uiStore.chatList.isScrollingDown) {
+    if (event?.force || uiStore.chat.isScrollingDown) {
         const scrollPosition = messageListRef.value.scrollHeight;
         const scrollHeight = messageListRef.value.scrollHeight;
 
@@ -102,7 +100,8 @@ function handleScroll(_e: Event) {
     const elementHeight = messageListElem.scrollHeight;
     const userScrolled = messageListElem.scrollTop + messageListElem.clientHeight;
 
-    uiStore.setScrollingDown(elementHeight < userScrolled + 25); // 25px padding
+    // If scrolled more than 25px up.
+    uiStore.chat.isScrollingDown = elementHeight < userScrolled + 25; // 25px padding
 }
 
 </script>

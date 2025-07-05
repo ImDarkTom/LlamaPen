@@ -151,7 +151,7 @@ watch(
             <template v-else>
                 <TextInputSetting label="Ollama URL" v-model="config.ollamaUrl" default="http://localhost:11434"
                     :check="ollamaUrlCheck" />
-                <span v-if="!uiStore.connectedToOllama">
+                <span v-if="!uiStore.isConnectedToOllama">
                     Can't connect? Checkout the
                     <RouterLink to="/guide" class="text-text underline">setup guide</RouterLink>.
                 </span>

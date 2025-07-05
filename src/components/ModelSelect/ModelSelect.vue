@@ -146,7 +146,7 @@ function setFocused(index: number) {
             <DropdownButton :direction="direction" :opened="showSelect" :additional-classes="buttonClasses"
                 @update:opened="toggleShowSelect">
 
-                <span v-if="uiStore.connectedToOllama" class="flex flex-row gap-2 items-center">
+                <span v-if="uiStore.isConnectedToOllama" class="flex flex-row gap-2 items-center">
                     <ModelIcon :name="selectedModelInfo?.model || 'Unknown'" class="size-6" />
                     {{ selectedModelInfo?.name || config.selectedModel }}
                 </span>
@@ -185,9 +185,9 @@ function setFocused(index: number) {
                             @blur="searchFocused = false" @keydown="searchKeyDown" type="search"
                             placeholder="Search a model..."
                             class="border-2 border-primary focus:border-border w-full rounded-lg h-6 box-content p-3 outline-0"
-                            :class="{ 'cursor-not-allowed': !uiStore.connectedToOllama }"
+                            :class="{ 'cursor-not-allowed': !uiStore.isConnectedToOllama }"
                             aria-label="Search for a model..." aria-controls="model-list"
-                            :disabled="!uiStore.connectedToOllama">
+                            :disabled="!uiStore.isConnectedToOllama">
                         <RouterLink to="/models"
                             class="h-6 p-3 box-content text-background !bg-primary hover:!bg-border cursor-pointer transition-colors duration-dynamic rounded-lg">
                             <TbListDetails />
@@ -196,7 +196,7 @@ function setFocused(index: number) {
 
                     <ul role="list" class="max-h-80 overflow-y-auto *:not-last:mb-2">
                         <ModelSelectItem 
-                            v-if="uiStore.connectedToOllama && queriedModelList.length > 0"
+                            v-if="uiStore.isConnectedToOllama && queriedModelList.length > 0"
                             v-for="(model, index) in queriedModelList" :key="model.name" 
                             :model="model" 
                             :index="index"
@@ -207,7 +207,7 @@ function setFocused(index: number) {
                             @mouseover="setFocused(index)" 
                             ref="listItemsRef" 
                         />
-                        <li v-else-if="uiStore.connectedToOllama && queriedModelList.length === 0"
+                        <li v-else-if="uiStore.isConnectedToOllama && queriedModelList.length === 0"
                             class="flex w-full p-4 justify-center items-center">
                             No results.
                         </li>

@@ -246,7 +246,7 @@ function sanitizeSection(text: string | null) {
             <button
                 class="text-background bg-primary enabled:hover:bg-secondary p-3 h-8 box-content rounded-lg enabled:cursor-pointer select-none flex flex-row justify-center items-center gap-2 disabled:opacity-75"
                 @click="downloadModel"
-                :disabled="!uiStore.connectedToOllama">
+                :disabled="!uiStore.isConnectedToOllama">
                 <AiOutlineDownload />
                 Download
             </button>
@@ -275,7 +275,7 @@ function sanitizeSection(text: string | null) {
 
             <div class="h-[1px] w-full bg-border"></div>
 
-            <div v-if="!uiStore.connectedToOllama">
+            <div v-if="!uiStore.isConnectedToOllama">
                 Not connected to Ollama
             </div>
             <div v-else-if="modelList.length === 0">
