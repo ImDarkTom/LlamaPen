@@ -11,7 +11,7 @@ type ModelListItem = {
         parameter_size: string;
         quantization_level: string;
     };
-    capabilities?: ('completion' | 'tools' | 'vision' | 'insert' | 'embedding' | 'search')[];
+    capabilities?: ('completion' | 'tools' | 'thinking' | 'vision' | 'insert' | 'embedding' | 'search')[];
     llamapenMetadata?: {
         premium?: boolean;
         creator: string;
