@@ -8,6 +8,7 @@ import { computed, onMounted, ref } from 'vue';
 import AccountSection from './components/AccountSection.vue';
 import supabase from '@/lib/supabase';
 import isDateBeforeToday from '@/utils/core/isDateBeforeToday';
+import { BsCheckSquareFill } from 'vue-icons-plus/bs';
 
 const userStore = useUserStore();
 const config = useConfigStore();
@@ -99,7 +100,7 @@ const quotaUsedPercentage = computed(() => (realRemaining.value / userStore.subs
 				<div v-else class="w-full">
 					<span class="flex flex-row">
 						<span>
-							Messages/edits remaining: <b>{{ realRemaining }}/{{ userStore.subscription.limit }}</b>
+							Messages remaining: <b>{{ realRemaining }}/{{ userStore.subscription.limit }}</b>
 						</span>
 						<div class="grow"></div>
 						<span>Resets daily at 00:00 UTC</span>
@@ -111,28 +112,36 @@ const quotaUsedPercentage = computed(() => (realRemaining.value / userStore.subs
 						></div>
 					</div>
 				</div>
-				<h3 class="text-2xl">Plan</h3>
+				<h3 class="text-2xl" id="plan">Plan</h3>
 				<div class="w-full flex justify-center">
-					<button class="w-fit text-background bg-primary hover:bg-secondary transition-colors duration-dynamic p-4 rounded-lg cursor-pointer" @click="subscriptionButtonClick">
-						{{ loadingSubButtonPage ? 
-							'Waiting for checkout session...' :
-							userStore.subscription.subscribed ? 'Manage Subscription' : 'Subscribe to LlamaPen Explorer - €8/mo' }}
+					<button class="group w-fit flex flex-row text-surface-light hover:text-surface font-semibold bg-gradient-to-br from-text to-primary hover:from-secondary hover:scale-105 hover:shadow-secondary/50 shadow-transparent shadow-lg shadow- p-1 transition-all duration-dynamic rounded-lg cursor-pointer" @click="subscriptionButtonClick">
+						<div class="p-3">
+							{{ loadingSubButtonPage ? 
+								'Opening checkout session...' :
+								userStore.subscription.subscribed ? 
+									'Manage Subscription' : 
+									'Subscribe to LlamaPen Explorer'
+							}}
+						</div>
+						<div v-if="!loadingSubButtonPage && !userStore.subscription.subscribed" class="group-hover:text-secondary bg-surface-light group-hover:bg-surface transition-all duration-dynamic text-text-muted flex items-center justify-center p-3 rounded-md">
+							€8/mo
+						</div>
 					</button>
 				</div>
 				<div v-if="userStore.subscription.name !== 'Premium'" class="flex flex-row gap-2">
 					<div class="w-1/2 border-2 border-border-muted rounded-lg">
 						<h4 class="text-xl font-semibold bg-border-muted text-center select-none p-2">Free (current plan)</h4>
-						<ul class="p-4 flex flex-col gap-1">
-							<li>✅ 20 message tokens/day</li>
-							<li>✅ Access to standard models</li>
+						<ul class="p-4 flex flex-col gap-1 *:flex *:flex-row *:gap-2 *:items-center">
+							<li><BsCheckSquareFill class="size-5 shrink-0" /> 20 message tokens/day</li>
+							<li><BsCheckSquareFill class="size-5 shrink-0"/> Access to free AI models</li>
 						</ul>
 					</div>
 					<div class="w-1/2 border-2 border-primary rounded-lg bg-surface">
 						<h4 class="text-xl font-semibold text-center bg-primary text-background select-none p-2">Premium</h4>
-						<ul class="p-4 flex flex-col gap-1">
-							<li>✅ 100 message tokens/day</li>
-							<li>✅ Access to premium models</li>
-							<li>❤️ Developer support</li>
+						<ul class="p-4 flex flex-col gap-1 *:flex *:flex-row *:items-start *:gap-2">
+							<li><BsCheckSquareFill class="size-5 shrink-0 text-secondary" /> 100 message tokens/day</li>
+							<li><BsCheckSquareFill class="size-5 shrink-0 text-secondary" /> Access to free + premium AI models</li>
+							<li>💖 Support development</li>
 						</ul>
 					</div>
 				</div>

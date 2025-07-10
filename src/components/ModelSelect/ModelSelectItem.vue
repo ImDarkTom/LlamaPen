@@ -23,7 +23,7 @@ function setModel(model: ModelListItem) {
 		if (userStore.subscription.subscribed) {
 			emit('setModel', model.model);
 		} else {
-			router.push('/account');
+			router.push('/account#plan');
 		}
 	} else {
 		emit('setModel', model.model);
