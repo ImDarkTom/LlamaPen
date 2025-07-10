@@ -10,6 +10,7 @@ import ollamaApi from '@/utils/ollama';
 import ModelIcon from '../Icon/ModelIcon.vue';
 import { TbListDetails } from 'vue-icons-plus/tb';
 import isOnMobile from '@/utils/core/isOnMobile';
+import ollamaRequest from '@/utils/ollamaRequest';
 
 const config = useConfigStore();
 const uiStore = useUiStore();
@@ -63,11 +64,22 @@ function handleClickOutside() {
     }
 }
 
-function setModel(newModelName: string) {
+async function setModel(newModelName: string) {
     config.selectedModel = newModelName;
 
     toggleShowSelect();
     searchQuery.value = "";
+
+    const { data: response, error } = await ollamaRequest('/api/show', 'POST', {
+        model: newModelName,
+    });
+
+    if (error) {
+        console.error('Error getting model info for selected ollama model.', error);
+        return
+    }
+    
+    uiStore.chat.selectedModelInfo = await response.json();
 }
 
 function resetState() {
@@ -138,6 +150,10 @@ const selectedModelInfo = computed(() => modelsList.value.find(model => model.mo
 function setFocused(index: number) {
     focusedItemIndex.value = index;
 }
+
+const modelName = computed(() => {
+    return selectedModelInfo.value?.name || config.selectedModel;
+});
 </script>
 
 <template>
@@ -148,7 +164,7 @@ function setFocused(index: number) {
 
                 <span v-if="uiStore.isConnectedToOllama" class="flex flex-row gap-2 items-center">
                     <ModelIcon :name="selectedModelInfo?.model || 'Unknown'" class="size-6" />
-                    {{ selectedModelInfo?.name || config.selectedModel }}
+                    {{ modelName }}
                 </span>
 
                 <p class="flex flex-row gap-2 items-center italic" v-else>

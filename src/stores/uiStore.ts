@@ -4,6 +4,7 @@ import { useConfigStore } from './config';
 interface UIStore {
     chat: {
         isScrollingDown: boolean,
+        selectedModelInfo: OllamaModelInfoResponse | null
     },
     setConnectedToOllama: boolean,
 }
@@ -14,7 +15,8 @@ interface UIStore {
 export const useUiStore = defineStore('uiStore', {
     state: (): UIStore => ({
         chat: {
-            isScrollingDown: false,
+            isScrollingDown: true,
+            selectedModelInfo: null,
         },
         setConnectedToOllama: false,
     }),

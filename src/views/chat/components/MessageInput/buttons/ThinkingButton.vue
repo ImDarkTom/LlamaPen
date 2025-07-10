@@ -1,18 +1,43 @@
 <script setup lang="ts">
+import { useUiStore } from '@/stores/uiStore';
+import { computed, watch } from 'vue';
 import { BiBrain } from 'vue-icons-plus/bi';
 
-defineProps(['modelValue'])
-const emits = defineEmits(['update:modelValue'])
+const uiStore = useUiStore();
 
+defineProps(['modelValue']);
+const emits = defineEmits(['update:modelValue']);
+
+const selectedModelCanThink = computed(() => {
+    return uiStore.chat.selectedModelInfo?.capabilities.includes('thinking');
+});
+
+watch(selectedModelCanThink, () => {
+    if (!selectedModelCanThink.value) {
+        emits('update:modelValue', false)
+    }
+});
+
+function toggleCheck(e: Event) {
+    if (!selectedModelCanThink.value) return;
+    emits('update:modelValue', (e.target as HTMLInputElement).checked);
+}
 </script>
 
 <template>
-    <div class="aspect-square msg-input-secondary-btn !p-0 " :class="{ 'bg-primary ring-background! text-background!': modelValue }"
-        title="Enable thinking">
-        <label for="thinking-toggle" class="cursor-pointer size-full flex items-center justify-center">
+    <div 
+        class="msg-input-secondary-btn " 
+        :class="{ 
+            'bg-primary ring-background! text-background!': modelValue,
+            'opacity-50': !selectedModelCanThink
+        }"
+        :title="selectedModelCanThink ? 'Enable thinking' : 'Selected model does not have thinking capabilities.'"
+    >
+        <label for="thinking-toggle" class="cursor-pointer size-full flex flex-row gap-2 items-center justify-center">
             <BiBrain />
+            <span>Think</span>
         </label>
         <input type="checkbox" id="thinking-toggle" class="hidden" :value="modelValue"
-            @input="emits('update:modelValue', ($event.target as HTMLInputElement).checked)" />
+            @input="toggleCheck" />
     </div>
 </template>
