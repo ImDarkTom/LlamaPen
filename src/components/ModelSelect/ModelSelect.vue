@@ -11,6 +11,7 @@ import ModelIcon from '../Icon/ModelIcon.vue';
 import { TbListDetails } from 'vue-icons-plus/tb';
 import isOnMobile from '@/utils/core/isOnMobile';
 import ollamaRequest from '@/utils/ollamaRequest';
+import { useModelCapabiltyCache } from '@/composables/modelCapabilities';
 
 const config = useConfigStore();
 const uiStore = useUiStore();
@@ -79,7 +80,10 @@ async function setModel(newModelName: string) {
         return
     }
     
-    uiStore.chat.selectedModelInfo = await response.json();
+    const modelInfo = (await response.json()) as OllamaModelInfoResponse;
+
+    uiStore.chat.selectedModelInfo = modelInfo;
+    useModelCapabiltyCache().addToCache(newModelName, modelInfo.capabilities);
 }
 
 function resetState() {

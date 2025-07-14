@@ -4,11 +4,15 @@ import useUserStore from '@/stores/user';
 import { AiFillStar, AiOutlineArrowRight, AiOutlineEye, AiOutlineTool } from 'vue-icons-plus/ai';
 import { BsGlobe } from 'vue-icons-plus/bs';
 import ModelIcon from '../Icon/ModelIcon.vue';
-import { ref } from 'vue';
+import { computed, ref } from 'vue';
+import { useModelCapabiltyCache } from '@/composables/modelCapabilities';
+import { BiBrain } from 'vue-icons-plus/bi';
 
 const userStore = useUserStore();
 
-defineProps<{
+const { cachedCapabilities } = useModelCapabiltyCache();
+
+const props = defineProps<{
 	model: ModelListItem,
 	index: number,
 	isCurrentModel: boolean,
@@ -33,6 +37,10 @@ function setModel(model: ModelListItem) {
 const listItemRef = ref<HTMLLIElement | null>(null);
 defineExpose({
 	listItemRef
+});
+
+const modelCapabilities = computed(() => {
+	return props.model.capabilities || cachedCapabilities.value[props.model.model] || [];
 });
 </script>
 
@@ -60,17 +68,21 @@ defineExpose({
 						<AiFillStar class="text-yellow-400 size-4" />
 					</div>
 					<!-- Capability tags -->
-					<div v-if="model.capabilities?.includes('vision')"
+					<div v-if="modelCapabilities.includes('vision')"
 						class="bg-green-400/25 rounded-sm ring-1 ring-green-400 p-0.5">
 						<AiOutlineEye class="text-green-400 size-4" />
 					</div>
-					<div v-if="model.capabilities?.includes('tools')"
+					<div v-if="modelCapabilities.includes('thinking')"
+						class="bg-violet-400/25 rounded-sm ring-1 ring-violet-400 p-0.5">
+						<BiBrain class="text-violet-400 size-4" />
+					</div>
+					<div v-if="modelCapabilities.includes('tools')"
 						class="bg-blue-400/25 rounded-sm ring-1 ring-blue-400 p-0.5">
 						<AiOutlineTool class="text-blue-400 size-4" />
 					</div>
-					<div v-if="model.capabilities?.includes('search')"
-						class="bg-violet-400/25 rounded-sm ring-1 ring-violet-400 p-0.5">
-						<BsGlobe class="text-violet-400 size-4" />
+					<div v-if="modelCapabilities.includes('search')"
+						class="bg-violet-400/25 rounded-sm ring-1 ring-pink-400 p-0.5">
+						<BsGlobe class="text-pink-400 size-4" />
 					</div>
 				</div>
 			</div>
