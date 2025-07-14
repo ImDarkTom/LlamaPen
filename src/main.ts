@@ -1,5 +1,6 @@
 import { createApp } from "vue";
-import "./styles/style.css";
+import "./assets/style/style.css";
+import "./assets/style/fonts.css";
 import App from "./App.vue";
 import { createPinia } from "pinia";
 import piniaPluginPersistedstate from "pinia-plugin-persistedstate";
