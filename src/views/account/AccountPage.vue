@@ -8,7 +8,8 @@ import { computed, onMounted, ref } from 'vue';
 import AccountSection from './components/AccountSection.vue';
 import supabase from '@/lib/supabase';
 import isDateBeforeToday from '@/utils/core/isDateBeforeToday';
-import { BsCheckSquareFill } from 'vue-icons-plus/bs';
+import { BsCheckSquareFill, BsStripe } from 'vue-icons-plus/bs';
+import { BiTimeFive } from 'vue-icons-plus/bi';
 
 const userStore = useUserStore();
 const config = useConfigStore();
@@ -73,7 +74,23 @@ const realRemaining = computed(() => {
 	}
 })
 
-const quotaUsedPercentage = computed(() => (realRemaining.value / userStore.subscription.limit) * 100)
+const quotaUsedPercentage = computed(() => (realRemaining.value / userStore.subscription.limit) * 100);
+
+const subButtonText = computed(() => {
+	if (loadingSubButtonPage.value) {
+		return userStore.subscription.subscribed
+			? 'Opening subscription manager...'
+			: 'Opening checkout session...';
+	}
+
+	return userStore.subscription.subscribed
+		? 'Manage subscription'
+		: 'Subscribe to LlamaPen Premium'
+});
+
+const showPriceTag = computed(() => {
+	return !loadingSubButtonPage && !userStore.subscription.subscribed
+});
 </script>
 
 <template>
@@ -113,17 +130,30 @@ const quotaUsedPercentage = computed(() => (realRemaining.value / userStore.subs
 					</div>
 				</div>
 				<h3 class="text-2xl" id="plan">Plan</h3>
+				<div v-if="userStore.subscription.subscribed" class="flex flex-row gap-2">
+					<span class="border-2 border-border-muted rounded-lg p-2">
+						Status: <span class="font-semibold capitalize">{{ userStore.subscription.status }}</span>
+					</span>
+					<span 
+						v-if="userStore.subscription.cancel_at_period_end" 
+						class="bg-warning/75 text-background-light p-2 rounded-lg border-2 border-warning flex flex-row gap-2 items-center"
+					>
+						Ending {{ new Date(userStore.subscription.period_end * 1000).toLocaleDateString() }} <BiTimeFive />
+					</span>
+					<span 
+						v-else
+						class="bg-success/75 text-background-light p-2 rounded-lg border-2 border-success flex flex-row gap-2 items-center"
+					>
+						Renewing on {{ new Date(userStore.subscription.period_end * 1000).toLocaleDateString() }} <BiTimeFive />
+					</span>
+				</div>
 				<div class="w-full flex justify-center">
-					<button class="group w-fit flex flex-row text-surface-light hover:text-surface font-semibold bg-gradient-to-br from-text to-primary hover:from-secondary hover:scale-105 hover:shadow-secondary/50 shadow-transparent shadow-lg shadow- p-1 transition-all duration-dynamic rounded-lg cursor-pointer" @click="subscriptionButtonClick">
-						<div class="p-3">
-							{{ loadingSubButtonPage ? 
-								'Opening checkout session...' :
-								userStore.subscription.subscribed ? 
-									'Manage Subscription' : 
-									'Subscribe to LlamaPen Explorer'
-							}}
+					<button class="group w-fit flex flex-row text-surface-light hover:text-surface font-semibold bg-gradient-to-br from-text to-primary hover:from-secondary hover:scale-105 hover:shadow-primary/50 shadow-transparent shadow-lg shadow- p-1 transition-all duration-dynamic rounded-lg cursor-pointer" @click="subscriptionButtonClick">
+						<div class="p-3 flex flex-row gap-2 items-center">
+							<BsStripe />
+							{{ subButtonText }}
 						</div>
-						<div v-if="!loadingSubButtonPage && !userStore.subscription.subscribed" class="group-hover:text-secondary bg-surface-light group-hover:bg-surface transition-all duration-dynamic text-text-muted flex items-center justify-center p-3 rounded-md">
+						<div v-if="showPriceTag" class="group-hover:text-secondary bg-surface-light group-hover:bg-surface transition-all duration-dynamic text-text-muted flex items-center justify-center p-3 rounded-md">
 							€8/mo
 						</div>
 					</button>

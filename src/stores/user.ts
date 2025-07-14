@@ -31,18 +31,22 @@ async function fetchSubInfo() {
 const user = ref<User | null>(null);
 const session = ref<Session | null>(null);
 const subscriptionInfo = ref<{ 
-    subscribed: boolean, 
     name: string, 
+    subscribed: boolean,
+    status?: string, 
     remaining: number, 
     remaining_last_updated: string | null
     limit: number, 
-    ending?: number, 
+    period_end: number,
+    cancel_at_period_end: boolean, 
 }>({
-    subscribed: false,
     name: 'Loading...',
+    subscribed: false,
     remaining: 20,
     remaining_last_updated: null,
     limit: 20,
+    period_end: -1,
+    cancel_at_period_end: false
 });
 
 /**
