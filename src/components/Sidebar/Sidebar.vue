@@ -33,12 +33,12 @@ function hideSidebar() {
 }
 
 onMounted(() => {
-    emitter.on('hideSidebar', () => hideSidebar);
+    emitter.on('hideSidebar', hideSidebar);
     document.addEventListener('keydown', shortcutListener);
 });
 
 onUnmounted(() => {
-    emitter.off('hideSidebar', () => hideSidebar);
+    emitter.off('hideSidebar', hideSidebar);
     document.removeEventListener('keydown', shortcutListener);
 });
 </script>

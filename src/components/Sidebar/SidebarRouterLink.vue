@@ -31,7 +31,6 @@ const isExternalLink = computed(() => {
 
 const handleNavigate = (navigate: (e?: MouseEvent) => Promise<void | NavigationFailure>) => {
 	if (isOnMobile() && config.closeSidebarOnNavMobile) {
-		console.log("hiding sidebar");
 		emitter.emit('hideSidebar');
 	}
 
