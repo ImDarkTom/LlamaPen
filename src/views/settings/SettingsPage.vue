@@ -17,6 +17,9 @@ import { useUiStore } from '@/stores/uiStore';
 import NumberInputSetting from './components/NumberInputSetting.vue';
 import PageHeader from '@/components/Page/PageHeader.vue';
 import SelectionSetting from './components/SelectionSetting.vue';
+import ollamaRequest from '@/utils/ollamaRequest';
+import { TbListDetails } from 'vue-icons-plus/tb';
+import { AiFillInfoCircle } from 'vue-icons-plus/ai';
 
 const config = useConfigStore();
 const router = useRouter();
@@ -128,6 +131,19 @@ watch(
 );
 
 const isInProd = import.meta.env.VITE_PRODUCTION === 'true';
+
+async function checkOllamaVersion() {
+    const { data: response, error } = await ollamaRequest('/api/version', 'GET');
+
+    if (error) {
+        alert(`❌ Error fetching Ollama version, ${error}`);
+        return;
+    }
+    
+    const body = await response.json();
+
+    alert(`✅ Ollama Version: ${body.version || 'Unknown'}`);
+}
 </script>
 
 <template>
@@ -157,7 +173,14 @@ const isInProd = import.meta.env.VITE_PRODUCTION === 'true';
                     Can't connect? Checkout the
                     <RouterLink to="/guide" class="text-text underline">setup guide</RouterLink>.
                 </span>
-                <ButtonSetting type="link" to="/models">Manage Models</ButtonSetting>
+                <div class="flex flex-row gap-2 *:w-1/2">
+                    <ButtonSetting type="link" to="/models">
+                        <TbListDetails /> Manage Models
+                    </ButtonSetting>
+                    <ButtonSetting type="button" @click="checkOllamaVersion">
+                        <AiFillInfoCircle /> Check Ollama version
+                    </ButtonSetting>
+                </div>
             </template>
         </OptionCategory>
 
