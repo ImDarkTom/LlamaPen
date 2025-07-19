@@ -32,14 +32,15 @@ function handleEscape(e: KeyboardEvent) {
 
 <template>
     <div class="w-full h-full flex flex-col items-center py-4 box-border overflow-y-auto px-2
-    *:mx-auto *:md:w-4/5 *:lg:w-3/5">
+    *:mx-auto *:md:w-4/5 *:lg:w-3/5 *:max-w-3xl">
         <PageHeader text="Setup Guide" />
 
         <div class="flex flex-col h-full box-border">
             <h2 class="text-3xl font-semibold pb-2 text-text">Connecting to your local Ollama instance</h2>
-            <p>Ollama does not allow external connections by default, for this app to work you need to add this URL to
-                Ollama's
-                trusted origins and re-launch it. </p>
+            <p>Ollama does not allow connections from any external URLs by default, so for this app to work you need to add this app's URL to
+                Ollama's trusted origins and re-launch it. </p>
+            <br>
+            <p class="mt-6">Below are guides on how to do that on set different operating systems:</p>
 
             <h3 class="text-2xl pb-2 pt-4 flex flex-row items-center">
                 <AiFillWindows />&nbsp;Windows
@@ -51,8 +52,11 @@ function handleEscape(e: KeyboardEvent) {
                 class="my-2"><code class="hljs language-bash !my-2">set OLLAMA_ORIGINS="{{ originUrl }}" & ollama serve</code></pre>
             <br>
 
-            <p>If you want to be able to connect without re-running this command each time, you can instead run
-                this to <b>persistently</b> add this app URL to Ollama's trusted origins: </p>
+            <p>This will temporarily allow connections to Ollama from this URL until Ollama is closed.</p>
+            <br>
+
+            <p class="mt-6">If you want to be able to connect without re-running this command each time, you can instead run
+                another command to <b>persistently</b> add this app's URL to Ollama's trusted origins: </p>
             <br>
 
             <pre class="my-2"><code class="hljs language-bash !my-2">setx OLLAMA_ORIGINS="{{ originUrl }}"</code></pre>
@@ -88,8 +92,7 @@ function handleEscape(e: KeyboardEvent) {
             <p class="pb-4">The most common cause for this error is that Ollama is already running. Make sure to close Ollama/end the
                 process before trying again.
                 <br><br>
-                It may also happen if another app is running on the same port, which is unlikely, however it is a
-                possibility.
+                This may also happen if another program is running on the same port which is unlikely, however it is possible.
             </p>
         </div>
     </div>
