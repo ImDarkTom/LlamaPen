@@ -110,7 +110,7 @@ function regenerateMessage(model: string) {
     <div class="group/message m-2 flex flex-col">
         <div class="box-border p-4 flex flex-col" :class="{
             'ml-auto rounded-2xl bg-background-light max-w-[70%] shadow-md shadow-background-dark/50': isUserMessage && !editing,
-            'w-full box-border !p-2 !m-0': isModelMessage || editing
+            'w-full max-w-[calc(100dvw-1rem)] box-border !p-2 !m-0': isModelMessage || editing
         }">
             <div v-if="message.type === 'model'" class="group/msg-header flex flex-row items-center gap-2 mb-2">
                 <ModelIcon :name="message.model" :ignore-styling="true"
