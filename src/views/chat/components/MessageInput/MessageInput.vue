@@ -13,6 +13,7 @@ import router from '@/lib/router';
 import FileUpload from './buttons/FileUpload.vue';
 import ThinkingButton from './buttons/ThinkingButton.vue';
 import { useConfigStore } from '@/stores/config';
+import MessageOptions from './buttons/MessageOptions.vue';
 
 const messagesStore = useMessagesStore();
 const chatsStore = useChatsStore();
@@ -187,6 +188,7 @@ function handlePastedImage(file: File) {
                     <FileUpload :onChange="uploadFile" />
                     <ModelSelect direction="up" />
                     <ThinkingButton v-model="config.chat.thinking.enabled" />
+                    <MessageOptions />
                     <!-- we could revisit the persona selector later -->
                 </div>
                 <ActionButton :canGenerate="canGenerate" @startGeneration="startGeneration" />

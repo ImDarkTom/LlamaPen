@@ -2,7 +2,7 @@
 import { ref } from 'vue';
 import { BsCopy, BsPen } from 'vue-icons-plus/bs';
 import logger from '@/lib/logger';
-import MessageOptionButton from './MessageOptionButton.vue';
+import MessageInteractionButton from './MessageInteractionButton.vue';
 import { AiFillInfoCircle } from 'vue-icons-plus/ai';
 
 const props = defineProps<{
@@ -44,14 +44,14 @@ function openInfo() {
 <template>
     <div class="flex flex-row gap-2 pt-1"
         :class="{ 'justify-end': message.type === 'user', 'justify-start': message.type !== 'user' }">
-        <MessageOptionButton v-if="done" :text="copyTooltipText">
+        <MessageInteractionButton v-if="done" :text="copyTooltipText">
             <BsCopy class="size-full" title="Copy Text" @click="copyMessage" />
-        </MessageOptionButton>
-        <MessageOptionButton v-if="message.type === 'user'" text="Edit">
+        </MessageInteractionButton>
+        <MessageInteractionButton v-if="message.type === 'user'" text="Edit">
             <BsPen class="size-full" title="Edit" @click="editMessage" />
-        </MessageOptionButton>
-        <MessageOptionButton v-if="done" text="Message Info">
+        </MessageInteractionButton>
+        <MessageInteractionButton v-if="done" text="Message Info">
             <AiFillInfoCircle class="size-full" title="Message Info" @click="openInfo" />
-        </MessageOptionButton>
+        </MessageInteractionButton>
     </div>
 </template>

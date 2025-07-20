@@ -25,6 +25,13 @@ interface Config {
         signoutBeforeDisable: boolean,
     },
     chat: {
+        messageOptionsEnabled: boolean,
+        messageOptions: {
+            temperature: number;
+            top_k: number;
+            top_p: number;
+            min_p: number;
+        }
         thinking: {
             enabled: false;
             infoOpenByDefault: boolean;
@@ -34,6 +41,13 @@ interface Config {
         mockRequests: boolean,
         infoLogs: boolean,
     }
+};
+
+export const defaultMessageOptions = { // Defaults from https://github.com/ollama/ollama/blob/main/docs/modelfile.md#parameter
+    temperature: 0.8,
+    top_k: 40,
+    top_p: 0.9,
+    min_p: 0.0,
 };
 
 // Get current location and replace port with 11434
@@ -58,7 +72,7 @@ export const useConfigStore = defineStore('config', {
                 alternateGemmaIcon: false,
             },
             tooltip: {
-                waitTimeoutMs: 500, // Time before showing tooltip
+                waitTimeoutMs: 250, // Time before showing tooltip
             },
             theme: 'auto',
         },
@@ -68,6 +82,8 @@ export const useConfigStore = defineStore('config', {
             signoutBeforeDisable: false,
         },
         chat: {
+            messageOptionsEnabled: false,
+            messageOptions: defaultMessageOptions,
             thinking: {
                 // Enabled is toggled by the input box icon
                 enabled: false,

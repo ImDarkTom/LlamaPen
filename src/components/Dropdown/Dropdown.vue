@@ -33,8 +33,7 @@ defineExpose({
 
 <template>
     <div v-mousedown-outside="handleClickOutside">
-        <DropdownButton :direction :opened @update:opened="toggleOpened"
-        >
+        <DropdownButton :direction :opened @update:opened="toggleOpened">
             <slot name="button" />
         </DropdownButton>
 

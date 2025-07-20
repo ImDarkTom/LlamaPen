@@ -144,6 +144,7 @@ class OllamaAPI {
 				model: modelOverride ?? useConfigStore().selectedModel,
 				think: useConfigStore().chat.thinking.enabled,
 				stream: true,
+				options: useConfigStore().chat.messageOptionsEnabled ? useConfigStore().chat.messageOptions : undefined,
 				messages,
 			}),
 			signal: abortSignal,

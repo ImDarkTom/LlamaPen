@@ -1,5 +1,5 @@
 <script setup lang="ts">
-import MessageOptions from './ChatMessage/MessageOptions.vue';
+import MessageInteractions from './ChatMessage/MessageInteractions.vue';
 import { computed, nextTick, onMounted, ref } from 'vue';
 
 import MessageEditor from './MessageEditor.vue';
@@ -174,6 +174,6 @@ function regenerateMessage(model: string) {
                 </span>
             </div>
         </div>
-        <MessageOptions v-if="!editing" :message="message" :done="modelMessageDone" @editMessage="editMessage" />
+        <MessageInteractions v-if="!editing" :message="message" :done="modelMessageDone" @editMessage="editMessage" />
     </div>
 </template>
