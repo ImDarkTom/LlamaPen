@@ -4,7 +4,6 @@ import { useConfigStore } from '../../stores/config';
 import { useUiStore } from '../../stores/uiStore';
 import { VscDebugDisconnect } from 'vue-icons-plus/vsc';
 import ModelSelectItem from './ModelSelectItem.vue';
-import DropdownButton from '../Dropdown/DropdownButton.vue';
 import logger from '@/lib/logger';
 import ollamaApi from '@/utils/ollama';
 import ModelIcon from '../Icon/ModelIcon.vue';
@@ -12,6 +11,7 @@ import { TbListDetails } from 'vue-icons-plus/tb';
 import isOnMobile from '@/utils/core/isOnMobile';
 import ollamaRequest from '@/utils/ollamaRequest';
 import { useModelCapabiltyCache } from '@/composables/modelCapabilities';
+import Dropdown from '../Dropdown/Dropdown.vue';
 
 const config = useConfigStore();
 const uiStore = useUiStore();
@@ -20,12 +20,12 @@ const uiStore = useUiStore();
 const modelsList = ref<ModelList>([]);
 
 // UI State
-const showSelect = ref<boolean>(false);
 const searchQuery = ref<string>('');
 const searchFocused = ref<boolean>(false);
 const focusedItemIndex = ref<number>(0);
 
 // Refs
+const dropdownRef = ref<ComponentPublicInstance & { toggleOpened: () => void } | null>(null);
 const searchBarRef = ref<HTMLInputElement | null>(null);
 const listItemsRef = ref<Array<ComponentPublicInstance<{ listItemRef: HTMLLIElement | null }>>>([]);
 
@@ -55,20 +55,19 @@ const queriedModelList = computed<ModelList>(() => {
 function handleKeyboardShortcuts(e: KeyboardEvent) {
     if (e.key === "M" && e.ctrlKey && e.shiftKey) {
         e.preventDefault();
-        toggleShowSelect();
-    }
-}
 
-function handleClickOutside() {
-    if (showSelect.value) {
-        toggleShowSelect();
+        if (dropdownRef.value) {
+            dropdownRef.value.toggleOpened();
+        }
     }
 }
 
 async function setModel(newModelName: string) {
     config.selectedModel = newModelName;
 
-    toggleShowSelect();
+    if (dropdownRef.value) {
+        dropdownRef.value.toggleOpened();
+    }
     searchQuery.value = "";
 
     const { data: response, error } = await ollamaRequest('/api/show', 'POST', {
@@ -91,10 +90,8 @@ function resetState() {
     focusedItemIndex.value = 0;
 }
 
-function toggleShowSelect() {
-    showSelect.value = !showSelect.value;
-
-    if (showSelect) {
+function onToggled(opened: boolean) {
+    if (opened) {
         nextTick(() => {
             // QOL change for mobile users so keyboard doesn't pop up
             if (!isOnMobile()) {
@@ -117,7 +114,9 @@ function searchKeyDown(e: KeyboardEvent) {
             break;
 
         case "Escape":
-            toggleShowSelect();
+            if (dropdownRef.value) {
+                dropdownRef.value.toggleOpened();
+            }
             resetState();
             break;
 
@@ -146,7 +145,6 @@ function searchKeyDown(e: KeyboardEvent) {
 
 defineProps<{
     direction: 'up' | 'down',
-    buttonClasses?: string
 }>();
 
 const selectedModelInfo = computed(() => modelsList.value.find(model => model.model === config.selectedModel));
@@ -161,83 +159,47 @@ const modelName = computed(() => {
 </script>
 
 <template>
-    <div v-mousedown-outside="handleClickOutside">
-        <div id="modelselect">
-            <DropdownButton :direction="direction" :opened="showSelect" :additional-classes="buttonClasses"
-                @update:opened="toggleShowSelect">
+    <Dropdown :direction @opened="onToggled" ref="dropdownRef">
+        <template #button>
+            <span v-if="uiStore.isConnectedToOllama" class="flex flex-row gap-2 items-center">
+                <ModelIcon :name="selectedModelInfo?.model || 'Unknown'" class="size-6" />
+                {{ modelName }}
+            </span>
 
-                <span v-if="uiStore.isConnectedToOllama" class="flex flex-row gap-2 items-center">
-                    <ModelIcon :name="selectedModelInfo?.model || 'Unknown'" class="size-6" />
-                    {{ modelName }}
-                </span>
+            <p class="flex flex-row gap-2 items-center italic" v-else>
+                <VscDebugDisconnect />
+                Disconnected
+            </p>
+        </template>
+        <template #menu>
+            <div class="flex flex-row gap-2 items-center justify-center" role="listbox">
+                <!-- Search bar -->
+                <input ref="searchBarRef" v-model="searchQuery" @focus="searchFocused = true"
+                    @blur="searchFocused = false" @keydown="searchKeyDown" type="search" placeholder="Search a model..."
+                    class="border-2 border-primary focus:border-border w-full rounded-lg h-6 box-content p-3 outline-0"
+                    :class="{ 'cursor-not-allowed': !uiStore.isConnectedToOllama }" aria-label="Search for a model..."
+                    aria-controls="model-list" :disabled="!uiStore.isConnectedToOllama">
+                <RouterLink to="/models"
+                    class="h-6 p-3 box-content text-background !bg-primary hover:!bg-border cursor-pointer transition-colors duration-dynamic rounded-lg">
+                    <TbListDetails />
+                </RouterLink>
+            </div>
 
-                <p class="flex flex-row gap-2 items-center italic" v-else>
+            <ul role="list" class="max-h-80 overflow-y-auto *:not-last:mb-2">
+                <ModelSelectItem v-if="uiStore.isConnectedToOllama && queriedModelList.length > 0"
+                    v-for="(model, index) in queriedModelList" :key="model.name" :model="model" :index="index"
+                    :isCurrentModel="model.model === selectedModelInfo?.model" :selected="index === focusedItemIndex"
+                    :queriedModelList="queriedModelList" @setModel="setModel" @mouseover="setFocused(index)"
+                    ref="listItemsRef" />
+                <li v-else-if="uiStore.isConnectedToOllama && queriedModelList.length === 0"
+                    class="flex w-full p-4 justify-center items-center">
+                    No results.
+                </li>
+                <li v-else class="h-24 flex px-3 py-2 roundex-xl justify-center items-center font-bold gap-2">
                     <VscDebugDisconnect />
-                    Disconnected
-                </p>
-            </DropdownButton>
-
-            <Transition
-                :enter-active-class="[
-                    'motion-scale-in-[0.5]',
-                    direction === 'up' ? 'motion-translate-y-in-[25%]' : 'motion-translate-y-in-[-25%]',
-                    'motion-translate-x-in-[-10%]',
-                    'motion-opacity-in-[0%]',
-                    'motion-duration-[var(--transition-duration)]'
-                ].join(' ')"
-                :leave-active-class="[
-                    'motion-scale-out-[0.5]',
-                    direction === 'up' ? 'motion-translate-y-out-[25%]' : 'motion-translate-y-out-[-25%]',
-                    'motion-translate-x-out-[-10%]',
-                    'motion-opacity-out-[0%]',
-                    'motion-duration-[var(--transition-duration)]'
-                ].join(' ')"
-            >
-
-                <div v-if="showSelect" class="absolute flex flex-col gap-2 left-0 bg-surface p-1.5 rounded-lg max-w-[100dvw-3rem] w-full sm:w-96 box-border z-20 shadow-md shadow-background"
-                    :class="{
-                        'bottom-full mb-2': direction === 'up',
-                        'top-full mt-2': direction === 'down'
-                    }" role="listbox">
-                    <div class="flex flex-row gap-2 items-center justify-center">
-                        <!-- Search bar -->
-                        <input ref="searchBarRef" v-model="searchQuery" @focus="searchFocused = true"
-                            @blur="searchFocused = false" @keydown="searchKeyDown" type="search"
-                            placeholder="Search a model..."
-                            class="border-2 border-primary focus:border-border w-full rounded-lg h-6 box-content p-3 outline-0"
-                            :class="{ 'cursor-not-allowed': !uiStore.isConnectedToOllama }"
-                            aria-label="Search for a model..." aria-controls="model-list"
-                            :disabled="!uiStore.isConnectedToOllama">
-                        <RouterLink to="/models"
-                            class="h-6 p-3 box-content text-background !bg-primary hover:!bg-border cursor-pointer transition-colors duration-dynamic rounded-lg">
-                            <TbListDetails />
-                        </RouterLink>
-                    </div>
-
-                    <ul role="list" class="max-h-80 overflow-y-auto *:not-last:mb-2">
-                        <ModelSelectItem 
-                            v-if="uiStore.isConnectedToOllama && queriedModelList.length > 0"
-                            v-for="(model, index) in queriedModelList" :key="model.name" 
-                            :model="model" 
-                            :index="index"
-                            :isCurrentModel="model.model === selectedModelInfo?.model"
-                            :selected="index === focusedItemIndex" 
-                            :queriedModelList="queriedModelList"
-                            @setModel="setModel" 
-                            @mouseover="setFocused(index)" 
-                            ref="listItemsRef" 
-                        />
-                        <li v-else-if="uiStore.isConnectedToOllama && queriedModelList.length === 0"
-                            class="flex w-full p-4 justify-center items-center">
-                            No results.
-                        </li>
-                        <li v-else class="h-24 flex px-3 py-2 roundex-xl justify-center items-center font-bold gap-2">
-                            <VscDebugDisconnect />
-                            Not connected to Ollama.
-                        </li>
-                    </ul>
-                </div>
-            </Transition>
-        </div>
-    </div>
+                    Not connected to Ollama.
+                </li>
+            </ul>
+        </template>
+    </Dropdown>
 </template>

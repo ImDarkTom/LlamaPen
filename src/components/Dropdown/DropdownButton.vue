@@ -4,7 +4,6 @@ import { BsChevronDown, BsChevronUp } from 'vue-icons-plus/bs';
 const props = defineProps<{
 	direction: 'up' | 'down';
 	opened: boolean;
-	additionalClasses?: string,
 }>();
 
 const emit = defineEmits(['update:opened']);
@@ -12,13 +11,15 @@ const emit = defineEmits(['update:opened']);
 const toggleOpened = () => {
 	emit('update:opened', !props.opened);
 }
-
 </script>
 
 <template>
-	<div class="flex flex-row items-center gap-2 msg-input-secondary-btn
-		w-max overflow-ellipsis" :class="additionalClasses" @click="toggleOpened" aria-haspopup="listbox"
-		:aria-expanded="opened">
+	<div 
+		class="flex flex-row items-center gap-2 msg-input-secondary-btn w-max overflow-ellipsis" 
+		@click="toggleOpened" 
+		aria-haspopup="listbox"
+		:aria-expanded="opened"
+	>
 		<slot></slot>
 
 		<template v-if="$props.direction === 'up'">
