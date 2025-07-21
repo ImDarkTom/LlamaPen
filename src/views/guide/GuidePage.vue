@@ -59,7 +59,7 @@ function handleEscape(e: KeyboardEvent) {
                 another command to <b>persistently</b> add this app's URL to Ollama's trusted origins: </p>
             <br>
 
-            <pre class="my-2"><code class="hljs language-bash !my-2">setx OLLAMA_ORIGINS="{{ originUrl }}"</code></pre>
+            <pre class="my-2"><code class="hljs language-bash !my-2">setx OLLAMA_ORIGINS "{{ originUrl }}"</code></pre>
             <br>
 
             <p>After that, just open Ollama normally and you should be able to connect after refreshing this page.</p>
