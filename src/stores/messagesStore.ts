@@ -138,35 +138,90 @@ const useMessagesStore = defineStore('messages', () => {
 	// Utils
 	// -----
 
-	async function getOllamaResponse(modelOverride?: string | null) {
-		// TODO: Reduce function complexity by splitting into smaller functions.
-		// TODO: make this know that openedChatId is not null.
-
-		const TOTAL_MESSAGE_SAVE_INTERVAL = 5; // 5 tokens/chunks.
-		let saveCounter = 5;
-
-		// We have verified that openedChatId is not null by this point
-
-		const selectedModel = modelOverride ?? useConfigStore().selectedModel;
-
-		if (selectedModel === '') {
-			throw new Error('No selected model found.')
+	function getSelectedModel(modelOverride?: string) {
+		// TODO: Validate that the selected model is valid by comparing to
+		// a list of available models.
+		if (modelOverride) {
+			return modelOverride;
 		}
 
-		const listBeforeModelMessage = await getMessagesInOllamaFormat();
+		const configStore = useConfigStore();
+		const selectedModel = configStore.selectedModel;
 
+		return selectedModel;
+	}
+
+	/**
+	 * 
+	 * 
+	 * @param model The model to use for the message.
+	 * @param chatId The chat ID to add the message to.
+	 * @return The ID of the added message.
+	 */
+	async function addModelMessageToChat(model: string, chatId: number): Promise<number> {
 		const ollamaMessageId = await db.messages.add({
-			chatId: openedChatId.value as number,
+			chatId,
 			content: '',
 			created: new Date(),
 			type: 'model',
-			model: selectedModel,
+			model: model,
 			status: 'waiting',
 			attachments: [],
 		} as Omit<ModelChatMessage, 'id'>);
 
-		await db.chats.update(openedChatId.value!, { lastestMessageDate: new Date() });
-		logger.info('Messages Store', 'Added ollama message', ollamaMessageId);
+		logger.info('Messages Store', 'Added blank ollama message', ollamaMessageId);
+		return ollamaMessageId;
+	}
+
+	function handleMessageChunkError(chunk: ChatIteratorError) {
+		switch (chunk.error.type) {
+			case '401-parse-fail':
+				alert('Error parsing 401 response');
+				break;
+			case 'no-response-body':
+				alert('No response body found for message chunk');
+				break;
+			case 'unknown-401':
+				alert('Unknown 401 error when recieving message');
+				break;
+			case 'user-not-authed':
+				alert('You need to be signed in to use this model.');
+				break;
+			case 'user-not-premium':
+				alert('You need premium to use this model.');
+				break;
+			case 'rate-limit':
+				alert('Rate limit reached. Please choose a different model or try again later.');
+				break;
+			default:
+				alert(`Unknown error when generating message: ${chunk.error.message}`);
+		}
+
+		emitter.emit('stopChatGeneration');
+	}
+
+	/**
+	 * Handles getting a response from the Ollama API for the current opened chat.
+	 * This should be refactored into smaller functions as it handles a lot of logic.
+	 * 
+	 * @param modelOverride Optional model to override the current selected model.
+	 */
+	async function getOllamaResponse(modelOverride?: string) {
+		const messageSaveInterval = useConfigStore().chat.tokenSaveInterval;
+
+		// 1. Ensure there is an opened chat ID.
+		if (!openedChatId.value) {
+			logger.warn('Messages Store', 'No opened chat ID found when trying to get Ollama response.');
+			return;
+		}
+		const chatId = openedChatId.value;
+
+		const selectedModel = getSelectedModel(modelOverride);
+
+		// 2. Add a blank model message to the chat to put the response in.
+		const ollamaMessageId = await addModelMessageToChat(selectedModel, chatId);
+		// Update the chat's lastestMessageDate to now.
+		await db.chats.update(chatId, { lastestMessageDate: new Date() });
 
 		const abortController = new AbortController();
 
@@ -178,55 +233,29 @@ const useMessagesStore = defineStore('messages', () => {
 		emitter.on('stopChatGeneration', cancelHandler);
 		logger.info('Messages Store', 'Added stop chat generation emit listener');
 
-		function handleChunkError(chunk: ChatIteratorError) {
-			switch (chunk.error.type) {
-				case '401-parse-fail':
-					alert('Error parsing 401 response');
-					break;
-				case 'no-response-body':
-					alert('No response body found for message chunk');
-					break;
-				case 'unknown-401':
-					alert('Unknown 401 error when recieving message');
-					break;
-				case 'user-not-authed':
-					alert('You need to be signed in to use this model.');
-					break;
-				case 'user-not-premium':
-					alert('You need premium to use this model.');
-					break;
-				case 'rate-limit': 
-					alert('Rate limit reached. Please choose a different model or try again later.');
-					break;
-				default:
-					alert(`Unknown error when generating message: ${chunk.error.message}`);
-			}
-		}
+		const chatMessageList = await getMessagesInOllamaFormat();
 
 		let updatedMessage = "";
 		let updatedMessageThoughts = ""; 
 		let messageGenerating = false;
-		for await (const chunk of ollamaApi.chat(listBeforeModelMessage, abortController.signal, selectedModel)) {
-			// console.log(chunk);
-
+		let messageSaveCounter = 0;
+		for await (const chunk of ollamaApi.chat(chatMessageList, abortController.signal, selectedModel)) {
 			if ('error' in chunk) {
-				handleChunkError(chunk);
-				cancelHandler();
+				handleMessageChunkError(chunk);
 				break;
 			}
 
 			if ('stream_done' in chunk) {
-				const status = chunk.reason === 'stream-done' ? 'finished' : 'cancelled'
-
-				updateOllamaMessageInDB(ollamaMessageId, updatedMessage);
-				updateMessageStatus(ollamaMessageId, status);
+				const finishReason = chunk.reason === 'stream-done' ? 'finished' : 'cancelled';
+				updateOllamaMessageInDB(ollamaMessageId, updatedMessage, updatedMessageThoughts);
+				updateMessageStatus(ollamaMessageId, finishReason);
 
 				logger.info('Messages Store', 'Got stream_done chunk.');
 				break;
 			}
 
 			if ('done' in chunk && chunk.done) {
-				updateOllamaMessageInDB(ollamaMessageId, updatedMessage);
+				updateOllamaMessageInDB(ollamaMessageId, updatedMessage, updatedMessageThoughts);
 				updateMessageStatus(ollamaMessageId, 'finished');
 
 				logger.info('Messages Store', 'Finished generating response.');
@@ -241,32 +270,30 @@ const useMessagesStore = defineStore('messages', () => {
 
 			const messageChunk = chunk.message.content;
 			const thoughtsChunk = chunk.message.thinking || '';
-			openedChatMessages.value = openedChatMessages.value.map((message) => {
-				if (message.id === ollamaMessageId) {
-					updatedMessage += messageChunk;
-					updatedMessageThoughts += thoughtsChunk;
 
-					return {
-						...message,
-						content: updatedMessage,
-						thinking: updatedMessageThoughts,
-					};
-				}
+			const messageIndex = openedChatMessages.value.findIndex(message => message.id === ollamaMessageId);
+			if (messageIndex !== -1) {
+				updatedMessage += messageChunk;
+				updatedMessageThoughts += thoughtsChunk;
+				openedChatMessages.value[messageIndex] = {
+					...openedChatMessages.value[messageIndex] as ModelChatMessage,
+					content: updatedMessage,
+					thinking: updatedMessageThoughts
+				};
+			}
 
-				return message;
-			});
-
-			saveCounter--;
-
-			if (saveCounter <= 0) {
+			messageSaveCounter++;
+			if (messageSaveCounter >= messageSaveInterval) {
 				updateOllamaMessageInDB(ollamaMessageId, updatedMessage, updatedMessageThoughts);
-				saveCounter = TOTAL_MESSAGE_SAVE_INTERVAL;
+				messageSaveCounter = 0;
 				// logger.info('Messages Store', 'Updated ollama message in DB\n=======\n', updatedMessage);
 			}
 		}
 
+		// Clean up
 		emitter.off('stopChatGeneration', cancelHandler);
 
+		// Generate a title for the chat if it is "New Chat".
 		const chatTitle = await attemptGenerateTitle();
 		setPageTitle(`${chatTitle} | Chat`);
 	}
@@ -343,7 +370,7 @@ const useMessagesStore = defineStore('messages', () => {
 
 		logger.info('Messages Store', 'Deleted messages after message to be regenerated', id);
 
-		const modelToUse = model === '' ? null : model;
+		const modelToUse = model === '' ? undefined : model;
 
 		getOllamaResponse(modelToUse);
 	}

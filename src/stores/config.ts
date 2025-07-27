@@ -31,7 +31,8 @@ interface Config {
             top_k: number;
             top_p: number;
             min_p: number;
-        }
+        },
+        tokenSaveInterval: number, // How many tokens to save before updating the message in the database.
         thinking: {
             enabled: false;
             infoOpenByDefault: boolean;
@@ -88,7 +89,8 @@ export const useConfigStore = defineStore('config', {
                 // Enabled is toggled by the input box icon
                 enabled: false,
                 infoOpenByDefault: false,
-            }
+            },
+            tokenSaveInterval: 5,
         },
         developer: {
             mockRequests: false,
