@@ -176,13 +176,13 @@ const useMessagesStore = defineStore('messages', () => {
 	function handleMessageChunkError(chunk: ChatIteratorError) {
 		switch (chunk.error.type) {
 			case '401-parse-fail':
-				alert('Error parsing 401 response');
+				alert(`Error parsing 401 response: ${chunk.error.message}`);
 				break;
 			case 'no-response-body':
 				alert('No response body found for message chunk');
 				break;
 			case 'unknown-401':
-				alert('Unknown 401 error when recieving message');
+				alert(`Unknown 401 error: ${chunk.error.message}`);
 				break;
 			case 'user-not-authed':
 				alert('You need to be signed in to use this model.');
@@ -192,6 +192,9 @@ const useMessagesStore = defineStore('messages', () => {
 				break;
 			case 'rate-limit':
 				alert('Rate limit reached. Please choose a different model or try again later.');
+				break;
+			case 'parse-fail':
+				alert(`Failed to parse message chunk.`);
 				break;
 			default:
 				alert(`Unknown error when generating message: ${chunk.error.message}`);
@@ -235,58 +238,51 @@ const useMessagesStore = defineStore('messages', () => {
 
 		const chatMessageList = await getMessagesInOllamaFormat();
 
-		let updatedMessage = "";
-		let updatedMessageThoughts = ""; 
-		let messageGenerating = false;
+		let generatedContent = "";
+		let generatedThoughts = ""; 
+		let isGenerating = false;
 		let messageSaveCounter = 0;
 		for await (const chunk of ollamaApi.chat(chatMessageList, abortController.signal, selectedModel)) {
-			if ('error' in chunk) {
+			// First, check if the chunk is an error or done indicator.
+			if (chunk.type === 'error') {
 				handleMessageChunkError(chunk);
 				break;
-			}
+			} else if (chunk.type === 'done') {
+				updateOllamaMessageInDB(ollamaMessageId, generatedContent, generatedThoughts);
 
-			if ('stream_done' in chunk) {
-				const finishReason = chunk.reason === 'stream-done' ? 'finished' : 'cancelled';
-				updateOllamaMessageInDB(ollamaMessageId, updatedMessage, updatedMessageThoughts);
-				updateMessageStatus(ollamaMessageId, finishReason);
+				const status = chunk.reason === 'completed' ? 'finished' : 'cancelled';
+				updateMessageStatus(ollamaMessageId, status);
 
-				logger.info('Messages Store', 'Got stream_done chunk.');
+				logger.info('Messages Store', 'Finished generating response with status', status);
 				break;
 			}
 
-			if ('done' in chunk && chunk.done) {
-				updateOllamaMessageInDB(ollamaMessageId, updatedMessage, updatedMessageThoughts);
-				updateMessageStatus(ollamaMessageId, 'finished');
-
-				logger.info('Messages Store', 'Finished generating response.');
-				break;
-			}
+			// If not, process the message chunk.
 
 			// If message is not an error or stream end chunk.
-			if (messageGenerating === false) {
-				messageGenerating = true;
+			if (isGenerating === false) {
+				isGenerating = true;
 				updateMessageStatus(ollamaMessageId, 'generating');
 			}
 
-			const messageChunk = chunk.message.content;
-			const thoughtsChunk = chunk.message.thinking || '';
+			const messageChunk = chunk.data.message.content;
+			const thoughtsChunk = chunk.data.message.thinking || '';
 
 			const messageIndex = openedChatMessages.value.findIndex(message => message.id === ollamaMessageId);
 			if (messageIndex !== -1) {
-				updatedMessage += messageChunk;
-				updatedMessageThoughts += thoughtsChunk;
+				generatedContent += messageChunk;
+				generatedThoughts += thoughtsChunk;
 				openedChatMessages.value[messageIndex] = {
 					...openedChatMessages.value[messageIndex] as ModelChatMessage,
-					content: updatedMessage,
-					thinking: updatedMessageThoughts
+					content: generatedContent,
+					thinking: generatedThoughts
 				};
 			}
 
 			messageSaveCounter++;
 			if (messageSaveCounter >= messageSaveInterval) {
-				updateOllamaMessageInDB(ollamaMessageId, updatedMessage, updatedMessageThoughts);
+				updateOllamaMessageInDB(ollamaMessageId, generatedContent, generatedThoughts);
 				messageSaveCounter = 0;
-				// logger.info('Messages Store', 'Updated ollama message in DB\n=======\n', updatedMessage);
 			}
 		}
 

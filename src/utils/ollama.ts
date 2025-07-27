@@ -8,17 +8,21 @@ import ollamaRequest from './ollamaRequest';
 
 const chatTitleExamples = `\nExamples of titles:\n📉 Stock Market Trends\n🍪 Perfect Chocolate Chip Recipe\nEvolution of Music Streaming\nRemote Work Productivity Tips\nArtificial Intelligence in Healthcare\n🎮 Video Game Development Insights`;
 
-export type ChatIteratorError = {
+export type ChatIteratorChunk = {
+	type: 'error',
 	error: {
-		type: '401-parse-fail' | 'no-response-body' | 'user-not-premium' | 'user-not-authed' | 'rate-limit' | 'unknown-401'
+		type: '401-parse-fail' | 'no-response-body' | 'user-not-premium' | 'user-not-authed' | 'rate-limit' | 'unknown-401' | 'parse-fail' | 'custom-error';
 		message?: string;
 	};
-}
+} | {
+	type: 'done',
+	reason: 'completed' | 'cancelled' | 'error',
+} | {
+	type: 'message',
+	data: OllamaChatResponseChunk;
+};
 
-export type ChatIteratorDone = {
-	stream_done: boolean;
-	reason?: 'stream-done' | 'user-aborted';
-}
+export type ChatIteratorError = Extract<ChatIteratorChunk, { type: 'error' }>;
 
 class OllamaAPI {
 	private modelList: ModelList = [];
@@ -134,7 +138,11 @@ class OllamaAPI {
 		});
 	}
 
-	async* chatIterator(messages: OllamaMessage[], abortSignal: AbortSignal, modelOverride?: string): AsyncGenerator<OllamaChatResponseChunk, ChatIteratorError | ChatIteratorDone | undefined, unknown> {
+	async* chatIterator(
+		messages: OllamaMessage[], 
+		abortSignal: AbortSignal, 
+		modelOverride?: string
+	): AsyncGenerator<ChatIteratorChunk, ChatIteratorChunk | undefined, unknown> {
 		const response = await authedFetch(useConfigStore().apiUrl('/api/chat'), {
 			method: 'POST',
 			headers: {
@@ -151,27 +159,27 @@ class OllamaAPI {
 		});
 
 		if (!response.body) {
-			return { error: { type: 'no-response-body' } };
+			return { type: 'error', error: { type: 'no-response-body' } };
 		}
 
 		if (response.status === 401) {
 			const { data, error } = await tryCatch<{ error: { text: string, type: string } }>(await response.json());
 
 			if (error || !data.error) {
-				return { error: { type: '401-parse-fail' } };
+				return { type: 'error', error: { type: '401-parse-fail', message: error?.message || 'Failed to parse 401 response' } };
 			}
 
 			if (data.error.type === 'premium') {
-				return { error: { type: 'user-not-premium' } };
+				return { type: 'error', error: { type: 'user-not-premium' } };
 			} else if (data.error.type === 'auth') {
-				return { error: { type: 'user-not-authed' } }
+				return { type: 'error', error: { type: 'user-not-authed' } };
 			} else {
-				return { error: { type: 'unknown-401' } }
+				return { type: 'error', error: { type: 'unknown-401', message: data.error.text } };
 			}
 		}
 
 		if (response.status === 429) {
-			return { error: { type: 'rate-limit' } };
+			return { type: 'error', error: { type: 'rate-limit' } };
 		}
 
 
@@ -179,10 +187,14 @@ class OllamaAPI {
 		const reader = response.body.getReader();
 
 		while (true) {
-			if (abortSignal.aborted) return { stream_done: true, reason: 'user-aborted' };
+			if (abortSignal.aborted) {
+				return { type: 'done', reason: 'cancelled' };
+			}
 
 			const { done, value } = await reader.read();
-			if (done) return { stream_done: true, reason: 'stream-done' };
+			if (done) {
+				return { type: 'done', reason: 'completed' };
+			}
 
 			const chunkText = decoder.decode(value).trim().split('\n');
 
@@ -191,21 +203,27 @@ class OllamaAPI {
 
 				if (error) {
 					console.error('Error parsing message chunk', error);
+					yield { type: 'error', error: { type: 'parse-fail' } };
 					continue;
 				}
 
 				if ('error' in data) {
-					alert(data.error);
+					yield { type: 'error', error: { type: 'custom-error', message: data.error }};
 					continue;
 				}
 
-				yield data;
+				if (data.done) {
+					yield { type: 'done', reason: 'completed' };
+					continue;
+				}
+
+				yield { type: 'message', data };
 			}
 		}
 	}
 
-	chat(messages: OllamaMessage[], abortSignal: AbortSignal, modelOverride?: string): ReadableOf<OllamaChatResponseChunk | ChatIteratorError | ChatIteratorDone> {
-		return Readable.from(this.chatIterator(messages, abortSignal, modelOverride)) as ReadableOf<OllamaChatResponseChunk | ChatIteratorError | ChatIteratorDone>;
+	chat(messages: OllamaMessage[], abortSignal: AbortSignal, modelOverride?: string): ReadableOf<ChatIteratorChunk> {
+		return Readable.from(this.chatIterator(messages, abortSignal, modelOverride)) as ReadableOf<ChatIteratorChunk>;
 	}
 
 	async getModels(force?: boolean) {
