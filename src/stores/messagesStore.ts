@@ -19,22 +19,11 @@ let liveSyncInitialised = false;
 type RefReturn<T> = ReturnType<typeof ref<T>>;
 
 function initLiveSync(
-	messages: RefReturn<ChatMessage[]>,
 	openedChatMessages: RefReturn<ChatMessage[]>,
 	openedChatIdRef: Ref<number | null, number | null>
 ) {
 	if (liveSyncInitialised) return;
-
 	liveSyncInitialised = true;
-
-	liveQuery(() => db.messages.toArray()).subscribe({
-		next: data => {
-			messages.value = data;
-		},
-		error: (e) => {
-			console.error('Error during liveQuery for chats', e)
-		}
-	});
 
 	let openedMessagesSubscription: { unsubscribe: () => void } | null = null;
 
@@ -70,12 +59,10 @@ function initLiveSync(
  * Handles messages, opened chat messages, and opened chat ID. Seperate from chatsStore.
  */
 const useMessagesStore = defineStore('messages', () => {
-	const messages = ref<ChatMessage[]>([]);
+	const openedChatId = ref<number | null>(null);
 	const openedChatMessages = ref<ChatMessage[]>([]);
 
-	const openedChatId = ref<number | null>(null);
-
-	initLiveSync(messages, openedChatMessages, openedChatId);
+	initLiveSync(openedChatMessages, openedChatId);
 
 	async function sendMessage(content: string, attachments: File[] = []) {
 		if (content.length === 0) return;
@@ -355,10 +342,6 @@ const useMessagesStore = defineStore('messages', () => {
 		return Promise.all(formattedMessages);
 	}
 
-	async function clearMessages() {
-		await db.messages.clear();
-	}
-
 	async function regenerateMessage(id: number, model: string) {
 		await db.messages
 			.where('[chatId+id]')
@@ -371,14 +354,21 @@ const useMessagesStore = defineStore('messages', () => {
 		getOllamaResponse(modelToUse);
 	}
 
+	/**
+	 * Clears all messages from the database.
+	 */
+	async function clearAllMessages() {
+		await db.messages.clear();
+	}
+
 	return {
 		openedChatMessages,
 		openedChatId,
 		openChat,
 		sendMessage,
 		editMessage,
-		clearMessages,
-		regenerateMessage
+		regenerateMessage,
+		clearAllMessages,
 	};
 });
 

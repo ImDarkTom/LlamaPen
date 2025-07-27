@@ -63,7 +63,7 @@ function clearChats() {
     if (!confirm('Are you sure you want to clear all chats?')) return;
 
     chatsStore.clearChats();
-    messagesStore.clearMessages();
+    messagesStore.clearAllMessages();
 }
 
 function handleEscape(e: KeyboardEvent) {
