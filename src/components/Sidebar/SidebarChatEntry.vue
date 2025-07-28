@@ -5,8 +5,10 @@ import useChatsStore from '@/stores/chatsStore';
 import SidebarEntry from './SidebarEntry.vue';
 import { getDateTimeString } from '@/utils/core/getDateTimeString';
 import { BsChatLeft } from 'vue-icons-plus/bs';
+import useMessagesStore from '@/stores/messagesStore';
 
 const chatsStore = useChatsStore();
+const messagesStore = useMessagesStore();
 const router = useRouter();
 
 const props = defineProps<{
@@ -86,7 +88,7 @@ function setPinned(value: boolean) {
         :pinned="props.chat.pinned" 
         :hover-message="hoverTitle"
         :editing="editing"
-        :is-generating-title="props.chat.isGeneratingTitle || false"
+        :is-generating-title="messagesStore.chatsGeneratingTitles.includes(props.chat.id)"
         :is-opened="chatsStore.isOpened(props.chat.id)"
         :set-pinned="setPinned" 
         :edit-name="editChatName"

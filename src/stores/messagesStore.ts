@@ -61,21 +61,24 @@ function initLiveSync(
 const useMessagesStore = defineStore('messages', () => {
 	const openedChatId = ref<number | null>(null);
 	const openedChatMessages = ref<ChatMessage[]>([]);
+	const chatsGeneratingTitles = ref<number[]>([]);
 
 	initLiveSync(openedChatMessages, openedChatId);
 
 	async function sendMessage(content: string, attachments: File[] = []) {
 		if (content.length === 0) return;
+		let shouldGenerateTitle = false;
 
 		logger.info('Messages Store', 'Sending message', content, attachments);
 
 		if (openedChatId.value === null) {
 			const newChatId = await useChatsStore().createNewChat();
 			openedChatId.value = newChatId;
+			shouldGenerateTitle = true;
 
 			const newUrl = `/chat/${newChatId}`;
-
 			logger.info('Messages Store', 'No opened chat, created new and navigating to', newUrl);
+
 
 			logger.info('Messages Store', "Created new chat with id", openedChatId.value);
 		}
@@ -92,7 +95,11 @@ const useMessagesStore = defineStore('messages', () => {
 		await db.chats.update(openedChatId.value, { lastestMessageDate: new Date() });
 		logger.info('Messages Store', 'Added message', messageData);
 
-		getOllamaResponse();
+		await getOllamaResponse();
+		if (shouldGenerateTitle) {
+			const chatTitle = await generateChatTitle();
+			setPageTitle(`${chatTitle} | Chat`);
+		}
 	}
 
 
@@ -138,20 +145,13 @@ const useMessagesStore = defineStore('messages', () => {
 		return selectedModel;
 	}
 
-	/**
-	 * 
-	 * 
-	 * @param model The model to use for the message.
-	 * @param chatId The chat ID to add the message to.
-	 * @return The ID of the added message.
-	 */
 	async function addModelMessageToChat(model: string, chatId: number): Promise<number> {
 		const ollamaMessageId = await db.messages.add({
 			chatId,
 			content: '',
 			created: new Date(),
 			type: 'model',
-			model: model,
+			model,
 			status: 'waiting',
 			attachments: [],
 		} as Omit<ModelChatMessage, 'id'>);
@@ -191,6 +191,30 @@ const useMessagesStore = defineStore('messages', () => {
 	}
 
 	/**
+	 * Formats messages from the database into the format expected by Ollama.
+	 * 
+	 * @returns An array of messages formatted for Ollama.
+	 */
+	async function getMessagesInOllamaFormat(chatId: number): Promise<OllamaMessage[]> {
+		const sortedMessages = await db.messages
+			.where('chatId')
+			.equals(chatId)
+			.sortBy('created');
+
+		const formattedMessages = sortedMessages.map(async (message) => {
+			return {
+				role: message.type === 'user' ? 'user' : 'assistant' as 'user' | 'assistant',
+				content: message.content,
+				images: await filesAsBase64(message.attachments || [])
+			};
+		});
+
+		logger.info('Messages Store', 'Formatted messages into Ollama format', await Promise.all(formattedMessages));
+
+		return Promise.all(formattedMessages);
+	}
+
+	/**
 	 * Handles getting a response from the Ollama API for the current opened chat.
 	 * This should be refactored into smaller functions as it handles a lot of logic.
 	 * 
@@ -198,6 +222,20 @@ const useMessagesStore = defineStore('messages', () => {
 	 */
 	async function getOllamaResponse(modelOverride?: string) {
 		const messageSaveInterval = useConfigStore().chat.tokenSaveInterval;
+
+		// Helpers
+		const setMessageStatus = async(newStatus: ModelMessageStatus) => {
+			await db.messages.update(ollamaMessageId, { status: newStatus } as Partial<ModelChatMessage>);
+		}
+
+		const syncMessageToDb = async () => {
+			const updateData: Partial<ModelChatMessage> = { content: generatedContent };
+			if (generatedThoughts) {
+				updateData.thinking = generatedThoughts;
+			}
+
+			await db.messages.update(ollamaMessageId, updateData);
+		}
 
 		// 1. Ensure there is an opened chat ID.
 		if (!openedChatId.value) {
@@ -216,14 +254,14 @@ const useMessagesStore = defineStore('messages', () => {
 		const abortController = new AbortController();
 
 		const cancelHandler = async () => {
-			updateMessageStatus(ollamaMessageId, 'cancelled');
+			setMessageStatus('cancelled');
 			abortController.abort("message generation cancelled by user.");
 		}
 
 		emitter.on('stopChatGeneration', cancelHandler);
 		logger.info('Messages Store', 'Added stop chat generation emit listener');
 
-		const chatMessageList = await getMessagesInOllamaFormat();
+		const chatMessageList = await getMessagesInOllamaFormat(chatId);
 
 		let generatedContent = "";
 		let generatedThoughts = ""; 
@@ -235,10 +273,10 @@ const useMessagesStore = defineStore('messages', () => {
 				handleMessageChunkError(chunk);
 				break;
 			} else if (chunk.type === 'done') {
-				updateOllamaMessageInDB(ollamaMessageId, generatedContent, generatedThoughts);
+				syncMessageToDb();
 
 				const status = chunk.reason === 'completed' ? 'finished' : 'cancelled';
-				updateMessageStatus(ollamaMessageId, status);
+				setMessageStatus(status);
 
 				logger.info('Messages Store', 'Finished generating response with status', status);
 				break;
@@ -247,9 +285,9 @@ const useMessagesStore = defineStore('messages', () => {
 			// If not, process the message chunk.
 
 			// If message is not an error or stream end chunk.
-			if (isGenerating === false) {
+			if (!isGenerating) {
 				isGenerating = true;
-				updateMessageStatus(ollamaMessageId, 'generating');
+				setMessageStatus('generating');
 			}
 
 			const messageChunk = chunk.data.message.content;
@@ -268,89 +306,52 @@ const useMessagesStore = defineStore('messages', () => {
 
 			messageSaveCounter++;
 			if (messageSaveCounter >= messageSaveInterval) {
-				updateOllamaMessageInDB(ollamaMessageId, generatedContent, generatedThoughts);
 				messageSaveCounter = 0;
+				syncMessageToDb();
 			}
 		}
 
 		// Clean up
 		emitter.off('stopChatGeneration', cancelHandler);
-
-		// Generate a title for the chat if it is "New Chat".
-		const chatTitle = await attemptGenerateTitle();
-		setPageTitle(`${chatTitle} | Chat`);
-	}
-
-	async function updateMessageStatus(messageId: number, status: ModelMessageStatus) {
-		await db.messages.update(messageId, { status } as Partial<ModelChatMessage>);
 	}
 
 	/**
-	 * Generates a title for the opened chat if the current title is "New Chat".
+	 * Generates a title for the opened chat.
 	 * @returns The generated title for the opened chat, or the current title if it is not "New Chat".
 	 */
-	async function attemptGenerateTitle(): Promise<string> {
+	async function generateChatTitle(): Promise<string> {
 		const chatId = openedChatId.value;
 		if (!chatId) {
 			throw new Error('No opened chatID found when generating title');
 		}
 
-		const chatsStore = useChatsStore();
-		const currentTitle = await chatsStore.getChatTitle(chatId);
-
-		// If chat name is not "New Chat", don't generate title.
-		if (currentTitle !== 'New Chat') return currentTitle;
-
-		await db.chats.update(chatId, { isGeneratingTitle: true });
-
+		chatsGeneratingTitles.value.push(chatId);
 		logger.info('Messages Store', 'Generating chat title for opened chat', chatId);
 
 		const chatMessages = openedChatMessages.value;
 		const newChatTitle = await ollamaApi.generateChatTitle(chatMessages);
 
 		useChatsStore().renameChat(chatId, newChatTitle);
-		await db.chats.update(chatId, { isGeneratingTitle: false });
+		chatsGeneratingTitles.value = chatsGeneratingTitles.value.filter(id => id !== chatId);
 
 		return newChatTitle;
 	}
 
-	async function updateOllamaMessageInDB(id: number, content: string, thinking?: string) {
-		if (thinking) {
-			await db.messages.update(id, { content, thinking } as ModelChatMessage);
-			return;
-		}
-
-		await db.messages.update(id, { content });
-	}
-
-	async function getMessagesInOllamaFormat(): Promise<OllamaMessage[]> {
-		const sortedMessages = await db.messages
-			.where('chatId')
-			.equals(openedChatId.value!)
-			.sortBy('created');
-
-		const formattedMessages = sortedMessages.map(async (message) => {
-			return {
-				role: message.type === 'user' ? 'user' : 'assistant' as 'user' | 'assistant',
-				content: message.content,
-				images: await filesAsBase64(message.attachments || [])
-			};
-		});
-
-		logger.info('Messages Store', 'Formatted messages into Ollama format', await Promise.all(formattedMessages));
-
-		return Promise.all(formattedMessages);
-	}
-
+	/**
+	 * Regenerates a message by deleting all messages from the opened chat after the specified message ID
+	 * and then calling getOllamaResponse to generate the response again.
+	 * 
+	 * @param id The ID of the message to regenerate.
+	 * @param model The model to use for regeneration. If empty, uses the selected model.
+	 */
 	async function regenerateMessage(id: number, model: string) {
 		await db.messages
 			.where('[chatId+id]')
-			.between([openedChatId.value, id - 1], [openedChatId.value, Dexie.maxKey], false, true).delete();
-
+			.between([openedChatId.value, id - 1], [openedChatId.value, Dexie.maxKey], false, true)
+			.delete();
 		logger.info('Messages Store', 'Deleted messages after message to be regenerated', id);
 
 		const modelToUse = model === '' ? undefined : model;
-
 		getOllamaResponse(modelToUse);
 	}
 
@@ -364,6 +365,7 @@ const useMessagesStore = defineStore('messages', () => {
 	return {
 		openedChatMessages,
 		openedChatId,
+		chatsGeneratingTitles,
 		openChat,
 		sendMessage,
 		editMessage,
