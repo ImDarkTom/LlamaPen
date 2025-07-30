@@ -8,7 +8,6 @@ import ButtonSetting from './components/ButtonSetting.vue';
 import useChatsStore from '@/stores/chatsStore';
 import useMessagesStore from '@/stores/messagesStore';
 import supabase from '@/lib/supabase';
-import useUserStore from '@/stores/user';
 import TextInputSetting from './components/TextInputSetting.vue';
 import logger from '@/lib/logger';
 import setPageTitle from '@/utils/core/setPageTitle';
@@ -20,13 +19,14 @@ import SelectionSetting from './components/SelectionSetting.vue';
 import ollamaRequest from '@/utils/ollamaRequest';
 import { TbListDetails } from 'vue-icons-plus/tb';
 import { AiFillInfoCircle } from 'vue-icons-plus/ai';
+import { RiAccountCircleLine } from 'vue-icons-plus/ri';
+import { BsFillTrash3Fill, BsKeyboard } from 'vue-icons-plus/bs';
 
 const config = useConfigStore();
 const router = useRouter();
 
 const chatsStore = useChatsStore();
 const messagesStore = useMessagesStore();
-const userStore = useUserStore();
 const uiStore = useUiStore();
 
 // transition speed
@@ -89,29 +89,6 @@ onBeforeUnmount(() => {
 
 const inProduction = import.meta.env.VITE_PRODUCTION === 'true';
 
-async function signIn() {
-    if (!supabase) {
-        return;
-    }
-
-    const { data: _data, error } = await supabase.auth.signInWithOAuth({
-        provider: 'google',
-    });
-
-    if (error) {
-        alert('Error attempting sign in, ' + error);
-    }
-}
-
-async function signOut() {
-    if (!supabase) {
-        return;
-    }
-
-    await supabase.auth.signOut();
-    location.reload();
-}
-
 watch(
     () => config.api.enabled,
     async (newValue) => {
@@ -121,9 +98,6 @@ watch(
 
             logger.info('Settings Page', 'Signing out before disabling API');
             await supabase.auth.signOut();
-
-            location.reload();
-            return;
         }
 
         location.reload();
@@ -152,20 +126,13 @@ async function checkOllamaVersion() {
         <PageHeader text="Settings" />
 
         <OptionCategory label="Account" v-if="inProduction">
-            <ToggleSetting v-model="config.api.enabled" label="Enable Llamapen Cloud" />
-            <template v-if="config.api.enabled">
-                <ButtonSetting v-if="!userStore.isSignedIn" @click="signIn">Sign in with Google</ButtonSetting>
-                <template v-else>
-                    <div class="flex flex-row gap-2">
-                        <ButtonSetting type="link" to="/account">Manage account</ButtonSetting>
-                        <ButtonSetting @click="signOut">Sign out</ButtonSetting>
-                    </div>
-                </template>
-            </template>
+            <ToggleSetting v-model="config.api.enabled" label="Enable Llamapen API" />
+            <span v-if="!config.api.enabled" class="text-sm inline-flex gap-2"><AiFillInfoCircle /> Run more powerful models with LlamaPen API, an optional cloud service.</span>
+            <ButtonSetting v-else type="link" to="/account"><RiAccountCircleLine /> Manage Account</ButtonSetting>
         </OptionCategory>
 
         <OptionCategory label="Ollama">
-            <div v-if="config.api.enabled">Ollama not available while LlamaPen Cloud is enabled.</div>
+            <div v-if="config.api.enabled">Ollama not available while LlamaPen API is enabled.</div>
             <template v-else>
                 <TextInputSetting label="Ollama URL" v-model="config.ollamaUrl" default="http://localhost:11434"
                     :check="ollamaUrlCheck" />
@@ -185,7 +152,7 @@ async function checkOllamaVersion() {
         </OptionCategory>
 
         <OptionCategory label="Appearance">
-            <ButtonSetting type="link" to="/shortcuts">View keyboard shortcuts</ButtonSetting>
+            <ButtonSetting type="link" to="/shortcuts"><BsKeyboard /> View keyboard shortcuts</ButtonSetting>
             <SelectionSetting 
                 v-model="config.ui.theme" 
                 label="Theme" 
@@ -218,11 +185,11 @@ async function checkOllamaVersion() {
         </OptionCategory>
 
         <OptionCategory label="Chat">
-            <ButtonSetting @click="clearChats">
-                Clear all chats
-            </ButtonSetting>
             <ToggleSetting v-model="config.chat.thinking.infoOpenByDefault"
                 label="Reasoning text open by default" />
+            <ButtonSetting @click="clearChats">
+                <BsFillTrash3Fill /> Clear all chats
+            </ButtonSetting>
         </OptionCategory>
 
         <OptionCategory label="Developer" v-if="!isInProd">

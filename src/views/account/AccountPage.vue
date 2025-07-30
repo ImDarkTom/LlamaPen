@@ -8,12 +8,15 @@ import { computed, onMounted, ref } from 'vue';
 import AccountSection from './components/AccountSection.vue';
 import supabase from '@/lib/supabase';
 import isDateBeforeToday from '@/utils/core/isDateBeforeToday';
-import { BsCheckSquareFill, BsStripe } from 'vue-icons-plus/bs';
+import { BsCheckSquareFill, BsGoogle, BsStripe } from 'vue-icons-plus/bs';
 import { BiTimeFive } from 'vue-icons-plus/bi';
 import { CgFileDocument } from 'vue-icons-plus/cg';
 import { FiMail, FiShield } from 'vue-icons-plus/fi';
 import ContactSection from './components/ContactSection.vue';
 import { FaBug } from 'vue-icons-plus/fa';
+import ButtonSetting from '../settings/components/ButtonSetting.vue';
+import { PiSignOutBold } from 'vue-icons-plus/pi';
+import { IpPeopleDeleteOne } from 'vue-icons-plus/ip';
 
 const userStore = useUserStore();
 const config = useConfigStore();
@@ -95,16 +98,63 @@ const subButtonText = computed(() => {
 const showPriceTag = computed(() => {
 	return !loadingSubButtonPage && !userStore.subscription.subscribed
 });
+
+async function signOut() {
+    if (!supabase) {
+        return;
+    }
+
+    await supabase.auth.signOut();
+    location.reload();
+}
+
+const isSigningIn = ref(false);
+
+async function signIn() {
+    if (!supabase) {
+        return;
+    }
+
+	isSigningIn.value = true;
+
+    const { data: _data, error } = await supabase.auth.signInWithOAuth({
+        provider: 'google',
+    });
+
+    if (error) {
+        alert('Error attempting sign in, ' + error);
+    }
+}
 </script>
 
 <template>
 	<div class="w-full h-full flex flex-col items-center py-4 box-border overflow-y-auto px-2
 	*:mx-auto *:md:w-4/5 *:lg:w-3/5">
-		<div v-if="!userStore.user" class="text-xl">
-			You are not signed in
+		<div v-if="!userStore.user" class="w-4/5 flex flex-col items-center justify-center h-full">
+			<AccountSection class="items-center justify-center" flex-direction="col">
+				<div class="flex flex-col items-center gap-4">
+					<RouterLink to="/settings" class="text-primary! hover:underline">← Back to Settings</RouterLink>
+					<span class="font-bold text-xl">Welcome to LlamaPen API</span>
+					<ButtonSetting v-if="!userStore.isSignedIn" @click="signIn" class="font-medium px-16" :class="{ 'opacity-75': isSigningIn }"><BsGoogle /> {{ isSigningIn ? 'Signing in...' : 'Continue with Google' }}</ButtonSetting>
+					<span>
+						By signing up, you agree to our 
+						<a href="https://api.llamapen.app/terms" target="_blank" class="text-secondary hover:underline">Terms of Service</a> 
+						and 
+						<a href="https://api.llamapen.app/privacy" target="_blank" class="text-secondary hover:underline">Privacy Policy</a>.
+					</span>
+				</div>
+			</AccountSection>
 		</div>
 		<div class="w-4/5" v-else>
 			<h1 class="font-bold text-4xl!">My Account</h1>
+			<AccountSection flex-direction="row" :apart="true">
+				<ButtonSetting type="link" to="/settings" >
+					← Go to Settings
+				</ButtonSetting>
+				<ButtonSetting type="button" @click="signOut" >
+					<PiSignOutBold /> Sign out
+				</ButtonSetting>
+			</AccountSection>
 			<AccountSection flex-direction="row">
 				<img :src="userStore.user.user_metadata.avatar_url" alt="User avatar" 
 				class="size-28 rounded-full outline-2 outline-border-muted">
@@ -209,7 +259,10 @@ const showPriceTag = computed(() => {
 			</AccountSection>
 
 			<AccountSection title="Danger Zone">
-				<div class="bg-danger text-background w-fit p-4 rounded-lg cursor-pointer" @click="deleteAccount">Delete Account</div>
+				<ButtonSetting type="button" @click="deleteAccount" class="bg-danger! hover:saturate-200 hover:bg-danger!">
+					<IpPeopleDeleteOne />
+					Delete Account
+				</ButtonSetting>
 			</AccountSection>
 		</div>
 	</div>
