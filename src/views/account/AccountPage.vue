@@ -96,7 +96,7 @@ const subButtonText = computed(() => {
 });
 
 const showPriceTag = computed(() => {
-	return !loadingSubButtonPage && !userStore.subscription.subscribed
+	return !loadingSubButtonPage.value && !userStore.subscription.subscribed
 });
 
 async function signOut() {
@@ -204,7 +204,6 @@ async function signIn() {
 				<div class="w-full flex justify-center">
 					<button class="group w-fit flex flex-row text-surface-light hover:text-surface font-semibold bg-gradient-to-br from-text to-primary hover:from-secondary hover:scale-105 hover:shadow-primary/50 shadow-transparent shadow-lg shadow- p-1 transition-all duration-dynamic rounded-lg cursor-pointer" @click="subscriptionButtonClick">
 						<div class="p-3 flex flex-row gap-2 items-center">
-							<BsStripe />
 							{{ subButtonText }}
 						</div>
 						<div v-if="showPriceTag" class="group-hover:text-secondary bg-surface-light group-hover:bg-surface transition-all duration-dynamic text-text-muted flex items-center justify-center p-3 rounded-md">
@@ -212,20 +211,23 @@ async function signIn() {
 						</div>
 					</button>
 				</div>
+				<span class="text-sm flex flex-row gap-1 items-center justify-center"><BsStripe class="size-4" />Payments handled securely by Stripe</span>
 				<div v-if="userStore.subscription.name !== 'Premium'" class="flex flex-row gap-2">
 					<div class="w-1/2 border-2 border-border-muted rounded-lg">
 						<h4 class="text-xl font-semibold bg-border-muted text-center select-none p-2">Free (current plan)</h4>
 						<ul class="p-4 flex flex-col gap-1 *:flex *:flex-row *:gap-2 *:items-center">
-							<li><BsCheckSquareFill class="size-5 shrink-0" /> 20 message tokens/day</li>
-							<li><BsCheckSquareFill class="size-5 shrink-0"/> Access to free AI models</li>
+							<li><BsCheckSquareFill class="size-5 shrink-0" />20 message tokens/day</li>
+							<li><BsCheckSquareFill class="size-5 shrink-0"/>Access to free AI models</li>
+							<li><BsCheckSquareFill class="size-5 shrink-0"/>Standard account support</li>
 						</ul>
 					</div>
 					<div class="w-1/2 border-2 border-primary rounded-lg bg-surface">
-						<h4 class="text-xl font-semibold text-center bg-primary text-background select-none p-2">Premium</h4>
+						<h4 class="text-xl font-semibold text-center bg-primary text-background select-none p-2">Premium ✨</h4>
 						<ul class="p-4 flex flex-col gap-1 *:flex *:flex-row *:items-start *:gap-2">
-							<li><BsCheckSquareFill class="size-5 shrink-0 text-secondary" /> 100 message tokens/day</li>
-							<li><BsCheckSquareFill class="size-5 shrink-0 text-secondary" /> Access to free + premium AI models</li>
-							<li>💖 Support development</li>
+							<li><BsCheckSquareFill class="size-5 shrink-0 text-secondary" /><span><strong>100</strong> message tokens/day</span></li>
+							<li><BsCheckSquareFill class="size-5 shrink-0 text-secondary" /><span>Access to free + <strong>premium</strong> AI models</span></li>
+							<li><BsCheckSquareFill class="size-5 shrink-0 text-secondary" /><span>Priority account support</span></li>
+							<li>💖 Support ongoing development</li>
 						</ul>
 					</div>
 				</div>

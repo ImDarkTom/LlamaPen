@@ -8,6 +8,9 @@ interface Config {
     transitionSpeed: number,
     closeSidebarOnNavMobile: boolean,
     ui: {
+        modelList: {
+            hideUpgradePrompt: boolean, // Hide the upgrade message in the model list
+        }
         modelIcons: {
             monochrome: boolean,
             background: boolean,
@@ -66,6 +69,9 @@ export const useConfigStore = defineStore('config', {
         transitionSpeed: 0.125,
         closeSidebarOnNavMobile: true,
         ui: {
+            modelList: {
+                hideUpgradePrompt: false,
+            },
             modelIcons: {
                 monochrome: true,
                 background: false,

@@ -182,6 +182,8 @@ async function checkOllamaVersion() {
                 label="Hover delay (ms)" />
             <CategoryLabel>Mobile</CategoryLabel>
             <ToggleSetting v-model="config.closeSidebarOnNavMobile" label="Hide sidebar on navigate" />
+            <!-- <CategoryLabel>UI Flags</CategoryLabel>
+            <ToggleSetting v-model="config.ui.modelList.hideUpgradePrompt" label="Hide model list upgrade prompt" /> -->
         </OptionCategory>
 
         <OptionCategory label="Chat">

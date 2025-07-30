@@ -12,6 +12,8 @@ import isOnMobile from '@/utils/core/isOnMobile';
 import ollamaRequest from '@/utils/ollamaRequest';
 import { useModelCapabiltyCache } from '@/composables/modelCapabilities';
 import Dropdown from '../Dropdown/Dropdown.vue';
+import { BsEyeSlash, BsRocketTakeoff } from 'vue-icons-plus/bs';
+import Tooltip from '../Tooltip/Tooltip.vue';
 
 const config = useConfigStore();
 const uiStore = useUiStore();
@@ -186,6 +188,20 @@ const modelName = computed(() => {
             </div>
 
             <ul role="list" class="max-h-80 overflow-y-auto *:not-last:mb-2">
+                <RouterLink to="/settings" v-if="!config.api.enabled && !config.ui.modelList.hideUpgradePrompt" class="!bg-border flex flex-row p-4 rounded-lg">
+                    <div class="flex items-center mr-2">
+                        <BsRocketTakeoff />
+                    </div>
+                    <div class="flex flex-col gap-2">    
+                        <span class="text-text font-medium">Want to run more powerful models?</span>
+                        <span class="text-sm">Run the latest AI models at full size and lightning speed with LlamaPen API.</span>
+                    </div>
+                    <div class="flex flex-row items-center ml-auto">
+                        <Tooltip text="Hide" >
+                            <BsEyeSlash class="cursor-pointer" @click.prevent="config.ui.modelList.hideUpgradePrompt = true" />
+                        </Tooltip>
+                    </div>
+                </RouterLink>
                 <ModelSelectItem v-if="uiStore.isConnectedToOllama && queriedModelList.length > 0"
                     v-for="(model, index) in queriedModelList" :key="model.name" :model="model" :index="index"
                     :isCurrentModel="model.model === selectedModelInfo?.model" :selected="index === focusedItemIndex"
