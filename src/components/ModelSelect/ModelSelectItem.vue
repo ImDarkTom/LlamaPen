@@ -7,8 +7,10 @@ import ModelIcon from '../Icon/ModelIcon.vue';
 import { computed, ref } from 'vue';
 import { useModelCapabiltyCache } from '@/composables/modelCapabilities';
 import { BiBrain } from 'vue-icons-plus/bi';
+import { useConfigStore } from '@/stores/config';
 
 const userStore = useUserStore();
+const config = useConfigStore();
 
 const { cachedCapabilities } = useModelCapabiltyCache();
 
@@ -23,15 +25,17 @@ const props = defineProps<{
 const emit = defineEmits<(e: 'setModel', name: string) => void>();
 
 function setModel(model: ModelListItem) {
-	if (model.llamapenMetadata?.premium) {
-		if (userStore.subscription.subscribed) {
-			emit('setModel', model.model);
-		} else {
-			router.push('/account#plan');
-		}
-	} else {
-		emit('setModel', model.model);
+	if (config.api.enabled && !userStore.isSignedIn) {
+		// Show toast to sign in
+		router.push('/account');
+		return;
+	} else if (model.llamapenMetadata?.premium && !userStore.subscription.subscribed) {
+		// Show toast to check out premium
+		router.push('/account#plan');
+		return;
 	}
+
+	emit('setModel', model.model);
 }
 
 const listItemRef = ref<HTMLLIElement | null>(null);
@@ -49,7 +53,7 @@ const modelCapabilities = computed(() => {
 		:class="{
 			'bg-surface-light': selected && !isCurrentModel,
 			'bg-surface-light ring-2 ring-border ring-inset': isCurrentModel,
-			'opacity-75': !userStore.subscription.subscribed && model.llamapenMetadata?.premium
+			'opacity-75': (!userStore.subscription.subscribed && model.llamapenMetadata?.premium) || (config.api.enabled && !userStore.isSignedIn),
 		}" @click="setModel(model)" ref="listItemRef" :aria-selected="selected">
 
 		<ModelIcon :name="model.model" class="size-10 p-1" />
