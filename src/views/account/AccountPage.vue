@@ -10,6 +10,10 @@ import supabase from '@/lib/supabase';
 import isDateBeforeToday from '@/utils/core/isDateBeforeToday';
 import { BsCheckSquareFill, BsStripe } from 'vue-icons-plus/bs';
 import { BiTimeFive } from 'vue-icons-plus/bi';
+import { CgFileDocument } from 'vue-icons-plus/cg';
+import { FiMail, FiShield } from 'vue-icons-plus/fi';
+import ContactSection from './components/ContactSection.vue';
+import { FaBug } from 'vue-icons-plus/fa';
 
 const userStore = useUserStore();
 const config = useConfigStore();
@@ -175,6 +179,33 @@ const showPriceTag = computed(() => {
 						</ul>
 					</div>
 				</div>
+			</AccountSection>
+			
+			<AccountSection title="Contact" flex-direction="col">
+				<ContactSection
+					title="Account/billing support"
+					description="For account/billing issues, contact us at support@llamapen.app"
+					:icon="FiMail"
+					link="mailto:support@llamapen.app" 
+				/>
+				<ContactSection
+					title="Terms of Service"
+					description="Read the terms of service."
+					:icon="CgFileDocument"
+					link="https://api.llamapen.app/terms" 
+				/>
+				<ContactSection
+					title="Privacy Policy"
+					description="Read the privacy policy."
+					:icon="FiShield"
+					link="https://api.llamapen.app/privacy" 
+				/>
+				<ContactSection
+					title="App issues"
+					description="Found a bug? Report it on the GitHub."
+					:icon="FaBug"
+					link="https://github.com/ImDarkTom/LlamaPen/issues" 
+				/>
 			</AccountSection>
 
 			<AccountSection title="Danger Zone">
