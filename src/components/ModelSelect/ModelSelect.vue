@@ -12,8 +12,6 @@ import isOnMobile from '@/utils/core/isOnMobile';
 import ollamaRequest from '@/utils/ollamaRequest';
 import { useModelCapabiltyCache } from '@/composables/modelCapabilities';
 import Dropdown from '../Dropdown/Dropdown.vue';
-import { BsEyeSlash, BsRocketTakeoff } from 'vue-icons-plus/bs';
-import Tooltip from '../Tooltip/Tooltip.vue';
 
 const config = useConfigStore();
 const uiStore = useUiStore();
@@ -188,7 +186,7 @@ const modelName = computed(() => {
             </div>
 
             <ul role="list" class="max-h-80 overflow-y-auto *:not-last:mb-2">
-                <RouterLink to="/settings" v-if="!config.api.enabled && !config.ui.modelList.hideUpgradePrompt" class="!bg-border flex flex-row p-4 rounded-lg">
+                <!-- <RouterLink to="/settings" v-if="!config.api.enabled && !config.ui.modelList.hideUpgradePrompt" class="!bg-border flex flex-row p-4 rounded-lg">
                     <div class="flex items-center mr-2">
                         <BsRocketTakeoff />
                     </div>
@@ -201,20 +199,25 @@ const modelName = computed(() => {
                             <BsEyeSlash class="cursor-pointer" @click.prevent="config.ui.modelList.hideUpgradePrompt = true" />
                         </Tooltip>
                     </div>
-                </RouterLink>
-                <ModelSelectItem v-if="uiStore.isConnectedToOllama && queriedModelList.length > 0"
+                </RouterLink> -->
+                <li v-if="!uiStore.isConnectedToOllama" class="h-24 flex px-3 py-2 roundex-xl justify-center items-center font-bold gap-2">
+                    <VscDebugDisconnect />
+                    Not connected to Ollama.
+                </li>
+                <li v-else-if="queriedModelList.length === 0 && searchQuery !== ''"
+                    class="flex w-full p-4 justify-center items-center">
+                    No results.
+                </li>
+                <li v-else-if="queriedModelList.length === 0 && searchQuery === ''"
+                    class="flex flex-col w-full p-4 justify-center items-center">
+                    <span>No models found.</span>
+                    <a href="https://ollama.com/search" target="_blank" class="text-secondary hover:underline">Search on Ollama</a>
+                </li>
+                <ModelSelectItem v-else-if="queriedModelList.length > 0"
                     v-for="(model, index) in queriedModelList" :key="model.name" :model="model" :index="index"
                     :isCurrentModel="model.model === selectedModelInfo?.model" :selected="index === focusedItemIndex"
                     :queriedModelList="queriedModelList" @setModel="setModel" @mouseover="setFocused(index)"
                     ref="listItemsRef" />
-                <li v-else-if="uiStore.isConnectedToOllama && queriedModelList.length === 0"
-                    class="flex w-full p-4 justify-center items-center">
-                    No results.
-                </li>
-                <li v-else class="h-24 flex px-3 py-2 roundex-xl justify-center items-center font-bold gap-2">
-                    <VscDebugDisconnect />
-                    Not connected to Ollama.
-                </li>
             </ul>
         </template>
     </Dropdown>
