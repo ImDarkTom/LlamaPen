@@ -186,20 +186,6 @@ const modelName = computed(() => {
             </div>
 
             <ul role="list" class="max-h-80 overflow-y-auto *:not-last:mb-2">
-                <!-- <RouterLink to="/settings" v-if="!config.api.enabled && !config.ui.modelList.hideUpgradePrompt" class="!bg-border flex flex-row p-4 rounded-lg">
-                    <div class="flex items-center mr-2">
-                        <BsRocketTakeoff />
-                    </div>
-                    <div class="flex flex-col gap-2">    
-                        <span class="text-text font-medium">Want to run more powerful models?</span>
-                        <span class="text-sm">Run the latest AI models at full size and lightning speed with LlamaPen API.</span>
-                    </div>
-                    <div class="flex flex-row items-center ml-auto">
-                        <Tooltip text="Hide" >
-                            <BsEyeSlash class="cursor-pointer" @click.prevent="config.ui.modelList.hideUpgradePrompt = true" />
-                        </Tooltip>
-                    </div>
-                </RouterLink> -->
                 <li v-if="!uiStore.isConnectedToOllama" class="h-24 flex px-3 py-2 roundex-xl justify-center items-center font-bold gap-2">
                     <VscDebugDisconnect />
                     Not connected to Ollama.

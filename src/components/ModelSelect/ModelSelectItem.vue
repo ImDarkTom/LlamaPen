@@ -53,7 +53,7 @@ const modelCapabilities = computed(() => {
 		:class="{
 			'bg-surface-light': selected && !isCurrentModel,
 			'bg-surface-light ring-2 ring-border ring-inset': isCurrentModel,
-			'opacity-75': (!userStore.subscription.subscribed && model.llamapenMetadata?.premium) || (config.api.enabled && !userStore.isSignedIn),
+			'opacity-50': (!userStore.subscription.subscribed && model.llamapenMetadata?.premium) || (config.api.enabled && !userStore.isSignedIn),
 		}" @click="setModel(model)" ref="listItemRef" :aria-selected="selected">
 
 		<ModelIcon :name="model.model" class="size-10 p-1" />
