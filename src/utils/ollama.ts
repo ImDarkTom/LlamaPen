@@ -5,6 +5,7 @@ import { Readable } from 'readable-stream';
 import type { ReadableOf } from '@/types/util';
 import logger from '../lib/logger';
 import ollamaRequest from './ollamaRequest';
+import db from '@/lib/db';
 
 const chatTitleExamples = `\nExamples of titles:\n📉 Stock Market Trends\n🍪 Perfect Chocolate Chip Recipe\nEvolution of Music Streaming\nRemote Work Productivity Tips\nArtificial Intelligence in Healthcare\n🎮 Video Game Development Insights`;
 
@@ -32,16 +33,21 @@ class OllamaAPI {
 			return 'Mock Chat Title';
 		}
 
-		const messagesFormatted = messages.map((message) => {
-			const hasAttachments = message.attachments && message.attachments.length > 0;
+		const messagesFormatted = await Promise.all(
+			messages.map(async (message) => {
+				const hasAttachments = (await db.attachments
+					.where('messageId')
+					.equals(message.id)
+					.count()) > 0;
 
-			const content = hasAttachments ? `${message.content}\n<Attachment(s)>` : message.content;
+				const content = hasAttachments ? `${message.content}\n<Attachment(s)>` : message.content;
 
-			return {
-				role: message.type === 'user' ? 'user' : 'assistant',
-				content,
-			};
-		});
+				return {
+					role: message.type === 'user' ? 'user' : 'assistant',
+					content,
+				};
+			})
+		);
 
 		messagesFormatted.unshift({
 			role: 'system',
