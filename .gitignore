@@ -26,3 +26,5 @@ dist-ssr
 .env
 # Dev
 icons_all/
+
+dev-dist/
