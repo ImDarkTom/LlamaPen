@@ -136,6 +136,8 @@ function handleClipboardEvent(event: ClipboardEvent) {
 
             handlePastedImage(file);
             event.preventDefault();
+        } else {
+            alert(`Unsupported attachment type ${item.type}. Please only upload images.`)
         }
     }
 }

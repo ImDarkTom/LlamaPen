@@ -84,26 +84,26 @@ const useMessagesStore = defineStore('messages', () => {
 			logger.info('Messages Store', "Created new chat with id", openedChatId.value);
 		}
 
-		const allAttachments = toRaw(attachments);
-
-		const attachmentMap: Omit<UserAttachment, 'id'>[] = allAttachments.map((attachment) => {
-			return {
-				content: attachment,
-				created: new Date(),
-			}
-		})
-
-		const attachmentIds = await db.attachments.bulkAdd(attachmentMap, { allKeys: true });
-
 		const messageData = {
 			chatId: openedChatId.value,
 			content,
 			created: new Date(),
 			type: 'user' as 'user' | 'model',
-			attachments: attachmentIds,
 		};
 
-		await db.messages.add(messageData);
+		const messageId = await db.messages.add(messageData);
+
+		const allAttachments = toRaw(attachments);
+		const attachmentMap: Omit<UserAttachment, 'id'>[] = allAttachments.map((attachment) => {
+			return {
+				content: attachment,
+				created: new Date(),
+				messageId, 
+			}
+		})
+
+		await db.attachments.bulkAdd(attachmentMap);
+
 		await db.chats.update(openedChatId.value, { lastestMessageDate: new Date() });
 		logger.info('Messages Store', 'Added message', messageData);
 
@@ -122,10 +122,19 @@ const useMessagesStore = defineStore('messages', () => {
 
 		await db.messages.update(id, { content });
 
-		// Delete all messages with same chatId where id is after the edited message's id 
-		await db.messages
+		const messageIdsToBeDeleted = await db.messages
 			.where('[chatId+id]')
-			.between([openedChatId.value, id], [openedChatId.value, Dexie.maxKey], false, true).delete();
+			.between([openedChatId.value, id], [openedChatId.value, Dexie.maxKey], false, true)
+			.primaryKeys();
+
+		// Delete all messages with same chatId where id is after the edited message's id 
+		await db.messages.bulkDelete(messageIdsToBeDeleted);
+
+		// Delete all attachments associated with deleted messages.
+		await db.attachments
+			.where('messageId')
+			.anyOf(messageIdsToBeDeleted)
+			.delete();	
 
 		logger.info('Messages Store', 'Deleted messages after edited message', id);
 
@@ -214,7 +223,7 @@ const useMessagesStore = defineStore('messages', () => {
 			.sortBy('created');
 
 		const formattedMessages = sortedMessages.map(async (message) => {
-			const attachmentBlobsInMessage = await getMessageAttachmentBlobs(message.attachments);
+			const attachmentBlobsInMessage = await getMessageAttachmentBlobs(message.id);
 
 			return {
 				role: message.type === 'user' ? 'user' : 'assistant' as 'user' | 'assistant',
@@ -374,6 +383,7 @@ const useMessagesStore = defineStore('messages', () => {
 	 */
 	async function clearAllMessages() {
 		await db.messages.clear();
+		await db.attachments.clear();
 	}
 
 	return {

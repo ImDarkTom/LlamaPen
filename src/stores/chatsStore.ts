@@ -79,6 +79,22 @@ const useChatsStore = defineStore('chats', () => {
 
 	async function deleteChat(id: number) {
 		await db.chats.delete(id);
+		logger.info('Chats Store', `Deleted chat with id ${id}`);
+
+		const messagesToDelete = await db.messages
+			.where('chatId')
+			.equals(id)
+			.primaryKeys();
+
+		await db.messages.bulkDelete(messagesToDelete);
+		logger.info('Chats Store', `Deleted messages associated with chat ${id}`);
+
+		await db.attachments
+			.where('messageId')
+			.anyOf(messagesToDelete)
+			.delete();
+		logger.info('Chats Store', `Deleted attachments associated with chat ${id}`);
+
 	}
 
 	async function renameChat(id: number, newTitle: string) {

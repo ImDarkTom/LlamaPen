@@ -9,7 +9,7 @@ const db = new Dexie('LlamapenDB') as Dexie & {
 db.version(1).stores({
 	chats: '++id,title,createdAt,lastestMessageDate,pinned',
 	messages: '++id,chatId,created,[chatId+id]',
-	attachments: '++id,created'
+	attachments: '++id,messageId,created'
 });
 
 export default db;

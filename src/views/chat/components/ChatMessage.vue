@@ -26,7 +26,7 @@ const props = defineProps<{
 
 const images = ref<{ id: string; blobSrc: string; file: Blob }[]>([]);
 onMounted(async () => {
-    const messageAttachments = await getMessageAttachmentBlobs(props.message.attachments);
+    const messageAttachments = await getMessageAttachmentBlobs(props.message.id);
     images.value = messageAttachments.map((attachment) => {
         return {
             id: nanoid(),
