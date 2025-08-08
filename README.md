@@ -11,35 +11,41 @@ A no-install needed GUI for Ollama.
 - 🛠️ Renders markdown, think text, LaTeX math.
 - ⚡ Keyboard shortcuts for quick navigation.
 - 🗃️ Built-in model & download manager.
+- 🔌 Offline & PWA support.
 - 🕊️ 100% Free & Open-Source.
 
 ## Setting Up
 
 A [guide for setup](https://llamapen.app/guide) is included on the site. We've tried to make setup as smooth and straightforward as possible, letting you configure once and immediately start chatting any time Ollama is running.
 
-Once set-up, you can start chatting. All **chats are stored locally** in your browser giving you complete privacy and near-instant chat load times. 
+Once set-up, you can start chatting. All **chats are stored locally** in your browser giving you complete privacy and near-instant chat load times.
 
 ## Contributing
 
 Contributing/running locally is also made as straightforward as possible. To get a local version of LlamaPen running on your machine, follow these steps:
 
 ### 0. Prerequisites
+
 Make sure you have installed:
+
 - [Git](https://git-scm.com/downloads)
 - [Bun](https://bun.sh/) (1.2+)
 
 ### 1. Download
+
 ```bash
 git clone https://github.com/ImDarkTom/LlamaPen
 cd LlamaPen
 ```
 
 ### 2. Install dependencies
+
 ```bash
 bun i
 ```
 
 ### 3. Run
+
 ```bash
 bun dev
 ```
@@ -59,6 +65,7 @@ Funding to help development is always appreciated, whether that is through purch
 <a href="https://www.buymeacoffee.com/ImDarkTom" target="_blank"><img src="https://cdn.buymeacoffee.com/buttons/default-yellow.png" alt="Buy Me A Coffee" height="41" width="174"></a>
 
 ## Licenses & Attribution
+
 - [Ollama](https://github.com/ollama/ollama)
 - [Lobe Icons](https://github.com/lobehub/lobe-icons)
 - [*Picture in the preview*](https://commons.wikimedia.org/w/index.php?curid=145806133)
