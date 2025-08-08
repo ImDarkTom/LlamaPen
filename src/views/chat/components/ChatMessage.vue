@@ -152,7 +152,7 @@ function regenerateMessage(model: string) {
                 </span>
             </div>
             <img v-for="image of images" :key="image.id" :src="image.blobSrc"
-                class="rounded-xl max-w-full max-h-full cursor-pointer mb-2"
+                class="rounded-xl max-w-64 max-h-full cursor-pointer mb-2"
                 @click="emitter.emit('openLightbox', { image: image.file })" alt="Message attached media" />
 
             <MessageEditor v-if="editing" ref="messageEditorRef" :messageText="message.content"
