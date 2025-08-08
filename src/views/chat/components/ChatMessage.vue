@@ -16,6 +16,7 @@ import { VscDebugRestart } from 'vue-icons-plus/vsc';
 import logger from '@/lib/logger';
 import { BiTimeFive } from 'vue-icons-plus/bi';
 import { renderMarkdown } from '@/lib/marked';
+import { getMessageAttachmentBlobs } from '@/utils/core/getMessageAttachments';
 
 const messagesStore = useMessagesStore();
 
@@ -23,19 +24,23 @@ const props = defineProps<{
     message: ChatMessage;
 }>();
 
+const images = ref<{ id: string; blobSrc: string; file: Blob }[]>([]);
+onMounted(async () => {
+    const messageAttachments = await getMessageAttachmentBlobs(props.message.attachments);
+    images.value = messageAttachments.map((attachment) => {
+        return {
+            id: nanoid(),
+            blobSrc: URL.createObjectURL(attachment),
+            file: attachment,
+        }
+    });
+})
+
 // === State ===
 const editing = ref<boolean>(false);
 const messageEditorRef = ref<InstanceType<typeof MessageEditor> | null>(null);
 
 // === Computed ===
-const images = (props.message.attachments || []).map((file) => {
-    return {
-        id: nanoid(),
-        blobSrc: URL.createObjectURL(file),
-        file,
-    }
-});
-
 const isUserMessage = computed(() => props.message.type === 'user');
 const isModelMessage = computed(() => props.message.type === 'model');
 const modelMessageDone = computed(() => props.message.type === 'model' &&

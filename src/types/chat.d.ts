@@ -7,6 +7,11 @@ interface Chat {
 	pinned: 0 | 1;
 }
 
+type UserAttachment = {
+	id: number;
+	created: Date;
+	content: Blob;
+}
 
 type ChatMessage = ModelChatMessage | UserChatMessage;
 
@@ -15,7 +20,7 @@ type BaseChatMessage = {
 	chatId: number;
 	content: string;
 	created: Date;
-	attachments?: Blob[];
+	attachments?: number[];
 };
 
 interface ModelChatMessage extends BaseChatMessage {

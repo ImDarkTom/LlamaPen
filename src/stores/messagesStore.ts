@@ -10,6 +10,7 @@ import { useConfigStore } from './config';
 import { filesAsBase64 } from '@/utils/core/filesAsBase64';
 import { useUiStore } from './uiStore';
 import setPageTitle from '@/utils/core/setPageTitle';
+import { getMessageAttachmentBlobs } from '@/utils/core/getMessageAttachments';
 
 // ----
 // Init
@@ -83,12 +84,23 @@ const useMessagesStore = defineStore('messages', () => {
 			logger.info('Messages Store', "Created new chat with id", openedChatId.value);
 		}
 
+		const allAttachments = toRaw(attachments);
+
+		const attachmentMap: Omit<UserAttachment, 'id'>[] = allAttachments.map((attachment) => {
+			return {
+				content: attachment,
+				created: new Date(),
+			}
+		})
+
+		const attachmentIds = await db.attachments.bulkAdd(attachmentMap, { allKeys: true });
+
 		const messageData = {
 			chatId: openedChatId.value,
 			content,
 			created: new Date(),
 			type: 'user' as 'user' | 'model',
-			attachments: toRaw(attachments),
+			attachments: attachmentIds,
 		};
 
 		await db.messages.add(messageData);
@@ -202,10 +214,12 @@ const useMessagesStore = defineStore('messages', () => {
 			.sortBy('created');
 
 		const formattedMessages = sortedMessages.map(async (message) => {
+			const attachmentBlobsInMessage = await getMessageAttachmentBlobs(message.attachments);
+
 			return {
 				role: message.type === 'user' ? 'user' : 'assistant' as 'user' | 'assistant',
 				content: message.content,
-				images: await filesAsBase64(message.attachments || [])
+				images: await filesAsBase64(attachmentBlobsInMessage)
 			};
 		});
 
