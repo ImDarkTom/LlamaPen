@@ -20,7 +20,7 @@ A [guide for setup](https://llamapen.app/guide) is included on the site. We've t
 
 Once set-up, you can start chatting. All **chats are stored locally** in your browser giving you complete privacy and near-instant chat load times.
 
-## Contributing
+## Contributing/Running Locally
 
 Contributing/running locally is also made as straightforward as possible. To get a local version of LlamaPen running on your machine, follow these steps:
 
@@ -46,11 +46,19 @@ bun i
 
 ### 3. Run
 
+If you want to run in developer mode and see changes in your code updated live, do:
+
 ```bash
 bun dev
 ```
 
-*That's it!* If you are using VSCode you can optionally install the extensions in the `extensions.json` file for a smoother development experience.
+If you want to just run locally with no overhead, do:
+
+```bash
+bun run local
+```
+
+*That's it!* If you are contributing and VSCode, you can optionally install the extensions in the `extensions.json` file for a smoother development experience.
 
 ## LlamaPen API
 
