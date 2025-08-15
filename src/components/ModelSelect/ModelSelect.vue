@@ -166,7 +166,7 @@ const modelName = computed(() => {
                 {{ modelName }}
             </span>
 
-            <p class="flex flex-row gap-2 items-center italic" v-else>
+            <p class="flex flex-row gap-2 items-center italic font-medium" v-else>
                 <VscDebugDisconnect />
                 Disconnected
             </p>
