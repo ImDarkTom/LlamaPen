@@ -77,7 +77,7 @@ function handleEscape(e: KeyboardEvent) {
             <p>And similarly to persistently add to trusted origins you can do:</p>
             <br>
 
-            <pre class="my-2"><code class="hljs language-bash !my-2">echo '\nexport OLLAMA_ORIGINS="{{ originUrl }}"' >> ~/.bashrc && source ~/.bashrc</code></pre>
+            <pre class="my-2"><code class="hljs language-bash !my-2">echo 'export OLLAMA_ORIGINS="{{ originUrl }}"' >> ~/.bashrc && source ~/.bashrc</code></pre>
             <br>
 
             <p>(This is assuming you are using <b>Bash</b>, other shells may have different ways of setting global variables)</p>
