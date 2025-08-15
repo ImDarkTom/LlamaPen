@@ -129,7 +129,7 @@ async function signIn() {
 
 <template>
 	<div class="w-full h-full flex flex-col items-center py-4 box-border overflow-y-auto px-2
-	*:mx-auto *:md:w-4/5 *:lg:w-3/5">
+	*:mx-auto *:md:w-4/5 *:lg:w-3/5 *:max-w-3xl">
 		<div v-if="!userStore.user" class="w-4/5 flex flex-col items-center justify-center h-full">
 			<AccountSection class="items-center justify-center" flex-direction="col">
 				<div class="flex flex-col items-center gap-4">
