@@ -46,19 +46,19 @@ bun i
 
 ### 3. Run
 
-If you want to run in developer mode and see changes in your code updated live, do:
+If you want to run in **developer mode** and see changes in your code updated live, do:
 
 ```bash
 bun dev
 ```
 
-If you want to just run locally with no overhead, do:
+If you want to just **run locally** with no overhead, do:
 
 ```bash
 bun run local
 ```
 
-*That's it!* If you are contributing and VSCode, you can optionally install the extensions in the `extensions.json` file for a smoother development experience.
+*That's it!* If you are contributing and using VSCode you can optionally install the extensions in the `extensions.json` file for a smoother development experience.
 
 ## LlamaPen API
 
@@ -68,7 +68,7 @@ For security purposes, LlamaPen API is **not** open-source, however we strive to
 
 ## Donating
 
-Funding to help development is always appreciated, whether that is through purchasing a subscription on LlamaPen API or donating directly, I will appreciate any sponsorship you decide to give. 
+Funding to help development is always appreciated, whether that is through purchasing a subscription on LlamaPen API or donating directly, I will appreciate any sponsorship you give. 
 
 <a href="https://www.buymeacoffee.com/ImDarkTom" target="_blank"><img src="https://cdn.buymeacoffee.com/buttons/default-yellow.png" alt="Buy Me A Coffee" height="41" width="174"></a>
 
