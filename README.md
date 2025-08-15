@@ -70,7 +70,7 @@ For security purposes, LlamaPen API is **not** open-source, however we strive to
 
 Funding to help development is always appreciated, whether that is through purchasing a subscription on LlamaPen API or donating directly, I will appreciate any sponsorship you give. 
 
-<a href="https://www.buymeacoffee.com/ImDarkTom" target="_blank"><img src="https://cdn.buymeacoffee.com/buttons/default-yellow.png" alt="Buy Me A Coffee" height="41" width="174"></a>
+<a href="https://www.buymeacoffee.com/ImDarkTom" target="_blank"><img src="https://cdn.buymeacoffee.com/buttons/v2/default-yellow.png" alt="Buy Me A Coffee" height="41" width="174"></a>
 
 ## Licenses & Attribution
 
