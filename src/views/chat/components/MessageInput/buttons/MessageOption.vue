@@ -37,13 +37,13 @@ function onInput(event: Event) {
             </Tooltip>
         </div>
         <div class="bg-surface-light p-1 flex flex-row gap-2 rounded-md">
-            <div class="flex flex-row gap-2 grow items-center p-1">
+            <div class="flex flex-row w-2/3 gap-2 items-center p-1">
                 <span>{{ min }}</span>
                 <input class="slider appearance-none grow cursor-pointer" type="range" :value="modelValue" @input="onInput" :min :max :step />
                 <span>{{ max }}</span>
             </div>
 
-            <input class="p-1 focus:border-border border-border-muted border-2 outline-none rounded-md" :id="inputId" type="number" :value="modelValue" @input="onInput" :min :max :step />
+            <input class="p-1 w-1/3 focus:border-border border-border-muted border-2 outline-none rounded-md" :id="inputId" type="number" :value="modelValue" @input="onInput" :min :max :step />
         </div>
     </div>
 </template>
