@@ -1,0 +1,8 @@
+User-agent: *
+Allow: /
+
+Disallow: /chat/*
+Disallow: /settings
+Disallow: /account
+
+Sitemap: https://llamapen.app/sitemap.xml
