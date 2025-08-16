@@ -2,7 +2,7 @@
 import Dropdown from '@/components/Dropdown/Dropdown.vue';
 import MessageOption from './MessageOption.vue';
 import { useConfigStore } from '@/stores/config';
-import { FaWrench } from 'vue-icons-plus/fa';
+import { GrConfigure } from 'vue-icons-plus/gr';
 
 const config = useConfigStore();
 
@@ -24,13 +24,13 @@ const tooltips = {
     <Dropdown direction="up">
         <template #button>
             <div>
-                <FaWrench class="p-1" />
+                <GrConfigure class="p-1" />
             </div>
         </template>
         <template #menu>
             <div>
                 <div class="flex flex-row items-center justify-between">
-                    <span class="font-semibold text-lg">Custom Model Parameters</span>
+                    <span class="font-semibold text-lg">Generation Parameters</span>
                     <button class="bg-surface-light p-2 rounded-md cursor-pointer hover:bg-primary hover:text-surface-light transition-colors duration-dynamic" @click="reset">Reset</button>
                 </div>
                 <div class="flex flex-row items-center gap-2 mb-2">
