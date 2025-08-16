@@ -20,7 +20,7 @@ import ollamaRequest from '@/utils/ollamaRequest';
 import { TbListDetails } from 'vue-icons-plus/tb';
 import { AiFillInfoCircle } from 'vue-icons-plus/ai';
 import { RiAccountCircleLine } from 'vue-icons-plus/ri';
-import { BsFillTrash3Fill, BsKeyboard } from 'vue-icons-plus/bs';
+import { BsFillTrash3Fill, BsKeyboard, BsRocketTakeoff } from 'vue-icons-plus/bs';
 
 const config = useConfigStore();
 const router = useRouter();
@@ -127,7 +127,10 @@ async function checkOllamaVersion() {
 
         <OptionCategory label="Account" v-if="inProduction">
             <ToggleSetting v-model="config.api.enabled" label="Enable Llamapen API" />
-            <span v-if="!config.api.enabled" class="text-sm inline-flex gap-2"><AiFillInfoCircle /> Run more powerful models with LlamaPen API, an optional cloud service.</span>
+            <span v-if="!config.api.enabled" class="text-text-muted/80 text-sm flex flex-row gap-2 items-center justify-start">
+                <BsRocketTakeoff class="size-4" />
+                Run more powerful models with LlamaPen API, an optional cloud service.
+            </span>
             <ButtonSetting v-else type="link" to="/account"><RiAccountCircleLine /> Manage Account</ButtonSetting>
         </OptionCategory>
 
