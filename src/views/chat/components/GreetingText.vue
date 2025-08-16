@@ -32,7 +32,7 @@ function getTimeInHHmm() {
             &middot;
             <span>{{ new Date().toLocaleDateString() }}</span>
             &middot;
-            <span>v0.0.1</span>
+            <span>v1.0.0</span>
         </span>
     </div>
 </template>
