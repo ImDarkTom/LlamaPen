@@ -160,6 +160,11 @@ async function checkOllamaVersion() {
                 :itemNames="['System default', 'Dark', 'Light', 'Plain Dark', 'Plain Light']"
                 @update:model-value="config.loadTheme()" 
             />
+            <ToggleSetting 
+                v-model="config.ui.nativeScrollbar" 
+                label="Native scrollbar" 
+                @update:model-value="config.loadScrollbarSetting()"
+            />
             <div class="flex flex-col gap-2 w-full">
                 <span class="text-lg">Animation Speed</span>
                 <input class="accent-primary w-full" @change="updateTransitionSpeed" v-model="transitionSpeed"

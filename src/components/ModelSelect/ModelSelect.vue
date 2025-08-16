@@ -185,7 +185,7 @@ const modelName = computed(() => {
                 </RouterLink>
             </div>
 
-            <ul role="list" class="max-h-80 overflow-y-auto *:not-last:mb-2">
+            <ul role="list" class="max-h-80 overflow-y-auto [scrollbar-width:thin] *:not-last:mb-2">
                 <li v-if="!uiStore.isConnectedToOllama" class="h-24 flex px-3 py-2 roundex-xl justify-center items-center font-bold gap-2">
                     <VscDebugDisconnect />
                     Not connected to Ollama.

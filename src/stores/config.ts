@@ -21,6 +21,7 @@ interface Config {
             waitTimeoutMs: number;
         },
         theme: string;
+        nativeScrollbar: boolean;
     },
     api: {
         enabled: boolean,
@@ -82,6 +83,7 @@ export const useConfigStore = defineStore('config', {
                 waitTimeoutMs: 250, // Time before showing tooltip
             },
             theme: 'auto',
+            nativeScrollbar: false
         },
         api: {
             enabled: false,
@@ -135,6 +137,13 @@ export const useConfigStore = defineStore('config', {
 
             const prefersDark = window.matchMedia('(prefers-color-scheme: dark)').matches;
             document.documentElement.setAttribute('theme', prefersDark ? 'dark' : 'light');
+        },
+        loadScrollbarSetting() {
+            if (this.ui.nativeScrollbar) {
+                document.body.setAttribute('data-native-scrollbar', '1');
+            } else {
+                document.body.removeAttribute('data-native-scrollbar');
+            }
         }
     },
     persist: {

@@ -188,6 +188,10 @@ z-99 - z-100: Popup
     overflow: hidden;
 }
 
+body:not([data-native-scrollbar]) {
+    scrollbar-color: var(--color-primary) var(--color-surface);
+}
+
 /* Transitions */
 
 /* @media all { */

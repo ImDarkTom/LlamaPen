@@ -2,11 +2,12 @@
 import { onBeforeMount } from 'vue';
 import { useConfigStore } from './stores/config';
 
-const configStore = useConfigStore();
+const config = useConfigStore();
 
 onBeforeMount(() => {
-    configStore.loadTheme();
-    configStore.loadTransitionSpeed();
+    config.loadTheme();
+    config.loadTransitionSpeed();
+    config.loadScrollbarSetting();
 });
 </script>
 
