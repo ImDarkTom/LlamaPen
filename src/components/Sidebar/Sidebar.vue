@@ -46,16 +46,14 @@ onUnmounted(() => {
 <template>
     <!-- note: removing the wrapper breaks this -->
     <div>
-        <Transition name="slide-left" mode="default">
-            <aside 
-                v-show="useConfig.showSidebar"
-                class="flex flex-col h-full w-[calc(100vw-3rem)] sm:w-[calc(100vw-3rem)] md:w-[18vw] md:min-w-64 bg-background-dark box-border p-2"
-            >
-                <SidebarHeader />
-                <ChatList />
-                <SidebarFooter />
-            </aside>
-        </Transition>
+        <aside 
+            class="flex flex-col fixed top-0 left-0 h-full w-72 z-[29] bg-background-dark box-border p-2 transition-all duration-dynamic"
+            :class="{ '-translate-x-full': !useConfig.showSidebar, 'translate-x-0': useConfig.showSidebar }"
+        >
+            <SidebarHeader />
+            <ChatList />
+            <SidebarFooter />
+        </aside>
         <div class="absolute top-0 left-0 h-12 w-12 p-2 z-30">
             <div class="size-10 p-1.5 cursor-pointer rounded-lg text-text hover:bg-surface hover:shadow-md shadow-background-dark transition-all duration-dynamic"
                 @pointerdown="handlePointerDown" aria-label="Toggle Sidebar">
