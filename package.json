@@ -7,7 +7,7 @@
     "dev": "bunx --bun vite",
     "build": "vue-tsc -b && vite build",
     "preview": "vite preview",
-    "local": "bunx run build && echo \"✅ App should be running locally at http://localhost:8080\" && bunx --bun serve dist --listen 8080 --single"
+    "local": "bun run build && echo \"✅ App should be running locally at http://localhost:8080\" && bunx --bun serve dist --listen 8080 --single"
   },
   "dependencies": {
     "@supabase/supabase-js": "^2.55.0",
