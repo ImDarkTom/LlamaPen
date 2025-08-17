@@ -76,6 +76,7 @@ Funding to help development is always appreciated, whether that is through purch
 
 - [Ollama](https://github.com/ollama/ollama)
 - [Lobe Icons](https://github.com/lobehub/lobe-icons)
+- [Nebula Sans Font](https://www.nebulasans.com/)
 - [*Picture in the preview*](https://commons.wikimedia.org/w/index.php?curid=145806133)
 
 *LlamaPen* is [AGPL-3.0](https://github.com/ImDarkTom/LlamaPen?tab=AGPL-3.0-1-ov-file)
