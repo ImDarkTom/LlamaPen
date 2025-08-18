@@ -169,7 +169,7 @@ async function checkOllamaVersion() {
                 @update:model-value="config.loadScrollbarSetting()"
             />
             <div class="flex flex-col gap-2 w-full">
-                <span class="text-lg">Animation Speed</span>
+                <span class="text-lg">Animation Duration</span>
                 <input class="accent-primary w-full" @change="updateTransitionSpeed" v-model="transitionSpeed"
                     type="range" min="0" max="1" step="0.025" />
                 <span class="py-2">
