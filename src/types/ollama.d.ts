@@ -69,8 +69,7 @@ type OllamaModelInfoResponse = {
         'general.size_label': string;
         'general.tags': unknown | null;
         'general.type': string;
-        [key: string]: string;
-    };
+    } & Record<string, unknown>;
     tensors: {
         name: string;
         type: string;
