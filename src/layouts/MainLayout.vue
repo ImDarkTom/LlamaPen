@@ -11,10 +11,10 @@ const config = useConfigStore();
         <Sidebar />
     </div>
 
-    <!-- <div v-if="config.showSidebar"
+    <div v-if="config.showSidebar"
         class="fixed inset-0 bg-black/50 z-28 md:hidden"
         @click="config.showSidebar = !config.showSidebar"
-    ></div> -->
+    ></div>
         
 
     <div class="flex-1 min-h-[100svh] pl-0 transition-all duration-dynamic overflow-y-auto"
