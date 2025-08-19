@@ -7,9 +7,7 @@ const config = useConfigStore();
 </script>
 
 <template>
-    <div class="flex">
-        <Sidebar />
-    </div>
+    <Sidebar />
 
     <div v-if="config.showSidebar"
         class="fixed inset-0 bg-black/50 z-28 md:hidden"
