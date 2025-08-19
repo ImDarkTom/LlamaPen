@@ -9,7 +9,6 @@ import ollamaApi from '@/utils/ollama';
 import ModelIcon from '../Icon/ModelIcon.vue';
 import { TbListDetails } from 'vue-icons-plus/tb';
 import isOnMobile from '@/utils/core/isOnMobile';
-import ollamaRequest from '@/utils/ollamaRequest';
 import { useModelCapabiltyCache } from '@/composables/modelCapabilities';
 import Dropdown from '../Dropdown/Dropdown.vue';
 
@@ -69,20 +68,9 @@ async function setModel(newModelName: string) {
         dropdownRef.value.toggleOpened();
     }
     searchQuery.value = "";
-
-    const { data: response, error } = await ollamaRequest('/api/show', 'POST', {
-        model: newModelName,
-    });
-
-    if (error) {
-        console.error('Error getting model info for selected ollama model.', error);
-        return
-    }
     
-    const modelInfo = (await response.json()) as OllamaModelInfoResponse;
-
+    const modelInfo = await useModelCapabiltyCache().loadModelCapabilities(newModelName);
     uiStore.chat.selectedModelInfo = modelInfo;
-    useModelCapabiltyCache().addToCache(newModelName, modelInfo.capabilities);
 }
 
 function resetState() {
