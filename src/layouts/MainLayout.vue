@@ -9,10 +9,19 @@ const config = useConfigStore();
 <template>
     <Sidebar />
 
-    <div v-if="config.showSidebar"
-        class="fixed inset-0 bg-black/50 z-28 md:hidden"
-        @click="config.showSidebar = !config.showSidebar"
-    ></div>
+    <Transition
+        enter-active-class="transition-opacity duration-dynamic"
+        leave-active-class="transition-opacity duration-dynamic"
+        enter-from-class="opacity-0"
+        enter-to-class="opacity-100"
+        leave-from-class="opacity-100"
+        leave-to-class="opacity-0"
+    >
+        <div v-if="config.showSidebar"
+            class="fixed inset-0 bg-black/50 z-28 md:hidden"
+            @click="config.showSidebar = !config.showSidebar"
+        ></div>
+    </Transition>
         
 
     <div class="flex-1 min-h-[100svh] pl-0 transition-all duration-dynamic overflow-y-auto"
