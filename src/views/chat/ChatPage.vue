@@ -25,7 +25,7 @@ watch(() => messagesStore.openedChatId, updateChatTitle);
 
 <template>
     <div class="w-full h-full flex flex-col">
-        <div v-if="chatTitle" class="flex flex-row h-15 shrink-0 p-1 items-center justify-center">
+        <div v-if="chatTitle" class="flex md:hidden flex-row h-15 shrink-0 p-1 items-center justify-center">
             <span class="max-w-[calc(100%-6rem)] line-clamp-1">{{ chatTitle }}</span>
 
             <!-- New Chat icon -->
@@ -38,7 +38,7 @@ watch(() => messagesStore.openedChatId, updateChatTitle);
                 </div>
             </RouterLink>
         </div>
-        <div class="w-full h-[calc(100%-3.75rem)] flex flex-col"
+        <div class="w-full h-[calc(100%-3.75rem)] md:h-full flex flex-col"
             :class="{'h-full': !chatTitle}">
             <MessageList />
             <MessageInput />
