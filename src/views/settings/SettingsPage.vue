@@ -168,6 +168,10 @@ async function checkOllamaVersion() {
                 label="Native scrollbar" 
                 @update:model-value="config.loadScrollbarSetting()"
             />
+            <ToggleSetting 
+                v-model="config.ui.sendButtonAltIcon" 
+                label="Alternate send button icon" 
+            />
             <div class="flex flex-col gap-2 w-full">
                 <span class="text-lg">Animation Duration</span>
                 <input class="accent-primary w-full" @change="updateTransitionSpeed" v-model="transitionSpeed"
