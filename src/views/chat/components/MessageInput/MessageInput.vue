@@ -161,12 +161,12 @@ function handlePastedImage(file: File) {
 <template>
     <div class="w-full flex justify-center">
         <div
-            class="w-full sm:w-full lg:w-3xl mx-1 mb-0 sm:mx-1 sm:mb-1 md:mx-4 md:mb-2 p-2 
-                box-border flex flex-col items-center max-h-[48rem] relative bg-background-light rounded-t-xl sm:rounded-b-lg">
+            class="w-[calc(100%-1rem)] lg:w-3xl mx-4 mb-2 p-2
+                box-border flex flex-col items-center max-h-[48rem] relative bg-background-light rounded-xl">
             <ScrollToBottomButton />
             <!-- todo: make this a contenteditable div so we can auto-resize it on line break -->
             <textarea 
-                class="w-full box-border p-2 pb-6 text-base border-none outline-none resize-none overflow-y-auto break-words"
+                class="w-full box-border p-2 pb-8 text-base border-none outline-none resize-none overflow-y-auto break-words"
                 :rows="Math.min(messageInputValue.split('\n').length, 12)"
                 v-model="messageInputValue" 
                 placeholder="Enter a message..."
