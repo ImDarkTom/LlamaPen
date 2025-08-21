@@ -87,7 +87,7 @@ function inputKeyDown(e: KeyboardEvent) {
     }
     
     e.preventDefault();
-    if (!canGenerate) {
+    if (!canGenerate.value) {
         return;
     }
 
