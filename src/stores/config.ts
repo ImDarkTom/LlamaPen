@@ -22,6 +22,7 @@ interface Config {
         },
         theme: string;
         nativeScrollbar: boolean;
+        sendButtonAltIcon: boolean; // Use paper plane icon instead of up arrow
     },
     api: {
         enabled: boolean,
@@ -83,7 +84,8 @@ export const useConfigStore = defineStore('config', {
                 waitTimeoutMs: 250, // Time before showing tooltip
             },
             theme: 'auto',
-            nativeScrollbar: false
+            nativeScrollbar: false,
+            sendButtonAltIcon: false,
         },
         api: {
             enabled: false,

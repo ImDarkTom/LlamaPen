@@ -98,7 +98,7 @@ const useMessagesStore = defineStore('messages', () => {
 			return {
 				content: attachment,
 				created: new Date(),
-				messageId, 
+				messageId,
 			}
 		})
 
@@ -134,7 +134,7 @@ const useMessagesStore = defineStore('messages', () => {
 		await db.attachments
 			.where('messageId')
 			.anyOf(messageIdsToBeDeleted)
-			.delete();	
+			.delete();
 
 		logger.info('Messages Store', 'Deleted messages after edited message', id);
 
@@ -247,7 +247,7 @@ const useMessagesStore = defineStore('messages', () => {
 		const messageSaveInterval = useConfigStore().chat.tokenSaveInterval;
 
 		// Helpers
-		const setMessageStatus = async(newStatus: ModelMessageStatus) => {
+		const setMessageStatus = async (newStatus: ModelMessageStatus) => {
 			await db.messages.update(ollamaMessageId, { status: newStatus } as Partial<ModelChatMessage>);
 		}
 
@@ -287,7 +287,7 @@ const useMessagesStore = defineStore('messages', () => {
 		const chatMessageList = await getMessagesInOllamaFormat(chatId);
 
 		let generatedContent = "";
-		let generatedThoughts = ""; 
+		let generatedThoughts = "";
 		let isGenerating = false;
 		let messageSaveCounter = 0;
 		for await (const chunk of ollamaApi.chat(chatMessageList, abortController.signal, selectedModel)) {
