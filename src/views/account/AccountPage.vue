@@ -133,7 +133,7 @@ async function signIn() {
 <template>
 	<div class="w-full h-full flex flex-col items-center py-4 box-border overflow-y-auto px-2
 	*:mx-auto *:md:w-4/5 *:lg:w-3/5 *:max-w-3xl">
-		<div v-if="!userStore.user" class="w-4/5 flex flex-col items-center justify-center h-full">
+		<div v-if="!userStore.user" class="flex flex-col items-center justify-center h-full">
 			<AccountSection class="items-center justify-center" flex-direction="col">
 				<div class="flex flex-col items-center gap-4">
 					<RouterLink to="/settings" class="text-primary! hover:underline">← Back to Settings</RouterLink>
@@ -148,7 +148,7 @@ async function signIn() {
 				</div>
 			</AccountSection>
 		</div>
-		<div class="w-4/5" v-else>
+		<div v-else>
 			<h1 class="font-bold text-4xl!">My Account</h1>
 			<AccountSection flex-direction="row" :apart="true">
 				<ButtonSetting type="link" to="/settings" >
@@ -161,7 +161,7 @@ async function signIn() {
 			<AccountSection flex-direction="row">
 				<img :src="userStore.user.user_metadata.avatar_url" alt="User avatar" 
 				class="size-28 rounded-full outline-2 outline-border-muted">
-				<div class="flex flex-col gap-2">
+				<div class="flex flex-col overflow-hidden gap-2">
 					<span class="text-text text-2xl font-semibold">{{ userStore.user.user_metadata.full_name }}</span>
 					<span>{{ userStore.user.user_metadata.email }}</span>
 					<span>{{ userStore.subscription.name }} Tier</span>
@@ -215,8 +215,8 @@ async function signIn() {
 					</button>
 				</div>
 				<span class="text-sm flex flex-row gap-1 items-center justify-center"><BsStripe class="size-4" />Payments handled securely by Stripe</span>
-				<div v-if="userStore.subscription.name !== 'Premium'" class="flex flex-row gap-2">
-					<div class="w-1/2 border-2 border-border-muted rounded-lg">
+				<div v-if="userStore.subscription.name !== 'Premium'" class="flex flex-col md:flex-row gap-4 md:gap-2">
+					<div class="w-full md:w-1/2 border-2 border-border-muted rounded-lg">
 						<h4 class="text-xl font-semibold bg-border-muted text-center select-none p-2">Free (current plan)</h4>
 						<ul class="p-4 flex flex-col gap-1 *:flex *:flex-row *:gap-2 *:items-center">
 							<li><BsCheckSquareFill class="size-5 shrink-0" />20 message tokens/day</li>
@@ -224,7 +224,7 @@ async function signIn() {
 							<li><BsCheckSquareFill class="size-5 shrink-0"/>Standard account support</li>
 						</ul>
 					</div>
-					<div class="w-1/2 border-2 border-primary rounded-lg bg-surface">
+					<div class="w-full md:w-1/2 border-2 border-primary rounded-lg bg-surface">
 						<h4 class="text-xl font-semibold text-center bg-primary text-background select-none p-2">Premium ✨</h4>
 						<ul class="p-4 flex flex-col gap-1 *:flex *:flex-row *:items-start *:gap-2">
 							<li><BsCheckSquareFill class="size-5 shrink-0 text-secondary" /><span><strong>100</strong> message tokens/day</span></li>
