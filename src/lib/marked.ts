@@ -7,7 +7,28 @@ import DOMPurify from 'dompurify';
 import "katex/dist/katex.min.css";
 import "highlight.js/styles/atom-one-dark.min.css";
 
+const renderer = {
+    link(token: any) {
+        const href = token.href;
+        const title = token.title;
+        const text = token.text || href;
+
+        const isInternal = 
+            href.startsWith('/') || 
+            href.startsWith('#') || 
+            href.startsWith(window.location.origin);
+
+        const titleAttr = title ? `title="${title}"` : '';
+        const targetAttrs = isInternal ? '' : 'target="_blank" rel="noopener noreferrer"';
+        const externalIndicator = isInternal ? '' : ' ↗';
+
+        return `<a href="${href}" ${titleAttr} ${targetAttrs}>${text}${externalIndicator}</a>`;
+    }
+};
+
 const fullMarked = new Marked();
+
+fullMarked.use({ renderer });
 
 fullMarked.use(markedKatex());
 
@@ -16,13 +37,11 @@ fullMarked.use(markedHighlight({
     langPrefix: 'hljs language-',
     highlight(code, lang, _info) {
         const language = hljs.getLanguage(lang) ? lang : 'plaintext';
-
+        
         return hljs.highlight(code, { language }).value;
     }
 }));
 
-// `fullMarked` is used for messages, where we need to render LaTeX with Katex and HLJS.
-// `simpleMarked` is an untouched marked instance for quick rendering such as the models page. 
 
 /**
  * Handles rendering markdown, using DOMPurify to prevent XSS. Note: This may be ran many times 
@@ -32,7 +51,7 @@ fullMarked.use(markedHighlight({
  */
 export function renderMarkdown(text: string) {
     const rawHtml = fullMarked.parse(text, { async: false });
-    const sanitizedHtml = DOMPurify.sanitize(rawHtml);
+    const sanitizedHtml = DOMPurify.sanitize(rawHtml, { ADD_ATTR: ['target'] });
 
     return sanitizedHtml;
 }
