@@ -43,7 +43,7 @@ interface Config {
             enabled: false;
             infoOpenByDefault: boolean;
         },
-        titleGenerationStyle: 'firstMessage' | 'generate' | 'chatId';
+        titleGenerationStyle: 'firstMessage' | 'generate' | 'chatId' | 'dynamic';
     }
     developer: {
         mockRequests: boolean,

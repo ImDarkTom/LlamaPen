@@ -21,6 +21,8 @@ import { TbListDetails } from 'vue-icons-plus/tb';
 import { AiFillInfoCircle } from 'vue-icons-plus/ai';
 import { RiAccountCircleLine } from 'vue-icons-plus/ri';
 import { BsFillTrash3Fill, BsKeyboard, BsRocketTakeoff } from 'vue-icons-plus/bs';
+import Tooltip from '@/components/Tooltip/Tooltip.vue';
+import { BiHelpCircle } from 'vue-icons-plus/bi';
 
 const config = useConfigStore();
 const router = useRouter();
@@ -200,9 +202,12 @@ async function checkOllamaVersion() {
             <SelectionSetting 
                 v-model="config.chat.titleGenerationStyle" 
                 label="Title generation style" 
-                :items="['firstMessage', 'generate', 'chatId']" 
-                :itemNames="['Use first message', 'Generate with current model (default)', 'Use chat ID']"
+                :items="['firstMessage', 'generate', 'chatId', 'dynamic']" 
+                :itemNames="['Use first message', 'Generate with current model', 'Use chat ID', 'Dynamic (default)']"
             />
+            <Tooltip text="Dynamic: First message if question, else generate.">
+                <BiHelpCircle />
+            </Tooltip>
             <ToggleSetting v-model="config.chat.thinking.infoOpenByDefault"
                 label="Reasoning text open by default" />
             <ButtonSetting @click="clearChats">

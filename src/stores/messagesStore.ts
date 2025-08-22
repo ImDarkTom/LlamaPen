@@ -87,6 +87,15 @@ const useMessagesStore = defineStore('messages', () => {
 				chatsStore.renameChat(newChatId, firstMessageTitle);
 			} else if (config.chat.titleGenerationStyle === 'chatId') {
 				chatsStore.renameChat(newChatId, `Chat #${newChatId}`);
+			} else if (config.chat.titleGenerationStyle === 'dynamic') {
+				const questionRegex = /^(who|what|when|where|why|how|which|whose|is|are|do|does|did|can|could|would|should|will)\b.*\?$/i;
+				
+				if (questionRegex.test(content.trim())) {
+					const firstMessageTitle = content.length > 50 ? content.slice(0, 47) + '...' : content;
+					chatsStore.renameChat(newChatId, firstMessageTitle);
+				} else {
+					shouldGenerateTitle = true;
+				}
 			}
 
 			logger.info('Messages Store', 'No opened chat, created new with ID', openedChatId.value);
