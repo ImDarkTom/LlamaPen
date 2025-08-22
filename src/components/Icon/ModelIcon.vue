@@ -38,7 +38,13 @@ const modelIconMap: Record<string, string> = {
 	'phi': 'microsoft',
 	llava: 'llava',
 	nemotron: 'nvidia',
-	deepcoder: 'together'
+	deepcoder: 'together',
+	'z.ai': 'zai',
+	zai: 'zai',
+	glm: 'zai',
+	hunyuan: 'hunyuan',
+	moonshot: 'moonshot',
+	kimi: 'moonshot',
 };
 
 function getSlug(): string {
