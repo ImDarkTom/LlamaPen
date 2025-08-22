@@ -68,20 +68,28 @@ const useMessagesStore = defineStore('messages', () => {
 
 	async function sendMessage(content: string, attachments: File[] = []) {
 		if (content.length === 0) return;
+		const config = useConfigStore();
+		const chatsStore = useChatsStore();
+
 		let shouldGenerateTitle = false;
 
 		logger.info('Messages Store', 'Sending message', content, attachments);
 
 		if (openedChatId.value === null) {
-			const newChatId = await useChatsStore().createNewChat();
+			// If there was no opened chat, create a new line
+			const newChatId = await chatsStore.createNewChat();
 			openedChatId.value = newChatId;
-			shouldGenerateTitle = true;
 
-			const newUrl = `/chat/${newChatId}`;
-			logger.info('Messages Store', 'No opened chat, created new and navigating to', newUrl);
+			if (config.chat.titleGenerationStyle === 'generate') {
+				shouldGenerateTitle = true;
+			} else if (config.chat.titleGenerationStyle === 'firstMessage') {
+				const firstMessageTitle = content.length > 50 ? content.slice(0, 47) + '...' : content;
+				chatsStore.renameChat(newChatId, firstMessageTitle);
+			} else if (config.chat.titleGenerationStyle === 'chatId') {
+				chatsStore.renameChat(newChatId, `Chat #${newChatId}`);
+			}
 
-
-			logger.info('Messages Store', "Created new chat with id", openedChatId.value);
+			logger.info('Messages Store', 'No opened chat, created new with ID', openedChatId.value);
 		}
 
 		const messageData = {

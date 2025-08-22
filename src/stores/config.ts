@@ -38,10 +38,12 @@ interface Config {
             min_p: number;
         },
         tokenSaveInterval: number, // How many tokens to save before updating the message in the database.
+        // TODO: Add the above to UI ^
         thinking: {
             enabled: false;
             infoOpenByDefault: boolean;
-        }
+        },
+        titleGenerationStyle: 'firstMessage' | 'generate' | 'chatId';
     }
     developer: {
         mockRequests: boolean,
@@ -101,6 +103,7 @@ export const useConfigStore = defineStore('config', {
                 infoOpenByDefault: false,
             },
             tokenSaveInterval: 5,
+            titleGenerationStyle: 'generate',
         },
         developer: {
             mockRequests: false,

@@ -197,6 +197,12 @@ async function checkOllamaVersion() {
         </OptionCategory>
 
         <OptionCategory label="Chat">
+            <SelectionSetting 
+                v-model="config.chat.titleGenerationStyle" 
+                label="Title generation style" 
+                :items="['firstMessage', 'generate', 'chatId']" 
+                :itemNames="['Use first message', 'Generate with current model (default)', 'Use chat ID']"
+            />
             <ToggleSetting v-model="config.chat.thinking.infoOpenByDefault"
                 label="Reasoning text open by default" />
             <ButtonSetting @click="clearChats">
