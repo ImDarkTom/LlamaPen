@@ -4,7 +4,7 @@ import { useConfigStore } from '@/stores/config';
 import ToggleSetting from '@/views/settings/components/ToggleSetting.vue';
 import OptionCategory from './components/OptionCategory.vue';
 import { useRouter } from 'vue-router';
-import ButtonSetting from './components/ButtonSetting.vue';
+import PrimaryButton from '../../components/Buttons/PrimaryButton.vue';
 import useChatsStore from '@/stores/chatsStore';
 import useMessagesStore from '@/stores/messagesStore';
 import supabase from '@/lib/supabase';
@@ -129,35 +129,52 @@ async function checkOllamaVersion() {
 
         <OptionCategory label="Account" v-if="inProduction">
             <ToggleSetting v-model="config.api.enabled" label="Enable Llamapen API" />
-            <span v-if="!config.api.enabled" class="text-text-muted/80 text-sm flex flex-row gap-2 items-center justify-start">
-                <BsRocketTakeoff class="size-4" />
+            <span v-if="!config.api.enabled" class="text-text-muted/80 text-sm">
+                <BsRocketTakeoff class="size-4 inline align-middle" />
                 Run more powerful models with LlamaPen API, an optional cloud service.
             </span>
-            <ButtonSetting v-else type="link" to="/account"><RiAccountCircleLine /> Manage Account</ButtonSetting>
+            
+            <PrimaryButton
+                v-else
+                text="Manage Account"
+                type="link" 
+                to="/account" 
+                :icon="RiAccountCircleLine" />
         </OptionCategory>
 
         <OptionCategory label="Ollama">
             <div v-if="config.api.enabled">Ollama not available while LlamaPen API is enabled.</div>
             <template v-else>
-                <TextInputSetting label="Ollama URL" v-model="config.ollamaUrl" default="http://localhost:11434"
+                <TextInputSetting 
+                    label="Ollama URL" 
+                    v-model="config.ollamaUrl" 
+                    default="http://localhost:11434"
                     :check="ollamaUrlCheck" />
                 <span v-if="!uiStore.isConnectedToOllama">
                     Can't connect? Checkout the
                     <RouterLink to="/guide" class="text-text underline">setup guide</RouterLink>.
                 </span>
                 <div class="flex flex-row gap-2 *:w-1/2">
-                    <ButtonSetting type="link" to="/models">
-                        <TbListDetails /> Manage Models
-                    </ButtonSetting>
-                    <ButtonSetting type="button" @click="checkOllamaVersion">
-                        <AiFillInfoCircle /> Check Ollama version
-                    </ButtonSetting>
+                    <PrimaryButton
+                        text="Manage Models"
+                        type="link" 
+                        to="/models" 
+                        :icon="TbListDetails" /> 
+                    <PrimaryButton
+                        text="Check Ollama version"
+                        type="button"
+                        @click="checkOllamaVersion"
+                        :icon="AiFillInfoCircle" />
                 </div>
             </template>
         </OptionCategory>
 
         <OptionCategory label="Appearance">
-            <ButtonSetting type="link" to="/shortcuts"><BsKeyboard /> View keyboard shortcuts</ButtonSetting>
+            <PrimaryButton
+                text="View keyboard shortcuts"
+                type="link" 
+                to="/shortcuts" 
+                :icon="BsKeyboard" />
             <SelectionSetting 
                 v-model="config.ui.theme" 
                 label="Theme" 
@@ -210,9 +227,12 @@ async function checkOllamaVersion() {
             </Tooltip>
             <ToggleSetting v-model="config.chat.thinking.infoOpenByDefault"
                 label="Reasoning text open by default" />
-            <ButtonSetting @click="clearChats">
-                <BsFillTrash3Fill /> Clear all chats
-            </ButtonSetting>
+            <PrimaryButton
+                text="Clear all chats"
+                type="button"
+                color="danger"
+                :icon="BsFillTrash3Fill"
+                @click="clearChats" />
         </OptionCategory>
 
         <OptionCategory label="Developer" v-if="!isInProd">

@@ -14,7 +14,7 @@ import { CgFileDocument } from 'vue-icons-plus/cg';
 import { FiMail, FiShield } from 'vue-icons-plus/fi';
 import ContactSection from './components/ContactSection.vue';
 import { FaBug } from 'vue-icons-plus/fa';
-import ButtonSetting from '../settings/components/ButtonSetting.vue';
+import PrimaryButton from '../../components/Buttons/PrimaryButton.vue';
 import { PiSignOutBold } from 'vue-icons-plus/pi';
 import { IpPeopleDeleteOne } from 'vue-icons-plus/ip';
 
@@ -138,7 +138,13 @@ async function signIn() {
 				<div class="flex flex-col items-center gap-4">
 					<RouterLink to="/settings" class="text-primary! hover:underline">← Back to Settings</RouterLink>
 					<span class="font-bold text-xl">Welcome to LlamaPen API</span>
-					<ButtonSetting v-if="!userStore.isSignedIn" @click="signIn" class="font-medium px-16" :class="{ 'opacity-75': isSigningIn }"><BsGoogle /> {{ isSigningIn ? 'Signing in...' : 'Continue with Google' }}</ButtonSetting>
+					<PrimaryButton 
+						v-if="!userStore.isSignedIn" 
+						class="font-medium px-16" 
+						:class="{ 'opacity-75': isSigningIn }"
+						:text="isSigningIn ? 'Signing in...' : 'Continue with Google'"
+						:icon="BsGoogle" 
+						@click="signIn" />
 					<span>
 						By signing up, you agree to our 
 						<a href="https://api.llamapen.app/terms" target="_blank" class="text-secondary hover:underline">Terms of Service</a> 
@@ -151,12 +157,15 @@ async function signIn() {
 		<div v-else>
 			<h1 class="font-bold text-4xl!">My Account</h1>
 			<AccountSection flex-direction="row" :apart="true">
-				<ButtonSetting type="link" to="/settings" >
-					← Go to Settings
-				</ButtonSetting>
-				<ButtonSetting type="button" @click="signOut" >
-					<PiSignOutBold /> Sign out
-				</ButtonSetting>
+				<PrimaryButton 
+					text="← Go to Settings"
+					type="link" 
+					to="/settings" />
+				<PrimaryButton
+					text="Sign out"
+					type="button" 
+					:icon="PiSignOutBold"
+					@click="signOut" />
 			</AccountSection>
 			<AccountSection flex-direction="row">
 				<img :src="userStore.user.user_metadata.avatar_url" alt="User avatar" 
@@ -264,10 +273,12 @@ async function signIn() {
 			</AccountSection>
 
 			<AccountSection title="Danger Zone">
-				<ButtonSetting type="button" @click="deleteAccount" class="bg-danger! hover:saturate-200 hover:bg-danger!">
-					<IpPeopleDeleteOne />
-					Delete Account
-				</ButtonSetting>
+				<PrimaryButton
+					text="Delete Account"
+					color="danger"
+					type="button" 
+					:icon="IpPeopleDeleteOne"
+					@click="deleteAccount" />
 			</AccountSection>
 		</div>
 	</div>
