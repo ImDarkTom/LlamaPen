@@ -4,10 +4,14 @@ import { onUnmounted, ref } from 'vue';
 
 const config = useConfigStore();
 
-const props = defineProps<{
+const props = withDefaults(defineProps<{
     text: string;
     disabled?: boolean;
-}>();
+    size? : 'small' | 'medium' | 'large';
+}>(), {
+    disabled: false,
+    size: 'medium',
+});
 
 let visible = ref<boolean>(false);
 let timeoutId: null | NodeJS.Timeout = null;
@@ -43,7 +47,12 @@ onUnmounted(() => {
             class="bg-surface-light max-w-3xl absolute top-[110%] left-[50%] w-max -translate-x-[50%] p-2 rounded-lg shadow-md shadow-background-dark z-40">
             <div class="absolute -top-[0.15ch] left-[50%] rotate-45 -translate-x-[50%] w-[1ch] h-[1ch] bg-surface-light">
             </div>
-            <span>{{ text }}</span>
+            <span
+                :class="{ 
+                    'text-sm': size === 'small',
+                    'text-md': size === 'medium',
+                    'text-lg': size === 'large',
+                }">{{ text }}</span>
         </div>
     </div>
 </template>
