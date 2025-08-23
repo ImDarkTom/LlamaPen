@@ -6,7 +6,7 @@ import { BsGlobe } from 'vue-icons-plus/bs';
 import ModelIcon from '../Icon/ModelIcon.vue';
 import { computed, ref } from 'vue';
 import { useModelCapabiltyCache } from '@/composables/modelCapabilities';
-import { BiBrain } from 'vue-icons-plus/bi';
+import { BiBrain, BiLock } from 'vue-icons-plus/bi';
 import { useConfigStore } from '@/stores/config';
 
 const userStore = useUserStore();
@@ -67,25 +67,40 @@ const modelCapabilities = computed(() => {
 					{{ model.name}}
 				</span>
 				<div class="flex flex-row gap-2 ml-2 shrink-0 min-w-fit">
-					<div v-if="model.llamapenMetadata?.premium"
-						class="bg-yellow-400/25 rounded-sm ring-1 ring-yellow-400 p-0.5">
+					<div 
+						v-if="model.llamapenMetadata?.premium"
+						class="bg-yellow-400/25 rounded-sm ring-1 ring-yellow-400 p-0.5"
+						title="Premium model - requires an active LlamaPen API Premium subscription">
 						<AiFillStar class="text-yellow-400 size-4" />
 					</div>
 					<!-- Capability tags -->
-					<div v-if="modelCapabilities.includes('vision')"
-						class="bg-green-400/25 rounded-sm ring-1 ring-green-400 p-0.5">
+					<div 
+						v-if="modelCapabilities.includes('vision')"
+						class="bg-green-400/25 rounded-sm ring-1 ring-green-400 p-0.5"
+						title="Vision - can process images">
 						<AiOutlineEye class="text-green-400 size-4" />
 					</div>
-					<div v-if="modelCapabilities.includes('thinking')"
-						class="bg-violet-400/25 rounded-sm ring-1 ring-violet-400 p-0.5">
+					<div 
+						v-if="modelCapabilities.includes('thinking')"
+						class="bg-violet-400/25 rounded-sm ring-1 ring-violet-400 p-0.5 flex flex-row"
+						:title="model.llamapenMetadata?.tags?.includes('alwaysReasons') 
+							? 'Locked reasoning - always uses reasoning capabilities' 
+							: 'Thinking - toggleable enhanced reasoning capabilities'">
 						<BiBrain class="text-violet-400 size-4" />
+						<BiLock
+							v-if="model.llamapenMetadata?.tags?.includes('alwaysReasons')"
+							class="text-violet-400 size-4" />
 					</div>
-					<div v-if="modelCapabilities.includes('tools')"
-						class="bg-blue-400/25 rounded-sm ring-1 ring-blue-400 p-0.5">
+					<div 
+						v-if="modelCapabilities.includes('tools')"
+						class="bg-blue-400/25 rounded-sm ring-1 ring-blue-400 p-0.5"
+						title="Tools - can use external tools (to be added)">
 						<AiOutlineTool class="text-blue-400 size-4" />
 					</div>
-					<div v-if="modelCapabilities.includes('search')"
-						class="bg-violet-400/25 rounded-sm ring-1 ring-pink-400 p-0.5">
+					<div 
+						v-if="modelCapabilities.includes('search')"
+						class="bg-violet-400/25 rounded-sm ring-1 ring-pink-400 p-0.5"
+						title="Web search - can access and search the web">
 						<BsGlobe class="text-pink-400 size-4" />
 					</div>
 				</div>

@@ -15,6 +15,7 @@ type ModelListItem = {
     llamapenMetadata?: {
         premium?: boolean;
         creator: string;
+        tags?: string[];
     }
 }
 
