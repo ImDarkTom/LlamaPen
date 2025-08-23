@@ -22,7 +22,7 @@ const props = defineProps<{
 	queriedModelList: ModelList,
 }>();
 
-const emit = defineEmits<(e: 'setModel', name: string) => void>();
+const emit = defineEmits<(e: 'setModel', model: ModelListItem) => void>();
 
 function setModel(model: ModelListItem) {
 	if (config.api.enabled && !userStore.isSignedIn) {
@@ -35,7 +35,7 @@ function setModel(model: ModelListItem) {
 		return;
 	}
 
-	emit('setModel', model.model);
+	emit('setModel', model);
 }
 
 const listItemRef = ref<HTMLLIElement | null>(null);
