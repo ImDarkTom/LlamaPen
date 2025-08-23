@@ -239,6 +239,7 @@ async function signIn() {
 							<li><BsCheckSquareFill class="size-5 shrink-0 text-secondary" /><span><strong>100</strong> message tokens/day</span></li>
 							<li><BsCheckSquareFill class="size-5 shrink-0 text-secondary" /><span>Access to free + <strong>premium</strong> AI models</span></li>
 							<li><BsCheckSquareFill class="size-5 shrink-0 text-secondary" /><span>Priority account support</span></li>
+							<li><BsCheckSquareFill class="size-5 shrink-0 text-secondary" /><span>Message attachments</span></li>
 							<li>💖 Support ongoing development</li>
 						</ul>
 					</div>
