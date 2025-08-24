@@ -17,10 +17,12 @@ const updateValue = () => {
 
 <template>
 	<label class="w-full flex flex-row justify-between items-center cursor-pointer transition-all duration-dynamic" @click="updateValue">
-		<span class="text-lg text-text-muted hover:text-text">
-			{{ label }}
+		<span class="text-lg text-text-muted">
+			<span class="align-middle hover:text-text">
+				{{ label }}
+			</span>
 			<Tooltip v-if="tooltip" :text="tooltip" size="small">
-				<BiHelpCircle class="inline" />
+				<BiHelpCircle class="hover:text-text inline align-middle ml-1" />
 			</Tooltip>
 		</span>
 		

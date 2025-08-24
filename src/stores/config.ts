@@ -96,7 +96,7 @@ export const useConfigStore = defineStore('config', {
                 alternateGemmaIcon: false,
             },
             tooltip: {
-                waitTimeoutMs: 250, // Time before showing tooltip
+                waitTimeoutMs: 100, // Time before showing tooltip
             },
             theme: 'auto',
             nativeScrollbar: false,

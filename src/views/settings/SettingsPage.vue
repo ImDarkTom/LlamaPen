@@ -20,16 +20,15 @@ import { TbListDetails } from 'vue-icons-plus/tb';
 import { AiFillInfoCircle } from 'vue-icons-plus/ai';
 import { RiAccountCircleLine } from 'vue-icons-plus/ri';
 import { BsFillTrash3Fill, BsKeyboard, BsRocketTakeoff } from 'vue-icons-plus/bs';
-import Tooltip from '@/components/Tooltip/Tooltip.vue';
-import { BiHelpCircle } from 'vue-icons-plus/bi';
 import { useModelList } from '@/composables/useModelList';
+import OptionText from './components/OptionText.vue';
 
 const config = useConfigStore();
 const router = useRouter();
 
 const chatsStore = useChatsStore();
 const messagesStore = useMessagesStore();
-const { connectedToOllama } = useModelList();
+const { connectedToOllama, loading: ollamaLoading } = useModelList();
 
 // transition speed
 const transitionSpeed = ref(0.125);
@@ -126,7 +125,9 @@ async function checkOllamaVersion() {
         <PageHeader text="Settings" />
 
         <OptionCategory label="Account" v-if="inProduction">
-            <ToggleSetting v-model="config.api.enabled" label="Enable Llamapen API" />
+            <ToggleSetting 
+                v-model="config.api.enabled" 
+                label="Enable Llamapen API" />
             <span v-if="!config.api.enabled" class="text-text-muted/80 text-sm">
                 <BsRocketTakeoff class="size-4 inline align-middle" />
                 Run more powerful models with LlamaPen API, an optional cloud service.
@@ -147,8 +148,9 @@ async function checkOllamaVersion() {
                     label="Ollama URL" 
                     v-model="config.ollamaUrl" 
                     default="http://localhost:11434"
-                    :check="ollamaUrlCheck" />
-                <span v-if="!connectedToOllama">
+                    :check="ollamaUrlCheck"
+                    tooltip="The URL to connect to Ollama on. (Default: http://localhost:11434)" />
+                <span v-if="!connectedToOllama && !ollamaLoading">
                     Can't connect? Checkout the
                     <RouterLink to="/guide" class="text-text underline">setup guide</RouterLink>.
                 </span>
@@ -156,12 +158,12 @@ async function checkOllamaVersion() {
                 <ToggleSetting
                     v-model="config.ollama.modelCapabilities.autoload"
                     label="Autoload model capabilities"
-                    tooltip="Load model capabilities on connect. By default only loads if 30 models or less." />
+                    tooltip="Load model capabilities on connect. By default only loads if 30 models or less. (Default: Enabled)" />
                 <div v-if="config.ollama.modelCapabilities.autoload" class="border-l-[1px] border-text pl-3 ml-3">
                     <ToggleSetting 
                         v-model="config.ollama.modelCapabilities.alwaysAutoload" 
                         label="Always autoload model capabilities"
-                        tooltip="Loads model capabilities regardless of no. of models." />
+                        tooltip="Loads model capabilities regardless of no. of models. (Default: Disabled)" />
                 </div>
 
                 <div class="flex flex-row gap-2 *:w-1/2">
@@ -191,18 +193,21 @@ async function checkOllamaVersion() {
                 :items="['auto', 'dark', 'light', 'mono-dark', 'mono-light']" 
                 :itemNames="['System default', 'Dark', 'Light', 'Plain Dark', 'Plain Light']"
                 @update:model-value="config.loadTheme()" 
+                tooltip="The theme for the app. (Default: System default (dark/light))"
             />
             <ToggleSetting 
                 v-model="config.ui.nativeScrollbar" 
                 label="Native scrollbar" 
+                tooltip="Use the browser's default scrollbar styling. (Default: Disabled)"
                 @update:model-value="config.loadScrollbarSetting()"
             />
             <ToggleSetting 
                 v-model="config.ui.sendButtonAltIcon" 
                 label="Alternate send button icon" 
+                tooltip="Use a paper-plane icon instead of an up arrow. (Default: Disabled)"
             />
             <div class="flex flex-col gap-2 w-full">
-                <span class="text-lg">Animation Duration</span>
+                <OptionText label="Animation Duration" tooltip="The length of animations/transitions throughout the UI. (Default: 125ms)" />
                 <input class="accent-primary w-full" @change="updateTransitionSpeed" v-model="transitionSpeed"
                     type="range" min="0" max="1" step="0.025" />
                 <span class="py-2">
@@ -212,17 +217,37 @@ async function checkOllamaVersion() {
                 </span>
             </div>
             <CategoryLabel>Model Icons</CategoryLabel>
-            <ToggleSetting v-model="config.ui.modelIcons.monochrome" label="Monochrome model icons" />
-            <ToggleSetting v-model="config.ui.modelIcons.background" label="Model icons background" />
+            <ToggleSetting 
+                v-model="config.ui.modelIcons.monochrome" 
+                label="Monochrome model icons"
+                tooltip="Use single-color variants of model icons. (Default: Enabled)" />
+            <ToggleSetting 
+                v-model="config.ui.modelIcons.background" 
+                label="Model icons background"
+                tooltip="Add a background to model icons throughout the app. (Default: Disabled)" />
             <div v-if="config.ui.modelIcons.background" class="border-l-[1px] border-text pl-3 ml-3">
-                <ToggleSetting v-model="config.ui.modelIcons.backgroundDark" label="Dark icon background" />
+                <ToggleSetting 
+                    v-model="config.ui.modelIcons.backgroundDark" 
+                    label="Dark icon background"
+                    tooltip="Make the icon background darker. (Default: Disabled)" />
             </div>
-            <ToggleSetting v-model="config.ui.modelIcons.alternateGemmaIcon" label="Alternate Gemma icon" />
+            <ToggleSetting 
+                v-model="config.ui.modelIcons.alternateGemmaIcon" 
+                label="Alternate Gemma icon"
+                tooltip="Use the Google logo instead of the Gemma icon. (Default: Disabled)" />
             <CategoryLabel>Tooltip</CategoryLabel>
-            <NumberInputSetting v-model="config.ui.tooltip.waitTimeoutMs" :default="500" :min="0" :max="1000"
-                label="Hover delay (ms)" />
+            <NumberInputSetting 
+                v-model="config.ui.tooltip.waitTimeoutMs" 
+                :default="100" 
+                :min="0" 
+                :max="1000"
+                label="Hover delay (ms)"
+                tooltip="How long to mouse over an element before it's tooltip appears. (Default: 100)" />
             <CategoryLabel>Mobile</CategoryLabel>
-            <ToggleSetting v-model="config.closeSidebarOnNavMobile" label="Hide sidebar on navigate" />
+            <ToggleSetting 
+                v-model="config.closeSidebarOnNavMobile" 
+                label="Hide sidebar on navigate"
+                tooltip="Hides the sidebar after pressing a button to change the page. (Default: Enabled)" />
         </OptionCategory>
 
         <OptionCategory label="Chat">
@@ -231,12 +256,12 @@ async function checkOllamaVersion() {
                 label="Title generation style" 
                 :items="['firstMessage', 'generate', 'chatId', 'dynamic']" 
                 :itemNames="['Use first message', 'Generate with current model', 'Use chat ID', 'Dynamic (default)']"
+                tooltip="Dynamic: First message if question, else generate. (Default: Generate with current model)"
             />
-            <Tooltip text="Dynamic: First message if question, else generate.">
-                <BiHelpCircle />
-            </Tooltip>
-            <ToggleSetting v-model="config.chat.thinking.infoOpenByDefault"
-                label="Reasoning text open by default" />
+            <ToggleSetting 
+                v-model="config.chat.thinking.infoOpenByDefault"
+                label="Reasoning text open by default"
+                tooltip="Have reasoning/thinking text open by default for each message. (Default: Disabled)" />
             <PrimaryButton
                 text="Clear all chats"
                 type="button"

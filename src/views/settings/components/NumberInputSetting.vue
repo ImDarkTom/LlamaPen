@@ -1,5 +1,6 @@
 <script setup lang="ts">
 import { ref, watch } from 'vue';
+import OptionText from './OptionText.vue';
 
 const emit = defineEmits(['update:modelValue']);
 
@@ -9,6 +10,7 @@ const props = defineProps<{
     default: number;
     min?: number;
     max?: number;
+    tooltip?: string;
 }>();
 
 const defaultString = props.default.toString();
@@ -58,7 +60,7 @@ const updateValue = () => {
 
 <template>
     <label class="w-full flex flex-col justify-between items-start">
-        <span class="text-lg font-medium text-text-muted hover:text-text">{{ label }}</span>
+        <OptionText :label :tooltip />
 
         <div class="w-full flex flex-row gap-2">
             <input type="number" v-model="inputValue" :placeholder="defaultString" :aria-label="label" :min :max
