@@ -106,8 +106,6 @@ watch(
     }
 );
 
-const isInProd = import.meta.env.VITE_PRODUCTION === 'true';
-
 async function checkOllamaVersion() {
     const { data: response, error } = await ollamaRequest('/api/version', 'GET');
 
@@ -235,7 +233,7 @@ async function checkOllamaVersion() {
                 @click="clearChats" />
         </OptionCategory>
 
-        <OptionCategory label="Developer" v-if="!isInProd">
+        <OptionCategory label="Developer" v-if="!inProduction">
             <span class="text-danger">Do not change these settings unless you know what you're doing.</span>
             <ToggleSetting v-model="config.developer.mockRequests" label="Mock requests" />
             <ToggleSetting v-model="config.developer.infoLogs" label="Show info logs" />
