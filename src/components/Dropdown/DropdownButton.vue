@@ -1,4 +1,5 @@
 <script setup lang="ts">
+import MessageInputButton from '@/views/chat/components/MessageInput/buttons/MessageInputButton.vue';
 import { BsChevronDown, BsChevronUp } from 'vue-icons-plus/bs';
 
 const props = defineProps<{
@@ -14,8 +15,8 @@ const toggleOpened = () => {
 </script>
 
 <template>
-	<div 
-		class="flex flex-row items-center gap-2 msg-input-secondary-btn w-max overflow-ellipsis" 
+	<MessageInputButton
+		class="flex flex-row items-center gap-2 w-max overflow-ellipsis" 
 		@click="toggleOpened" 
 		aria-haspopup="listbox"
 		:aria-expanded="opened"
@@ -30,5 +31,5 @@ const toggleOpened = () => {
 			<BsChevronDown v-if="opened" class="w-4 h-full" />
 			<BsChevronUp v-else class="w-4 h-full" />
 		</template>
-	</div>
+	</MessageInputButton>
 </template>

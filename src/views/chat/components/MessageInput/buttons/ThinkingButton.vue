@@ -2,6 +2,7 @@
 import { useModelList } from '@/composables/useModelList';
 import { computed, watch } from 'vue';
 import { BiBrain } from 'vue-icons-plus/bi';
+import MessageInputButton from './MessageInputButton.vue';
 
 const { selectedModelCapabilities } = useModelList();
 
@@ -23,8 +24,7 @@ function toggleCheck(e: Event) {
 </script>
 
 <template>
-    <div 
-        class="msg-input-secondary-btn " 
+    <MessageInputButton
         :class="{ 
             'bg-primary ring-background! text-background!': modelValue,
             'opacity-50': !selectedModelCanThink
@@ -37,5 +37,5 @@ function toggleCheck(e: Event) {
         </label>
         <input type="checkbox" id="thinking-toggle" class="hidden" :value="modelValue"
             @input="toggleCheck" />
-    </div>
+    </MessageInputButton>
 </template>

@@ -138,13 +138,6 @@
     }
 }
 
-.msg-input-secondary-btn {
-    /* fix duration here */
-    @apply select-none cursor-pointer rounded-lg transition-all duration-150 
-        text-text-muted hover:text-text ring-1 ring-text-muted hover:ring-text
-        h-10 p-2 pointer-coarse:h-12 pointer-coarse:p-3 box-border;
-}
-
 .hljs {
     @apply mb-4 rounded-lg;
 }

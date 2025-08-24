@@ -4,6 +4,7 @@ import { useConfigStore } from '@/stores/config';
 import useUserStore from '@/stores/user';
 import { computed } from 'vue';
 import { MdOutlineAddPhotoAlternate } from 'vue-icons-plus/md';
+import MessageInputButton from './MessageInputButton.vue';
 
 const userStore = useUserStore();
 const config = useConfigStore();
@@ -37,8 +38,8 @@ function onClick(e: MouseEvent) {
 </script>
 
 <template>
-    <div 
-        class="aspect-square msg-input-secondary-btn !p-0"
+    <MessageInputButton
+        class="aspect-square p-0!"
         :class="{ 
             'opacity-50 cursor-not-allowed': !selectedModelHasVision,
             'opacity-60': apiNotAllowed
@@ -52,5 +53,5 @@ function onClick(e: MouseEvent) {
             <MdOutlineAddPhotoAlternate />
         </label>
         <input type="file" id="file-upload" class="hidden" accept="image/*" multiple @change="onChange" @click="onClick" />
-    </div>
+    </MessageInputButton>
 </template>
