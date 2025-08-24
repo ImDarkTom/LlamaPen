@@ -16,7 +16,7 @@ const buttonClasses = 'w-full border-none p-1.5 m-0 box-border rounded-lg h-8 bg
 <template>
     <div class="flex flex-col max-w-full gap-2 pt-2">
         <StatusText v-if="!config.api.enabled" />
-        <RouterLink v-else-if="userStore.user" to="/account">
+        <SidebarRouterLink v-else-if="userStore.user" to="/account">
             <div class="flex w-full h-16 bg-background-light ring-1 ring-border-muted rounded-xl p-2 hover:ring-primary transition-all duration-dynamic">
                 <div class="flex items-center mr-3 p-1">
                     <img :src="userStore.user.user_metadata.avatar_url" alt="User avatar"
@@ -27,7 +27,7 @@ const buttonClasses = 'w-full border-none p-1.5 m-0 box-border rounded-lg h-8 bg
                     <span class="text-sm">{{userStore.subscription.name}}</span>
                 </div>
             </div>
-        </RouterLink>
+        </SidebarRouterLink>
         <div class="flex flex-row gap-2">
             <SidebarRouterLink to="/guide" class="grow" v-slot="{ isActive }">
                 <BiSolidHelpCircle v-if="isActive" :class="buttonClasses" />
