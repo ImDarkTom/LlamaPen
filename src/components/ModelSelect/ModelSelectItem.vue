@@ -5,17 +5,16 @@ import { AiFillStar, AiOutlineArrowRight, AiOutlineEye, AiOutlineTool } from 'vu
 import { BsGlobe } from 'vue-icons-plus/bs';
 import ModelIcon from '../Icon/ModelIcon.vue';
 import { computed, ref } from 'vue';
-import { useModelCapabiltyCache } from '@/composables/modelCapabilities';
 import { BiBrain, BiLock } from 'vue-icons-plus/bi';
 import { useConfigStore } from '@/stores/config';
+import { useModelList, type ModelInfoListItem } from '@/composables/useModelList';
 
 const userStore = useUserStore();
 const config = useConfigStore();
-
-const { cachedCapabilities } = useModelCapabiltyCache();
+const { getModelCapabilities } = useModelList();
 
 const props = defineProps<{
-	model: ModelListItem,
+	model: ModelInfoListItem,
 	index: number,
 	isCurrentModel: boolean,
 	selected: boolean,
@@ -42,9 +41,7 @@ defineExpose({
 	listItemRef
 });
 
-const modelCapabilities = computed(() => {
-	return props.model.capabilities || cachedCapabilities.value[props.model.model] || [];
-});
+const modelCapabilities = computed(() => getModelCapabilities(props.model));
 </script>
 
 <template>
@@ -52,22 +49,22 @@ const modelCapabilities = computed(() => {
 		:class="{
 			'bg-surface-light': selected && !isCurrentModel,
 			'bg-surface-light ring-2 ring-border ring-inset': isCurrentModel,
-			'opacity-50': (!userStore.subscription.subscribed && model.llamapenMetadata?.premium) || (config.api.enabled && !userStore.isSignedIn),
-		}" @click="setModel(model)" ref="listItemRef" :aria-selected="selected">
+			'opacity-50': (!userStore.subscription.subscribed && model.modelData.llamapenMetadata?.premium) || (config.api.enabled && !userStore.isSignedIn),
+		}" @click="setModel(model.modelData)" ref="listItemRef" :aria-selected="selected">
 
-		<ModelIcon :name="model.model" class="size-10 p-1" />
+		<ModelIcon :name="model.modelData.model" class="size-10 p-1" />
 
 		<div class="flex flex-col">
 			<div class="flex flex-row items-center">
 				<span 
 					class="text-md font-semibold text-ellipsis whitespace-nowrap overflow-hidden text-text"
-					:title="model.name"
+					:title="model.modelData.name"
 				>
-					{{ model.name}}
+					{{ model.modelData.name}}
 				</span>
 				<div class="flex flex-row gap-2 ml-2 shrink-0 min-w-fit">
 					<div 
-						v-if="model.llamapenMetadata?.premium"
+						v-if="model.modelData.llamapenMetadata?.premium"
 						class="bg-yellow-400/25 rounded-sm ring-1 ring-yellow-400 p-0.5"
 						title="Premium model - requires an active LlamaPen API Premium subscription">
 						<AiFillStar class="text-yellow-400 size-4" />
@@ -82,12 +79,12 @@ const modelCapabilities = computed(() => {
 					<div 
 						v-if="modelCapabilities.includes('thinking')"
 						class="bg-violet-400/25 rounded-sm ring-1 ring-violet-400 p-0.5 flex flex-row"
-						:title="model.llamapenMetadata?.tags?.includes('alwaysReasons') 
+						:title="model.modelData.llamapenMetadata?.tags?.includes('alwaysReasons') 
 							? 'Locked reasoning - always uses reasoning capabilities' 
 							: 'Thinking - toggleable enhanced reasoning capabilities'">
 						<BiBrain class="text-violet-400 size-4" />
 						<BiLock
-							v-if="model.llamapenMetadata?.tags?.includes('alwaysReasons')"
+							v-if="model.modelData.llamapenMetadata?.tags?.includes('alwaysReasons')"
 							class="text-violet-400 size-4" />
 					</div>
 					<div 
@@ -104,7 +101,7 @@ const modelCapabilities = computed(() => {
 					</div>
 				</div>
 			</div>
-			<span class="text-sm text-text-muted">{{ model.details.parameter_size }}</span>
+			<span class="text-sm text-text-muted">{{ model.modelData.details.parameter_size }}</span>
 			<div class="absolute text-text hidden items-center justify-center right-0 top-0 h-full w-16 bg-gradient-to-r from-transparent to-surface-light group-hover:flex"
 				:class="{ 
 					'!flex': selected,

@@ -6,6 +6,7 @@ export type ModelInfoListItem = {
     modelData: ModelListItem;
     loadedInMemory: boolean;
     hidden: boolean;
+    fetchedCapabilities?: OllamaCapability[];
 }
 
 const state = reactive<{
@@ -32,15 +33,23 @@ async function load(force: boolean = false) {
     state.error = null;
     loadPromise = (async () => {
         try {
+            // Get loaded models so we can tag which are loaded when we get the full list
             const loadedModelIds = await ollamaApi.getLoadedModelIds();
 
             // Get the base model list
             state.models = (await ollamaApi.getModels(force))
-                .map((model) => ({
-                    modelData: model,
-                    loadedInMemory: loadedModelIds.includes(model.model),
-                    hidden: useConfigStore().chat.hiddenModels.includes(model.model),
-                }));
+                .map((model) => {
+                    return {
+                        modelData: model,
+                        loadedInMemory: loadedModelIds.includes(model.model),
+                        hidden: useConfigStore().chat.hiddenModels.includes(model.model),
+                    }
+                });
+
+            for (const model of state.models) {
+                const capabilities = await ollamaApi.getModelCapabilities(model.modelData.model);
+                model.fetchedCapabilities = capabilities;
+            }
 
             state.connectedToOllama = true;
         } catch (err) {
@@ -81,6 +90,17 @@ export function useModelList() {
         refreshModelStates();
     }
 
+    function getModelCapabilities(model: ModelInfoListItem) {
+        return model.modelData.capabilities ||
+            model.fetchedCapabilities || [];
+    }
+    
+    const selectedModelCapabilities = computed(() => {
+        if (!selectedModelInfo.value.exists) return [];
+
+        return getModelCapabilities(selectedModelInfo.value.data);
+    })
+
     const selectedModelInfo = computed<
         { exists: true, data: ModelInfoListItem } | 
         { exists: false, data: null }
@@ -100,6 +120,8 @@ export function useModelList() {
         load,
         modelIds,
         setModelHidden,
-        selectedModelInfo
+        selectedModelInfo,
+        selectedModelCapabilities,
+        getModelCapabilities
     };
 };

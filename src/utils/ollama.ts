@@ -305,6 +305,25 @@ class OllamaAPI {
 
 		return true;
 	}
+
+	async getModelCapabilities(model: string): Promise<OllamaCapability[]> {
+		const { data: response, error } = await ollamaRequest('/api/show', 'POST', {
+			model,
+		});
+
+		if (error) {
+			logger.warn('OllamaAPI', `Error getting model capabilities for ${model}: ${error}`);
+			return [];
+		}
+
+		if (response.status !== 200) {
+			return [];
+		}
+
+		const responseJson = await response.json() as OllamaModelInfoResponse;
+
+		return responseJson.capabilities as OllamaCapability[];
+	}
 }
 
 const ollamaApi = new OllamaAPI();

@@ -1,20 +1,21 @@
 <script setup lang="ts">
+import { useModelList } from '@/composables/useModelList';
 import { useConfigStore } from '@/stores/config';
-import { useUiStore } from '@/stores/uiStore';
 import useUserStore from '@/stores/user';
 import { computed } from 'vue';
 import { MdOutlineAddPhotoAlternate } from 'vue-icons-plus/md';
 
-const uiStore = useUiStore();
 const userStore = useUserStore();
 const config = useConfigStore();
+
+const { selectedModelCapabilities } = useModelList();
 
 defineProps<{
     onChange: (event: Event) => void
 }>();
 
 const selectedModelHasVision = computed(() => {
-    return uiStore.chat.selectedModelInfo?.capabilities.includes('vision');
+    return selectedModelCapabilities.value.includes('vision')
 });
 
 const apiNotAllowed = computed(() => {

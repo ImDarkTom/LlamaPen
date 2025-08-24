@@ -1,21 +1,18 @@
 <script setup lang="ts">
 import { computed, nextTick, onBeforeUnmount, onMounted, ref, type ComponentPublicInstance } from 'vue';
 import { useConfigStore } from '../../stores/config';
-import { useUiStore } from '../../stores/uiStore';
 import { VscDebugDisconnect } from 'vue-icons-plus/vsc';
 import ModelSelectItem from './ModelSelectItem.vue';
 import logger from '@/lib/logger';
 import ModelIcon from '../Icon/ModelIcon.vue';
 import { TbListDetails } from 'vue-icons-plus/tb';
 import isOnMobile from '@/utils/core/isOnMobile';
-import { useModelCapabiltyCache } from '@/composables/modelCapabilities';
 import Dropdown from '../Dropdown/Dropdown.vue';
 import { useModelList, type ModelInfoListItem } from '@/composables/useModelList';
 import { AiOutlineLoading, AiOutlineReload } from 'vue-icons-plus/ai';
 import PrimaryButton from '../Buttons/PrimaryButton.vue';
 
 const config = useConfigStore();
-const uiStore = useUiStore();
 
 // State
 const { 
@@ -86,41 +83,6 @@ async function setModel(newModel: ModelListItem, skipUiUpdate: boolean = false) 
         }
         searchQuery.value = "";
     };
-    
-    if (config.api.enabled) {
-        uiStore.chat.selectedModelInfo = {
-            capabilities: newModel.capabilities || [],
-            details: {
-                families: [],
-                family: '',
-                format: '',
-                parameter_size: '',
-                parent_model: '',
-                quantization_level: ''
-            },
-            license: '',
-            modelfile: '',
-            tensors: [],
-            template: '',
-            modified_at: '',
-            model_info: {
-                "general.architecture": '',
-                "general.basename": newModelId,
-                "general.file_type": 0,
-                "general.finetune": '',
-                "general.languages": '',
-                "general.parameter_count": -1,
-                "general.quantization_version": -1,
-                "general.size_label": '',
-                "general.tags": null,
-                "general.type": '',
-            },
-        };
-        return;
-    }
-
-    const modelInfo = await useModelCapabiltyCache().loadModelCapabilities(newModelId);
-    uiStore.chat.selectedModelInfo = modelInfo;
 }
 
 function resetState() {
@@ -266,7 +228,7 @@ const modelName = computed(() => {
                     v-for="(model, index) in queriedModelList.filter((item) => !item.hidden)" 
                     :key="model.modelData.name" 
                     :index="index"
-                    :model="model.modelData" 
+                    :model="model" 
                     :isCurrentModel="model.modelData.model === selectedModelInfo.data?.modelData.model" 
                     :selected="index === focusedItemIndex"
                     @setModel="setModel" 

@@ -1,16 +1,14 @@
 <script setup lang="ts">
-import { useUiStore } from '@/stores/uiStore';
+import { useModelList } from '@/composables/useModelList';
 import { computed, watch } from 'vue';
 import { BiBrain } from 'vue-icons-plus/bi';
 
-const uiStore = useUiStore();
+const { selectedModelCapabilities } = useModelList();
 
 defineProps(['modelValue']);
 const emits = defineEmits(['update:modelValue']);
 
-const selectedModelCanThink = computed(() => {
-    return uiStore.chat.selectedModelInfo?.capabilities.includes('thinking');
-});
+const selectedModelCanThink = computed(() => selectedModelCapabilities.value.includes('thinking'));
 
 watch(selectedModelCanThink, () => {
     if (!selectedModelCanThink.value) {

@@ -19,6 +19,8 @@ type ModelListItem = {
     }
 }
 
+type OllamaCapability = NonNullable<ModelListItem['capabilities']>[number];
+
 type ModelList = ModelListItem[];
 
 type ModelListResponse = {

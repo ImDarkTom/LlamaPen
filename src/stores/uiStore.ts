@@ -3,7 +3,6 @@ import { defineStore } from "pinia";
 interface UIStore {
     chat: {
         isScrollingDown: boolean,
-        selectedModelInfo: OllamaModelInfoResponse | null
     }
 }
 
@@ -14,7 +13,6 @@ export const useUiStore = defineStore('uiStore', {
     state: (): UIStore => ({
         chat: {
             isScrollingDown: true,
-            selectedModelInfo: null,
         }
     }),
     getters: {},
