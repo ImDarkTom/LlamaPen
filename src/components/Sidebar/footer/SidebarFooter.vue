@@ -1,8 +1,8 @@
 <script setup lang="ts">
 import StatusText from './StatusText.vue';
-import { BiHelpCircle, BiSolidHelpCircle } from 'vue-icons-plus/bi';
+import { BiHelpCircle } from 'vue-icons-plus/bi';
 import { AiFillGithub } from 'vue-icons-plus/ai';
-import { IoSettings, IoSettingsOutline } from 'vue-icons-plus/io';
+import { IoSettingsOutline } from 'vue-icons-plus/io';
 import SidebarRouterLink from '../SidebarRouterLink.vue';
 import useUserStore from '@/stores/user';
 import { useConfigStore } from '@/stores/config';
@@ -29,16 +29,14 @@ const buttonClasses = 'w-full border-none p-1.5 m-0 box-border rounded-lg h-8 bg
             </div>
         </SidebarRouterLink>
         <div class="flex flex-row gap-2">
-            <SidebarRouterLink to="/guide" class="grow" v-slot="{ isActive }">
-                <BiSolidHelpCircle v-if="isActive" :class="buttonClasses" />
-                <BiHelpCircle v-else :class="buttonClasses" />
+            <SidebarRouterLink to="/guide" class="grow">
+                <BiHelpCircle :class="buttonClasses" />
             </SidebarRouterLink>
             <a href="https://github.com/ImDarkTom/LlamaPen" target="_blank" class="grow">
                 <AiFillGithub :class="buttonClasses" />
             </a>
-            <SidebarRouterLink to="/settings" class="grow" v-slot="{ isActive }">
-                <IoSettings v-if="isActive" :class="buttonClasses" />
-                <IoSettingsOutline v-else :class="buttonClasses" />
+            <SidebarRouterLink to="/settings" class="grow">
+                <IoSettingsOutline :class="buttonClasses" />
             </SidebarRouterLink>
         </div>
     </div>
