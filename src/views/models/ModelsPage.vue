@@ -9,6 +9,7 @@ import logger from '@/lib/logger';
 import ModelViewer from './components/ModelViewer.vue';
 import ModelList from './components/ModelList.vue';
 import { tryCatch } from '@/utils/core/tryCatch';
+import ViewerContainer from './components/ViewerContainer.vue';
 
 const config = useConfigStore();
 
@@ -103,19 +104,20 @@ async function setModelViewInfo(modelId: string) {
         :class="{ 'pt-10': !config.showSidebar }">
         <ModelList
             :modelsList 
-            @refresh-model-list="refreshModelList"
-        />
+            @refresh-model-list="refreshModelList" />
         
-        <div v-if="selectedModel.state === 'unselected'"
-            class="h-8/12 md:h-full w-full md:w-9/12 bg-background-light rounded-lg p-2 flex items-center justify-center text-xl">
+        <ViewerContainer
+            v-if="selectedModel.state === 'unselected'"
+            class="flex items-center justify-center text-xl" >
             {{ config.api.enabled ?
                 'Model management is only available without API mode.' :
                 'Select a model to view its details, or download a new model.' }}
-        </div>
-        <ModelViewer v-else
+        </ViewerContainer>
+
+        <ModelViewer 
+            v-else
             :modelFromParams
             :selectedModel
-            @refresh-model-list="refreshModelList"
-        />
+            @refresh-model-list="refreshModelList" />
     </div>
 </template>

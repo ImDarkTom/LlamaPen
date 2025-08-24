@@ -16,6 +16,7 @@ import MemoryUnloadIcon from '@/components/Icon/MemoryUnloadIcon.vue';
 import InfoSection from './InfoSection.vue';
 import CapabilitiesSkeleton from './CapabilitiesSkeleton.vue';
 import router from '@/lib/router';
+import ViewerContainer from './ViewerContainer.vue';
 
 const props = defineProps<{
     modelFromParams: string | null,
@@ -164,7 +165,7 @@ const modelInfo = computed(() =>
 </script>
 
 <template>
-    <div class="h-8/12 md:h-full w-full md:w-9/12 bg-background-light rounded-lg p-2 overflow-y-auto">
+    <ViewerContainer>
         <span class="flex flex-row gap-2 items-center">
             <ModelIcon :name="modelFromParams ?? 'Unknown'" class="size-14 p-2" />
 
@@ -211,5 +212,5 @@ const modelInfo = computed(() =>
         <InfoSection title="Template" :content="sanitizeSection(modelTemplate)" />
         <InfoSection title="Details" :kv-list="modelDetails" />
         <InfoSection title="Model Info" :kv-list="modelInfo" />
-    </div>
+    </ViewerContainer>
 </template>
