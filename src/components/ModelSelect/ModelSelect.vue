@@ -201,7 +201,10 @@ const modelName = computed(() => {
             </div>
 
             <ul role="list" class="max-h-80 overflow-y-auto [scrollbar-width:thin] *:not-last:mb-2">
-                <li v-if="!connectedToOllama" class="h-24 flex flex-col px-3 py-2 roundex-xl justify-center items-center font-bold gap-2">
+                <li v-if="modelsLoading" class="h-24 flex justify-center items-center">
+                    <AiOutlineLoading class="animate-spin size-6" />
+                </li>
+                <li v-else-if="!connectedToOllama" class="h-24 flex flex-col px-3 py-2 justify-center items-center font-bold gap-2">
                     <span>
                         <VscDebugDisconnect class="inline" />
                         Not connected to Ollama.
