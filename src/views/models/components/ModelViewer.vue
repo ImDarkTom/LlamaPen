@@ -5,18 +5,23 @@ import { computed, ref } from 'vue';
 import type { IconType } from 'vue-icons-plus';
 import { AiOutlineVerticalAlignMiddle } from 'vue-icons-plus/ai';
 import { BiBrain, BiLinkExternal } from 'vue-icons-plus/bi';
-import { BsCopy, BsEye, BsFillTrash3Fill, BsTools } from 'vue-icons-plus/bs';
+import { BsCopy, BsEye, BsEyeSlash, BsFillTrash3Fill, BsTools } from 'vue-icons-plus/bs';
 import { VscDebugContinue } from 'vue-icons-plus/vsc';
 import DOMPurify from 'dompurify';
 import Unknown from '@/icons/unknown.svg';
 import ollamaRequest from '@/utils/ollamaRequest';
-import ActionButton from './ActionButton.vue';
 import { Fa6Memory } from 'vue-icons-plus/fa6';
 import MemoryUnloadIcon from '@/components/Icon/MemoryUnloadIcon.vue';
 import InfoSection from './InfoSection.vue';
 import CapabilitiesSkeleton from './CapabilitiesSkeleton.vue';
 import router from '@/lib/router';
 import ViewerContainer from './ViewerContainer.vue';
+import { useConfigStore } from '@/stores/config';
+import { useModelList } from '@/composables/useModelList';
+import PrimaryButton from '@/components/Buttons/PrimaryButton.vue';
+
+const { setModelHidden } = useModelList();
+const config = useConfigStore();
 
 const props = defineProps<{
     modelFromParams: string | null,
@@ -79,7 +84,7 @@ async function deleteModel() {
     refreshModelList();
 }
 
-const loadModelText = ref('Load Model');
+const loadModelText = ref('Load into memory');
 async function loadModelIntoOllama() {
     const modelName = props.modelFromParams;
     if (!modelName) {
@@ -98,7 +103,7 @@ async function loadModelIntoOllama() {
     }
 
     loadModelText.value = 'Unload Model';
-    refreshModelList()
+    refreshModelList();
 }
 
 async function unloadModel() {
@@ -162,18 +167,18 @@ const modelDetails = computed(() =>
 const modelInfo = computed(() =>
     getModelValue<Record<string, unknown>>({}, {}, m => m.model_info)
 );
+
+const isHidden = computed(() => config.chat.hiddenModels.includes(props.modelFromParams || ''));
 </script>
 
 <template>
     <ViewerContainer>
-        <span class="flex flex-row gap-2 items-center">
-            <ModelIcon :name="modelFromParams ?? 'Unknown'" class="size-14 p-2" />
+        <div class="text-2xl md:text-3xl mb-2 md:my-6 align-middle min-w-0 whitespace-normal">
+            <ModelIcon :name="modelFromParams ?? 'Unknown'" class="size-8 md:size-14! inline mr-2" />
 
-            <h1 class="font-bold text-text">
-                {{ modelName }}
-                <span class="text-text-muted font-normal">({{ modelFromParams }})</span>
-            </h1>
-        </span>
+            <span class="text-text font-bold mr-2">{{ modelName }}</span>
+            <span class="text-text-muted font-normal">({{ modelFromParams }})</span>
+        </div>
 
         <CapabilitiesSkeleton v-if="selectedModel.state === 'loading'" />
         <div v-else role="list" class="flex flex-row gap-2">
@@ -184,29 +189,54 @@ const modelInfo = computed(() =>
             </div>
         </div>
 
-        <h2 class="text-3xl pb-2 pt-4 text-text">Actions</h2>
-        <div class="flex flex-row gap-2 overflow-x-auto" :class="{ 'opacity-50': selectedModel.state === 'loading' }">
-            <a :href="`https://ollama.com/library/${modelFromParams}`" target="_blank"
-                class="p-4 min-w-max rounded-lg cursor-pointer select-none flex items-center justify-center flex-row gap-2 text-background-light bg-primary!">
-                <BiLinkExternal />
-                Open in Ollama Library
-            </a>
-            <ActionButton type="toggled" @click="unloadModel"
-                v-if="modelFromParams && (selectedModel.state === 'data' && selectedModel.isLoaded)">
-                <MemoryUnloadIcon /> Unload Model
-            </ActionButton>
-            <ActionButton type="normal" @click="loadModelIntoOllama" v-else>
-                <Fa6Memory /> {{ loadModelText }}
-            </ActionButton>
-            <ActionButton type="normal" @click="copyModel">
-                <BsCopy /> Copy/duplicate Model
-            </ActionButton>
-            <ActionButton type="danger" @click="deleteModel">
-                <BsFillTrash3Fill /> Delete Model
-            </ActionButton>
+        <h2 class="text-xl md:text-3xl pb-2 pt-4 text-text">Actions</h2>
+        <div class="flex flex-row gap-2 overflow-x-auto pb-2" :class="{ 'opacity-50': selectedModel.state === 'loading' }">
+            <PrimaryButton
+                type="external-link"
+                text="Open in Ollama Library"
+                :icon="BiLinkExternal"
+                :single-line="true"
+                :href="`https://ollama.com/library/${modelFromParams}`"/>
+            <PrimaryButton
+                type="button"
+                :color="isHidden ? 'sunken' : 'primary'"
+                :text="isHidden ? 'Unhide from list' : 'Hide from list'"
+                :icon="isHidden ? BsEyeSlash : BsEye"
+                :single-line="true"
+                @click="setModelHidden(modelFromParams, isHidden)"
+            />
+
+            <PrimaryButton
+                v-if="modelFromParams && (selectedModel.state === 'data' && selectedModel.isLoaded)"
+                type="button"
+                text="Unload Model"
+                :icon="MemoryUnloadIcon"
+                :single-line="true"
+                @click="unloadModel" />
+            <PrimaryButton
+                v-else
+                type="button"
+                :text="loadModelText"
+                :icon="Fa6Memory"
+                :single-line="true"
+                @click="loadModelIntoOllama" />
+
+            <PrimaryButton
+                type="button"
+                text="Copy/duplicate model"
+                :icon="BsCopy"
+                :single-line="true"
+                @click="copyModel" />
+            <PrimaryButton
+                type="button"
+                color="danger"
+                text="Delete model"
+                :icon="BsFillTrash3Fill"
+                :single-line="true"
+                @click="deleteModel" />
         </div>
 
-        <h2 class="text-3xl pt-4 pb-2 text-text">Info</h2>
+        <h2 class="text-xl md:text-3xl pt-4 pb-2 text-text">Info</h2>
         <InfoSection title="License" :content="sanitizeSection(modelLicense)" />
         <InfoSection title="Modelfile" :content="sanitizeSection(modelModelfile)" />
         <InfoSection title="Template" :content="sanitizeSection(modelTemplate)" />

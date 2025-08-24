@@ -44,6 +44,7 @@ interface Config {
             infoOpenByDefault: boolean;
         },
         titleGenerationStyle: 'firstMessage' | 'generate' | 'chatId' | 'dynamic';
+        hiddenModels: string[];
     }
     developer: {
         mockRequests: boolean,
@@ -104,6 +105,7 @@ export const useConfigStore = defineStore('config', {
             },
             tokenSaveInterval: 5,
             titleGenerationStyle: 'generate',
+            hiddenModels: []
         },
         developer: {
             mockRequests: false,

@@ -12,7 +12,6 @@ const props = defineProps<{
 
 const emit = defineEmits(['editMessage']);
 
-
 const copyTooltipText = ref<string>("Copy text");
 function copyMessage() {
     const tempElem = document.createElement('input');

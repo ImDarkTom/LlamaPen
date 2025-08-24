@@ -2,6 +2,7 @@
 import MemoryLoadIcon from '@/components/Icon/MemoryLoadIcon.vue';
 import ModelIcon from '@/components/Icon/ModelIcon.vue';
 import Tooltip from '@/components/Tooltip/Tooltip.vue';
+import type { ModelInfoListItem } from '@/composables/useModelList';
 import logger from '@/lib/logger';
 import { useConfigStore } from '@/stores/config';
 import { useUiStore } from '@/stores/uiStore';
@@ -9,18 +10,20 @@ import ollamaRequest from '@/utils/ollamaRequest';
 import { streamChunks } from '@/utils/streamChunks';
 import { ref } from 'vue';
 import { AiOutlineArrowLeft, AiOutlineDownload, AiOutlineSearch } from 'vue-icons-plus/ai';
+import { BsEyeSlash } from 'vue-icons-plus/bs';
 
 const config = useConfigStore();
 const uiStore = useUiStore();
 
 defineProps<{
-    modelsList: ModelSidebarListItem[],
+    modelsList: ModelInfoListItem[],
 }>();
 
 const emit = defineEmits<{
     refreshModelList: [],
 }>();
 
+// example chunk:
 // const downloadingModels = ref<Record<string, OllamaPullResponseChunk>>({
 //     'granite-embedding:30m': {
 //         status: "pulling 27d24c87a53d",
@@ -74,9 +77,8 @@ async function downloadModel() {
 
 <template>
     <div
-            class="h-4/12 md:h-full w-full md:w-3/12 bg-background-light rounded-lg flex flex-col gap-2 p-2 overflow-y-auto relative"
-            :class="{ 'cursor-not-allowed select-none overflow-hidden!': config.api.enabled }"
-        >
+        class="h-4/12 md:h-full w-full md:w-3/12 bg-background-light rounded-lg flex flex-col gap-2 p-2 relative"
+        :class="{ 'cursor-not-allowed select-none overflow-hidden!': config.api.enabled }" >
             <!-- overlay -->
             <div v-if="config.api.enabled" class="w-full h-full absolute top-0 left-0 bg-black/50"></div>
             <RouterLink to="/"
@@ -87,65 +89,71 @@ async function downloadModel() {
 
             <div class="h-[1px] w-full bg-border"></div>
 
-            <form action="https://ollama.com/search" target="_blank" class="flex flex-row gap-2 items-center">
-                <input type="text" name="q" placeholder="Search ollama.com..." required
-                    class="border-2 border-border-muted focus:border-border w-full rounded-lg h-6 box-content p-3 outline-0"
-                    aria-label="Search Ollama models...">
-                <button type="submit" class="size-6 p-3 box-content rounded-lg bg-border-muted hover:bg-border cursor-pointer">
-                    <AiOutlineSearch />
+            <div class="flex flex-col gap-2 overflow-y-auto">
+                <form action="https://ollama.com/search" target="_blank" class="flex flex-row gap-2 items-center">
+                    <input type="text" name="q" placeholder="Search ollama.com..." required
+                        class="border-2 border-border-muted focus:border-border w-full rounded-lg h-6 box-content p-3 outline-0"
+                        aria-label="Search Ollama models...">
+                    <button type="submit" class="size-6 p-3 box-content rounded-lg bg-border-muted hover:bg-border cursor-pointer">
+                        <AiOutlineSearch />
+                    </button>
+                </form>
+                <button
+                    class="text-background bg-primary enabled:hover:bg-secondary p-3 h-8 box-content rounded-lg enabled:cursor-pointer select-none flex flex-row justify-center items-center gap-2 disabled:opacity-75"
+                    @click="downloadModel"
+                    :disabled="!uiStore.isConnectedToOllama">
+                    <AiOutlineDownload />
+                    Download
                 </button>
-            </form>
-            <button
-                class="text-background bg-primary enabled:hover:bg-secondary p-3 h-8 box-content rounded-lg enabled:cursor-pointer select-none flex flex-row justify-center items-center gap-2 disabled:opacity-75"
-                @click="downloadModel"
-                :disabled="!uiStore.isConnectedToOllama">
-                <AiOutlineDownload />
-                Download
-            </button>
 
-            <div v-for="(status, modelName) in downloadingModels"
-                class="p-4 rounded-md flex flex-row items-center gap-2 bg-surface">
-                <ModelIcon :name="modelName" class="size-6" />
-                <div class="flex flex-col gap-2 w-full">
-                    <div class="text-text">
-                        {{ modelName }}
-                    </div>
-                    <div class="text-sm flex flex-col gap-1">
-                        <span>
-                            {{ status.status }}
-                        </span>
-                        <span class="flex flex-row gap-1 justify-between">
-                            <span>{{ status.completed ? `${(status.completed / 1024 / 1024).toFixed(2)}
-                                MB/${((status.total ??
-                                    0) / 1024 / 1024).toFixed(2)} MB` : 'Waiting...' }}</span>
-                            <span>{{ Math.round((status.completed ? status.completed / (status.total ?? 0) : 0) * 100)
-                                }}%</span>
-                        </span>
+                <div v-for="(status, modelName) in downloadingModels"
+                    class="p-4 rounded-md flex flex-row items-center gap-2 bg-surface">
+                    <ModelIcon :name="modelName" class="size-6" />
+                    <div class="flex flex-col gap-2 w-full">
+                        <div class="text-text">
+                            {{ modelName }}
+                        </div>
+                        <div class="text-sm flex flex-col gap-1">
+                            <span>
+                                {{ status.status }}
+                            </span>
+                            <span class="flex flex-row gap-1 justify-between">
+                                <span>{{ status.completed ? `${(status.completed / 1024 / 1024).toFixed(2)}
+                                    MB/${((status.total ??
+                                        0) / 1024 / 1024).toFixed(2)} MB` : 'Waiting...' }}</span>
+                                <span>{{ Math.round((status.completed ? status.completed / (status.total ?? 0) : 0) * 100)
+                                    }}%</span>
+                            </span>
+                        </div>
                     </div>
                 </div>
+
+                <div class="h-[1px] w-full bg-border"></div>
+
+                <div v-if="!uiStore.isConnectedToOllama">
+                    Not connected to Ollama
+                </div>
+                <div v-else-if="modelsList.length === 0">
+                    No models found
+                </div>
+                <RouterLink v-else-if="!config.api.enabled" v-for="{ modelData, loadedInMemory, hidden } in modelsList" :to="`/models/${modelData.model}`"
+                    class="p-4 rounded-md flex flex-row items-center gap-2 hover:bg-surface! hover:text-text transition-all duration-dynamic"
+                    exactActiveClass="!bg-surface-light ring-2 ring-border ring-inset">
+                    <ModelIcon :name="modelData.name ?? 'Unknown'" class="size-6" />
+
+                    {{ modelData.name }}
+
+                    <div class="grow"></div>
+
+                    <Tooltip v-if="hidden" text="Loaded in memory"
+                        class="flex items-center justify-center">
+                        <BsEyeSlash class="h-full" />
+                    </Tooltip>
+                    <Tooltip v-if="loadedInMemory" text="Loaded in memory"
+                        class="flex items-center justify-center">
+                        <MemoryLoadIcon class="h-full" />
+                    </Tooltip>
+                </RouterLink>
             </div>
-
-            <div class="h-[1px] w-full bg-border"></div>
-
-            <div v-if="!uiStore.isConnectedToOllama">
-                Not connected to Ollama
-            </div>
-            <div v-else-if="modelsList.length === 0">
-                No models found
-            </div>
-            <RouterLink v-else-if="!config.api.enabled" v-for="{ model, loadedInMemory } in modelsList" :to="`/models/${model.model}`"
-                class="p-4 rounded-md flex flex-row items-center gap-2 hover:bg-surface! hover:text-text transition-all duration-dynamic"
-                exactActiveClass="!bg-surface-light ring-2 ring-border ring-inset">
-                <ModelIcon :name="model.name ?? 'Unknown'" class="size-6" />
-
-                {{ model.name }}
-
-                <div class="grow"></div>
-
-                <Tooltip v-if="loadedInMemory" text="Loaded in memory"
-                    class="flex items-center justify-center">
-                    <MemoryLoadIcon class="h-full" />
-                </Tooltip>
-            </RouterLink>
         </div>
 </template>

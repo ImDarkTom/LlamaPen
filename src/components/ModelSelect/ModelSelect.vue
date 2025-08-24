@@ -5,18 +5,18 @@ import { useUiStore } from '../../stores/uiStore';
 import { VscDebugDisconnect } from 'vue-icons-plus/vsc';
 import ModelSelectItem from './ModelSelectItem.vue';
 import logger from '@/lib/logger';
-import ollamaApi from '@/utils/ollama';
 import ModelIcon from '../Icon/ModelIcon.vue';
 import { TbListDetails } from 'vue-icons-plus/tb';
 import isOnMobile from '@/utils/core/isOnMobile';
 import { useModelCapabiltyCache } from '@/composables/modelCapabilities';
 import Dropdown from '../Dropdown/Dropdown.vue';
+import { useModelList, type ModelInfoListItem } from '@/composables/useModelList';
 
 const config = useConfigStore();
 const uiStore = useUiStore();
 
 // State
-const modelsList = ref<ModelList>([]);
+const { models: modelsList, modelIds, load: loadModels } = useModelList();
 
 // UI State
 const searchQuery = ref<string>('');
@@ -32,13 +32,19 @@ const listItemsRef = ref<Array<ComponentPublicInstance<{ listItemRef: HTMLLIElem
 onMounted(async () => {
     logger.info('Model Select Component', 'Selected model is', config.selectedModel);
 
-    modelsList.value = await ollamaApi.getModels();
-
-    if (!config.selectedModel || !modelsList.value.map((item) => item.model).includes(config.selectedModel)) {
-        config.selectedModel = modelsList.value[0].model;
+    await loadModels();
+    if (!config.selectedModel || !modelIds.value.includes(config.selectedModel)) {
+        config.selectedModel = modelIds.value[0];
     }
 
-    setModel(modelsList.value.find(model => model.model === config.selectedModel)!, true);
+    console.log(modelsList.value);
+    console.log(modelsList.value.find(model => model.modelData.model === config.selectedModel))
+
+    setModel(
+        modelsList.value
+            .find(model => model.modelData.model === config.selectedModel)!.modelData, 
+        true
+    );
 
     document.addEventListener('keydown', handleKeyboardShortcuts)
 });
@@ -48,8 +54,9 @@ onBeforeUnmount(() => {
 });
 
 // Computed properties
-const queriedModelList = computed<ModelList>(() => {
-    return modelsList.value.filter((model) => model.name.toLowerCase().includes((searchQuery.value || "").toLowerCase()));
+const queriedModelList = computed<ModelInfoListItem[]>(() => {
+    return modelsList.value
+        .filter((item) => item.modelData.name.toLowerCase().includes((searchQuery.value || "").toLowerCase()));
 });
 
 // Functions
@@ -135,7 +142,7 @@ function searchKeyDown(e: KeyboardEvent) {
     let scrollDown = false;
     switch (e.key) {
         case "Enter":
-            setModel(queriedModelList.value[focusedItemIndex.value]);
+            setModel(queriedModelList.value[focusedItemIndex.value].modelData);
             break;
 
         case "Escape":
@@ -172,7 +179,7 @@ defineProps<{
     direction: 'up' | 'down',
 }>();
 
-const selectedModelInfo = computed(() => modelsList.value.find(model => model.model === config.selectedModel));
+const selectedModelInfo = computed(() => modelsList.value.find(item => item.modelData.model === config.selectedModel)?.modelData);
 
 function setFocused(index: number) {
     focusedItemIndex.value = index;
@@ -224,11 +231,20 @@ const modelName = computed(() => {
                     <span>No models found.</span>
                     <a href="https://ollama.com/search" target="_blank" class="text-secondary hover:underline">Search on Ollama</a>
                 </li>
-                <ModelSelectItem v-else-if="queriedModelList.length > 0"
-                    v-for="(model, index) in queriedModelList" :key="model.name" :model="model" :index="index"
-                    :isCurrentModel="model.model === selectedModelInfo?.model" :selected="index === focusedItemIndex"
-                    :queriedModelList="queriedModelList" @setModel="setModel" @mouseover="setFocused(index)"
+                <ModelSelectItem 
+                    v-else-if="queriedModelList.filter((item) => !item.hidden).length > 0"
+                    v-for="(model, index) in queriedModelList.filter((item) => !item.hidden)" 
+                    :key="model.modelData.name" 
+                    :index="index"
+                    :model="model.modelData" 
+                    :isCurrentModel="model.modelData.model === selectedModelInfo?.model" 
+                    :selected="index === focusedItemIndex"
+                    @setModel="setModel" 
+                    @mouseover="setFocused(index)"
                     ref="listItemsRef" />
+                <li v-else class="flex flex-col w-full p-4 justify-center items-center">
+                    <span>No unhidden models found. </span>
+                </li>
             </ul>
         </template>
     </Dropdown>

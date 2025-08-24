@@ -1,19 +1,19 @@
 <script setup lang="ts">
 import router from '@/lib/router';
 import { useConfigStore } from '@/stores/config';
-import ollamaApi from '@/utils/ollama';
 import setPageTitle from '@/utils/core/setPageTitle';
 import { computed, onMounted, ref, watch } from 'vue';
 import ollamaRequest from '@/utils/ollamaRequest';
-import logger from '@/lib/logger';
 import ModelViewer from './components/ModelViewer.vue';
 import ModelList from './components/ModelList.vue';
 import { tryCatch } from '@/utils/core/tryCatch';
 import ViewerContainer from './components/ViewerContainer.vue';
+import { useModelList } from '@/composables/useModelList';
 
 const config = useConfigStore();
 
-const modelsList = ref<ModelSidebarListItem[]>([]);
+// State
+const { models: modelsList, load: loadModels } = useModelList();
 const selectedModel = ref<ModelViewInfo>({ state: 'unselected' });
 
 const modelFromParams = computed<string | null>(() => {
@@ -28,24 +28,12 @@ const modelFromParams = computed<string | null>(() => {
     }
 });
 
-async function refreshModelList() {
-    logger.info('Models Page', 'Refreshing model list');
-    const modelInfo = await ollamaApi.getModels(true);
+// Helpers 
+const refreshModelList = async () => await loadModels(true);
 
-    logger.info('Models Page', 'Refreshing loaded models');
-    const loadedModels = await ollamaApi.getLoadedModelIds();
-
-    modelsList.value = modelInfo.map((model) => {
-        return {
-            model,
-            loadedInMemory: loadedModels.includes(model.model)
-        };
-    });
-}
-
+// Hooks
 onMounted(async () => {
     setPageTitle('Models');
-
     refreshModelList();
 
     if (!modelFromParams.value) {
@@ -93,7 +81,7 @@ async function setModelViewInfo(modelId: string) {
     selectedModel.value = {
         state: 'data',
         model: modelInfo,
-        isLoaded: modelsList.value.some(item => item.model.model === modelId && item.loadedInMemory)
+        isLoaded: modelsList.value.some(item => item.modelData.model === modelId && item.loadedInMemory)
     };
 }
 
@@ -101,9 +89,9 @@ async function setModelViewInfo(modelId: string) {
 
 <template>
     <div class="w-full h-full flex flex-col md:flex-row gap-2 p-2 box-border overflow-y-auto"
-        :class="{ 'pt-10': !config.showSidebar }">
+        :class="{ 'pt-14 md:pt-2 md:pl-14': !config.showSidebar }">
         <ModelList
-            :modelsList 
+            :modelsList
             @refresh-model-list="refreshModelList" />
         
         <ViewerContainer

@@ -19,7 +19,6 @@ const props = defineProps<{
 	index: number,
 	isCurrentModel: boolean,
 	selected: boolean,
-	queriedModelList: ModelList,
 }>();
 
 const emit = defineEmits<(e: 'setModel', model: ModelListItem) => void>();
