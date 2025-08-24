@@ -1,58 +1,40 @@
 <script setup lang="ts">
 import { onMounted, ref } from 'vue';
-import { useConfigStore } from '../../../stores/config';
-import { useUiStore } from '../../../stores/uiStore';
 import { emitter } from '../../../lib/mitt';
+import { useModelList } from '@/composables/useModelList';
 
-const config = useConfigStore();
-const uiStore = useUiStore();
+const { connectedToOllama, load, error, loading } = useModelList();
 
 // UI State
 const statusMessageText = ref("Waiting for Ollama...");
-const waitingForResponse = ref<boolean>(true);
 
-// Refs
-const statusMessageElem = ref<HTMLElement | null>(null);
+onMounted(async () => {
+    await load();
 
-onMounted(() => {
-    fetch(config.apiUrl('/'))
-        .then(response => {
-            if (!response.ok) {
-                throw new Error(`HTTP Error when connecting to Ollama, code: ${response.status}`)
-            }
-            return response.text();
-        })
-        .then(response => {
-            statusMessageText.value = response;
-            uiStore.setConnectedToOllama = true;
-        })
-        .catch((error) => {
-            if (error instanceof TypeError) {
-                statusMessageText.value = "Network error, is Ollama running?";
-            } else {
-                statusMessageText.value = error.message;
-            }
+    if (connectedToOllama.value) {
+        statusMessageText.value = "Ollama is running";
+    } else if (error) {
+        if (error.value === "NetworkError when attempting to fetch resource.") {
+            statusMessageText.value = "Network error, is Ollama running?";
+        } else {
+            statusMessageText.value = error.value || 'Unknown Error';
+        }
 
-            uiStore.setConnectedToOllama = false;
-            emitter.emit('popup:ollamanotconnected');
-        })
-        .finally(() => {
-            waitingForResponse.value = false;
-        });
+        emitter.emit('popup:ollamanotconnected');
+    }
 });
-
 </script>
 
 <template>
     <div class="overflow-hidden overflow-ellipsis font-semibold">
         <span
             :class="{ 
-                'text-warning': waitingForResponse,
-                'text-success': uiStore.isConnectedToOllama && !waitingForResponse, 
-                'text-danger': !uiStore.isConnectedToOllama && !waitingForResponse
+                'text-warning': loading,
+                'text-success': connectedToOllama && !loading, 
+                'text-danger': !connectedToOllama && !loading
                 }">
             Ollama status:
-            <span class="font-normal" ref="statusMessageElem" :title="statusMessageText">{{ statusMessageText }}</span>
+            <span class="font-normal" :title="statusMessageText">{{ statusMessageText }}</span>
         </span>
     </div>
 </template>

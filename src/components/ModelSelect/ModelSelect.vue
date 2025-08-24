@@ -11,12 +11,21 @@ import isOnMobile from '@/utils/core/isOnMobile';
 import { useModelCapabiltyCache } from '@/composables/modelCapabilities';
 import Dropdown from '../Dropdown/Dropdown.vue';
 import { useModelList, type ModelInfoListItem } from '@/composables/useModelList';
+import { AiOutlineLoading, AiOutlineReload } from 'vue-icons-plus/ai';
+import PrimaryButton from '../Buttons/PrimaryButton.vue';
 
 const config = useConfigStore();
 const uiStore = useUiStore();
 
 // State
-const { models: modelsList, modelIds, load: loadModels } = useModelList();
+const { 
+    models: modelsList, 
+    modelIds, 
+    load: loadModels, 
+    selectedModelInfo, 
+    loading: modelsLoading,
+    connectedToOllama
+} = useModelList();
 
 // UI State
 const searchQuery = ref<string>('');
@@ -33,18 +42,15 @@ onMounted(async () => {
     logger.info('Model Select Component', 'Selected model is', config.selectedModel);
 
     await loadModels();
-    if (!config.selectedModel || !modelIds.value.includes(config.selectedModel)) {
+    if (selectedModelInfo.value.exists) {
+        setModel(
+            selectedModelInfo.value.data.modelData, 
+            true
+        );
+    } else {
         config.selectedModel = modelIds.value[0];
+        setModel(modelsList.value[0].modelData, true);
     }
-
-    console.log(modelsList.value);
-    console.log(modelsList.value.find(model => model.modelData.model === config.selectedModel))
-
-    setModel(
-        modelsList.value
-            .find(model => model.modelData.model === config.selectedModel)!.modelData, 
-        true
-    );
 
     document.addEventListener('keydown', handleKeyboardShortcuts)
 });
@@ -179,38 +185,53 @@ defineProps<{
     direction: 'up' | 'down',
 }>();
 
-const selectedModelInfo = computed(() => modelsList.value.find(item => item.modelData.model === config.selectedModel)?.modelData);
-
 function setFocused(index: number) {
     focusedItemIndex.value = index;
 }
 
 const modelName = computed(() => {
-    return selectedModelInfo.value?.name || config.selectedModel;
+    return selectedModelInfo.value.data?.modelData.name || config.selectedModel;
 });
 </script>
 
 <template>
     <Dropdown :direction @opened="onToggled" ref="dropdownRef">
         <template #button>
-            <span v-if="uiStore.isConnectedToOllama" class="flex flex-row gap-2 items-center">
-                <ModelIcon :name="selectedModelInfo?.model || 'Unknown'" class="size-6" />
+            <span v-if="modelsLoading" class="flex flex-row gap-2 items-center text-text-muted/75">
+                <AiOutlineLoading class="animate-spin size-6 inline" />
+                Loading models...
+            </span>
+
+            <span v-else-if="connectedToOllama && selectedModelInfo.exists" class="flex flex-row gap-2 items-center">
+                <ModelIcon :name="selectedModelInfo.data.modelData.model" class="size-6" />
                 {{ modelName }}
             </span>
 
-            <p class="flex flex-row gap-2 items-center italic font-medium" v-else>
+            <span v-else-if="connectedToOllama">
+                No model selected
+            </span>
+
+            <span v-else class="flex flex-row gap-2 items-center text-text-muted/75">
                 <VscDebugDisconnect />
                 Disconnected
-            </p>
+            </span>
         </template>
         <template #menu>
             <div class="flex flex-row gap-2 items-center justify-center" role="listbox">
                 <!-- Search bar -->
-                <input ref="searchBarRef" v-model="searchQuery" @focus="searchFocused = true"
-                    @blur="searchFocused = false" @keydown="searchKeyDown" type="search" placeholder="Search a model..."
+                <input 
                     class="border-2 border-primary focus:border-border w-full rounded-lg h-6 box-content p-3 outline-0"
-                    :class="{ 'cursor-not-allowed': !uiStore.isConnectedToOllama }" aria-label="Search for a model..."
-                    aria-controls="model-list" :disabled="!uiStore.isConnectedToOllama">
+                    :class="{ 'cursor-not-allowed': !connectedToOllama }" 
+                    ref="searchBarRef" 
+                    type="search"
+                    placeholder="Search a model..."
+                    :disabled="!connectedToOllama"
+                    v-model="searchQuery" 
+                    @focus="searchFocused = true"
+                    @blur="searchFocused = false" 
+                    @keydown="searchKeyDown" 
+                    aria-label="Search for a model..."
+                    aria-controls="model-list" >
                 <RouterLink to="/models"
                     class="h-6 p-3 box-content text-background !bg-primary hover:!bg-border cursor-pointer transition-colors duration-dynamic rounded-lg">
                     <TbListDetails />
@@ -218,9 +239,18 @@ const modelName = computed(() => {
             </div>
 
             <ul role="list" class="max-h-80 overflow-y-auto [scrollbar-width:thin] *:not-last:mb-2">
-                <li v-if="!uiStore.isConnectedToOllama" class="h-24 flex px-3 py-2 roundex-xl justify-center items-center font-bold gap-2">
-                    <VscDebugDisconnect />
-                    Not connected to Ollama.
+                <li v-if="!connectedToOllama" class="h-24 flex flex-col px-3 py-2 roundex-xl justify-center items-center font-bold gap-2">
+                    <span>
+                        <VscDebugDisconnect class="inline" />
+                        Not connected to Ollama.
+                    </span>
+                    <PrimaryButton
+                        type="button"
+                        color="primary"
+                        text="Retry"
+                        :icon="AiOutlineReload"
+                        @click="loadModels(true)"
+                    />
                 </li>
                 <li v-else-if="queriedModelList.length === 0 && searchQuery !== ''"
                     class="flex w-full p-4 justify-center items-center">
@@ -237,7 +267,7 @@ const modelName = computed(() => {
                     :key="model.modelData.name" 
                     :index="index"
                     :model="model.modelData" 
-                    :isCurrentModel="model.modelData.model === selectedModelInfo?.model" 
+                    :isCurrentModel="model.modelData.model === selectedModelInfo.data?.modelData.model" 
                     :selected="index === focusedItemIndex"
                     @setModel="setModel" 
                     @mouseover="setFocused(index)"

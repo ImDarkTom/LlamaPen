@@ -13,11 +13,13 @@ const state = reactive<{
     loading: boolean,
     error: string | null,
     initialised: boolean,
+    connectedToOllama: boolean,
 }>({
     models: [],
     loading: false,
     error: null,
     initialised: false,
+    connectedToOllama: false
 });
 
 let loadPromise: Promise<void> | null = null;
@@ -39,11 +41,12 @@ async function load(force: boolean = false) {
                     loadedInMemory: loadedModelIds.includes(model.model),
                     hidden: useConfigStore().chat.hiddenModels.includes(model.model),
                 }));
-            
-            state.initialised = true;
+
+            state.connectedToOllama = true;
         } catch (err) {
             state.error = (err as Error).message;
         } finally {
+            state.initialised = true;
             state.loading = false;
             loadPromise = null;
         }
@@ -78,10 +81,25 @@ export function useModelList() {
         refreshModelStates();
     }
 
+    const selectedModelInfo = computed<
+        { exists: true, data: ModelInfoListItem } | 
+        { exists: false, data: null }
+    >(() => {
+        const selected = state.models
+            .find(modelItem => modelItem.modelData.model === useConfigStore().selectedModel);
+
+        if (selected) {
+            return { exists: true, data: selected };
+        } else {
+            return { exists: false, data: null };
+        }
+    });
+
     return {
         ...toRefs(state),
         load,
         modelIds,
-        setModelHidden
+        setModelHidden,
+        selectedModelInfo
     };
 };

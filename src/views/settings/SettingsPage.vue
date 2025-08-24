@@ -12,7 +12,6 @@ import TextInputSetting from './components/TextInputSetting.vue';
 import logger from '@/lib/logger';
 import setPageTitle from '@/utils/core/setPageTitle';
 import CategoryLabel from './components/CategoryLabel.vue';
-import { useUiStore } from '@/stores/uiStore';
 import NumberInputSetting from './components/NumberInputSetting.vue';
 import PageHeader from '@/components/Page/PageHeader.vue';
 import SelectionSetting from './components/SelectionSetting.vue';
@@ -23,13 +22,14 @@ import { RiAccountCircleLine } from 'vue-icons-plus/ri';
 import { BsFillTrash3Fill, BsKeyboard, BsRocketTakeoff } from 'vue-icons-plus/bs';
 import Tooltip from '@/components/Tooltip/Tooltip.vue';
 import { BiHelpCircle } from 'vue-icons-plus/bi';
+import { useModelList } from '@/composables/useModelList';
 
 const config = useConfigStore();
 const router = useRouter();
 
 const chatsStore = useChatsStore();
 const messagesStore = useMessagesStore();
-const uiStore = useUiStore();
+const { connectedToOllama } = useModelList();
 
 // transition speed
 const transitionSpeed = ref(0.125);
@@ -148,7 +148,7 @@ async function checkOllamaVersion() {
                     v-model="config.ollamaUrl" 
                     default="http://localhost:11434"
                     :check="ollamaUrlCheck" />
-                <span v-if="!uiStore.isConnectedToOllama">
+                <span v-if="!connectedToOllama">
                     Can't connect? Checkout the
                     <RouterLink to="/guide" class="text-text underline">setup guide</RouterLink>.
                 </span>

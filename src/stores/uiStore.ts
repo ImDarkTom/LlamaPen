@@ -1,12 +1,10 @@
 import { defineStore } from "pinia";
-import { useConfigStore } from './config';
 
 interface UIStore {
     chat: {
         isScrollingDown: boolean,
         selectedModelInfo: OllamaModelInfoResponse | null
-    },
-    setConnectedToOllama: boolean,
+    }
 }
 
 /**
@@ -17,14 +15,8 @@ export const useUiStore = defineStore('uiStore', {
         chat: {
             isScrollingDown: true,
             selectedModelInfo: null,
-        },
-        setConnectedToOllama: false,
-    }),
-    getters: {
-        isConnectedToOllama(): boolean {
-            const configStore = useConfigStore();
-            return configStore.api.enabled || this.setConnectedToOllama;
         }
-    },
+    }),
+    getters: {},
     actions: {}
 });

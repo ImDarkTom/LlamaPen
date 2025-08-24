@@ -2,10 +2,9 @@
 import MemoryLoadIcon from '@/components/Icon/MemoryLoadIcon.vue';
 import ModelIcon from '@/components/Icon/ModelIcon.vue';
 import Tooltip from '@/components/Tooltip/Tooltip.vue';
-import type { ModelInfoListItem } from '@/composables/useModelList';
+import { useModelList, type ModelInfoListItem } from '@/composables/useModelList';
 import logger from '@/lib/logger';
 import { useConfigStore } from '@/stores/config';
-import { useUiStore } from '@/stores/uiStore';
 import ollamaRequest from '@/utils/ollamaRequest';
 import { streamChunks } from '@/utils/streamChunks';
 import { ref } from 'vue';
@@ -13,7 +12,7 @@ import { AiOutlineArrowLeft, AiOutlineDownload, AiOutlineSearch } from 'vue-icon
 import { BsEyeSlash } from 'vue-icons-plus/bs';
 
 const config = useConfigStore();
-const uiStore = useUiStore();
+const { connectedToOllama } = useModelList();
 
 defineProps<{
     modelsList: ModelInfoListItem[],
@@ -101,7 +100,7 @@ async function downloadModel() {
                 <button
                     class="text-background bg-primary enabled:hover:bg-secondary p-3 h-8 box-content rounded-lg enabled:cursor-pointer select-none flex flex-row justify-center items-center gap-2 disabled:opacity-75"
                     @click="downloadModel"
-                    :disabled="!uiStore.isConnectedToOllama">
+                    :disabled="!connectedToOllama">
                     <AiOutlineDownload />
                     Download
                 </button>
@@ -130,7 +129,7 @@ async function downloadModel() {
 
                 <div class="h-[1px] w-full bg-border"></div>
 
-                <div v-if="!uiStore.isConnectedToOllama">
+                <div v-if="!connectedToOllama">
                     Not connected to Ollama
                 </div>
                 <div v-else-if="modelsList.length === 0">
