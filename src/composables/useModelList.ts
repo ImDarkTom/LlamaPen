@@ -29,6 +29,8 @@ async function load(force: boolean = false) {
     if (state.initialised && !force) return;
     if (loadPromise) return loadPromise;
 
+    const config = useConfigStore();
+
     state.loading = true;
     state.error = null;
     loadPromise = (async () => {
@@ -42,13 +44,21 @@ async function load(force: boolean = false) {
                     return {
                         modelData: model,
                         loadedInMemory: loadedModelIds.includes(model.model),
-                        hidden: useConfigStore().chat.hiddenModels.includes(model.model),
+                        hidden: config.chat.hiddenModels.includes(model.model),
                     }
                 });
 
-            for (const model of state.models) {
-                const capabilities = await ollamaApi.getModelCapabilities(model.modelData.model);
-                model.fetchedCapabilities = capabilities;
+            if (
+                !config.api.enabled && 
+                (
+                    config.ollama.modelCapabilities.autoload && state.models.length < 31
+                    || config.ollama.modelCapabilities.alwaysAutoload
+                )
+            ) {
+                for (const model of state.models) {
+                    const capabilities = await ollamaApi.getModelCapabilities(model.modelData.model);
+                    model.fetchedCapabilities = capabilities;
+                }
             }
 
             state.connectedToOllama = true;

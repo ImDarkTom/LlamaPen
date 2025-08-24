@@ -152,6 +152,18 @@ async function checkOllamaVersion() {
                     Can't connect? Checkout the
                     <RouterLink to="/guide" class="text-text underline">setup guide</RouterLink>.
                 </span>
+
+                <ToggleSetting
+                    v-model="config.ollama.modelCapabilities.autoload"
+                    label="Autoload model capabilities"
+                    tooltip="Load model capabilities on connect. By default only loads if 30 models or less." />
+                <div v-if="config.ollama.modelCapabilities.autoload" class="border-l-[1px] border-text pl-3 ml-3">
+                    <ToggleSetting 
+                        v-model="config.ollama.modelCapabilities.alwaysAutoload" 
+                        label="Always autoload model capabilities"
+                        tooltip="Loads model capabilities regardless of no. of models." />
+                </div>
+
                 <div class="flex flex-row gap-2 *:w-1/2">
                     <PrimaryButton
                         text="Manage Models"

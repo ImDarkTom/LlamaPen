@@ -1,9 +1,13 @@
 <script setup lang="ts">
+import Tooltip from '@/components/Tooltip/Tooltip.vue';
+import { BiHelpCircle } from 'vue-icons-plus/bi';
+
 const emit = defineEmits(['update:modelValue']);
 
 const props = defineProps<{
 	modelValue: boolean;
 	label: string;
+	tooltip?: string;
 }>();
 
 const updateValue = () => {
@@ -13,7 +17,12 @@ const updateValue = () => {
 
 <template>
 	<label class="w-full flex flex-row justify-between items-center cursor-pointer transition-all duration-dynamic" @click="updateValue">
-		<span class="text-lg text-text-muted hover:text-text">{{ label }}</span>
+		<span class="text-lg text-text-muted hover:text-text">
+			{{ label }}
+			<Tooltip v-if="tooltip" :text="tooltip" size="small">
+				<BiHelpCircle class="inline" />
+			</Tooltip>
+		</span>
 		
 		<input 
 			class="sr-only"

@@ -7,6 +7,12 @@ interface Config {
     showSidebar: boolean,
     transitionSpeed: number,
     closeSidebarOnNavMobile: boolean,
+    ollama: {
+        modelCapabilities: {
+            autoload: boolean,
+            alwaysAutoload: boolean,
+        }
+    },
     ui: {
         modelList: {
             hideUpgradePrompt: boolean, // Hide the upgrade message in the model list
@@ -73,6 +79,12 @@ export const useConfigStore = defineStore('config', {
         showSidebar: true,
         transitionSpeed: 0.125,
         closeSidebarOnNavMobile: true,
+        ollama: {
+            modelCapabilities: {
+                autoload: true,
+                alwaysAutoload: false
+            }
+        },
         ui: {
             modelList: {
                 hideUpgradePrompt: false,
