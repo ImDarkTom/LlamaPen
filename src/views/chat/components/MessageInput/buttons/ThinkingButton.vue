@@ -4,7 +4,7 @@ import { computed, watch } from 'vue';
 import { BiBrain } from 'vue-icons-plus/bi';
 import MessageInputButton from './MessageInputButton.vue';
 
-const { selectedModelCapabilities } = useModelList();
+const { selectedModelCapabilities, selectedModelInfo } = useModelList();
 
 defineProps(['modelValue']);
 const emits = defineEmits(['update:modelValue']);
@@ -17,8 +17,30 @@ watch(selectedModelCanThink, () => {
     }
 });
 
+const selectedAlwaysReasons = computed(() => {
+    return !!(
+        selectedModelInfo.value.exists &&
+        selectedModelInfo.value.data.modelData.llamapenMetadata?.tags?.includes('alwaysReasons')
+    );
+});
+
+watch(selectedAlwaysReasons, () => {
+    if (selectedAlwaysReasons.value) {
+        emits('update:modelValue', true);
+    }
+});
+
+const buttonHoverText = computed<string>(() => {
+    if (!selectedModelCanThink.value) return 'Selected model does not have thinking capabilities.';
+    else if (selectedAlwaysReasons.value) return 'Thinking cannot be disabled for his model.';
+    else return 'Enable thinking.'
+});
+
 function toggleCheck(e: Event) {
-    if (!selectedModelCanThink.value) return;
+    if (
+        !selectedModelCanThink.value ||
+        selectedAlwaysReasons.value
+    ) return;
     emits('update:modelValue', (e.target as HTMLInputElement).checked);
 }
 </script>
@@ -27,9 +49,9 @@ function toggleCheck(e: Event) {
     <MessageInputButton
         :class="{ 
             'bg-primary ring-background! text-background!': modelValue,
-            'opacity-50': !selectedModelCanThink
+            'opacity-50': !selectedModelCanThink || selectedAlwaysReasons
         }"
-        :title="selectedModelCanThink ? 'Enable thinking' : 'Selected model does not have thinking capabilities.'"
+        :title="buttonHoverText"
     >
         <label for="thinking-toggle" class="cursor-pointer size-full flex flex-row gap-2 items-center justify-center">
             <BiBrain />
