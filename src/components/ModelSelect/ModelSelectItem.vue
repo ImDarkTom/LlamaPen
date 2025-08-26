@@ -58,9 +58,9 @@ const modelCapabilities = computed(() => getModelCapabilities(props.model));
 			<div class="flex flex-row items-center">
 				<span 
 					class="text-md font-semibold text-ellipsis whitespace-nowrap overflow-hidden text-text"
-					:title="model.modelData.name"
+					:title="model.modelData.model"
 				>
-					{{ model.modelData.name}}
+					{{ model.displayName}}
 				</span>
 				<div class="flex flex-row gap-2 ml-2 shrink-0 min-w-fit">
 					<div 

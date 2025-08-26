@@ -4,6 +4,7 @@ import { computed, reactive, toRefs } from "vue";
 
 export type ModelInfoListItem = {
     modelData: ModelListItem;
+    displayName: string;
     loadedInMemory: boolean;
     hidden: boolean;
     fetchedCapabilities?: OllamaCapability[];
@@ -41,8 +42,14 @@ async function load(force: boolean = false) {
             // Get the base model list
             state.models = (await ollamaApi.getModels(force))
                 .map((model) => {
+                    const displayName = 
+                        config.chat.modelRenames[model.model] ||
+                        model.name ||
+                        model.model;
+
                     return {
                         modelData: model,
+                        displayName,
                         loadedInMemory: loadedModelIds.includes(model.model),
                         hidden: config.chat.hiddenModels.includes(model.model),
                     }
@@ -85,7 +92,7 @@ async function refreshModelStates() {
 }
 
 export function useModelList() {
-    const modelIds = computed(() => state.models.map((item) => item.modelData.name));
+    const modelIds = computed(() => state.models.map((item) => item.modelData.model));
 
     function setModelHidden(modelId: string | null, setHidden: boolean) {
         if (!modelId) return;

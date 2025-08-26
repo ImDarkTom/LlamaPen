@@ -135,12 +135,15 @@ async function downloadModel() {
                 <div v-else-if="modelsList.length === 0">
                     No models found
                 </div>
-                <RouterLink v-else-if="!config.api.enabled" v-for="{ modelData, loadedInMemory, hidden } in modelsList" :to="`/models/${modelData.model}`"
+                <RouterLink 
+                    v-else-if="!config.api.enabled" 
+                    v-for="{ modelData, loadedInMemory, hidden, displayName } in modelsList" 
                     class="p-4 rounded-md flex flex-row items-center gap-2 hover:bg-surface! hover:text-text transition-all duration-dynamic"
-                    exactActiveClass="!bg-surface-light ring-2 ring-border ring-inset">
-                    <ModelIcon :name="modelData.name ?? 'Unknown'" class="size-6" />
+                    exactActiveClass="!bg-surface-light ring-2 ring-border ring-inset"
+                    :to="`/models/${modelData.model}`" >
+                    <ModelIcon :name="modelData.model ?? 'Unknown'" class="size-6" />
 
-                    {{ modelData.name }}
+                    {{ displayName }}
 
                     <div class="grow"></div>
 

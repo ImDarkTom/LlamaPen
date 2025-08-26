@@ -51,6 +51,7 @@ interface Config {
         },
         titleGenerationStyle: 'firstMessage' | 'generate' | 'chatId' | 'dynamic';
         hiddenModels: string[];
+        modelRenames: Record<string, string>;
     }
     developer: {
         mockRequests: boolean,
@@ -117,7 +118,8 @@ export const useConfigStore = defineStore('config', {
             },
             tokenSaveInterval: 5,
             titleGenerationStyle: 'generate',
-            hiddenModels: []
+            hiddenModels: [],
+            modelRenames: {},
         },
         developer: {
             mockRequests: false,

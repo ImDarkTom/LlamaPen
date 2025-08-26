@@ -5,7 +5,7 @@ import { computed, ref } from 'vue';
 import type { IconType } from 'vue-icons-plus';
 import { AiOutlineVerticalAlignMiddle } from 'vue-icons-plus/ai';
 import { BiBrain, BiLinkExternal } from 'vue-icons-plus/bi';
-import { BsCopy, BsEye, BsEyeSlash, BsFillTrash3Fill, BsTools } from 'vue-icons-plus/bs';
+import { BsCopy, BsEye, BsEyeSlash, BsFillTrash3Fill, BsPen, BsTools } from 'vue-icons-plus/bs';
 import { VscDebugContinue } from 'vue-icons-plus/vsc';
 import DOMPurify from 'dompurify';
 import Unknown from '@/icons/unknown.svg';
@@ -118,6 +118,23 @@ async function unloadModel() {
     refreshModelList();
 }
 
+async function renameModel() {
+    const modelName = props.modelFromParams;
+    if (!modelName) {
+        alert('No model selected to rename.');
+        return;
+    }
+
+    let newName = prompt(`Enter a new name for '${modelName}' (app cosmetic only): '`, modelName);
+    if (newName === '' || !newName) {
+        newName = modelName;
+    }
+
+    useConfigStore().chat.modelRenames[modelName] = newName;
+
+    refreshModelList();
+}
+
 function sanitizeSection(text: string | null) {
     return DOMPurify.sanitize(text ?? '')
 }
@@ -199,12 +216,18 @@ const isHidden = computed(() => config.chat.hiddenModels.includes(props.modelFro
                 :href="`https://ollama.com/library/${modelFromParams}`"/>
             <PrimaryButton
                 type="button"
+                color="primary"
+                text="Rename model"
+                :icon="BsPen"
+                :single-line="true"
+                @click="renameModel" />
+            <PrimaryButton
+                type="button"
                 :color="isHidden ? 'sunken' : 'primary'"
                 :text="isHidden ? 'Unhide from list' : 'Hide from list'"
                 :icon="isHidden ? BsEyeSlash : BsEye"
                 :single-line="true"
-                @click="setModelHidden(modelFromParams, isHidden)"
-            />
+                @click="setModelHidden(modelFromParams, isHidden)" />
 
             <PrimaryButton
                 v-if="modelFromParams && (selectedModel.state === 'data' && selectedModel.isLoaded)"

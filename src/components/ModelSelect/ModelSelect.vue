@@ -59,7 +59,15 @@ onBeforeUnmount(() => {
 // Computed properties
 const queriedModelList = computed<ModelInfoListItem[]>(() => {
     return modelsList.value
-        .filter((item) => item.modelData.name.toLowerCase().includes((searchQuery.value || "").toLowerCase()));
+        .filter((model) => {
+            const query = (searchQuery.value || "").toLowerCase();
+
+            return (
+                model.modelData.name.toLowerCase().includes(query) ||
+                model.displayName.toLowerCase().includes(query) ||
+                model.modelData.model.toLowerCase().includes(query)
+            );
+        });
 });
 
 // Functions
@@ -152,7 +160,9 @@ function setFocused(index: number) {
 }
 
 const modelName = computed(() => {
-    return selectedModelInfo.value.data?.modelData.name || config.selectedModel;
+    if (!selectedModelInfo.value.exists) return "No model selected.";
+    
+    return selectedModelInfo.value.data.displayName;
 });
 </script>
 
@@ -229,7 +239,7 @@ const modelName = computed(() => {
                 <ModelSelectItem 
                     v-else-if="queriedModelList.filter((item) => !item.hidden).length > 0"
                     v-for="(model, index) in queriedModelList.filter((item) => !item.hidden)" 
-                    :key="model.modelData.name" 
+                    :key="model.modelData.model" 
                     :index="index"
                     :model="model" 
                     :isCurrentModel="model.modelData.model === selectedModelInfo.data?.modelData.model" 
