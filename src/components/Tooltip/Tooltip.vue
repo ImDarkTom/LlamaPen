@@ -44,7 +44,7 @@ onUnmounted(() => {
     <div class="relative inline-block" @mouseenter="showTooltip" @mouseleave="hideTooltip">
         <slot></slot>
         <div v-if="visible"
-            class="bg-surface-light max-w-3xl absolute top-[110%] left-[50%] w-max -translate-x-[50%] p-2 rounded-lg shadow-md shadow-background-dark z-40">
+            class="bg-surface-light max-w-prose absolute top-[110%] left-[50%] w-max -translate-x-[50%] p-2 rounded-lg shadow-md shadow-background-dark z-40">
             <div class="absolute -top-[0.15ch] left-[50%] rotate-45 -translate-x-[50%] w-[1ch] h-[1ch] bg-surface-light">
             </div>
             <span

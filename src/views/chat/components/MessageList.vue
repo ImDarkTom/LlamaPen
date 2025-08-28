@@ -1,6 +1,6 @@
 <script setup lang="ts">
 import { nextTick, onMounted, onUnmounted, ref, watch } from 'vue';
-import ChatMessage from './ChatMessage.vue';
+import ChatMessage from './ChatMessage/ChatMessage.vue';
 import { useRoute } from 'vue-router';
 import { emitter } from '@/lib/mitt';
 import { useUiStore } from '@/stores/uiStore';

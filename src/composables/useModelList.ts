@@ -132,6 +132,18 @@ export function useModelList() {
         }
     });
 
+    function getModelInfo(modelId: string): 
+        { exists: true, data: ModelInfoListItem } | { exists: false, data: null } {
+        const selected = state.models
+            .find(modelItem => modelItem.modelData.model === modelId);
+
+        if (selected) {
+            return { exists: true, data: selected };
+        } else {
+            return { exists: false, data: null };
+        }
+    }
+
     return {
         ...toRefs(state),
         load,
@@ -139,6 +151,7 @@ export function useModelList() {
         setModelHidden,
         selectedModelInfo,
         selectedModelCapabilities,
-        getModelCapabilities
+        getModelCapabilities,
+        getModelInfo
     };
 };
