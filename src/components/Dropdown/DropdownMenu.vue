@@ -2,6 +2,7 @@
 defineProps<{
     direction: 'up' | 'down',
     opened: boolean,
+    unstyled?: boolean;
 }>();
 </script>
 
@@ -24,10 +25,11 @@ defineProps<{
     >
 
         <div v-if="opened"
-            class="absolute flex flex-col gap-2 left-0 bg-surface p-1.5 rounded-lg max-w-[100dvw-3rem] w-full sm:w-96 box-border z-20 shadow-md shadow-background"
+            class="absolute left-0 w-full box-border z-20"
             :class="{
                 'bottom-full mb-2': direction === 'up',
-                'top-full mt-2': direction === 'down'
+                'top-full mt-2': direction === 'down',
+                'bg-surface p-1.5 flex flex-col gap-2 rounded-lg max-w-[100dvw-3rem] w-full sm:w-96 shadow-md shadow-background': !unstyled
             }"
         >
             <slot />
