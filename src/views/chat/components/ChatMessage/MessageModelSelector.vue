@@ -1,6 +1,5 @@
 <script setup lang="ts">
 import DropdownMenu from '@/components/Dropdown/DropdownMenu.vue';
-import ModelIcon from '@/components/Icon/ModelIcon.vue';
 import Tooltip from '@/components/Tooltip/Tooltip.vue';
 import { useModelList, type ModelInfoListItem } from '@/composables/useModelList';
 import logger from '@/lib/logger';
@@ -9,7 +8,7 @@ import { computed } from '@vue/reactivity';
 import { ref } from 'vue';
 import { AiOutlineSwap } from 'vue-icons-plus/ai';
 import { BsCloudSlash, BsExclamationTriangle } from 'vue-icons-plus/bs';
-import { VscDebugRestart } from 'vue-icons-plus/vsc';
+import MessageModelSelectorItem from './MessageModelSelectorItem.vue';
 
 const props = defineProps<{
     modelMessageDone: boolean;
@@ -100,21 +99,17 @@ const warningText = computed(() => {
                 class="max-h-[50vh] w-max max-w-[min(65ch, 100vw)] overflow-y-auto absolute top-0 left-[50%] -translate-x-[50%] flex flex-col bg-surface z-20 p-2 rounded-xl gap-2 shadow-md shadow-background">
                 <span class="text-text text-center font-semibold">Regenerate using...</span>
                 <div class="w-full min-h-0.5 bg-border"></div>
-                <button
-                    class="p-2 hover:scale-[98%] ring-1 ring-border-muted hover:ring-border hover:bg-surface-light hover:text-text rounded-lg w-full min-w-48 cursor-pointer transition-all duration-dynamic flex flex-row items-center justify-start"
-                    @mouseup="regenerateMessage(message.model)">
-                    <VscDebugRestart class="size-6 mr-2 p-0.5" />
-                    {{ message.model }}
-                </button>
+                <MessageModelSelectorItem
+                    :modelId="message.model"
+                    :modelName="messageModelInfo.exists ? messageModelInfo.data.displayName : message.model"
+                    :regenerate-message="regenerateMessage" />
                 <div class="w-full min-h-0.5 bg-border"></div>
-                <button 
+                <MessageModelSelectorItem
                     v-for="model in allModels" 
                     :key="model.modelData.digest"
-                    class="p-2 hover:scale-[98%] ring-1 ring-border-muted hover:ring-border hover:bg-surface-light hover:text-text rounded-lg w-full min-w-48 cursor-pointer transition-all duration-dynamic flex flex-row items-center justify-start"
-                    @mouseup="regenerateMessage(model.modelData.model)" >
-                    <ModelIcon :name="model.modelData.model" class="size-6 mr-2" />
-                    {{ model.displayName }}
-                </button>
+                    :modelId="model.modelData.model"
+                    :modelName="model.displayName"
+                    :regenerate-message="regenerateMessage" />
             </div>
         </DropdownMenu>
     </div>
