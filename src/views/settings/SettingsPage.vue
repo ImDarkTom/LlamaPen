@@ -22,6 +22,8 @@ import { RiAccountCircleLine } from 'vue-icons-plus/ri';
 import { BsFillTrash3Fill, BsKeyboard, BsRocketTakeoff } from 'vue-icons-plus/bs';
 import { useModelList } from '@/composables/useModelList';
 import OptionText from './components/OptionText.vue';
+import { usePWAState } from '@/composables/usePWAState';
+import StatusIndicator from './components/StatusIndicator.vue';
 
 const config = useConfigStore();
 const router = useRouter();
@@ -29,6 +31,7 @@ const router = useRouter();
 const chatsStore = useChatsStore();
 const messagesStore = useMessagesStore();
 const { connectedToOllama, loading: ollamaLoading } = useModelList();
+const pwaState = usePWAState();
 
 // transition speed
 const transitionSpeed = ref(0.125);
@@ -268,6 +271,12 @@ async function checkOllamaVersion() {
                 color="danger"
                 :icon="BsFillTrash3Fill"
                 @click="clearChats" />
+        </OptionCategory>
+
+        <OptionCategory label="PWA">
+            <StatusIndicator :state="pwaState.isOnline.value" label="Online?" />
+            <StatusIndicator :state="pwaState.offlineReady.value" label="Offline ready?" />
+            <StatusIndicator :state="pwaState.needRefresh.value" label="Needs refresh?" />
         </OptionCategory>
 
         <OptionCategory label="Developer" v-if="!inProduction">
