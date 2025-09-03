@@ -75,7 +75,7 @@ export const defaultMessageOptions = { // Defaults from https://github.com/ollam
  */
 export const useConfigStore = defineStore('config', {
     state: (): Config => ({
-        ollamaUrl: 'http://localhost:11434',
+        ollamaUrl: import.meta.env.VITE_DEFAULT_OLLAMA ?? 'http://localhost:11434',
         selectedModel: '',
         showSidebar: true,
         transitionSpeed: 0.125,

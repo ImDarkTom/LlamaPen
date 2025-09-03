@@ -53,7 +53,7 @@ function updateTransitionSpeed() {
 
 function ollamaUrlCheck(url: string): string {
     if (url.length === 0 || url === "") {
-        url = "http://localhost:11434";
+        url = ollamaDefault;
     }
 
     config.ollamaUrl = url;
@@ -92,6 +92,7 @@ onBeforeUnmount(() => {
 });
 
 const inProduction = import.meta.env.VITE_PRODUCTION === 'true';
+const ollamaDefault = import.meta.env.VITE_PRODUCTION ?? 'http://localhost:11434';
 
 watch(
     () => config.api.enabled,
@@ -150,9 +151,9 @@ async function checkOllamaVersion() {
                 <TextInputSetting 
                     label="Ollama URL" 
                     v-model="config.ollamaUrl" 
-                    default="http://localhost:11434"
+                    :default="ollamaDefault"
                     :check="ollamaUrlCheck"
-                    tooltip="The URL to connect to Ollama on. (Default: http://localhost:11434)" />
+                    :tooltip="`The URL to connect to Ollama on. (Default: ${ollamaDefault})`" />
                 <span v-if="!connectedToOllama && !ollamaLoading">
                     Can't connect? Checkout the
                     <RouterLink to="/guide" class="text-text underline">setup guide</RouterLink>.
