@@ -24,7 +24,7 @@ function getTimeInHHmm() {
 </script>
 
 <template>
-    <div class="flex flex-col justify-center md:justify-end items-center w-full h-full md:h-1/2 mb-2">
+    <div class="flex flex-col justify-center md:justify-end items-center w-full h-full md:h-1/2 mb-8">
         <span class="text-xl md:text-2xl">{{ getGreetingMessage() }},</span>
         <span class="text-2xl md:text-4xl font-semibold text-center text-text">What can I help you with?</span>
         <span class="pt-1">
