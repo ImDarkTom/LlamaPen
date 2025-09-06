@@ -82,11 +82,15 @@ function renderText(text: string) {
     <div class="group/message m-2 mb-0 flex flex-col">
         <div class="box-border p-4 flex flex-col" :class="{
             'ml-auto rounded-2xl bg-background-light max-w-[70%] shadow-md shadow-background-dark/50': isUserMessage && !editing,
-            'w-full max-w-[calc(100dvw-1rem)] box-border !p-2 !m-0': isModelMessage || editing
+            'w-full max-w-[calc(100dvw-1rem)] box-border !p-2 !pb-1 !m-0': isModelMessage || editing
         }">
-            <div v-if="message.type === 'model'" class="group/msg-header flex flex-row items-center gap-2 mb-2">
-                <ModelIcon :name="message.model" :ignore-styling="true"
-                    class="size-10 p-2 bg-border-muted rounded-full ring-1 ring-border" />
+            <div 
+                v-if="message.type === 'model'" 
+                class="group/msg-header flex flex-row items-center gap-2 mb-2" >
+                <ModelIcon 
+                    class="size-10 p-2 bg-border-muted rounded-full ring-1 ring-border" 
+                    :name="message.model" 
+                    :ignore-styling="true" />
 
                 <MessageModelSelector
                     :modelMessageDone
@@ -94,32 +98,42 @@ function renderText(text: string) {
 
                 <div class="grow"></div>
 
-                <span class="flex flex-row gap-1 items-center opacity-0 group-hover/msg-header:opacity-100 transition-opacity duration-dynamic">
-                    <BiTimeFive />
-                    {{message.created.toLocaleString() }}
-                </span>
+                <div class="hidden md:block items-center opacity-0 group-hover/msg-header:opacity-100 transition-opacity duration-dynamic group-hover/msg-header:duration-0">
+                    <BiTimeFive class="inline mr-1" /><span class="items-center">{{ message.created.toLocaleString() }}</span>
+                </div>
             </div>
-            <img v-for="image of images" :key="image.id" :src="image.blobSrc"
+            <img 
+                v-for="image of images" 
+                :key="image.id" 
+                :src="image.blobSrc"
                 class="rounded-xl max-w-64 max-h-full cursor-pointer mb-2"
                 @click="emitter.emit('openLightbox', { image: image.file })" alt="Message attached media" />
 
-            <MessageEditor v-if="editing" ref="messageEditorRef" :messageText="message.content"
-                @onCancelEdit="cancelEditing" @onFinishEditing="finishEdit" />
+            <MessageEditor 
+                v-if="editing" 
+                ref="messageEditorRef" 
+                :messageText="message.content"
+                @onCancelEdit="cancelEditing" 
+                @onFinishEditing="finishEdit" />
 
             <div class="relative" v-else>
-                <div v-if="isUserMessage" class="max-w-none prose prose-app! dark:prose-invert">
+                <article 
+                    v-if="message.type === 'user'" 
+                    class="max-w-none prose prose-app! dark:prose-invert" >
                     {{ message.content }}
-                </div>
-                <span v-else-if="isModelMessage" class="flex flex-col">
+                </article>
+                <div 
+                    v-else-if="message.type === 'model'" >
                     <ThinkBlock :message="(message as ModelChatMessage)" />
-                    <span class="max-w-none prose prose-app! dark:prose-invert inline-block" v-html="renderText(message.content)">
-                    </span>
-                    <div v-if="message.type === 'model'" class="animate-breathe rounded-full bg-text inline-block"
+                    <article class="max-w-none prose prose-app! dark:prose-invert" v-html="renderText(message.content)"></article>
+                    <div
+                        v-if="message.status === 'waiting' || message.status === 'generating'"
+                        class="animate-breathe rounded-full bg-text inline-block"
                         :class="{
                             'size-6': message.status === 'waiting',
                             'size-4': message.status === 'generating',
                         }"></div>
-                </span>
+                </div>
             </div>
         </div>
         <MessageInteractions

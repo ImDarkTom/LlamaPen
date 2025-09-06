@@ -1,7 +1,6 @@
 <script setup lang="ts">
 import { onBeforeUnmount, onMounted, ref } from 'vue';
 
-
 defineProps<{
     messageText: string,
 }>();
@@ -19,19 +18,13 @@ onBeforeUnmount(() => {
 });
 
 function onKeyUp(e: KeyboardEvent) {
-    if (e.shiftKey) {
-        return;
-    }
-
     if (e.key === "Escape") {
         emit('onCancelEdit');
-        return;
     }
+}
 
-    if (e.key === "Enter") {
-        e.preventDefault();
-        emit('onFinishEditing', editorRef.value?.value)
-    }
+function submit() {
+    emit('onFinishEditing', editorRef.value?.value)
 }
 
 function focusEditor() {
@@ -44,5 +37,28 @@ defineExpose({
 </script>
 
 <template>
-    <textarea class="bg-surface border-none outline-none p-4 !m-2 box-border rounded-xl resize-y shadow-sm shadow-black" :value="messageText" ref="editorRef" @keyup="onKeyUp"></textarea>
+    <form 
+        class="bg-surface rounded-xl shadow-sm shadow-black"
+        @submit.prevent="submit" > 
+        <textarea 
+            class="border-none outline-none p-4 resize-y w-full" 
+            :value="messageText" 
+            ref="editorRef" 
+            @keyup="onKeyUp"></textarea>
+        <div class="min-w-full flex flex-row gap-2 justify-end p-2 font-medium">
+            <button
+                class="bg-highlight text-background-dark p-2 rounded-lg cursor-pointer"
+                @click="emit('onCancelEdit')">
+                Cancel
+            </button>
+            <button
+                type="submit"
+                class="bg-primary text-background-dark p-2 rounded-lg cursor-pointer">
+                Send
+            </button>
+        </div>
+    </form>
+    <div class="text-center md:text-start text-sm pt-1">
+        Note: Messages under this will be deleted.
+    </div>
 </template>

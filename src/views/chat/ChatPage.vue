@@ -1,5 +1,5 @@
 <script setup lang="ts">
-import { BiPencil } from 'vue-icons-plus/bi';
+import { BiEdit } from 'vue-icons-plus/bi';
 import MessageInput from './components/MessageInput/MessageInput.vue';
 import MessageList from './components/MessageList.vue';
 import useChatsStore from '@/stores/chatsStore';
@@ -21,19 +21,34 @@ async function updateChatTitle() {
 
 onMounted(updateChatTitle);
 watch(() => messagesStore.openedChatId, updateChatTitle);
+
+function renameChat() {
+    if (!messagesStore.openedChatId) return;
+    
+    const newName = prompt('Rename chat:', chatTitle.value ?? 'New Chat');
+    if (!newName) return;
+
+    chatsStore.renameChat(messagesStore.openedChatId, newName);
+    updateChatTitle();
+}
 </script>
 
 <template>
     <div class="w-full h-full flex flex-col">
-        <div v-if="chatTitle" class="flex md:hidden flex-row h-15 shrink-0 p-1 items-center justify-center">
-            <span class="max-w-[calc(100%-6rem)] line-clamp-1">{{ chatTitle }}</span>
+        <div 
+            v-if="chatTitle" 
+            class="flex md:hidden flex-row h-15 shrink-0 p-1 items-center justify-center border-b border-border" >
+
+            <span class="max-w-[calc(100%-6rem)] line-clamp-1 select-none" @dblclick="renameChat">
+                {{ chatTitle }}
+            </span>
 
             <!-- New Chat icon -->
             <RouterLink to="/chat">
                 <div class="absolute top-0 right-2 h-12 w-12 p-2">
                     <div class="size-10 p-1.5 cursor-pointer rounded-lg text-text hover:bg-surface hover:shadow-md shadow-background-dark transition-all duration-dynamic"
                         aria-label="New Chat">
-                        <BiPencil class="size-full" />
+                        <BiEdit class="size-full" />
                     </div>
                 </div>
             </RouterLink>

@@ -1,9 +1,8 @@
 <script setup lang="ts">
 import { ref } from 'vue';
-import { BsCopy, BsPen } from 'vue-icons-plus/bs';
 import logger from '@/lib/logger';
 import MessageInteractionButton from './MessageInteractionButton.vue';
-import { AiFillInfoCircle } from 'vue-icons-plus/ai';
+import { BiCopy, BiInfoCircle, BiPencil } from 'vue-icons-plus/bi';
 
 const props = defineProps<{
     message: ChatMessage;
@@ -41,16 +40,16 @@ function openInfo() {
 </script>
 
 <template>
-    <div class="flex flex-row gap-2 pt-1"
+    <div class="flex flex-row gap-2"
         :class="{ 'justify-end': message.type === 'user', 'justify-start': message.type !== 'user' }">
         <MessageInteractionButton v-if="done || message.type === 'user'" :text="copyTooltipText">
-            <BsCopy class="size-full" title="Copy Text" @click="copyMessage" />
+            <BiCopy class="size-full" title="Copy Text" @click="copyMessage" />
         </MessageInteractionButton>
         <MessageInteractionButton v-if="message.type === 'user'" text="Edit">
-            <BsPen class="size-full" title="Edit" @click="editMessage" />
+            <BiPencil class="size-full" title="Edit" @click="editMessage" />
         </MessageInteractionButton>
         <MessageInteractionButton v-if="done" text="Message Info">
-            <AiFillInfoCircle class="size-full" title="Message Info" @click="openInfo" />
+            <BiInfoCircle class="size-full" title="Message Info" @click="openInfo" />
         </MessageInteractionButton>
     </div>
 </template>
