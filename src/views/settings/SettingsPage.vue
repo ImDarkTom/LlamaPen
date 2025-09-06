@@ -17,13 +17,11 @@ import PageHeader from '@/components/Page/PageHeader.vue';
 import SelectionSetting from './components/SelectionSetting.vue';
 import ollamaRequest from '@/utils/ollamaRequest';
 import { TbListDetails } from 'vue-icons-plus/tb';
-import { AiFillInfoCircle } from 'vue-icons-plus/ai';
-import { RiAccountCircleLine } from 'vue-icons-plus/ri';
-import { BsFillTrash3Fill, BsKeyboard, BsRocketTakeoff } from 'vue-icons-plus/bs';
 import { useModelList } from '@/composables/useModelList';
 import OptionText from './components/OptionText.vue';
 import { usePWAState } from '@/composables/usePWAState';
 import StatusIndicator from './components/StatusIndicator.vue';
+import { BiInfoCircle, BiRocket, BiSolidKeyboard, BiTrash, BiUserCircle } from 'vue-icons-plus/bi';
 
 const config = useConfigStore();
 const router = useRouter();
@@ -133,7 +131,7 @@ async function checkOllamaVersion() {
                 v-model="config.api.enabled" 
                 label="Enable Llamapen API" />
             <span v-if="!config.api.enabled" class="text-text-muted/80 text-sm">
-                <BsRocketTakeoff class="size-4 inline align-middle" />
+                <BiRocket class="size-4 inline align-middle" />
                 Run more powerful models with LlamaPen API, an optional cloud service.
             </span>
             
@@ -142,7 +140,7 @@ async function checkOllamaVersion() {
                 text="Manage Account"
                 type="link" 
                 to="/account" 
-                :icon="RiAccountCircleLine" />
+                :icon="BiUserCircle" />
         </OptionCategory>
 
         <OptionCategory label="Ollama">
@@ -180,7 +178,7 @@ async function checkOllamaVersion() {
                         text="Check Ollama version"
                         type="button"
                         @click="checkOllamaVersion"
-                        :icon="AiFillInfoCircle" />
+                        :icon="BiInfoCircle" />
                 </div>
             </template>
         </OptionCategory>
@@ -190,7 +188,7 @@ async function checkOllamaVersion() {
                 text="View keyboard shortcuts"
                 type="link" 
                 to="/shortcuts" 
-                :icon="BsKeyboard" />
+                :icon="BiSolidKeyboard" />
             <SelectionSetting 
                 v-model="config.ui.theme" 
                 label="Theme" 
@@ -275,7 +273,7 @@ async function checkOllamaVersion() {
                 text="Clear all chats"
                 type="button"
                 color="danger"
-                :icon="BsFillTrash3Fill"
+                :icon="BiTrash"
                 @click="clearChats" />
         </OptionCategory>
 

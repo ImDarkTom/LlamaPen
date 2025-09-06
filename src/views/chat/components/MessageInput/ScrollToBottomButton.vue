@@ -2,7 +2,7 @@
 import { ref, watch } from 'vue';
 import { emitter } from '@/lib/mitt';
 import { useUiStore } from '@/stores/uiStore';
-import { BsFillArrowDownCircleFill } from 'vue-icons-plus/bs';
+import { BiSolidDownArrowCircle } from 'vue-icons-plus/bi';
 
 const uiStore = useUiStore();
 
@@ -30,7 +30,7 @@ watch(uiStore.chat, () => {
             v-if="showButton" 
             class="absolute -top-14 -translate-x-0 bg-surface-light font-medium p-2 rounded-lg select-none cursor-pointer shadow-sm shadow-black"
             @click="emitter.emit('scrollToBottom', { force: true })" >
-            <BsFillArrowDownCircleFill class="size-5 inline mr-2" />
+            <BiSolidDownArrowCircle class="size-5 inline mr-2" />
             <span class="align-middle text-sm">Scroll to bottom</span>
         </span>
     </Transition>

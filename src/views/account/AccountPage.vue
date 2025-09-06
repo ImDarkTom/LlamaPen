@@ -8,15 +8,9 @@ import { computed, onMounted, ref } from 'vue';
 import AccountSection from './components/AccountSection.vue';
 import supabase from '@/lib/supabase';
 import isDateBeforeToday from '@/utils/core/isDateBeforeToday';
-import { BsCheckSquareFill, BsGoogle, BsStripe } from 'vue-icons-plus/bs';
-import { BiTimeFive } from 'vue-icons-plus/bi';
-import { CgFileDocument } from 'vue-icons-plus/cg';
-import { FiMail, FiShield } from 'vue-icons-plus/fi';
+import { BiBug, BiFile, BiLogoGoogle, BiLogoStripe, BiLogOut, BiMailSend, BiShield, BiSolidCheckSquare, BiTimeFive, BiUserMinus } from 'vue-icons-plus/bi';
 import ContactSection from './components/ContactSection.vue';
-import { FaBug } from 'vue-icons-plus/fa';
 import PrimaryButton from '../../components/Buttons/PrimaryButton.vue';
-import { PiSignOutBold } from 'vue-icons-plus/pi';
-import { IpPeopleDeleteOne } from 'vue-icons-plus/ip';
 
 const userStore = useUserStore();
 const config = useConfigStore();
@@ -143,7 +137,7 @@ async function signIn() {
 						class="font-medium px-16" 
 						:class="{ 'opacity-75': isSigningIn }"
 						:text="isSigningIn ? 'Signing in...' : 'Continue with Google'"
-						:icon="BsGoogle" 
+						:icon="BiLogoGoogle" 
 						@click="signIn" />
 					<span>
 						By signing up, you agree to our 
@@ -164,7 +158,7 @@ async function signIn() {
 				<PrimaryButton
 					text="Sign out"
 					type="button" 
-					:icon="PiSignOutBold"
+					:icon="BiLogOut"
 					@click="signOut" />
 			</AccountSection>
 			<AccountSection flex-direction="row">
@@ -223,23 +217,23 @@ async function signIn() {
 						</div>
 					</button>
 				</div>
-				<span class="text-sm flex flex-row gap-1 items-center justify-center"><BsStripe class="size-4" />Payments handled securely by Stripe</span>
+				<span class="text-sm flex flex-row gap-1 items-center justify-center"><BiLogoStripe class="size-4" />Payments handled securely by Stripe</span>
 				<div v-if="userStore.subscription.name !== 'Premium'" class="flex flex-col md:flex-row gap-4 md:gap-2">
 					<div class="w-full md:w-1/2 border-2 border-border-muted rounded-lg">
 						<h4 class="text-xl font-semibold bg-border-muted text-center select-none p-2">Free (current plan)</h4>
 						<ul class="p-4 flex flex-col gap-1 *:flex *:flex-row *:gap-2 *:items-center">
-							<li><BsCheckSquareFill class="size-5 shrink-0" />20 message tokens/day</li>
-							<li><BsCheckSquareFill class="size-5 shrink-0"/>Access to free AI models</li>
-							<li><BsCheckSquareFill class="size-5 shrink-0"/>Standard account support</li>
+							<li><BiSolidCheckSquare class="size-5 shrink-0" />20 message tokens/day</li>
+							<li><BiSolidCheckSquare class="size-5 shrink-0"/>Access to free AI models</li>
+							<li><BiSolidCheckSquare class="size-5 shrink-0"/>Standard account support</li>
 						</ul>
 					</div>
 					<div class="w-full md:w-1/2 border-2 border-primary rounded-lg bg-surface">
 						<h4 class="text-xl font-semibold text-center bg-primary text-background select-none p-2">Premium ✨</h4>
 						<ul class="p-4 flex flex-col gap-1 *:flex *:flex-row *:items-start *:gap-2">
-							<li><BsCheckSquareFill class="size-5 shrink-0 text-secondary" /><span><strong>100</strong> message tokens/day</span></li>
-							<li><BsCheckSquareFill class="size-5 shrink-0 text-secondary" /><span>Access to free + <strong>premium</strong> AI models</span></li>
-							<li><BsCheckSquareFill class="size-5 shrink-0 text-secondary" /><span>Priority account support</span></li>
-							<li><BsCheckSquareFill class="size-5 shrink-0 text-secondary" /><span>Message attachments</span></li>
+							<li><BiSolidCheckSquare class="size-5 shrink-0 text-secondary" /><span><strong>100</strong> message tokens/day</span></li>
+							<li><BiSolidCheckSquare class="size-5 shrink-0 text-secondary" /><span>Access to free + <strong>premium</strong> AI models</span></li>
+							<li><BiSolidCheckSquare class="size-5 shrink-0 text-secondary" /><span>Priority account support</span></li>
+							<li><BiSolidCheckSquare class="size-5 shrink-0 text-secondary" /><span>Message attachments</span></li>
 							<li>💖 Support ongoing development</li>
 						</ul>
 					</div>
@@ -250,25 +244,25 @@ async function signIn() {
 				<ContactSection
 					title="Account/billing support"
 					description="For account/billing issues, contact us at support@llamapen.app"
-					:icon="FiMail"
+					:icon="BiMailSend"
 					link="mailto:support@llamapen.app" 
 				/>
 				<ContactSection
 					title="Terms of Service"
 					description="Read the terms of service."
-					:icon="CgFileDocument"
+					:icon="BiFile"
 					link="https://api.llamapen.app/terms" 
 				/>
 				<ContactSection
 					title="Privacy Policy"
 					description="Read the privacy policy."
-					:icon="FiShield"
+					:icon="BiShield"
 					link="https://api.llamapen.app/privacy" 
 				/>
 				<ContactSection
 					title="App issues"
 					description="Found a bug? Report it on the GitHub."
-					:icon="FaBug"
+					:icon="BiBug"
 					link="https://github.com/ImDarkTom/LlamaPen/issues" 
 				/>
 			</AccountSection>
@@ -278,7 +272,7 @@ async function signIn() {
 					text="Delete Account"
 					color="danger"
 					type="button" 
-					:icon="IpPeopleDeleteOne"
+					:icon="BiUserMinus"
 					@click="deleteAccount" />
 			</AccountSection>
 		</div>

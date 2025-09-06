@@ -1,11 +1,10 @@
 <script setup lang="ts">
 import router from '@/lib/router';
 import useUserStore from '@/stores/user';
-import { AiFillStar, AiOutlineArrowRight, AiOutlineEye, AiOutlineTool } from 'vue-icons-plus/ai';
-import { BsGlobe } from 'vue-icons-plus/bs';
+import { AiOutlineEye } from 'vue-icons-plus/ai';
 import ModelIcon from '../Icon/ModelIcon.vue';
 import { computed, ref } from 'vue';
-import { BiBrain, BiLock } from 'vue-icons-plus/bi';
+import { BiBrain, BiGlobe, BiLock, BiRightArrowAlt, BiStar, BiWrench } from 'vue-icons-plus/bi';
 import { useConfigStore } from '@/stores/config';
 import { useModelList, type ModelInfoListItem } from '@/composables/useModelList';
 
@@ -67,7 +66,7 @@ const modelCapabilities = computed(() => getModelCapabilities(props.model));
 						v-if="model.modelData.llamapenMetadata?.premium"
 						class="bg-yellow-400/25 rounded-sm ring-1 ring-yellow-400 p-0.5"
 						title="Premium model - requires an active LlamaPen API Premium subscription">
-						<AiFillStar class="text-yellow-400 size-4" />
+						<BiStar class="text-yellow-400 size-4" />
 					</div>
 					<!-- Capability tags -->
 					<div 
@@ -91,13 +90,13 @@ const modelCapabilities = computed(() => getModelCapabilities(props.model));
 						v-if="modelCapabilities.includes('tools')"
 						class="bg-blue-400/25 rounded-sm ring-1 ring-blue-400 p-0.5"
 						title="Tools - can use external tools (to be added)">
-						<AiOutlineTool class="text-blue-400 size-4" />
+						<BiWrench class="text-blue-400 size-4" />
 					</div>
 					<div 
 						v-if="modelCapabilities.includes('search')"
 						class="bg-violet-400/25 rounded-sm ring-1 ring-pink-400 p-0.5"
 						title="Web search - can access and search the web">
-						<BsGlobe class="text-pink-400 size-4" />
+						<BiGlobe class="text-pink-400 size-4" />
 					</div>
 				</div>
 			</div>
@@ -107,7 +106,7 @@ const modelCapabilities = computed(() => getModelCapabilities(props.model));
 					'!flex': selected,
 					'!to-border': isCurrentModel,
 				}">
-				<AiOutlineArrowRight class="size-8" />
+				<BiRightArrowAlt class="size-8" />
 			</div>
 		</div>
 	</li>

@@ -1,5 +1,5 @@
 <script setup lang="ts">
-import { BsCheckSquareFill, BsXSquareFill } from 'vue-icons-plus/bs';
+import { BiSolidCheckSquare, BiSolidXSquare } from 'vue-icons-plus/bi';
 
 defineProps<{
     state: boolean;
@@ -10,7 +10,7 @@ defineProps<{
 <template>
     <div>
         <component 
-            :is="state ? BsCheckSquareFill : BsXSquareFill"
+            :is="state ? BiSolidCheckSquare : BiSolidXSquare"
             class="inline mr-2"
             :class="{
                 'text-success': state,

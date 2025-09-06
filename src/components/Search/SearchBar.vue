@@ -4,8 +4,7 @@ import router from '@/lib/router';
 import useChatsStore from '@/stores/chatsStore';
 import { nextTick } from 'process';
 import { computed, onBeforeUnmount, onMounted, ref } from 'vue';
-import { AiFillFilter } from 'vue-icons-plus/ai';
-import { BiTimeFive } from 'vue-icons-plus/bi';
+import { BiFilterAlt, BiTimeFive } from 'vue-icons-plus/bi';
 import { PiSparkleFill } from 'vue-icons-plus/pi';
 
 const chatsStore = useChatsStore();
@@ -137,7 +136,7 @@ const filteredChats = computed(() => {
                 <input type="checkbox" id="toggle-search-filters" v-model="showFilters" class="sr-only">
                 <label for="toggle-search-filters" class="aspect-square bg-primary text-background hover:bg-border p-2 flex items-center justify-center rounded-lg cursor-pointer"
                     :class="{ 'hover:bg-border! text-text-muted bg-border-muted!': showFilters }">
-                        <AiFillFilter />
+                        <BiFilterAlt class="mr-0.5" />
                 </label>
             </div>
             <div v-if="showFilters" class="flex flex-row items-center gap-2 pt-5 pb-6 overflow-x-auto">

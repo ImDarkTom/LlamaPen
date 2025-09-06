@@ -1,8 +1,7 @@
 <script setup lang="ts">
 import { useConfigStore } from '@/stores/config';
 import { computed, ref } from 'vue';
-import { BiBrain } from 'vue-icons-plus/bi';
-import { BsChevronDown, BsChevronUp } from 'vue-icons-plus/bs';
+import { BiBrain, BiChevronDown, BiChevronUp } from 'vue-icons-plus/bi';
 
 const config = useConfigStore();
 
@@ -28,8 +27,8 @@ const thinkBlockText = computed<string | null>(() => {
 				<BiBrain />
 				<span class="text-lg font-semibold select-none">Thoughts</span>
 			</div>
-			<BsChevronUp v-if="opened" />
-			<BsChevronDown v-else />
+			<BiChevronUp v-if="opened" />
+			<BiChevronDown v-else />
 		</div>
 		<Transition name="expand-height">
 			<div v-if="opened" class="!pt-0">

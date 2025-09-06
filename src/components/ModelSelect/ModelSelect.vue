@@ -9,8 +9,9 @@ import { TbListDetails } from 'vue-icons-plus/tb';
 import isOnMobile from '@/utils/core/isOnMobile';
 import Dropdown from '../Dropdown/Dropdown.vue';
 import { useModelList, type ModelInfoListItem } from '@/composables/useModelList';
-import { AiOutlineLoading, AiOutlineReload } from 'vue-icons-plus/ai';
+import { AiOutlineLoading } from 'vue-icons-plus/ai';
 import PrimaryButton from '../Buttons/PrimaryButton.vue';
+import { BiRefresh } from 'vue-icons-plus/bi';
 
 const config = useConfigStore();
 
@@ -223,7 +224,7 @@ const modelName = computed(() => {
                         type="button"
                         color="primary"
                         text="Retry"
-                        :icon="AiOutlineReload"
+                        :icon="BiRefresh"
                         @click="loadModels(true)"
                     />
                 </li>

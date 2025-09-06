@@ -1,6 +1,6 @@
 <script setup lang="ts">
 import MessageInputButton from '@/views/chat/components/MessageInput/buttons/MessageInputButton.vue';
-import { BsChevronDown, BsChevronUp } from 'vue-icons-plus/bs';
+import { BiChevronDown, BiChevronUp } from 'vue-icons-plus/bi';
 
 const props = defineProps<{
 	direction: 'up' | 'down';
@@ -16,7 +16,7 @@ const toggleOpened = () => {
 
 <template>
 	<MessageInputButton
-		class="flex flex-row items-center gap-2 w-max overflow-ellipsis" 
+		class="flex flex-row items-center gap-1 w-max overflow-ellipsis" 
 		@click="toggleOpened" 
 		aria-haspopup="listbox"
 		:aria-expanded="opened"
@@ -24,12 +24,12 @@ const toggleOpened = () => {
 		<slot></slot>
 
 		<template v-if="$props.direction === 'up'">
-			<BsChevronUp v-if="opened" class="w-4 h-full" />
-			<BsChevronDown v-else class="w-4 h-full" />
+			<BiChevronUp v-if="opened"  />
+			<BiChevronDown v-else  />
 		</template>
 		<template v-else>
-			<BsChevronDown v-if="opened" class="w-4 h-full" />
-			<BsChevronUp v-else class="w-4 h-full" />
+			<BiChevronDown v-if="opened" />
+			<BiChevronUp v-else />
 		</template>
 	</MessageInputButton>
 </template>

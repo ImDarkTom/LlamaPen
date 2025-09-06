@@ -1,6 +1,6 @@
 <script setup lang="ts">
 import { ref } from 'vue';
-import { BsChevronDown, BsChevronUp } from 'vue-icons-plus/bs';
+import { BiChevronDown, BiChevronUp } from 'vue-icons-plus/bi';
 
 defineProps<{
     title: string;
@@ -29,8 +29,8 @@ function formatValue(value: unknown | null) {
         <div class="flex flex-row items-center justify-center w-full cursor-pointer bg-surface hover:bg-surface-light hover:text-text p-2 rounded-lg gap-2"
             @click="showingFull = !showingFull">
             <span class="text-lg md:text-2xl w-full select-none">{{ title }}</span>
-            <BsChevronUp class="h-full w-8 p-1" v-if="showingFull" />
-            <BsChevronDown class="h-full w-8 p-1" v-else />
+            <BiChevronUp class="h-full w-8 p-1" v-if="showingFull" />
+            <BiChevronDown class="h-full w-8 p-1" v-else />
         </div>
 
         <div v-if="showingFull" class="p-2 flex flex-col gap-2">

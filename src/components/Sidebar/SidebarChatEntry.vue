@@ -4,8 +4,8 @@ import { useRouter } from 'vue-router';
 import useChatsStore from '@/stores/chatsStore';
 import SidebarEntry from './SidebarEntry.vue';
 import { getDateTimeString } from '@/utils/core/getDateTimeString';
-import { BsChatLeft } from 'vue-icons-plus/bs';
 import useMessagesStore from '@/stores/messagesStore';
+import { BiChat } from 'vue-icons-plus/bi';
 
 const chatsStore = useChatsStore();
 const messagesStore = useMessagesStore();
@@ -81,7 +81,7 @@ function setPinned(value: boolean) {
 <template>
     <SidebarEntry 
         ref="entryRef"
-        :icon="BsChatLeft"
+        :icon="BiChat"
         type="chat"
         :id="props.chat.id"
         :title="props.chat.title"

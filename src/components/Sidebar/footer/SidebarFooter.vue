@@ -1,8 +1,6 @@
 <script setup lang="ts">
 import StatusText from './StatusText.vue';
-import { BiHelpCircle } from 'vue-icons-plus/bi';
-import { AiFillGithub } from 'vue-icons-plus/ai';
-import { IoSettingsOutline } from 'vue-icons-plus/io';
+import { BiCog, BiHelpCircle, BiLogoGithub } from 'vue-icons-plus/bi';
 import SidebarRouterLink from '../SidebarRouterLink.vue';
 import useUserStore from '@/stores/user';
 import { useConfigStore } from '@/stores/config';
@@ -33,10 +31,10 @@ const buttonClasses = 'w-full border-none p-1.5 m-0 box-border rounded-lg h-8 bg
                 <BiHelpCircle :class="buttonClasses" />
             </SidebarRouterLink>
             <a href="https://github.com/ImDarkTom/LlamaPen" target="_blank" class="grow">
-                <AiFillGithub :class="buttonClasses" />
+                <BiLogoGithub :class="buttonClasses" />
             </a>
             <SidebarRouterLink to="/settings" class="grow">
-                <IoSettingsOutline :class="buttonClasses" />
+                <BiCog :class="buttonClasses" />
             </SidebarRouterLink>
         </div>
     </div>

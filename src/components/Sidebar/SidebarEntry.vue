@@ -1,9 +1,8 @@
 <script setup lang="ts">
 import { computed, ref } from 'vue';
-import { AiOutlineClose } from 'vue-icons-plus/ai';
-import { BsFillPinAngleFill, BsPinAngle } from 'vue-icons-plus/bs';
 import SidebarRouterLink from './SidebarRouterLink.vue';
 import type { IconType } from 'vue-icons-plus';
+import { BiPin, BiSolidPin, BiX } from 'vue-icons-plus/bi';
 
 const hoveringOverIcon = ref<boolean>(false);
 const entryTextRef = ref<HTMLInputElement | null>(null);
@@ -52,9 +51,9 @@ defineExpose({
             <div class="box-content aspect-square" @mouseenter="hoveringOverIcon = true"
                 @mouseleave="hoveringOverIcon = false">
                 <template v-if="hoveringOverIcon || pinned">
-                    <BsFillPinAngleFill v-if="pinned" class="box-border p-0.5 text-primary"
+                    <BiSolidPin v-if="pinned" class="box-border p-0.5 text-primary"
                         @mousedown="setPinned(false)" />
-                    <BsPinAngle v-else class="box-border p-0.5" @mousedown="setPinned(true)" />
+                    <BiPin v-else class="box-border p-0.5" @mousedown="setPinned(true)" />
                 </template>
                 <component :is="icon" v-else class="box-border p-0.5" />
             </div>
@@ -69,7 +68,7 @@ defineExpose({
             <div 
                 class="hidden group-hover:block hover:text-danger transition-colors duration-dynamic ease-in-out" 
                 @click="deleteEntry">
-                <AiOutlineClose/>
+                <BiX />
             </div>
         </div>
     </SidebarRouterLink>

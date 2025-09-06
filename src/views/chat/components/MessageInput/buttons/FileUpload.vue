@@ -3,8 +3,8 @@ import { useModelList } from '@/composables/useModelList';
 import { useConfigStore } from '@/stores/config';
 import useUserStore from '@/stores/user';
 import { computed } from 'vue';
-import { MdOutlineAddPhotoAlternate } from 'vue-icons-plus/md';
 import MessageInputButton from './MessageInputButton.vue';
+import { BiImageAdd } from 'vue-icons-plus/bi';
 
 const userStore = useUserStore();
 const config = useConfigStore();
@@ -50,7 +50,7 @@ function onClick(e: MouseEvent) {
             for="file-upload" 
             class="cursor-pointer size-full flex items-center justify-center"
         >
-            <MdOutlineAddPhotoAlternate />
+            <BiImageAdd />
         </label>
         <input type="file" id="file-upload" class="hidden" accept="image/*" multiple @change="onChange" @click="onClick" />
     </MessageInputButton>

@@ -3,7 +3,6 @@ import { computed, onBeforeUnmount, onMounted, ref } from 'vue';
 import ModelSelect from '@/components/ModelSelect/ModelSelect.vue';
 import ActionButton from './ActionButton.vue';
 import ScrollToBottomButton from './ScrollToBottomButton.vue';
-import { AiFillCloseCircle } from 'vue-icons-plus/ai';
 import { emitter } from '@/lib/mitt';
 import useMessagesStore from '@/stores/messagesStore';
 import logger from '@/lib/logger';
@@ -14,6 +13,7 @@ import FileUpload from './buttons/FileUpload.vue';
 import ThinkingButton from './buttons/ThinkingButton.vue';
 import { useConfigStore } from '@/stores/config';
 import MessageOptions from './buttons/MessageOptions.vue';
+import { BiSolidXCircle } from 'vue-icons-plus/bi';
 
 const messagesStore = useMessagesStore();
 const chatsStore = useChatsStore();
@@ -180,7 +180,7 @@ function handlePastedImage(file: File) {
                     <img :src="createObjectUrl(file)"
                         class="ring-1 ring-primary rounded-lg h-full cursor-pointer hover:brightness-115 transition-color duration-dynamic"
                         @click="openInLightbox(file)" alt="User attached image" />
-                    <AiFillCloseCircle
+                    <BiSolidXCircle
                         class="absolute top-0 right-0 drop-shadow-sm drop-shadow-background hover:text-red-300 cursor-pointer transition-colors duration-dynamic"
                         @click="removeFileFromUploadList(file)" />
                 </div>

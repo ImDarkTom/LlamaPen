@@ -6,8 +6,8 @@ import TextDivider from '@/components/TextDivider/TextDivider.vue';
 import Tooltip from '@/components/Tooltip/Tooltip.vue';
 import { useModelList, type ModelInfoListItem } from '@/composables/useModelList';
 import { useConfigStore } from '@/stores/config';
-import { BiLinkExternal } from 'vue-icons-plus/bi';
-import { BsArrowLeft, BsDownload, BsEyeSlash } from 'vue-icons-plus/bs';
+import { BiDownload, BiLeftArrowAlt, BiLinkExternal } from 'vue-icons-plus/bi';
+import { BsEyeSlash } from 'vue-icons-plus/bs';
 
 const config = useConfigStore();
 const { connectedToOllama } = useModelList();
@@ -25,7 +25,7 @@ defineProps<{
             <div v-if="config.api.enabled" class="w-full h-full absolute top-0 left-0 bg-black/50"></div>
             <RouterLink to="/"
                 class="p-4 rounded-md flex flex-row items-center gap-2 font-semibold cursor-pointer hover:bg-surface! hover:text-text transition-colors duration-dynamic select-none">
-                <BsArrowLeft class="size-6" />
+                <BiLeftArrowAlt class="size-6" />
                 Back to Chat
             </RouterLink>
 
@@ -43,7 +43,7 @@ defineProps<{
                         class="w-full text-text-muted enabled:hover:text-text bg-surface enabled:hover:bg-surface-light py-6 rounded-lg enabled:cursor-pointer select-none flex flex-row justify-center items-center gap-2 disabled:opacity-75"
                         :class="{ 'bg-surface-light ring-2 ring-border ring-inset': isActive }"
                         :disabled="!connectedToOllama">
-                        <BsDownload />
+                        <BiDownload />
                         Download Manager
                     </button>
                 </RouterLink>

@@ -3,10 +3,8 @@ import ModelIcon from '@/components/Icon/ModelIcon.vue';
 import ollamaApi from '@/utils/ollama';
 import { computed, ref } from 'vue';
 import type { IconType } from 'vue-icons-plus';
-import { AiOutlineVerticalAlignMiddle } from 'vue-icons-plus/ai';
-import { BiBrain, BiLinkExternal } from 'vue-icons-plus/bi';
-import { BsCopy, BsEye, BsEyeSlash, BsFillTrash3Fill, BsPen, BsTools } from 'vue-icons-plus/bs';
-import { VscDebugContinue } from 'vue-icons-plus/vsc';
+import { BiBrain, BiCopy, BiLinkExternal, BiPencil, BiReflectVertical, BiSkipNext, BiTrash, BiWrench } from 'vue-icons-plus/bi';
+import { BsEye, BsEyeSlash } from 'vue-icons-plus/bs';
 import DOMPurify from 'dompurify';
 import Unknown from '@/icons/unknown.svg';
 import ollamaRequest from '@/utils/ollamaRequest';
@@ -140,11 +138,11 @@ function sanitizeSection(text: string | null) {
 }
 
 const capabilityIcons: Record<string, IconType> = {
-    'completion': VscDebugContinue,
-    'tools': BsTools,
+    'completion': BiSkipNext,
+    'tools': BiWrench,
     'thinking': BiBrain,
     'vision': BsEye,
-    'insert': AiOutlineVerticalAlignMiddle
+    'insert': BiReflectVertical
 };
 
 function getModelValue<T>(
@@ -218,7 +216,7 @@ const isHidden = computed(() => config.chat.hiddenModels.includes(props.modelFro
                 type="button"
                 color="primary"
                 text="Rename model"
-                :icon="BsPen"
+                :icon="BiPencil"
                 :single-line="true"
                 @click="renameModel" />
             <PrimaryButton
@@ -247,14 +245,14 @@ const isHidden = computed(() => config.chat.hiddenModels.includes(props.modelFro
             <PrimaryButton
                 type="button"
                 text="Copy/duplicate model"
-                :icon="BsCopy"
+                :icon="BiCopy"
                 :single-line="true"
                 @click="copyModel" />
             <PrimaryButton
                 type="button"
                 color="danger"
                 text="Delete model"
-                :icon="BsFillTrash3Fill"
+                :icon="BiTrash"
                 :single-line="true"
                 @click="deleteModel" />
         </div>

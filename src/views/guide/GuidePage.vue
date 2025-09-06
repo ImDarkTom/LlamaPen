@@ -4,7 +4,7 @@ import router from '@/lib/router';
 import setPageTitle from '@/utils/core/setPageTitle';
 import hljs from 'highlight.js';
 import { onBeforeUnmount, onMounted, ref } from 'vue';
-import { AiFillApple, AiFillWindows, AiOutlineLinux } from 'vue-icons-plus/ai';
+import { BiLogoApple, BiLogoTux, BiLogoWindows } from 'vue-icons-plus/bi';
 
 const originUrl = ref<string>(window.location.origin);
 
@@ -43,7 +43,7 @@ function handleEscape(e: KeyboardEvent) {
             <p class="mt-6">Below are guides on how to do that on set different operating systems:</p>
 
             <h3 class="text-2xl pb-2 pt-4 flex flex-row items-center">
-                <AiFillWindows />&nbsp;Windows
+                <BiLogoWindows />&nbsp;Windows
             </h3>
             <p>On Windows you can do this by running this command in <b>Command Prompt</b> or <b>PowerShell</b></p>
             <br>
@@ -65,8 +65,8 @@ function handleEscape(e: KeyboardEvent) {
             <p>After that, just open Ollama normally and you should be able to connect after refreshing this page.</p>
 
             <h3 class="text-2xl pb-2 pt-8 flex flex-row items-center">
-                <AiOutlineLinux />/
-                <AiFillApple />&nbsp;Linux/MacOS
+                <BiLogoTux />/
+                <BiLogoApple />&nbsp;Linux/MacOS
             </h3>
             <p>On linux or MacOS, you can run a similar command:</p>
             <br>

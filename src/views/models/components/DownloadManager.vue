@@ -5,9 +5,8 @@ import { streamChunks } from '@/utils/streamChunks';
 import { ref } from 'vue';
 import ViewerContainer from './ViewerContainer.vue';
 import ModelIcon from '@/components/Icon/ModelIcon.vue';
-import { BsCloudDownload } from 'vue-icons-plus/bs';
 import PrimaryButton from '@/components/Buttons/PrimaryButton.vue';
-import { ImCancelCircle } from 'vue-icons-plus/im';
+import { BiCloudDownload, BiStopCircle } from 'vue-icons-plus/bi';
 
 const emit = defineEmits<{
     refreshModelList: [];
@@ -100,7 +99,7 @@ function cancelDownload(model: string) {
                 type="submit"
                 class="bg-primary hover:bg-secondary transition-all duration-dynamic hover:duration-0 text-background p-4 rounded-md text-lg w-fit cursor-pointer" >
                 <span class="whitespace-normal md:whitespace-nowrap">
-                    <BsCloudDownload class="inline mr-2 align-middle" /> 
+                    <BiCloudDownload class="inline mr-2 align-middle" /> 
                     <span class="align-middle">Start Download</span>
                 </span>
             </button>
@@ -137,7 +136,7 @@ function cancelDownload(model: string) {
                         class="bg-background w-full h-8 rounded-md"
                         :max="status.total" 
                         :value="status.completed">32%</progress>
-                    <PrimaryButton text="Cancel " :icon="ImCancelCircle" @click="cancelDownload(modelName)" />
+                    <PrimaryButton text="Cancel" :icon="BiStopCircle" @click="cancelDownload(modelName)" />
                 </div>
             </div>
         </div>
