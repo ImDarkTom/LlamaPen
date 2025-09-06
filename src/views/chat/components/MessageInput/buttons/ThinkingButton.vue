@@ -51,7 +51,7 @@ function toggleCheck(e: Event) {
     <MessageInputButton
         :class="{ 
             'bg-primary ring-background! text-background!': modelValue,
-            'opacity-50': !selectedModelCanThink || selectedAlwaysReasons,
+            'opacity-50': selectedAlwaysReasons || loading,
             'hidden': (config.ui.messageInput.hideUnusedButtons && !selectedModelCanThink) && !loading
         }"
         :title="buttonHoverText"
