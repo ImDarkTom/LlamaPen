@@ -40,6 +40,11 @@
     .slider:hover::-moz-range-thumb {
         @apply bg-text-muted;
     }
+
+    progress::-webkit-progress-value,
+    progress::-moz-progress-bar {
+        @apply bg-secondary;
+    }
 }
 
 @layer base {

@@ -9,6 +9,7 @@ import ModelList from './components/ModelList.vue';
 import { tryCatch } from '@/utils/core/tryCatch';
 import ViewerContainer from './components/ViewerContainer.vue';
 import { useModelList } from '@/composables/useModelList';
+import DownloadManager from './components/DownloadManager.vue';
 
 const config = useConfigStore();
 
@@ -38,6 +39,8 @@ onMounted(async () => {
 
     if (!modelFromParams.value) {
         selectedModel.value = { state: 'unselected' };
+    } else if(modelFromParams.value === 'downloads') {
+        return
     } else {
         setModelViewInfo(modelFromParams.value);
     }
@@ -48,6 +51,8 @@ watch(router.currentRoute, () => {
 
     if (!modelFromParams.value) {
         selectedModel.value = { state: 'unselected' };
+    } else if (modelFromParams.value === 'downloads') {
+        return;
     } else {
         setModelViewInfo(modelFromParams.value);
     }
@@ -91,21 +96,17 @@ async function setModelViewInfo(modelId: string) {
     <div class="w-full h-full flex flex-col md:flex-row gap-2 p-2 box-border overflow-y-auto"
         :class="{ 'pt-14 md:pt-2 md:pl-14': !config.showSidebar }">
         <ModelList
-            :modelsList
+            :modelsList 
             @refresh-model-list="refreshModelList" />
-        
-        <ViewerContainer
-            v-if="selectedModel.state === 'unselected'"
+
+        <ViewerContainer 
+            v-if="selectedModel.state === 'unselected' && modelFromParams !== 'downloads'" 
             class="flex items-center justify-center text-xl" >
             {{ config.api.enabled ?
                 'Model management is only available without API mode.' :
                 'Select a model to view its details, or download a new model.' }}
         </ViewerContainer>
-
-        <ModelViewer 
-            v-else
-            :modelFromParams
-            :selectedModel
-            @refresh-model-list="refreshModelList" />
+        <DownloadManager v-else-if="modelFromParams === 'downloads'" @refresh-model-list="refreshModelList" />
+        <ModelViewer v-else :modelFromParams :selectedModel @refresh-model-list="refreshModelList" />
     </div>
 </template>
