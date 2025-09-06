@@ -44,7 +44,7 @@ const buttonIcon = computed(() => {
         return ImCancelCircle;
     }
 
-    if (config.ui.sendButtonAltIcon) {
+    if (config.ui.messageInput.sendButtonAltIcon) {
         return BiSolidSend;
     } else {
         return BiUpArrowAlt;
@@ -55,5 +55,5 @@ const buttonIcon = computed(() => {
 <template>
     <component :is="buttonIcon"
         class="bg-primary text-background size-10 shrink-0 pointer-coarse:size-12 box-border p-1.5 pointer-coarse:p-2 rounded-lg cursor-pointer"
-        :class="{ 'opacity-40 !cursor-default': !canGenerate && !isChatGenerating, 'p-2 pointer-coarse:p-3': config.ui.sendButtonAltIcon }" @click="handleClick" />
+        :class="{ 'opacity-40 !cursor-default': !canGenerate && !isChatGenerating, 'p-2 pointer-coarse:p-3': config.ui.messageInput.sendButtonAltIcon }" @click="handleClick" />
 </template>
