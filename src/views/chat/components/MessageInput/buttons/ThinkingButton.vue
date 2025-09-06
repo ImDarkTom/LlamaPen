@@ -3,8 +3,10 @@ import { useModelList } from '@/composables/useModelList';
 import { computed, watch } from 'vue';
 import { BiBrain } from 'vue-icons-plus/bi';
 import MessageInputButton from './MessageInputButton.vue';
+import { useConfigStore } from '@/stores/config';
 
-const { selectedModelCapabilities, selectedModelInfo } = useModelList();
+const { selectedModelCapabilities, selectedModelInfo, loading } = useModelList();
+const config = useConfigStore();
 
 defineProps(['modelValue']);
 const emits = defineEmits(['update:modelValue']);
@@ -49,7 +51,8 @@ function toggleCheck(e: Event) {
     <MessageInputButton
         :class="{ 
             'bg-primary ring-background! text-background!': modelValue,
-            'opacity-50': !selectedModelCanThink || selectedAlwaysReasons
+            'opacity-50': !selectedModelCanThink || selectedAlwaysReasons,
+            'hidden': (config.ui.messageInput.hideUnusedButtons && !selectedModelCanThink) && !loading
         }"
         :title="buttonHoverText"
     >

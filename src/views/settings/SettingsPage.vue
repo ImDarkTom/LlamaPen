@@ -206,9 +206,14 @@ async function checkOllamaVersion() {
                 @update:model-value="config.loadScrollbarSetting()"
             />
             <ToggleSetting 
-                v-model="config.ui.sendButtonAltIcon" 
+                v-model="config.ui.messageInput.sendButtonAltIcon" 
                 label="Alternate send button icon" 
                 tooltip="Use a paper-plane icon instead of an up arrow. (Default: Disabled)"
+            />
+            <ToggleSetting 
+                v-model="config.ui.messageInput.hideUnusedButtons" 
+                label="Hide unused message input buttons" 
+                tooltip="Hide buttons that rely on specific capabilities when the current model doesn't support them, such as the 'Think' button. (Default: Enabled)"
             />
             <div class="flex flex-col gap-2 w-full">
                 <OptionText label="Animation Duration" tooltip="The length of animations/transitions throughout the UI. (Default: 125ms)" />

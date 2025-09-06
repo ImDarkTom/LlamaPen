@@ -2,7 +2,7 @@
 import Dropdown from '@/components/Dropdown/Dropdown.vue';
 import MessageOption from './MessageOption.vue';
 import { useConfigStore } from '@/stores/config';
-import { GrConfigure } from 'vue-icons-plus/gr';
+import { BsSliders } from 'vue-icons-plus/bs';
 
 const config = useConfigStore();
 
@@ -21,10 +21,10 @@ const tooltips = {
 </script>
 
 <template>
-    <Dropdown direction="up">
+    <Dropdown direction="up" title="Configure generation parameters">
         <template #button>
             <div>
-                <GrConfigure class="p-1" />
+                <BsSliders class="p-1" />
             </div>
         </template>
         <template #menu>

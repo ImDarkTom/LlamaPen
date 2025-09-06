@@ -28,7 +28,10 @@ interface Config {
         },
         theme: string;
         nativeScrollbar: boolean;
-        sendButtonAltIcon: boolean; // Use paper plane icon instead of up arrow
+        messageInput: {
+            sendButtonAltIcon: boolean; // Use paper plane icon instead of up arrow
+            hideUnusedButtons: boolean;
+        }
     },
     api: {
         enabled: boolean,
@@ -101,7 +104,10 @@ export const useConfigStore = defineStore('config', {
             },
             theme: 'auto',
             nativeScrollbar: false,
-            sendButtonAltIcon: false,
+            messageInput: {
+                sendButtonAltIcon: false,
+                hideUnusedButtons: true
+            }
         },
         api: {
             enabled: false,
