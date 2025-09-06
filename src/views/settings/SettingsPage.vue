@@ -194,8 +194,8 @@ async function checkOllamaVersion() {
             <SelectionSetting 
                 v-model="config.ui.theme" 
                 label="Theme" 
-                :items="['auto', 'dark', 'light', 'mono-dark', 'mono-light']" 
-                :itemNames="['System default', 'Dark', 'Light', 'Plain Dark', 'Plain Light']"
+                :items="['auto', 'dark', 'light', 'mono-dark', 'mono-light', 'amoled']" 
+                :itemNames="['System default', 'Dark', 'Light', 'Plain Dark', 'Plain Light', 'AMOLED']"
                 @update:model-value="config.loadTheme()" 
                 tooltip="The theme for the app. (Default: System default (dark/light))"
             />

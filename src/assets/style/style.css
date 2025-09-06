@@ -104,6 +104,25 @@
         --color-success: oklch(0.5 0.05 160);
         --color-info: oklch(0.5 0.05 260);
     }
+
+    html[theme='amoled'] {
+        --color-background-dark: oklch(0 0.005 266);
+        --color-background: oklch(0.1 0.005 266);
+        --color-background-light: oklch(0.15 0.005 266);
+        --color-surface: oklch(0.2 0.005 266);
+        --color-surface-light: oklch(0.23 0.005 266);
+        --color-text: oklch(0.96 0.01 266);
+        --color-text-muted: oklch(0.76 0.01 266);
+        --color-highlight: oklch(0.5 0.01 266);
+        --color-border: oklch(0.4 0.01 266);
+        --color-border-muted: oklch(0.3 0.01 266);
+        --color-primary: oklch(0.76 0.1 266);
+        --color-secondary: oklch(0.76 0.1 86);
+        --color-danger: oklch(0.7 0.05 30);
+        --color-warning: oklch(0.7 0.05 100);
+        --color-success: oklch(0.7 0.05 160);
+        --color-info: oklch(0.7 0.05 260);
+    }
 }
 
 @theme {
