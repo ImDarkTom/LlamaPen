@@ -1,6 +1,5 @@
 <script setup lang="ts">
-import { ImCancelCircle } from 'vue-icons-plus/im';
-import { BiSolidSend, BiUpArrowAlt } from 'vue-icons-plus/bi';
+import { BiSolidSend, BiStop, BiUpArrowAlt } from 'vue-icons-plus/bi';
 import { computed } from 'vue';
 import useMessagesStore from '@/stores/messagesStore';
 import { emitter } from '@/lib/mitt';
@@ -41,7 +40,7 @@ function handleClick() {
 
 const buttonIcon = computed(() => {
     if (isChatGenerating.value) {
-        return ImCancelCircle;
+        return BiStop;
     }
 
     if (config.ui.messageInput.sendButtonAltIcon) {
@@ -53,7 +52,12 @@ const buttonIcon = computed(() => {
 </script>
 
 <template>
-    <component :is="buttonIcon"
-        class="bg-primary text-background size-10 shrink-0 pointer-coarse:size-12 box-border p-1.5 pointer-coarse:p-2 rounded-lg cursor-pointer"
-        :class="{ 'opacity-40 !cursor-default': !canGenerate && !isChatGenerating, 'p-2 pointer-coarse:p-3': config.ui.messageInput.sendButtonAltIcon }" @click="handleClick" />
+    <component 
+        :is="buttonIcon"
+        class="bg-primary text-background size-10 shrink-0 box-border p-1.5 pointer-coarse:p-2 rounded-lg cursor-pointer"
+        :class="{ 
+            'opacity-40 !cursor-default': !canGenerate && !isChatGenerating, 
+            'p-2': config.ui.messageInput.sendButtonAltIcon
+        }"
+        @click="handleClick" />
 </template>
