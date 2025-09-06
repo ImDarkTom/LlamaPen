@@ -132,7 +132,7 @@ const useMessagesStore = defineStore('messages', () => {
 	}
 
 
-	async function editMessage(id: number, content: string, generateResponse: boolean) {
+	async function editMessage(id: number, content: string, messageType: ChatMessage['type'], continueIfModel?: boolean) {
 		if (content.length === 0) return;
 
 		logger.info('Messages Store', 'Editing message', id, content);
@@ -155,8 +155,10 @@ const useMessagesStore = defineStore('messages', () => {
 
 		logger.info('Messages Store', 'Deleted messages after edited message', id);
 
-		if (generateResponse) {
+		if (messageType === 'user') {
 			getOllamaResponse();
+		} else if (continueIfModel) {
+			getOllamaResponse({ messageIdOverride: id });
 		}
 	}
 
@@ -273,7 +275,10 @@ const useMessagesStore = defineStore('messages', () => {
 	 * 
 	 * @param modelOverride Optional model to override the current selected model.
 	 */
-	async function getOllamaResponse(modelOverride?: string) {
+	async function getOllamaResponse(options?: {
+		modelOverride?: string
+		messageIdOverride?: number
+	}) {
 		const messageSaveInterval = useConfigStore().chat.tokenSaveInterval;
 
 		// Helpers
@@ -297,10 +302,10 @@ const useMessagesStore = defineStore('messages', () => {
 		}
 		const chatId = openedChatId.value;
 
-		const selectedModel = getSelectedModel(modelOverride);
+		const selectedModel = getSelectedModel(options?.modelOverride);
 
-		// 2. Add a blank model message to the chat to put the response in.
-		const ollamaMessageId = await addModelMessageToChat(selectedModel, chatId);
+		// 2. Add a blank model message to the chat to put the response in or get the overridden one.
+		const ollamaMessageId = options?.messageIdOverride ?? await addModelMessageToChat(selectedModel, chatId);
 		// Update the chat's lastestMessageDate to now.
 		await db.chats.update(chatId, { lastestMessageDate: new Date() });
 
@@ -318,6 +323,18 @@ const useMessagesStore = defineStore('messages', () => {
 
 		let generatedContent = "";
 		let generatedThoughts = "";
+
+		if (options?.messageIdOverride) {
+			const message = await db.messages.get(options.messageIdOverride);
+
+			if (!message) {
+				throw new Error('Failed to get message with id when editing model message + continuing.');
+			}
+
+			generatedContent = message.content;
+			generatedThoughts = (message as ModelChatMessage).thinking ?? '';
+		}
+
 		let isGenerating = false;
 		let messageSaveCounter = 0;
 		for await (const chunk of ollamaApi.chat(chatMessageList, abortController.signal, selectedModel)) {
@@ -405,7 +422,7 @@ const useMessagesStore = defineStore('messages', () => {
 		logger.info('Messages Store', 'Deleted messages after message to be regenerated', id);
 
 		const modelToUse = model === '' ? undefined : model;
-		getOllamaResponse(modelToUse);
+		getOllamaResponse({ modelOverride: modelToUse });
 	}
 
 	/**

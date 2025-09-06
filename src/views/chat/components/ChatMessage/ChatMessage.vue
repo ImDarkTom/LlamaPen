@@ -59,8 +59,13 @@ function cancelEditing() {
 function finishEdit(newText: string) {
     editing.value = false;
 
-    console.log(props.message.type);
-    messagesStore.editMessage(props.message.id, newText, props.message.type === 'user');
+    messagesStore.editMessage(props.message.id, newText, props.message.type, false);
+}
+
+function finishAndContinue(newText: string) {
+    editing.value = false;
+
+    messagesStore.editMessage(props.message.id, newText, props.message.type, true);
 }
 
 // Rendering
@@ -96,7 +101,8 @@ function renderText(text: string) {
                 ref="messageEditorRef" 
                 :message
                 @onCancelEdit="cancelEditing" 
-                @onFinishEditing="finishEdit" />
+                @onFinishEditing="finishEdit"
+                @onFinishAndContinue="finishAndContinue" />
 
             <div class="relative" v-else>
                 <article 

@@ -5,7 +5,7 @@ defineProps<{
     message: ChatMessage
 }>();
 
-const emit = defineEmits(['onFinishEditing', 'onCancelEdit']);
+const emit = defineEmits(['onFinishEditing', 'onCancelEdit', 'onFinishAndContinue']);
 
 const editorRef = ref<HTMLTextAreaElement | null>(null);
 
@@ -25,6 +25,10 @@ function onKeyUp(e: KeyboardEvent) {
 
 function submit() {
     emit('onFinishEditing', editorRef.value?.value)
+}
+
+function finishAndContinue() {
+    emit('onFinishAndContinue', editorRef.value?.value);
 }
 
 function focusEditor() {
@@ -51,11 +55,18 @@ defineExpose({
                 @click="emit('onCancelEdit')">
                 Cancel
             </button>
+            <button 
+                v-if="message.type === 'model'"
+                class="bg-highlight text-background-dark p-2 rounded-lg cursor-pointer"
+                @click="finishAndContinue">
+                Continue
+            </button>
             <button
                 type="submit"
                 class="bg-primary text-background-dark p-2 rounded-lg cursor-pointer">
-                {{ message.type === 'user' ? 'Send' : 'Edit' }}
+                {{ message.type === 'user' ? 'Send' : 'Finish' }}
             </button>
+
         </div>
     </form>
     <div class="text-center md:text-start text-sm pt-1">
