@@ -2,6 +2,7 @@
 import PrimaryButton from '@/components/Buttons/PrimaryButton.vue';
 import MemoryLoadIcon from '@/components/Icon/MemoryLoadIcon.vue';
 import ModelIcon from '@/components/Icon/ModelIcon.vue';
+import TextDivider from '@/components/TextDivider/TextDivider.vue';
 import Tooltip from '@/components/Tooltip/Tooltip.vue';
 import { useModelList, type ModelInfoListItem } from '@/composables/useModelList';
 import { useConfigStore } from '@/stores/config';
@@ -28,7 +29,7 @@ defineProps<{
                 Back to Chat
             </RouterLink>
 
-            <div class="h-[1px] w-full bg-border"></div>
+            <TextDivider text="Download" />
 
             <div class="flex flex-col gap-2 overflow-y-auto">
                 <PrimaryButton 
@@ -47,7 +48,7 @@ defineProps<{
                     </button>
                 </RouterLink>
 
-                <div class="h-[1px] w-full bg-border"></div>
+                <TextDivider text="Models" />
 
                 <div v-if="!connectedToOllama">
                     Not connected to Ollama
