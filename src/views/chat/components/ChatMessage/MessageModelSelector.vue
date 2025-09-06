@@ -6,9 +6,9 @@ import logger from '@/lib/logger';
 import useMessagesStore from '@/stores/messagesStore';
 import { computed } from '@vue/reactivity';
 import { ref } from 'vue';
-import { AiOutlineSwap } from 'vue-icons-plus/ai';
-import { BsCloudSlash, BsExclamationTriangle } from 'vue-icons-plus/bs';
+import { BsCloudSlash } from 'vue-icons-plus/bs';
 import MessageModelSelectorItem from './MessageModelSelectorItem.vue';
+import { BiError, BiRefresh } from 'vue-icons-plus/bi';
 
 const props = defineProps<{
     modelMessageDone: boolean;
@@ -76,7 +76,7 @@ const warningText = computed(() => {
             :text=warningText
             size="small">
             <BsCloudSlash v-if="messageModelIsApi" class="text-warning size-5 ml-1 translate-y-0.5" />
-            <BsExclamationTriangle v-else class="text-warning ml-1" />
+            <BiError v-else class="text-warning ml-1" />
         </Tooltip>
         
         <div 
@@ -89,7 +89,7 @@ const warningText = computed(() => {
                 {{ messageModelInfo.exists ? messageModelInfo.data.displayName : message.model }}
             </span>
             <Tooltip text="Regenerate" :disabled="!modelMessageDone">
-                <AiOutlineSwap v-if="modelMessageDone"
+                <BiRefresh v-if="modelMessageDone"
                     class="p-1 size-8 opacity-35 group-hover/msg-model:opacity-100 transition-opacity duration-dynamic" />
             </Tooltip>
         </div>
