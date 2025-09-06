@@ -2,6 +2,7 @@
 import { storeToRefs } from 'pinia';
 import SidebarChatEntry from './SidebarChatEntry.vue';
 import useChatsStore from '@/stores/chatsStore';
+import TextDivider from '../TextDivider/TextDivider.vue';
 
 const chatsStore = useChatsStore();
 const { pinnedChats, hasPinnedChats, unpinnedChatsByRecent } = storeToRefs(chatsStore);
@@ -9,12 +10,16 @@ const { pinnedChats, hasPinnedChats, unpinnedChatsByRecent } = storeToRefs(chats
 
 <template>
 	<div class="grow overflow-y-auto">
+		<TextDivider
+			v-if="hasPinnedChats"
+			text="Pinned" />
 		<div class="grow" role="list" aria-labelledby="pinnedChatsSection">
 			<h3 id="pinnedChatsSection" class="sr-only">Pinned Chats</h3>
 			<SidebarChatEntry v-for="chat of pinnedChats" :key="chat.id" :chat="chat" />
 		</div>
 
-		<div v-if="hasPinnedChats" class="w-full h-[1px] bg-border-muted" role="separator"></div>
+		<TextDivider 
+			text="Chats" />
 
 		<div class="grow" role="list" aria-labelledby="unpinnedChatsSection">
 			<h3 id="unpinnedChatsSection" class="sr-only">Unpinned Chats</h3>
