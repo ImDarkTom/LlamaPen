@@ -79,7 +79,7 @@ function renderText(text: string) {
 </script>
 
 <template>
-    <div class="group/message m-2 flex flex-col">
+    <div class="group/message m-2 mb-0 flex flex-col">
         <div class="box-border p-4 flex flex-col" :class="{
             'ml-auto rounded-2xl bg-background-light max-w-[70%] shadow-md shadow-background-dark/50': isUserMessage && !editing,
             'w-full max-w-[calc(100dvw-1rem)] box-border !p-2 !m-0': isModelMessage || editing
@@ -122,6 +122,14 @@ function renderText(text: string) {
                 </span>
             </div>
         </div>
-        <MessageInteractions v-if="!editing" :message="message" :done="modelMessageDone" @editMessage="editMessage" />
+        <MessageInteractions
+            class="transition-opacity duration-dynamic hover:duration-0"
+            :class="{
+                'group-hover/message:opacity-100 md:opacity-0': message.type === 'user'
+            }"
+            v-if="!editing" 
+            :message 
+            :done="modelMessageDone" 
+            @editMessage="editMessage" />
     </div>
 </template>

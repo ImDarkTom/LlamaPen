@@ -43,7 +43,7 @@ function openInfo() {
 <template>
     <div class="flex flex-row gap-2 pt-1"
         :class="{ 'justify-end': message.type === 'user', 'justify-start': message.type !== 'user' }">
-        <MessageInteractionButton v-if="done" :text="copyTooltipText">
+        <MessageInteractionButton v-if="done || message.type === 'user'" :text="copyTooltipText">
             <BsCopy class="size-full" title="Copy Text" @click="copyMessage" />
         </MessageInteractionButton>
         <MessageInteractionButton v-if="message.type === 'user'" text="Edit">

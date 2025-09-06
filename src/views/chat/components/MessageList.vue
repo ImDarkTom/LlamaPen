@@ -50,7 +50,7 @@ onMounted(() => {
             .then(title => setPageTitle(`${title} | Chat`));
     }
 
-    emitter.on('scrollToBottom', scrollToBottom);
+    emitter.on('scrollToBottom', (args) => scrollToBottom(args));
     emitter.on('openChat', (id) => openChat(id))
 
     nextTick(() => {
@@ -76,13 +76,14 @@ function scrollToBottom(event: { force?: boolean } | undefined) {
         return;
     }
 
-    if (event?.force || uiStore.chat.isScrollingDown) {
+    if ((event && event.force) || uiStore.chat.isScrollingDown) {
         const scrollPosition = messageListRef.value.scrollHeight;
         const scrollHeight = messageListRef.value.scrollHeight;
 
-        if (scrollPosition === scrollHeight) {
-            return;
-        }
+        // if (scrollPosition === scrollHeight) {
+        //     return;
+        // }
+        // ^ this breaks scrolling
 
         logger.info('Message List Component', 'Scrolling to bottom', scrollPosition, scrollHeight);
 
@@ -111,7 +112,11 @@ function handleScroll(_e: Event) {
         class="w-dvw sm:w-dvw md:w-auto flex justify-center overflow-y-auto overflow-x-hidden flex-1" ref="messageListRef"
         @scroll="handleScroll">
         <div class="flex flex-col grow max-w-[48rem]">
-            <ChatMessage v-for="message of openedChatMessages" :key="message.id" :message="message" />
+            <ChatMessage 
+                v-for="message of openedChatMessages"
+                class="last:pb-32"
+                :message
+                :key="message.id" />
         </div>
     </div>
     <GreetingText v-else />
