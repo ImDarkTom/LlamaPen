@@ -2,7 +2,7 @@
 import { onBeforeUnmount, onMounted, ref } from 'vue';
 
 defineProps<{
-    messageText: string,
+    message: ChatMessage
 }>();
 
 const emit = defineEmits(['onFinishEditing', 'onCancelEdit']);
@@ -42,7 +42,7 @@ defineExpose({
         @submit.prevent="submit" > 
         <textarea 
             class="border-none outline-none p-4 resize-y w-full" 
-            :value="messageText" 
+            :value="message.content" 
             ref="editorRef" 
             @keyup="onKeyUp"></textarea>
         <div class="min-w-full flex flex-row gap-2 justify-end p-2 font-medium">
@@ -54,7 +54,7 @@ defineExpose({
             <button
                 type="submit"
                 class="bg-primary text-background-dark p-2 rounded-lg cursor-pointer">
-                Send
+                {{ message.type === 'user' ? 'Send' : 'Edit' }}
             </button>
         </div>
     </form>

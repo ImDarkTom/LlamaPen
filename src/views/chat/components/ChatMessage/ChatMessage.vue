@@ -5,14 +5,12 @@ import { emitter } from '@/lib/mitt';
 import useMessagesStore from '@/stores/messagesStore';
 
 import { nanoid } from 'nanoid';
-import ModelIcon from '@/components/Icon/ModelIcon.vue';
-import { BiTimeFive } from 'vue-icons-plus/bi';
 import { renderMarkdown } from '@/lib/marked';
 import { getMessageAttachmentBlobs } from '@/utils/core/getMessageAttachments';
 import ThinkBlock from './ThinkBlock.vue';
 import MessageInteractions from './MessageInteractions.vue';
-import MessageModelSelector from './MessageModelSelector.vue';
 import MessageEditor from '../MessageEditor.vue';
+import ModelMessageHeader from './ModelMessage/ModelMessageHeader.vue';
 
 const messagesStore = useMessagesStore();
 
@@ -61,7 +59,8 @@ function cancelEditing() {
 function finishEdit(newText: string) {
     editing.value = false;
 
-    messagesStore.editMessage(props.message.id, newText);
+    console.log(props.message.type);
+    messagesStore.editMessage(props.message.id, newText, props.message.type === 'user');
 }
 
 // Rendering
@@ -84,24 +83,7 @@ function renderText(text: string) {
             'ml-auto rounded-2xl bg-background-light max-w-[70%] shadow-md shadow-background-dark/50': isUserMessage && !editing,
             'w-full max-w-[calc(100dvw-1rem)] box-border !p-2 !pb-1 !m-0': isModelMessage || editing
         }">
-            <div 
-                v-if="message.type === 'model'" 
-                class="group/msg-header flex flex-row items-center gap-2 mb-2" >
-                <ModelIcon 
-                    class="size-10 p-2 bg-border-muted rounded-full ring-1 ring-border" 
-                    :name="message.model" 
-                    :ignore-styling="true" />
-
-                <MessageModelSelector
-                    :modelMessageDone
-                    :message />
-
-                <div class="grow"></div>
-
-                <div class="hidden md:block items-center opacity-0 group-hover/msg-header:opacity-100 transition-opacity duration-dynamic group-hover/msg-header:duration-0">
-                    <BiTimeFive class="inline mr-1" /><span class="items-center">{{ message.created.toLocaleString() }}</span>
-                </div>
-            </div>
+            <ModelMessageHeader v-if="message.type === 'model'" :message :modelMessageDone />
             <img 
                 v-for="image of images" 
                 :key="image.id" 
@@ -112,7 +94,7 @@ function renderText(text: string) {
             <MessageEditor 
                 v-if="editing" 
                 ref="messageEditorRef" 
-                :messageText="message.content"
+                :message
                 @onCancelEdit="cancelEditing" 
                 @onFinishEditing="finishEdit" />
 

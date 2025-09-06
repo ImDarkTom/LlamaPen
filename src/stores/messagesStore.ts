@@ -132,7 +132,7 @@ const useMessagesStore = defineStore('messages', () => {
 	}
 
 
-	async function editMessage(id: number, content: string) {
+	async function editMessage(id: number, content: string, generateResponse: boolean) {
 		if (content.length === 0) return;
 
 		logger.info('Messages Store', 'Editing message', id, content);
@@ -155,7 +155,20 @@ const useMessagesStore = defineStore('messages', () => {
 
 		logger.info('Messages Store', 'Deleted messages after edited message', id);
 
-		getOllamaResponse();
+		if (generateResponse) {
+			getOllamaResponse();
+		}
+	}
+
+	async function deleteMessage(id: number) {
+		await db.messages.delete(id);
+
+		await db.attachments
+			.where('messageId')
+			.equals(id)
+			.delete();
+
+		logger.info('Messages Store', 'Deleted message with ID', id);
 	}
 
 
@@ -412,6 +425,7 @@ const useMessagesStore = defineStore('messages', () => {
 		editMessage,
 		regenerateMessage,
 		clearAllMessages,
+		deleteMessage
 	};
 });
 
