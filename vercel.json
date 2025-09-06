@@ -1,5 +1,10 @@
 {
     "$schema": "https://openapi.vercel.sh/vercel.json",
-    "rewrites": [{"source": "/(.*)", "destination": "/"}],
+    "rewrites": [
+        {
+            "source": "/((?!.*\\..*).*)",
+            "destination": "/"
+        }
+    ],
     "trailingSlash": false
 }
