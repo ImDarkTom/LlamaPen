@@ -28,6 +28,12 @@ interface ModelChatMessage extends BaseChatMessage {
 	model: string;
 	thinking?: string;
 	status: ModelMessageStatus;
+	toolCalls?: {
+		function: {
+			name: string;
+			arguments: Record<string, string | number | boolean>,
+		}
+	}[];
 }
 
 type ModelMessageStatus = 'waiting' | 'generating' | 'finished' | 'cancelled';

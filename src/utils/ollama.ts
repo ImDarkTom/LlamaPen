@@ -6,6 +6,7 @@ import type { ReadableOf } from '@/types/util';
 import logger from '../lib/logger';
 import ollamaRequest from './ollamaRequest';
 import db from '@/lib/db';
+import useToolsStore from '@/stores/toolsStore';
 
 const chatTitleExamples = `\nExamples of titles:\n📉 Stock Market Trends\n🍪 Perfect Chocolate Chip Recipe\nEvolution of Music Streaming\nRemote Work Productivity Tips\nArtificial Intelligence in Healthcare\n🎮 Video Game Development Insights`;
 
@@ -144,10 +145,44 @@ class OllamaAPI {
 		});
 	}
 
+	appToolsToOllama(): unknown[] {
+		const toggledToolsNames = useToolsStore().toggled;
+		const toggledTools = Object.entries(useToolsStore().tools).filter(data => toggledToolsNames.includes(data[0]));
+
+		const toolsList: unknown[] = [];
+
+		for (const tool of toggledTools) {
+			const toolInList = {
+				type: 'function',
+				function: {
+					name: tool[0],
+					description: tool[1].description,
+					parameters: {
+						type: 'object',
+						properties: {} as Record<string, ToolSchemas>,
+						required: tool[1].required,
+					}
+				}
+			};
+			
+
+			for (const item of Object.entries(tool[1].params)) {
+				toolInList.function.parameters.properties[item[0]] = item[1];
+			}
+
+			toolsList.push(toolInList);
+		}
+
+		return toolsList;
+	}
+
 	async* chatIterator(
 		messages: OllamaMessage[], 
 		abortSignal: AbortSignal, 
-		modelOverride?: string
+		additionalOptions?: {
+			modelOverride?: string,
+			disableTools?: boolean,
+		}
 	): AsyncGenerator<ChatIteratorChunk, ChatIteratorChunk | undefined, unknown> {
 		const response = await authedFetch(useConfigStore().apiUrl('/api/chat'), {
 			method: 'POST',
@@ -155,9 +190,10 @@ class OllamaAPI {
 				'Content-Type': 'application/json',
 			},
 			body: JSON.stringify({
-				model: modelOverride ?? useConfigStore().selectedModel,
+				model: additionalOptions?.modelOverride ?? useConfigStore().selectedModel,
 				think: useConfigStore().chat.thinking.enabled,
 				stream: true,
+				tools: this.appToolsToOllama(),
 				options: useConfigStore().chat.messageOptionsEnabled ? useConfigStore().chat.messageOptions : undefined,
 				messages,
 			}),
@@ -228,8 +264,8 @@ class OllamaAPI {
 		}
 	}
 
-	chat(messages: OllamaMessage[], abortSignal: AbortSignal, modelOverride?: string): ReadableOf<ChatIteratorChunk> {
-		return Readable.from(this.chatIterator(messages, abortSignal, modelOverride)) as ReadableOf<ChatIteratorChunk>;
+	chat(messages: OllamaMessage[], abortSignal: AbortSignal, additionalOptions?: { modelOverride?: string, disableTools?: boolean }): ReadableOf<ChatIteratorChunk> {
+		return Readable.from(this.chatIterator(messages, abortSignal, additionalOptions)) as ReadableOf<ChatIteratorChunk>;
 	}
 
 	async getModels(force?: boolean) {

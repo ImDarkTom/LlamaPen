@@ -14,6 +14,7 @@ import ThinkingButton from './buttons/ThinkingButton.vue';
 import { useConfigStore } from '@/stores/config';
 import MessageOptions from './buttons/MessageOptions.vue';
 import { BiSolidXCircle } from 'vue-icons-plus/bi';
+import MessageTools from './buttons/MessageTools.vue';
 
 const messagesStore = useMessagesStore();
 const chatsStore = useChatsStore();
@@ -190,6 +191,7 @@ function handlePastedImage(file: File) {
                     <FileUpload :onChange="uploadFile" />
                     <ModelSelect direction="up" />
                     <ThinkingButton v-model="config.chat.thinking.enabled" />
+                    <MessageTools />
                     <MessageOptions />
                     <!-- we could revisit the persona selector later -->
                 </div>

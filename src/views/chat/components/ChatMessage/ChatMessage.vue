@@ -11,6 +11,7 @@ import ThinkBlock from './ThinkBlock.vue';
 import MessageInteractions from './MessageInteractions.vue';
 import MessageEditor from '../MessageEditor.vue';
 import ModelMessageHeader from './ModelMessage/ModelMessageHeader.vue';
+import ToolCalls from './ToolCalls.vue';
 
 const messagesStore = useMessagesStore();
 
@@ -113,6 +114,7 @@ function renderText(text: string) {
                 <div 
                     v-else-if="message.type === 'model'" >
                     <ThinkBlock :message="(message as ModelChatMessage)" />
+                    <ToolCalls :message="(message as ModelChatMessage)" />
                     <article class="max-w-none prose prose-app! dark:prose-invert" v-html="renderText(message.content)"></article>
                     <div
                         v-if="message.status === 'waiting' || message.status === 'generating'"

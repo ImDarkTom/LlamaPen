@@ -291,6 +291,9 @@ const useMessagesStore = defineStore('messages', () => {
 			if (generatedThoughts) {
 				updateData.thinking = generatedThoughts;
 			}
+			if (toolCalls && toolCalls.length > 0) {
+				updateData.toolCalls = toolCalls;
+			}
 
 			await db.messages.update(ollamaMessageId, updateData);
 		}
@@ -323,6 +326,7 @@ const useMessagesStore = defineStore('messages', () => {
 
 		let generatedContent = "";
 		let generatedThoughts = "";
+		const toolCalls: ModelChatMessage['toolCalls'] = [];
 
 		if (options?.messageIdOverride) {
 			const message = await db.messages.get(options.messageIdOverride);
@@ -337,7 +341,7 @@ const useMessagesStore = defineStore('messages', () => {
 
 		let isGenerating = false;
 		let messageSaveCounter = 0;
-		for await (const chunk of ollamaApi.chat(chatMessageList, abortController.signal, selectedModel)) {
+		for await (const chunk of ollamaApi.chat(chatMessageList, abortController.signal, { modelOverride: selectedModel })) {
 			// First, check if the chunk is an error or done indicator.
 			if (chunk.type === 'error') {
 				handleMessageChunkError(chunk);
@@ -367,10 +371,19 @@ const useMessagesStore = defineStore('messages', () => {
 			if (messageIndex !== -1) {
 				generatedContent += messageChunk;
 				generatedThoughts += thoughtsChunk;
+
+				if (chunk.data.message.tool_calls) {
+					for (const toolCall of chunk.data.message.tool_calls) {
+						logger.info('Messages Store', 'Saved tool call to list', toolCall);
+						toolCalls.push(toolCall);
+					}
+				}
+
 				openedChatMessages.value[messageIndex] = {
 					...openedChatMessages.value[messageIndex] as ModelChatMessage,
 					content: generatedContent,
-					thinking: generatedThoughts
+					thinking: generatedThoughts,
+					...(toolCalls.length > 0 && { toolCalls }),
 				};
 			}
 

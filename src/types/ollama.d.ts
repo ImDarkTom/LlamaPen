@@ -38,6 +38,7 @@ type OllamaChatResponseChunk = {
         role: 'assistant' | 'user';
         content: string;
         thinking?: string;
+        tool_calls?: ModelChatMessage['toolCalls'];
     };
     done: boolean;
     done_reason?: 'stop' | string;
