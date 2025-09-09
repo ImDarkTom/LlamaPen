@@ -19,13 +19,13 @@ const useToolsStore = defineStore('tools', () => {
         }
     });
 
-    async function handleToolCalls(toolCalls: ModelChatMessage['toolCalls']): Promise<Record<string ,any> | null> {
+    async function handleToolCalls(toolCalls: ModelChatMessage['toolCalls']): Promise<{toolName: string, content: string}[] | null> {
         if (!toolCalls || toolCalls.length === 0) return null;
         logger.info('Tools Store', 'Processing tool calls', toolCalls);
 
-        const responses: Record<string, any> = {};
-
-        for (const tool of toolCalls) {
+        const responses: { toolName: string, content: string }[] = [];
+        
+        const promises = toolCalls.map(async (tool) => {
             const toCall = tools.value[tool.function.name];
             if (!toCall) throw new Error(`Tool not found when calling '${tool.function.name}'`);
 
@@ -39,10 +39,18 @@ const useToolsStore = defineStore('tools', () => {
                 referrer: 'no-referrer'
             });
 
-            const data = await response.json();
+            let content = await response.text();
 
-            responses[tool.function.name] = data;
-        }
+            try {
+                const parsed = JSON.parse(content);
+
+                content = typeof parsed === 'string' ? parsed : JSON.stringify(parsed);
+            } catch { }
+
+            responses.push({toolName: tool.function.name, content });
+        });
+
+        await Promise.all(promises);
 
         return responses;
     }

@@ -373,13 +373,13 @@ const useMessagesStore = defineStore('messages', () => {
 				const toolResponses = await toolsStore.handleToolCalls(toolCalls);
 				
 				if (toolResponses !== null) {
-					const toolMessages: Omit<ToolChatMessage, 'id'>[] = Object.entries(toolResponses).map(item => {
+					const toolMessages: Omit<ToolChatMessage, 'id'>[] = toolResponses.map(({ content, toolName }) => {
 						return {
 							type: "tool",
-							content: JSON.stringify(item[1]),
-							toolName: item[0],
-							chatId,
 							created: new Date(),
+							chatId,
+							content,
+							toolName,
 						}
 					});
 

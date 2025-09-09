@@ -11,7 +11,8 @@ import ThinkBlock from './ThinkBlock.vue';
 import MessageInteractions from './MessageInteractions.vue';
 import MessageEditor from '../MessageEditor.vue';
 import ModelMessageHeader from './ModelMessage/ModelMessageHeader.vue';
-import ToolCalls from './ToolCalls.vue';
+import ModelToolCalls from './ModelToolCalls.vue';
+import ToolCallsMessage from './ToolCallsMessage.vue';
 
 const messagesStore = useMessagesStore();
 
@@ -87,7 +88,8 @@ function renderText(text: string) {
     <div class="group/message m-2 mb-0 flex flex-col">
         <div class="box-border p-4 flex flex-col" :class="{
             'ml-auto rounded-2xl bg-background-light max-w-[70%] shadow-md shadow-background-dark/50': isUserMessage && !editing,
-            'w-full max-w-[calc(100dvw-1rem)] box-border !p-2 !pb-1 !m-0': isModelMessage || editing
+            'w-full max-w-[calc(100dvw-1rem)] box-border !p-2 !pb-1 !m-0': isModelMessage || editing,
+            'bg-surface !m-0 rounded-2xl': props.message.type === 'tool'
         }">
             <ModelMessageHeader v-if="message.type === 'model'" :message :modelMessageDone />
             <img 
@@ -114,7 +116,7 @@ function renderText(text: string) {
                 <div 
                     v-else-if="message.type === 'model'" >
                     <ThinkBlock :message="(message as ModelChatMessage)" />
-                    <ToolCalls :message="(message as ModelChatMessage)" />
+                    <ModelToolCalls :message="(message as ModelChatMessage)" />
                     <article class="max-w-none prose prose-app! dark:prose-invert" v-html="renderText(message.content)"></article>
                     <div
                         v-if="message.status === 'waiting' || message.status === 'generating'"
@@ -124,9 +126,7 @@ function renderText(text: string) {
                             'size-4': message.status === 'generating',
                         }"></div>
                 </div>
-                <div v-else-if="message.type === 'tool'">
-                    - |{{ message.toolName }}| complete
-                </div>
+                <ToolCallsMessage :message v-else-if="message.type === 'tool'" />
             </div>
         </div>
         <MessageInteractions
