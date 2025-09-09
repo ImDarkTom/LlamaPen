@@ -45,4 +45,5 @@ interface UserChatMessage extends BaseChatMessage {
 interface ToolChatMessage extends BaseChatMessage {
 	type: 'tool',
 	toolName: string;
+	completed?: Date;
 }

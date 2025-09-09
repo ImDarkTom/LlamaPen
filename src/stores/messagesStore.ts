@@ -369,24 +369,35 @@ const useMessagesStore = defineStore('messages', () => {
 				const status = chunk.reason === 'completed' ? 'finished' : 'cancelled';
 				setMessageStatus(status);
 
-				const toolsStore = useToolsStore();
-				const toolResponses = await toolsStore.handleToolCalls(toolCalls);
-				
-				if (toolResponses !== null) {
-					const toolMessages: Omit<ToolChatMessage, 'id'>[] = toolResponses.map(({ content, toolName }) => {
+				if (toolCalls) {
+					const toolsStore = useToolsStore();
+					const toolMessagesInitialised: Omit<ToolChatMessage, 'id'>[] = toolCalls.map(tool => {
 						return {
-							type: "tool",
+							type: 'tool',
 							created: new Date(),
 							chatId,
-							content,
-							toolName,
+							content: '',
+							toolName: tool.function.name
 						}
 					});
 
-					await db.messages.bulkAdd(toolMessages);
+					const messageIds = await db.messages.bulkPut(toolMessagesInitialised, { allKeys: true });
 
-					console.log('getting response after tools');
-					getOllamaResponse();
+					const toolResponses = await toolsStore.handleToolCalls(toolCalls);
+					
+					if (toolResponses && toolResponses.length > 0) {
+						await Promise.all(
+							toolResponses.map((response, index) =>
+								db.messages.update(messageIds[index], {
+									content: response.content,
+									completed: new Date(),
+								} as Partial<ToolChatMessage>)
+							)
+						);
+						
+						console.log('getting response after tools');
+						getOllamaResponse();
+					}
 				}
 
 				logger.info('Messages Store', 'Finished generating response with status', status);

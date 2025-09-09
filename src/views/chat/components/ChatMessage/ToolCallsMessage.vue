@@ -1,5 +1,6 @@
 <script setup lang="ts">
 import { ref } from 'vue';
+import { AiOutlineLoading } from 'vue-icons-plus/ai';
 import { BiSolidCheckSquare } from 'vue-icons-plus/bi';
 
 defineProps<{
@@ -11,15 +12,25 @@ const showing = ref<boolean>(false);
 
 <template>
     <div class="flex flex-col cursor-pointer" @click="showing = !showing">
-        <div class="flex flex-row" >
+        <div class="flex flex-row items-center" >
             <span class="text-lg font-semibold">
-                <BiSolidCheckSquare class="size-5 mr-1 inline" />
+                <component 
+                    :is="message.completed ? BiSolidCheckSquare : AiOutlineLoading" 
+                    class="size-5 mr-1 inline" 
+                    :class="{ 'animate-spin': !message.completed }" />
                 <span class="align-middle">{{ message.toolName }}</span>
             </span>
             <div class="grow"></div>
-            <div>completed (0.1s) placeholder</div>
+            <span :title="message.completed?.toLocaleString() ?? ''">
+                <template v-if="message.completed">
+                    Completed ({{ ((message.completed.getTime()  - message.created.getTime()) / 1000).toFixed(2) }}s)
+                </template>
+                <template v-else>
+                    Processing...
+                </template>
+            </span>
         </div>
-        <div v-if="showing">
+        <div v-if="showing" class="max-w-full break-words bg-background-light p-1 rounded-lg mt-2">
             {{ message.content }}
         </div>
     </div>

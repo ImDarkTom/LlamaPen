@@ -89,7 +89,7 @@ function renderText(text: string) {
         <div class="box-border p-4 flex flex-col" :class="{
             'ml-auto rounded-2xl bg-background-light max-w-[70%] shadow-md shadow-background-dark/50': isUserMessage && !editing,
             'w-full max-w-[calc(100dvw-1rem)] box-border !p-2 !pb-1 !m-0': isModelMessage || editing,
-            'bg-surface !m-0 rounded-2xl': props.message.type === 'tool'
+            'bg-surface !m-0 rounded-xl': props.message.type === 'tool'
         }">
             <ModelMessageHeader v-if="message.type === 'model'" :message :modelMessageDone />
             <img 
