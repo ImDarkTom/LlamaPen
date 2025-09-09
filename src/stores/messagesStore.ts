@@ -125,11 +125,7 @@ const useMessagesStore = defineStore('messages', () => {
 		await db.chats.update(openedChatId.value, { lastestMessageDate: new Date() });
 		logger.info('Messages Store', 'Added message', messageData);
 
-		await getOllamaResponse();
-		if (shouldGenerateTitle) {
-			const chatTitle = await generateChatTitle();
-			setPageTitle(`${chatTitle} | Chat`);
-		}
+		await getOllamaResponse({ generateTitle: shouldGenerateTitle });
 	}
 
 
@@ -294,8 +290,10 @@ const useMessagesStore = defineStore('messages', () => {
 	 */
 	async function getOllamaResponse(options?: {
 		modelOverride?: string
-		messageIdOverride?: number
+		messageIdOverride?: number,
+		generateTitle?: boolean,
 	}) {
+		logger.info('Messages Store', 'Get ollama response with options', options);
 		const messageSaveInterval = useConfigStore().chat.tokenSaveInterval;
 
 		// Helpers
@@ -369,7 +367,7 @@ const useMessagesStore = defineStore('messages', () => {
 				const status = chunk.reason === 'completed' ? 'finished' : 'cancelled';
 				setMessageStatus(status);
 
-				if (toolCalls) {
+ 				if (toolCalls.length > 0) {
 					const toolsStore = useToolsStore();
 					const toolMessagesInitialised: Omit<ToolChatMessage, 'id'>[] = toolCalls.map(tool => {
 						return {
@@ -396,7 +394,12 @@ const useMessagesStore = defineStore('messages', () => {
 						);
 						
 						console.log('getting response after tools');
-						getOllamaResponse();
+						getOllamaResponse({ generateTitle: options?.generateTitle });
+					}
+				} else {
+					if (options?.generateTitle) {
+						const chatTitle = await generateChatTitle();
+						setPageTitle(`${chatTitle} | Chat`);
 					}
 				}
 

@@ -36,12 +36,28 @@ class OllamaAPI {
 
 		const messagesFormatted = await Promise.all(
 			messages.map(async (message) => {
+				if (message.type === 'tool') {
+					return {
+						role: 'tool',
+						content: '<Tool Response>',
+					}
+				}
+
 				const hasAttachments = (await db.attachments
 					.where('messageId')
 					.equals(message.id)
 					.count()) > 0;
 
-				const content = hasAttachments ? `${message.content}\n<Attachment(s)>` : message.content;
+				
+				let content = message.content;
+				
+				if (hasAttachments) {
+					content += '\n<Attachment(s)>';
+				}
+
+				if (message.type === 'model' && (message.toolCalls && message.toolCalls.length > 0)) {
+					content += '\n<Tool Call(s)>';
+				}
 
 				return {
 					role: message.type === 'user' ? 'user' : 'assistant',
