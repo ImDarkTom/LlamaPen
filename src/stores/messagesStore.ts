@@ -11,6 +11,7 @@ import { filesAsBase64 } from '@/utils/core/filesAsBase64';
 import { useUiStore } from './uiStore';
 import setPageTitle from '@/utils/core/setPageTitle';
 import { getMessageAttachmentBlobs } from '@/utils/core/getMessageAttachments';
+import useToolsStore from './toolsStore';
 
 // ----
 // Init
@@ -257,11 +258,27 @@ const useMessagesStore = defineStore('messages', () => {
 		const formattedMessages = sortedMessages.map(async (message) => {
 			const attachmentBlobsInMessage = await getMessageAttachmentBlobs(message.id);
 
-			return {
-				role: message.type === 'user' ? 'user' : 'assistant' as 'user' | 'assistant',
+			if (message.type === 'tool') {
+				return {
+					role: 'tool' as const,
+					tool_name: message.toolName,
+					content: message.content,
+				}
+			}
+
+			const role: MessageRole = message.type === 'model' ? 'assistant' : 'user';
+
+			const builtMessage: OllamaMessage = {
+				role: role,
 				content: message.content,
-				images: await filesAsBase64(attachmentBlobsInMessage)
+				images: await filesAsBase64(attachmentBlobsInMessage),
 			};
+
+			if (message.type === 'model' && message.toolCalls) {
+				builtMessage['tool_calls'] = message.toolCalls;
+			}
+
+			return builtMessage;
 		});
 
 		logger.info('Messages Store', 'Formatted messages into Ollama format', await Promise.all(formattedMessages));
@@ -351,6 +368,26 @@ const useMessagesStore = defineStore('messages', () => {
 
 				const status = chunk.reason === 'completed' ? 'finished' : 'cancelled';
 				setMessageStatus(status);
+
+				const toolsStore = useToolsStore();
+				const toolResponses = await toolsStore.handleToolCalls(toolCalls);
+				
+				if (toolResponses !== null) {
+					const toolMessages: Omit<ToolChatMessage, 'id'>[] = Object.entries(toolResponses).map(item => {
+						return {
+							type: "tool",
+							content: JSON.stringify(item[1]),
+							toolName: item[0],
+							chatId,
+							created: new Date(),
+						}
+					});
+
+					await db.messages.bulkAdd(toolMessages);
+
+					console.log('getting response after tools');
+					getOllamaResponse();
+				}
 
 				logger.info('Messages Store', 'Finished generating response with status', status);
 				break;

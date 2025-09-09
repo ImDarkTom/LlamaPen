@@ -21,4 +21,5 @@ type AppTools = Record<string, {
     description: string;
     params: ToolSchemas;
     required: string[];
+    url: string;
 }>;

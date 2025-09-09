@@ -124,6 +124,9 @@ function renderText(text: string) {
                             'size-4': message.status === 'generating',
                         }"></div>
                 </div>
+                <div v-else-if="message.type === 'tool'">
+                    - |{{ message.toolName }}| complete
+                </div>
             </div>
         </div>
         <MessageInteractions
