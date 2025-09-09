@@ -2,8 +2,6 @@ import logger from '@/lib/logger';
 import { defineStore } from 'pinia';
 import { ref } from 'vue';
 
-// type RefReturn<T> = ReturnType<typeof ref<T>>;
-
 const useToolsStore = defineStore('tools', () => {
     const tools = ref<AppTools>({
         'web_search': {
@@ -12,10 +10,20 @@ const useToolsStore = defineStore('tools', () => {
                 'query': {
                     type: 'string',
                     description: 'The query to search for.'
-                }
+                },
+                'categories': {
+                    type: 'string',
+                    description: 'The search category.',
+                    enum: ['general', 'news']
+                },
+                'time_range': {
+                    type: 'string',
+                    description: 'Limit results to a timeframe. Leave blank for no limit.',
+                    enum: ['day', 'month', 'year']
+                },
             },
             required: ['query'],
-            url: 'http://localhost:8080/search?q={{query}}&category_general=1&language=all&time_range=&safesearch=0&theme=simple&format=json'
+            url: 'http://localhost:8080/search?q={{query}}&categories={{categories}}&language=all&time_range={{time_range}}&safesearch=0&format=json',
         }
     });
 
