@@ -9,6 +9,7 @@ import { ref } from 'vue';
 import { BsCloudSlash } from 'vue-icons-plus/bs';
 import MessageModelSelectorItem from './MessageModelSelectorItem.vue';
 import { BiError, BiRefresh } from 'vue-icons-plus/bi';
+import useUserStore from '@/stores/user';
 
 const props = defineProps<{
     modelMessageDone: boolean;
@@ -16,6 +17,7 @@ const props = defineProps<{
 }>();
 
 const messagesStore = useMessagesStore();
+const userStore = useUserStore();
 const { models, getModelInfo, modelIds, loading } = useModelList();
 
 const isOpened = ref<boolean>(false);
@@ -102,6 +104,7 @@ const warningText = computed(() => {
                 <MessageModelSelectorItem
                     :modelId="message.model"
                     :modelName="messageModelInfo.exists ? messageModelInfo.data.displayName : message.model"
+                    :modelIsAvailable="true"
                     :regenerate-message="regenerateMessage" />
                 <div class="w-full min-h-0.5 bg-border"></div>
                 <MessageModelSelectorItem
@@ -109,6 +112,7 @@ const warningText = computed(() => {
                     :key="model.modelData.digest"
                     :modelId="model.modelData.model"
                     :modelName="model.displayName"
+                    :modelIsAvailable="(model.modelData.llamapenMetadata?.premium && userStore.subscription.subscribed) ?? true"
                     :regenerate-message="regenerateMessage" />
             </div>
         </DropdownMenu>

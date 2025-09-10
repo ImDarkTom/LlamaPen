@@ -1,18 +1,32 @@
 <script setup lang="ts">
 import ModelIcon from '@/components/Icon/ModelIcon.vue';
 
-defineProps<{
+const props = defineProps<{
     modelId: string;
     modelName: string;
+    modelIsAvailable: boolean;
     regenerateMessage: (model: string) => void;
 }>();
+
+function onClick() {
+    if (!props.modelIsAvailable) {
+        return;
+    }
+
+    props.regenerateMessage(props.modelId);
+}
+
 </script>
 
 <template>
     <button 
         :title="modelId"
-        class="p-2 hover:scale-[98%] ring-1 ring-border-muted hover:ring-border hover:bg-surface-light hover:text-text rounded-lg w-full min-w-48 cursor-pointer transition-all duration-dynamic flex flex-row items-center justify-start"
-        @mouseup="regenerateMessage(modelId)" >
+        class="p-2 ring-1 ring-border-muted rounded-lg w-full min-w-48 transition-all duration-dynamic flex flex-row items-center justify-start"
+        :class="{ 
+            'hover:scale-[98%] hover:ring-border hover:bg-surface-light hover:text-text cursor-pointer': modelIsAvailable,
+            'opacity-50': !modelIsAvailable
+        }"
+        @click="onClick" >
         <ModelIcon :name="modelId" class="size-6 mr-2" />
         {{ modelName }}
     </button>
