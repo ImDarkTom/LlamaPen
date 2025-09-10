@@ -21,7 +21,7 @@ import { useModelList } from '@/composables/useModelList';
 import OptionText from './components/OptionText.vue';
 import { usePWAState } from '@/composables/usePWAState';
 import StatusIndicator from './components/StatusIndicator.vue';
-import { BiInfoCircle, BiRocket, BiSolidKeyboard, BiTrash, BiUserCircle } from 'vue-icons-plus/bi';
+import { BiInfoCircle, BiRocket, BiSolidKeyboard, BiTrash, BiUserCircle, BiWrench } from 'vue-icons-plus/bi';
 
 const config = useConfigStore();
 const router = useRouter();
@@ -258,6 +258,11 @@ async function checkOllamaVersion() {
         </OptionCategory>
 
         <OptionCategory label="Chat">
+            <PrimaryButton
+                text="Manage Tools"
+                type="link" 
+                to="/tools"
+                :icon="BiWrench" />
             <SelectionSetting 
                 v-model="config.chat.titleGenerationStyle" 
                 label="Title generation style" 
