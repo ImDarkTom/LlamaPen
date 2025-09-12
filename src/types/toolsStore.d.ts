@@ -1,25 +1,18 @@
-type ToolSchema<T> = Record<string, BaseSchema & T>;
-
-type BaseSchema = {
-    description?: string;
-}
-
-type StringSchema = ToolSchema<{
+type AppToolSchema = ({
+    name: string;
     type: 'string';
+    description?: string;
     enum?: string[];
-}>
-
-type NumberSchema = ToolSchema<{
-    type: 'number' | 'integer';
-}>
-
-type ToolSchemas = 
-    StringSchema |
-    NumberSchema
+} | {
+    name: string;
+    type: 'number'| 'integer';
+    description?: string;
+    enum?: number[];
+})[];
 
 type AppTools = Record<string, {
     description: string;
-    params: ToolSchemas;
+    params: AppToolSchema;
     required: string[];
     url: string;
 }>;

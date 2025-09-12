@@ -6,22 +6,25 @@ const useToolsStore = defineStore('tools', () => {
     const tools = ref<AppTools>({
         'web_search': {
             description: 'Search the internet for a query',
-            params: {
-                'query': {
+            params: [
+                {
+                    name: 'query',
                     type: 'string',
                     description: 'The query to search for.'
                 },
-                'categories': {
+                {
+                    name: 'categories',
                     type: 'string',
                     description: 'The search category.',
                     enum: ['general', 'news']
                 },
-                'time_range': {
+                {
+                    name: 'time_range',
                     type: 'string',
                     description: 'Limit results to a timeframe. Leave blank for no limit.',
                     enum: ['day', 'month', 'year']
                 },
-            },
+            ],
             required: ['query'],
             url: 'http://localhost:8080/search?q={{query}}&categories={{categories}}&language=all&time_range={{time_range}}&safesearch=0&format=json',
         }

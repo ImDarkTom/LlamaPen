@@ -1,30 +1,25 @@
 <script setup lang="ts">
-import useToolsStore from '@/stores/toolsStore';
-import { BiLeftArrowAlt, BiPlus } from 'vue-icons-plus/bi';
-import { RouterLink } from 'vue-router';
+import { useConfigStore } from '@/stores/config';
+import ToolsList from './ToolsList.vue';
+import ToolCreate from './ToolCreate.vue';
+import ToolEdit from './ToolEdit.vue';
 
-const toolsStore = useToolsStore();
+const config = useConfigStore();
+
 
 </script>
 
 <template>
-    <div class="max-w-prose mx-auto h-full box-border p-2 bg-background-light m-2 rounded-lg">
-        <div class="flex flex-row justify-between mb-2">
-            <RouterLink to="/settings" class="bg-surface! p-2 rounded-md text-primary! hover:text-text!">
-                <BiLeftArrowAlt class="inline mr-1" />
-                <span class="align-middle">Back to settings</span>
-            </RouterLink>
-            <RouterLink to="/settings" class="bg-surface! p-2 rounded-md text-primary! hover:text-text!">
-                <BiPlus class="inline mr-1" />
-                <span class="align-middle">New Tool</span> 
-            </RouterLink>
-        </div>
-        <RouterLink
-            v-for="[toolName, tool] in Object.entries(toolsStore.tools)"
-            :to="`/tools/${toolName}`">
-            <div class="flex flex-col text-text px-2 py-4 hover:bg-surface transition-colors duration-dynamic hover:duration-0 rounded-md">
-                <span>{{ toolName }}</span>
+    <div class="w-full h-full flex flex-col md:flex-row gap-2 p-2 box-border overflow-y-auto"
+        :class="{ 'pt-14 md:pt-2 md:pl-14': !config.showSidebar }">
+        <ToolsList />
+
+        <div class="p-2 bg-background-light w-full rounded-lg">
+            <ToolCreate v-if="$route.path === '/new-tool'" />
+            <ToolEdit v-else-if="$route.params.tool" :tool="($route.params.tool as string)" />
+            <div v-else class="w-full h-full flex items-center justify-center">
+                Edit an existing tool or create a new one
             </div>
-        </RouterLink>
+        </div>
     </div>
 </template>

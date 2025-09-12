@@ -175,7 +175,7 @@ class OllamaAPI {
 					description: tool[1].description,
 					parameters: {
 						type: 'object',
-						properties: {} as Record<string, ToolSchemas>,
+						properties: {} as OllamaToolParamSchema,
 						required: tool[1].required,
 					}
 				}

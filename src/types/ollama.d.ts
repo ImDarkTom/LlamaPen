@@ -1,3 +1,13 @@
+type OllamaToolParamSchema = Record<string, {
+    type: 'string';
+    description?: string;
+    enum?: string[];
+} | {
+    type: 'number'| 'integer';
+    description?: string;
+    enum?: number[];
+}>;
+
 type ModelListItem = {
     name: string;
     model: string;
