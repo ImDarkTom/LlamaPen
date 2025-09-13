@@ -4,47 +4,51 @@
 @plugin "@tailwindcss/typography";
 @config "@/../tailwind.config.js";
 
-@layer utilities {
-    /* tailwind utility: duration-dynamic */
-    .duration-dynamic {
-        transition-duration: var(--transition-duration);
-    }
+/* utils */
+@utility duration-dynamic {
+    transition-duration: var(--transition-duration);
+}
 
-    .slider::-webkit-slider-thumb {
-        @apply w-5 h-5 bg-primary ring-2 ring-inset ring-text rounded-full border-0 shadow-md transition-all;
-        transition-duration: var(--transition-duration);
-        -webkit-appearance: none;
-        margin-top: -6px; /* center thumb */
-    }
+@utility btn-primary {
+    @apply bg-primary hover:bg-secondary text-background-light rounded-lg transition-colors duration-dynamic;
+}
 
-    .slider::-moz-range-thumb {
-        @apply w-5 h-5 bg-primary ring-2 ring-inset ring-text rounded-full border-0 shadow-md transition-all;
-        transition-duration: var(--transition-duration);
-    }
 
-    .slider::-webkit-slider-runnable-track {
-        @apply h-1.5 bg-border rounded-lg;
-    }
+/* slider */
+.slider::-webkit-slider-thumb {
+    @apply w-5 h-5 bg-primary ring-2 ring-inset ring-text rounded-full border-0 shadow-md transition-all;
+    transition-duration: var(--transition-duration);
+    -webkit-appearance: none;
+    margin-top: -6px; /* center thumb */
+}
 
-    .slider::-moz-range-track {
-        @apply h-1.5 bg-border rounded-lg;
-    }
+.slider::-moz-range-thumb {
+    @apply w-5 h-5 bg-primary ring-2 ring-inset ring-text rounded-full border-0 shadow-md transition-all;
+    transition-duration: var(--transition-duration);
+}
 
-    .slider:hover::-webkit-slider-runnable-track,
-    .slider:hover::-moz-range-track {
-        @apply bg-border;
-        transition-duration: var(--transition-duration);
-    }
+.slider::-webkit-slider-runnable-track {
+    @apply h-1.5 bg-border rounded-lg;
+}
 
-    .slider:hover::-webkit-slider-thumb,
-    .slider:hover::-moz-range-thumb {
-        @apply bg-text-muted;
-    }
+.slider::-moz-range-track {
+    @apply h-1.5 bg-border rounded-lg;
+}
 
-    progress::-webkit-progress-value,
-    progress::-moz-progress-bar {
-        @apply bg-secondary;
-    }
+.slider:hover::-webkit-slider-runnable-track,
+.slider:hover::-moz-range-track {
+    @apply bg-border;
+    transition-duration: var(--transition-duration);
+}
+
+.slider:hover::-webkit-slider-thumb,
+.slider:hover::-moz-range-thumb {
+    @apply bg-text-muted;
+}
+
+progress::-webkit-progress-value,
+progress::-moz-progress-bar {
+    @apply bg-secondary;
 }
 
 @layer base {

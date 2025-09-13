@@ -1,9 +1,12 @@
 <script setup lang="ts">
 import Dropdown from '@/components/Dropdown/Dropdown.vue';
-import { BiWrench } from 'vue-icons-plus/bi';
+import { BiDotsHorizontalRounded, BiWrench } from 'vue-icons-plus/bi';
 import useToolsStore from '@/stores/toolsStore';
+import { computed, ref } from 'vue';
 
 const toolsStore = useToolsStore();
+
+const searchQuery = ref<string>('');
 
 function toggleSelection(item: string) {
     const index = toolsStore.toggled.indexOf(item);
@@ -13,10 +16,22 @@ function toggleSelection(item: string) {
         toolsStore.toggled.splice(index, 1);
     }
 }
+
+const searchedTools = computed(() => {
+    return Object.entries(toolsStore.tools).filter(item => item[0].includes(searchQuery.value));
+});
+
+function onKeyDown(e: KeyboardEvent) {
+    if (e.key === 'Enter') {
+        if (searchedTools.value.length === 1) {
+            toggleSelection(searchedTools.value[0][0]);
+        }
+    }
+}
 </script>
 
 <template>
-    <Dropdown direction="up" title="Configure generation parameters">
+    <Dropdown direction="up" title="Toggle available tools">
         <template #button>
             <span>
                 <BiWrench class="p-1 inline" />
@@ -25,8 +40,26 @@ function toggleSelection(item: string) {
         </template>
         <template #menu>
             <div class="flex flex-col">
-                <div v-for="[toolName, tool] in Object.entries(toolsStore.tools)" :key="toolName">
-                    <label>
+                <div class="flex flex-row gap-2 mb-2">
+                    <input
+                        class="border-2 border-primary focus:border-border w-full rounded-lg h-6 box-content p-3 outline-0" 
+                        type="text" 
+                        placeholder="Search tools..."
+                        v-model="searchQuery"
+                        @keydown="onKeyDown">
+                    <RouterLink
+                        to="/tools"
+                        class="p-3 btn-primary!">
+                        <span class="align-middle">
+                            Manage
+                        </span>
+                    </RouterLink>
+                </div>
+                <div 
+                    v-for="[toolName, tool] in searchedTools" 
+                    :key="toolName"
+                    class="hover:bg-surface-light transition-all duration-dynamic hover:duration:0 rounded-md">
+                    <label class="cursor-pointer">
                         <div class="flex flex-row items-center ml-3 select-none ">
                             <input
                                 class="size-5"
@@ -37,6 +70,11 @@ function toggleSelection(item: string) {
                                 <span class="text-text font-medium">{{ toolName }}</span>
                                 <span>{{ tool.description }}</span>
                             </div>
+                            <RouterLink :to="`/tools/${toolName}`" class="ml-auto">
+                                <div class="ring-border hover:ring-primary ring-1 p-2 rounded-md ">
+                                    <BiDotsHorizontalRounded />
+                                </div>
+                            </RouterLink>
                         </div>
                     </label>
                 </div>
