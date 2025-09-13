@@ -9,8 +9,12 @@
     transition-duration: var(--transition-duration);
 }
 
+@utility transition-quick {
+    @apply transition-all duration-dynamic hover:duration-0;
+}
+
 @utility btn-primary {
-    @apply bg-primary hover:bg-secondary text-background-light rounded-lg transition-colors duration-dynamic;
+    @apply bg-primary hover:bg-secondary text-background-light rounded-lg transition-colors duration-dynamic cursor-pointer;
 }
 
 

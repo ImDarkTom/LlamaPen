@@ -1,12 +1,9 @@
 <script setup lang="ts">
 import { useConfigStore } from '@/stores/config';
 import ToolsList from './ToolsList.vue';
-import ToolCreate from './ToolCreate.vue';
 import ToolEdit from './ToolEdit.vue';
 
 const config = useConfigStore();
-
-
 </script>
 
 <template>
@@ -15,8 +12,7 @@ const config = useConfigStore();
         <ToolsList />
 
         <div class="p-2 bg-background-light w-full rounded-lg">
-            <ToolCreate v-if="$route.path === '/new-tool'" />
-            <ToolEdit v-else-if="$route.params.tool" :tool="($route.params.tool as string)" />
+            <ToolEdit v-if="$route.params.tool" :tool="($route.params.tool as string)" />
             <div v-else class="w-full h-full flex items-center justify-center">
                 Edit an existing tool or create a new one
             </div>

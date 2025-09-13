@@ -1,10 +1,28 @@
 <script setup lang="ts">
+import router from '@/lib/router';
 import useToolsStore from '@/stores/toolsStore';
 import { BiLeftArrowAlt, BiPlus } from 'vue-icons-plus/bi';
 import { RouterLink } from 'vue-router';
 
 const toolsStore = useToolsStore();
 
+function newTool() {
+    let newToolName = prompt('Enter new tool name: (lowercase & no spaces): ');
+    if (!newToolName) return;
+    
+    newToolName = newToolName
+        .toLowerCase()
+        .replace(/ /g, '_');
+
+    toolsStore.tools[newToolName] = {
+        description: '',
+        params: [],
+        required: [],
+        url: ''
+    }
+
+    router.push(`/tools/${newToolName}`);
+}
 </script>
 
 <template>
@@ -14,10 +32,10 @@ const toolsStore = useToolsStore();
                 <BiLeftArrowAlt class="inline mr-1" />
                 <span class="align-middle">Back to settings</span>
             </RouterLink>
-            <RouterLink to="/new-tool" class="bg-surface! p-2 rounded-md text-primary! hover:text-text!">
+            <button class="bg-surface p-2 rounded-md text-primary hover:text-text cursor-pointer" @click="newTool">
                 <BiPlus class="inline mr-1" />
                 <span class="align-middle">New Tool</span>
-            </RouterLink>
+            </button>
         </div>
         <RouterLink v-for="toolName in Object.keys(toolsStore.tools)" :to="`/tools/${toolName}`">
             <div
