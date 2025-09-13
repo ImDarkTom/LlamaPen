@@ -182,8 +182,12 @@ class OllamaAPI {
 			};
 			
 
-			for (const item of Object.entries(tool[1].params)) {
-				toolInList.function.parameters.properties[item[0]] = item[1];
+			for (const param of tool[1].params) {
+				toolInList.function.parameters.properties[param.name] = {
+					type: param.type,
+					description: param.description,
+					...(param.enum ?? { enum: param.enum })
+				};
 			}
 
 			toolsList.push(toolInList);
