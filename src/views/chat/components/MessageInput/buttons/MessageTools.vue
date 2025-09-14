@@ -3,10 +3,16 @@ import Dropdown from '@/components/Dropdown/Dropdown.vue';
 import { BiDotsHorizontalRounded, BiWrench } from 'vue-icons-plus/bi';
 import useToolsStore from '@/stores/toolsStore';
 import { computed, ref } from 'vue';
+import { useModelList } from '@/composables/useModelList';
+import { useConfigStore } from '@/stores/config';
 
 const toolsStore = useToolsStore();
+const config = useConfigStore();
+const { loading, selectedModelCapabilities } = useModelList();
 
 const searchQuery = ref<string>('');
+
+const selectedModelCanCallTools = computed(() => selectedModelCapabilities.value.includes('tools'));
 
 function toggleSelection(item: string) {
     const index = toolsStore.toggled.indexOf(item);
@@ -31,7 +37,13 @@ function onKeyDown(e: KeyboardEvent) {
 </script>
 
 <template>
-    <Dropdown direction="up" title="Toggle available tools">
+    <Dropdown
+        :class="{ 
+            'opacity-50': loading,
+            'hidden': (config.ui.messageInput.hideUnusedButtons && !selectedModelCanCallTools) && !loading
+        }"
+        direction="up" 
+        title="Toggle available tools">
         <template #button>
             <span>
                 <BiWrench class="p-1 inline" />
