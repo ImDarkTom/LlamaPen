@@ -1,4 +1,5 @@
 <script setup lang="ts">
+import TextDivider from '@/components/TextDivider/TextDivider.vue';
 import router from '@/lib/router';
 import useToolsStore from '@/stores/toolsStore';
 import { BiLeftArrowAlt, BiPlus } from 'vue-icons-plus/bi';
@@ -26,20 +27,27 @@ function newTool() {
 </script>
 
 <template>
-    <div class="w-1/3 bg-background-light p-2 rounded-lg">
-        <div class="flex flex-row justify-between mb-2">
-            <RouterLink to="/settings" class="bg-surface! p-2 rounded-md text-primary! hover:text-text!">
-                <BiLeftArrowAlt class="inline mr-1" />
-                <span class="align-middle">Back to settings</span>
+    <div class="w-1/3 bg-background-light p-2 rounded-lg flex flex-col gap-2">
+        <div class="flex flex-col gap-2 justify-between">
+            <RouterLink to="/settings" class="grow">
+                <div class="bg-surface p-2 rounded-md text-primary hover:text-text flex justify-center">
+                    <BiLeftArrowAlt class="inline mr-1" />
+                    <span class="align-middle">Back to settings</span>
+                </div>
             </RouterLink>
-            <button class="bg-surface p-2 rounded-md text-primary hover:text-text cursor-pointer" @click="newTool">
+            <button class="bg-surface p-2 rounded-md text-primary hover:text-text cursor-pointer grow shrink" @click="newTool">
                 <BiPlus class="inline mr-1" />
                 <span class="align-middle">New Tool</span>
             </button>
         </div>
-        <RouterLink v-for="toolName in Object.keys(toolsStore.tools)" :to="`/tools/${toolName}`">
+        <TextDivider text="Added Tools" />
+        <RouterLink 
+            v-for="toolName in Object.keys(toolsStore.tools)"
+            :to="`/tools/${toolName}`"
+            class="rounded-md hover:bg-surface! text-text transition-quick"
+            exactActiveClass="bg-surface-light!">
             <div
-                class="flex flex-col text-text px-2 py-4 hover:bg-surface transition-colors duration-dynamic hover:duration-0 rounded-md">
+                class="px-2 py-4">
                 <span>{{ toolName }}</span>
             </div>
         </RouterLink>

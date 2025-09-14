@@ -85,18 +85,20 @@ function deleteTool() {
                 @click="deleteTool" />
         </div>
         <TextDivider text="User-facing" />
-        <TextInput v-model="selectedTool.url" label="Query URL" />
+        <TextInput v-model="selectedTool.url" label="Query URL" placeholder="https://example.com/?param={{query}}&other={{param}}" />
         <div v-if="missingParams && missingParams.length > 0" class="text-warning">
             <BiError class="inline" />
             <span class="align-middle">Params not found in query URL: </span>
             <ul>
-                <li v-for="param in missingParams"><span class="select-none">- </span>{{ `\{\{${param}\}\}` }}</li>
+                <li v-for="param in missingParams"><span class="select-none">• </span>{{ `\{\{${param}\}\}` }}</li>
             </ul>
         </div>
         <TextDivider text="Model-facing" />
         <div class="flex flex-col gap-2">
+            <h2 class="text-text font-semibold">Description</h2>
+            <TextInput v-model="selectedTool.description" placeholder="How/when to use the tool (e.g. Search the internet for a query)" />
             <h2 class="text-text font-semibold">Parameters</h2>
-            <div v-for="(param, index) in selectedTool.params" :key="index" class="flex flex-col bg-surface p-2 gap-2">
+            <div v-for="(param, index) in selectedTool.params" :key="index" class="flex flex-col bg-surface p-2 gap-2 rounded-lg">
                 <div class="flex flex-row gap-2">
                     <TextInput v-model="param.name" placeholder="Parameter name (e.g. page)" class="w-full" />
                     <button 
