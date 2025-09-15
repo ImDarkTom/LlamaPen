@@ -45,10 +45,10 @@ type OllamaChatResponseChunk = {
     model: string;
     created_at: string;
     message: {
-        role: 'assistant' | 'user';
+        role: MessageRole;
         content: string;
         thinking?: string;
-        tool_calls?: ModelChatMessage['toolCalls'];
+        tool_calls?: OllamaToolCall[];
     };
     done: boolean;
     done_reason?: 'stop' | string;
@@ -120,4 +120,27 @@ type OllamaPullResponseChunk = {
     total?: number; // Total size of the model in bytes
     completed?: number; // Number of bytes downloaded so far, might not be present for first few chunks
     error?: string; // Error message if any
+}
+
+type OllamaChatRequest = {
+    model: string; // The model name
+    messages: OllamaMessage[]; // List of messages
+    think?: boolean; // For thinking models only
+    tools?: unknown[]; // TODO: add types for this / For tool call models only
+    format?: unknown; // TODO: get from api
+    options?: unknown;
+    stream?: boolean; // Stream or not
+    keep_alive?: string; // How long to keep model loaded in memory, default '5m'.
+    options?: {
+        num_ctx?: number;
+        repeat_last_n?: number;
+        repeat_penalty?: number;
+        temperature?: number;
+        seed?: number;
+        stop?: string;
+        num_predict?: number;
+        top_k?: number;
+        top_p?: number;
+        min_p?: number;
+    };
 }
