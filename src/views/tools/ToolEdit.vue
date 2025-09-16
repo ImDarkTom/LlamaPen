@@ -89,6 +89,10 @@ function deleteTool() {
                 @click="deleteTool" />
         </div>
         <TextDivider text="User-facing" />
+        <label class="text-lg mb-2">
+            <input type="checkbox" v-model="selectedTool.userConfirmation">
+            <span class="ml-2">Require user confirmation?</span>
+        </label>
         <TextInput v-model="selectedTool.url" label="Query URL" placeholder="https://example.com/?param={{query}}&other={{param}}" />
         <button
             class="btn-primary w-full p-3 my-2!"

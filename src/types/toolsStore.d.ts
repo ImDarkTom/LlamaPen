@@ -12,6 +12,7 @@ type AppToolSchema = ({
 
 type AppTools = Record<string, {
     description: string;
+    userConfirmation: boolean;
     requestOptions: {
         method: 'GET' | 'POST' | 'PUT' | 'PATCH';
         accept: string;
@@ -19,7 +20,7 @@ type AppTools = Record<string, {
         userAgent: string;
         authorization?: string;
         body?: string;
-    }
+    };
     params: AppToolSchema;
     required: string[];
     url: string;

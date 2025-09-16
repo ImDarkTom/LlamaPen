@@ -6,6 +6,7 @@ const useToolsStore = defineStore('tools', () => {
     const tools = ref<AppTools>({
         'web_search': {
             description: 'Search the internet for a query',
+            userConfirmation: false,
             requestOptions: {
                 method: 'GET',
                 accept: 'application/json',
@@ -45,6 +46,14 @@ const useToolsStore = defineStore('tools', () => {
         const promises = toolCalls.map(async (tool) => {
             const toCall = tools.value[tool.function.name];
             if (!toCall) throw new Error(`Tool not found when calling '${tool.function.name}'`);
+
+            if (
+                toCall.userConfirmation &&
+                !confirm(`AI wants to use the '${tool.function.name}'. OK to allow. Cancel to deny.`)
+            ) {
+                responses.push({toolName: tool.function.name, content: 'User denied tool call request.' });
+                return;
+            }
 
             // Replace each item in the url with the arg
             const completedUrl = toCall.url.replace(/{{(.*?)}}/g, (_, key) => {

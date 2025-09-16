@@ -17,6 +17,7 @@ function newTool() {
 
     toolsStore.tools[newToolName] = {
         description: '',
+        userConfirmation: false,
         params: [],
         required: [],
         url: '',
