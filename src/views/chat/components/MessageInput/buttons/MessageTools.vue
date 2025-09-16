@@ -70,11 +70,11 @@ function onKeyDown(e: KeyboardEvent) {
                 <div 
                     v-for="[toolName, tool] in searchedTools" 
                     :key="toolName"
-                    class="hover:bg-surface-light transition-all duration-dynamic hover:duration:0 rounded-md">
+                    class="hover:bg-surface-light transition-quick rounded-md">
                     <label class="cursor-pointer">
                         <div class="flex flex-row items-center ml-3 select-none ">
                             <input
-                                class="size-5"
+                                class="size-5 accent-primary hover:accent-secondary transition-quick"
                                 type="checkbox" 
                                 :checked="toolsStore.toggled.includes(toolName)" 
                                 @change="toggleSelection(toolName)">
@@ -83,7 +83,7 @@ function onKeyDown(e: KeyboardEvent) {
                                 <span>{{ tool.description }}</span>
                             </div>
                             <RouterLink :to="`/tools/${toolName}`" class="ml-auto">
-                                <div class="ring-border hover:ring-primary ring-1 p-2 rounded-md ">
+                                <div class="ring-border hover:ring-primary ring-1 p-2 rounded-md transition-quick ">
                                     <BiDotsHorizontalRounded />
                                 </div>
                             </RouterLink>
