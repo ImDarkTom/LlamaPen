@@ -6,6 +6,12 @@ const useToolsStore = defineStore('tools', () => {
     const tools = ref<AppTools>({
         'web_search': {
             description: 'Search the internet for a query',
+            requestOptions: {
+                method: 'GET',
+                accept: 'application/json',
+                contentType: 'application/json',
+                userAgent: 'LlamaPen/1.0 (user tool call)',
+            },
             params: [
                 {
                     name: 'query',
@@ -42,13 +48,33 @@ const useToolsStore = defineStore('tools', () => {
 
             // Replace each item in the url with the arg
             const completedUrl = toCall.url.replace(/{{(.*?)}}/g, (_, key) => {
-                return encodeURIComponent(tool.function.arguments[key] ?? '')
+                const argValue = tool.function.arguments[key];
+                return encodeURIComponent(argValue ?? '')
             });
 
-            const response = await fetch(completedUrl, {
+            let completedBody: string | null = null;
+            if (toCall.requestOptions.body) {
+                completedBody = toCall.requestOptions.body.replace(/{{(.*?)}}/g, (_, key) => {
+                    return encodeURIComponent(tool.function.arguments[key] ?? '');
+                });
+            }
+
+            const reqOptions = toCall.requestOptions;
+
+            const fetchOptions: RequestInit = {
+                method: reqOptions.method,
                 credentials: 'omit',
-                referrer: 'no-referrer'
-            });
+                referrer: 'no-referrer',
+                headers: {
+                    'Accept': reqOptions.accept,
+                    'User-Agent': reqOptions.userAgent,
+                    'Content-Type': reqOptions.contentType,
+                    ...(reqOptions.authorization && { 'Authorization': reqOptions.authorization }),
+                },
+                ...(reqOptions.body && { body: completedBody }),
+            };
+
+            const response = await fetch(completedUrl, fetchOptions);
 
             let content = await response.text();
 

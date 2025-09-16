@@ -6,12 +6,16 @@ import { BiError, BiPencil, BiTrash } from 'vue-icons-plus/bi';
 import TextInput from './TextInput.vue';
 import TextDivider from '@/components/TextDivider/TextDivider.vue';
 import router from '@/lib/router';
+import { ref } from 'vue';
+import ToolRequestOptions from './edit/ToolRequestOptions.vue';
 
 const props = defineProps<{
     tool: string;
 }>();
 
 const toolsStore = useToolsStore();
+
+const reqOptionsOpened = ref(false);
 
 const selectedTool = computed<AppTools[string] | null>(() => {
     return toolsStore.tools[props.tool] ?? null;
@@ -77,7 +81,7 @@ function deleteTool() {
     <div v-if="!selectedTool" class="w-full h-full flex items-center justify-center">
         Invalid tool name.
     </div>
-    <div v-else class="overflow-auto max-h-full">
+    <div v-else class="overflow-auto max-h-full flex flex-col">
         <h1 class="text-text font-bold">{{ props.tool }}</h1>
         <div class="flex flex-row overflow-x-auto gap-2">
             <PrimaryButton text="Rename" :icon="BiPencil" :single-line="true" type="button" @click="rename" />
@@ -86,6 +90,12 @@ function deleteTool() {
         </div>
         <TextDivider text="User-facing" />
         <TextInput v-model="selectedTool.url" label="Query URL" placeholder="https://example.com/?param={{query}}&other={{param}}" />
+        <button
+            class="btn-primary w-full p-3 my-2!"
+            @click="reqOptionsOpened = !reqOptionsOpened">
+            More options
+        </button>
+        <ToolRequestOptions v-if="reqOptionsOpened" :toolName="props.tool" :selectedTool />
         <div v-if="missingParams && missingParams.length > 0" class="text-warning">
             <BiError class="inline" />
             <span class="align-middle">Params not found in query URL: </span>

@@ -19,7 +19,13 @@ function newTool() {
         description: '',
         params: [],
         required: [],
-        url: ''
+        url: '',
+        requestOptions: {
+            method: 'GET',
+            accept: '*/*',
+            contentType: 'application/json',
+            userAgent: 'LlamaPen/1.0 (user tool call)',
+        }
     }
 
     router.push(`/tools/${newToolName}`);
