@@ -34,7 +34,7 @@ function newTool() {
 </script>
 
 <template>
-    <div class="w-1/3 bg-background-light p-2 rounded-lg flex flex-col gap-2">
+    <div class="h-4/12 md:h-full w-full md:w-1/3 bg-background-light rounded-lg flex flex-col gap-2 p-2 relative overflow-y-auto">
         <div class="flex flex-col gap-2 justify-between">
             <RouterLink to="/settings" class="grow">
                 <div class="bg-surface p-2 rounded-md text-primary hover:text-text flex justify-center">

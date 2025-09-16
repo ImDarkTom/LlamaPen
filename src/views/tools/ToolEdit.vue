@@ -83,9 +83,19 @@ function deleteTool() {
     </div>
     <div v-else class="overflow-auto max-h-full flex flex-col">
         <h1 class="text-text font-bold">{{ props.tool }}</h1>
-        <div class="flex flex-row overflow-x-auto gap-2">
-            <PrimaryButton text="Rename" :icon="BiPencil" :single-line="true" type="button" @click="rename" />
-            <PrimaryButton text="Delete" :icon="BiTrash" :single-line="true" :color="'danger'" type="button"
+        <div class="flex flex-row overflow-x-auto gap-2 min-h-12 md:min-h-14">
+            <PrimaryButton 
+                type="button" 
+                text="Rename" 
+                :icon="BiPencil" 
+                :single-line="true" 
+                @click="rename" />
+            <PrimaryButton 
+                type="button"
+                text="Delete" 
+                :icon="BiTrash" 
+                :single-line="true" 
+                :color="'danger'" 
                 @click="deleteTool" />
         </div>
         <TextDivider text="User-facing" />
