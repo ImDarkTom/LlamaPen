@@ -98,6 +98,9 @@ function deleteTool() {
                 :color="'danger'" 
                 @click="deleteTool" />
         </div>
+        <div 
+            v-if="selectedTool.userHint"
+            class="py-2">{{ selectedTool.userHint }}</div>
         <TextDivider text="User-facing" />
         <label class="text-lg mb-2">
             <input type="checkbox" v-model="selectedTool.userConfirmation">

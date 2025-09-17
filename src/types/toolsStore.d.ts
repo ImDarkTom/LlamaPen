@@ -23,5 +23,6 @@ type AppTools = Record<string, {
     };
     params: AppToolSchema;
     required: string[];
+    userHint?: string;
     url: string;
 }>;

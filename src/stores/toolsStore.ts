@@ -7,6 +7,7 @@ const useToolsStore = defineStore('tools', () => {
         'web_search': {
             description: 'Search the internet for a query',
             userConfirmation: false,
+            userHint: 'Web search is intended to be used with a SearXNG instance. For a guide, see: https://github.com/ImDarkTom/LlamaPen-Search',
             requestOptions: {
                 method: 'GET',
                 accept: 'application/json',
