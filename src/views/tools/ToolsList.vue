@@ -54,7 +54,7 @@ function newTool() {
             class="rounded-md hover:bg-surface! text-text transition-quick"
             exactActiveClass="bg-surface-light!">
             <div
-                class="px-2 py-4">
+                class="p-2 pointer-coarse:py-4">
                 <span>{{ toolName }}</span>
             </div>
         </RouterLink>
