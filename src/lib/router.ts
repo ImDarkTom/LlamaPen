@@ -7,6 +7,7 @@ import AccountPage from '@/views/account/AccountPage.vue';
 import ShortcutsPage from '@/views/shortcuts/ShortcutsPage.vue';
 import ModelsPage from '@/views/models/ModelsPage.vue';
 import MainLayout from '@/layouts/MainLayout.vue';
+import ToolsPage from '@/views/tools/ToolsPage.vue';
 
 const routes: RouteRecordRaw[] = [
     {
@@ -22,6 +23,9 @@ const routes: RouteRecordRaw[] = [
             { path: "/shortcuts", component: ShortcutsPage },
             { path: '/models', component: ModelsPage },
             { path: '/models/:model(.*)', component: ModelsPage },
+            { path: '/tools', component: ToolsPage },
+            { path: '/tools/:tool(.*)', component: ToolsPage },
+            { path: '/new-tool', component: ToolsPage },
         ],
     },
 ];

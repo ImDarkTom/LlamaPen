@@ -11,6 +11,7 @@ import { filesAsBase64 } from '@/utils/core/filesAsBase64';
 import { useUiStore } from './uiStore';
 import setPageTitle from '@/utils/core/setPageTitle';
 import { getMessageAttachmentBlobs } from '@/utils/core/getMessageAttachments';
+import useToolsStore from './toolsStore';
 
 // ----
 // Init
@@ -124,11 +125,7 @@ const useMessagesStore = defineStore('messages', () => {
 		await db.chats.update(openedChatId.value, { lastestMessageDate: new Date() });
 		logger.info('Messages Store', 'Added message', messageData);
 
-		await getOllamaResponse();
-		if (shouldGenerateTitle) {
-			const chatTitle = await generateChatTitle();
-			setPageTitle(`${chatTitle} | Chat`);
-		}
+		await getOllamaResponse({ generateTitle: shouldGenerateTitle });
 	}
 
 
@@ -257,11 +254,27 @@ const useMessagesStore = defineStore('messages', () => {
 		const formattedMessages = sortedMessages.map(async (message) => {
 			const attachmentBlobsInMessage = await getMessageAttachmentBlobs(message.id);
 
-			return {
-				role: message.type === 'user' ? 'user' : 'assistant' as 'user' | 'assistant',
+			if (message.type === 'tool') {
+				return {
+					role: 'tool' as const,
+					tool_name: message.toolName,
+					content: message.content,
+				}
+			}
+
+			const role: MessageRole = message.type === 'model' ? 'assistant' : 'user';
+
+			const builtMessage: OllamaMessage = {
+				role: role,
 				content: message.content,
-				images: await filesAsBase64(attachmentBlobsInMessage)
+				images: await filesAsBase64(attachmentBlobsInMessage),
 			};
+
+			if (message.type === 'model' && message.toolCalls) {
+				builtMessage['tool_calls'] = message.toolCalls;
+			}
+
+			return builtMessage;
 		});
 
 		logger.info('Messages Store', 'Formatted messages into Ollama format', await Promise.all(formattedMessages));
@@ -277,8 +290,10 @@ const useMessagesStore = defineStore('messages', () => {
 	 */
 	async function getOllamaResponse(options?: {
 		modelOverride?: string
-		messageIdOverride?: number
+		messageIdOverride?: number,
+		generateTitle?: boolean,
 	}) {
+		logger.info('Messages Store', 'Get ollama response with options', options);
 		const messageSaveInterval = useConfigStore().chat.tokenSaveInterval;
 
 		// Helpers
@@ -290,6 +305,9 @@ const useMessagesStore = defineStore('messages', () => {
 			const updateData: Partial<ModelChatMessage> = { content: generatedContent };
 			if (generatedThoughts) {
 				updateData.thinking = generatedThoughts;
+			}
+			if (toolCalls && toolCalls.length > 0) {
+				updateData.toolCalls = toolCalls;
 			}
 
 			await db.messages.update(ollamaMessageId, updateData);
@@ -323,6 +341,7 @@ const useMessagesStore = defineStore('messages', () => {
 
 		let generatedContent = "";
 		let generatedThoughts = "";
+		const toolCalls: ModelChatMessage['toolCalls'] = [];
 
 		if (options?.messageIdOverride) {
 			const message = await db.messages.get(options.messageIdOverride);
@@ -337,7 +356,7 @@ const useMessagesStore = defineStore('messages', () => {
 
 		let isGenerating = false;
 		let messageSaveCounter = 0;
-		for await (const chunk of ollamaApi.chat(chatMessageList, abortController.signal, selectedModel)) {
+		for await (const chunk of ollamaApi.chat(chatMessageList, abortController.signal, { modelOverride: selectedModel })) {
 			// First, check if the chunk is an error or done indicator.
 			if (chunk.type === 'error') {
 				handleMessageChunkError(chunk);
@@ -347,6 +366,42 @@ const useMessagesStore = defineStore('messages', () => {
 
 				const status = chunk.reason === 'completed' ? 'finished' : 'cancelled';
 				setMessageStatus(status);
+
+ 				if (toolCalls.length > 0) {
+					const toolsStore = useToolsStore();
+					const toolMessagesInitialised: Omit<ToolChatMessage, 'id'>[] = toolCalls.map(tool => {
+						return {
+							type: 'tool',
+							created: new Date(),
+							chatId,
+							content: '',
+							toolName: tool.function.name
+						}
+					});
+
+					const messageIds = await db.messages.bulkPut(toolMessagesInitialised, { allKeys: true });
+
+					const toolResponses = await toolsStore.handleToolCalls(toolCalls);
+					
+					if (toolResponses && toolResponses.length > 0) {
+						await Promise.all(
+							toolResponses.map((response, index) =>
+								db.messages.update(messageIds[index], {
+									content: response.content,
+									completed: new Date(),
+								} as Partial<ToolChatMessage>)
+							)
+						);
+						
+						console.log('getting response after tools');
+						getOllamaResponse({ generateTitle: options?.generateTitle });
+					}
+				} else {
+					if (options?.generateTitle) {
+						const chatTitle = await generateChatTitle();
+						setPageTitle(`${chatTitle} | Chat`);
+					}
+				}
 
 				logger.info('Messages Store', 'Finished generating response with status', status);
 				break;
@@ -367,10 +422,19 @@ const useMessagesStore = defineStore('messages', () => {
 			if (messageIndex !== -1) {
 				generatedContent += messageChunk;
 				generatedThoughts += thoughtsChunk;
+
+				if (chunk.data.message.tool_calls) {
+					for (const toolCall of chunk.data.message.tool_calls) {
+						logger.info('Messages Store', 'Saved tool call to list', toolCall);
+						toolCalls.push(toolCall);
+					}
+				}
+
 				openedChatMessages.value[messageIndex] = {
 					...openedChatMessages.value[messageIndex] as ModelChatMessage,
 					content: generatedContent,
-					thinking: generatedThoughts
+					thinking: generatedThoughts,
+					...(toolCalls.length > 0 && { toolCalls }),
 				};
 			}
 

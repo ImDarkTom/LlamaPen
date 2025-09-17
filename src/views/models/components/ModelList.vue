@@ -29,9 +29,8 @@ defineProps<{
                 Back to Chat
             </RouterLink>
 
-            <TextDivider text="Download" />
-
             <div class="flex flex-col gap-2 overflow-y-auto">
+                <TextDivider text="Download" />
                 <PrimaryButton 
                     class="w-full"
                     text="Find models" 

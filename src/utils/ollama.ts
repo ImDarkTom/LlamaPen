@@ -6,6 +6,8 @@ import type { ReadableOf } from '@/types/util';
 import logger from '../lib/logger';
 import ollamaRequest from './ollamaRequest';
 import db from '@/lib/db';
+import useToolsStore from '@/stores/toolsStore';
+import { useModelList } from '@/composables/useModelList';
 
 const chatTitleExamples = `\nExamples of titles:\n📉 Stock Market Trends\n🍪 Perfect Chocolate Chip Recipe\nEvolution of Music Streaming\nRemote Work Productivity Tips\nArtificial Intelligence in Healthcare\n🎮 Video Game Development Insights`;
 
@@ -35,12 +37,28 @@ class OllamaAPI {
 
 		const messagesFormatted = await Promise.all(
 			messages.map(async (message) => {
+				if (message.type === 'tool') {
+					return {
+						role: 'tool',
+						content: '<Tool Response>',
+					}
+				}
+
 				const hasAttachments = (await db.attachments
 					.where('messageId')
 					.equals(message.id)
 					.count()) > 0;
 
-				const content = hasAttachments ? `${message.content}\n<Attachment(s)>` : message.content;
+				
+				let content = message.content;
+				
+				if (hasAttachments) {
+					content += '\n<Attachment(s)>';
+				}
+
+				if (message.type === 'model' && (message.toolCalls && message.toolCalls.length > 0)) {
+					content += '\n<Tool Call(s)>';
+				}
 
 				return {
 					role: message.type === 'user' ? 'user' : 'assistant',
@@ -144,23 +162,69 @@ class OllamaAPI {
 		});
 	}
 
+	appToolsToOllama(): unknown[] {
+		const toggledToolsNames = useToolsStore().toggled;
+		const toggledTools = Object.entries(useToolsStore().tools).filter(data => toggledToolsNames.includes(data[0]));
+
+		const toolsList: unknown[] = [];
+
+		for (const tool of toggledTools) {
+			const toolInList = {
+				type: 'function',
+				function: {
+					name: tool[0],
+					description: tool[1].description,
+					parameters: {
+						type: 'object',
+						properties: {} as OllamaToolParamSchema,
+						required: tool[1].required,
+					}
+				}
+			};
+			
+
+			for (const param of tool[1].params) {
+				toolInList.function.parameters.properties[param.name] = {
+					type: param.type,
+					description: param.description,
+					...(param.enum ?? { enum: param.enum })
+				};
+			}
+
+			toolsList.push(toolInList);
+		}
+
+		return toolsList;
+	}
+
 	async* chatIterator(
 		messages: OllamaMessage[], 
 		abortSignal: AbortSignal, 
-		modelOverride?: string
+		additionalOptions?: {
+			modelOverride?: string,
+		}
 	): AsyncGenerator<ChatIteratorChunk, ChatIteratorChunk | undefined, unknown> {
-		const response = await authedFetch(useConfigStore().apiUrl('/api/chat'), {
+		const { selectedModelCapabilities } = useModelList();
+		const config = useConfigStore();
+
+		const reqBody: OllamaChatRequest = {
+			model: additionalOptions?.modelOverride ?? config.selectedModel,
+			messages,
+			think: config.chat.thinking.enabled,
+			stream: true,
+			options: config.chat.messageOptionsEnabled ? config.chat.messageOptions : undefined,
+		};
+
+		if (selectedModelCapabilities.value.includes('tools')) {
+			reqBody.tools = this.appToolsToOllama();
+		}
+
+		const response = await authedFetch(config.apiUrl('/api/chat'), {
 			method: 'POST',
 			headers: {
 				'Content-Type': 'application/json',
 			},
-			body: JSON.stringify({
-				model: modelOverride ?? useConfigStore().selectedModel,
-				think: useConfigStore().chat.thinking.enabled,
-				stream: true,
-				options: useConfigStore().chat.messageOptionsEnabled ? useConfigStore().chat.messageOptions : undefined,
-				messages,
-			}),
+			body: JSON.stringify(reqBody),
 			signal: abortSignal,
 		});
 
@@ -228,8 +292,8 @@ class OllamaAPI {
 		}
 	}
 
-	chat(messages: OllamaMessage[], abortSignal: AbortSignal, modelOverride?: string): ReadableOf<ChatIteratorChunk> {
-		return Readable.from(this.chatIterator(messages, abortSignal, modelOverride)) as ReadableOf<ChatIteratorChunk>;
+	chat(messages: OllamaMessage[], abortSignal: AbortSignal, additionalOptions?: { modelOverride?: string }): ReadableOf<ChatIteratorChunk> {
+		return Readable.from(this.chatIterator(messages, abortSignal, additionalOptions)) as ReadableOf<ChatIteratorChunk>;
 	}
 
 	async getModels(force?: boolean) {

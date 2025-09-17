@@ -14,7 +14,7 @@ type UserAttachment = {
 	content: Blob;
 }
 
-type ChatMessage = ModelChatMessage | UserChatMessage;
+type ChatMessage = ModelChatMessage | UserChatMessage | ToolChatMessage;
 
 type BaseChatMessage = {
 	id: number;
@@ -28,10 +28,22 @@ interface ModelChatMessage extends BaseChatMessage {
 	model: string;
 	thinking?: string;
 	status: ModelMessageStatus;
+	toolCalls?: {
+		function: {
+			name: string;
+			arguments: Record<string, string | number | boolean>,
+		}
+	}[];
 }
 
 type ModelMessageStatus = 'waiting' | 'generating' | 'finished' | 'cancelled';
 
 interface UserChatMessage extends BaseChatMessage {
 	type: 'user';
+}
+
+interface ToolChatMessage extends BaseChatMessage {
+	type: 'tool',
+	toolName: string;
+	completed?: Date;
 }
