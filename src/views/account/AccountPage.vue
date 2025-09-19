@@ -64,18 +64,18 @@ async function deleteAccount() {
 
 // API's used token amount only updates when the user sends a request, therefore we can otherwise assume that it is at limit.
 const realRemaining = computed(() => {
-	const lastUpdatedRaw = userStore.subscription.remaining_last_updated;
-	if (!lastUpdatedRaw) return userStore.subscription.remaining;
+	const lastUpdatedRaw = userStore.subscription.usage.lastUpdated;
+	if (!lastUpdatedRaw) return userStore.subscription.usage.remaining;
 
 	if (isDateBeforeToday(lastUpdatedRaw)) {
 		// If the date was before today, that means the daily token reset must have happened. 
-		return userStore.subscription.limit;
+		return userStore.subscription.usage.limit;
 	} else {
-		return userStore.subscription.remaining;
+		return userStore.subscription.usage.remaining;
 	}
 })
 
-const quotaUsedPercentage = computed(() => (realRemaining.value / userStore.subscription.limit) * 100);
+const quotaUsedPercentage = computed(() => (realRemaining.value / userStore.subscription.usage.limit) * 100);
 
 const subButtonText = computed(() => {
 	if (loadingSubButtonPage.value) {
@@ -177,7 +177,7 @@ async function signIn() {
 				<div v-else class="w-full">
 					<span class="flex flex-row">
 						<span>
-							Messages remaining: <b>{{ realRemaining }}/{{ userStore.subscription.limit }}</b>
+							Messages remaining: <b>{{ realRemaining }}/{{ userStore.subscription.usage.limit }}</b>
 						</span>
 						<div class="grow"></div>
 						<span>Resets daily at 00:00 UTC</span>

@@ -34,17 +34,21 @@ const subscriptionInfo = ref<{
     name: string, 
     subscribed: boolean,
     status?: string, 
-    remaining: number, 
-    remaining_last_updated: string | null
-    limit: number, 
     period_end: number,
     cancel_at_period_end: boolean, 
+    usage: {
+        limit: number, 
+        remaining: number, 
+        lastUpdated: string | null;
+    }
 }>({
     name: 'Loading...',
     subscribed: false,
-    remaining: 20,
-    remaining_last_updated: null,
-    limit: 20,
+    usage: {
+        limit: 20,
+        remaining: 20,
+        lastUpdated: null,
+    },
     period_end: -1,
     cancel_at_period_end: false
 });
