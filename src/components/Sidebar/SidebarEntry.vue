@@ -3,78 +3,124 @@ import { computed, ref } from 'vue';
 import SidebarRouterLink from './SidebarRouterLink.vue';
 import { BiChat, BiPin, BiSolidPin, BiX } from 'vue-icons-plus/bi';
 import useChatsStore from '@/stores/chatsStore';
-
-const chatsStore = useChatsStore();
-
-const hoveringOverIcon = ref<boolean>(false);
-const entryTextRef = ref<HTMLInputElement | null>(null);
-
-const pinned = computed(() => props.pinned === 1 || false);
+import router from '@/lib/router';
+import useMessagesStore from '@/stores/messagesStore';
+import { getDateTimeString } from '@/utils/core/getDateTimeString';
 
 const props = defineProps<{
-	type: string,
-	id: number,
-	title: string,
-	pinned: 0 | 1,
-	hoverMessage: string,
-	isOpened: boolean,
-	editing: boolean,
-	isGeneratingTitle: boolean,
-	editName: (e: MouseEvent) => void,
-	stopEditing: (save?: boolean) => void,
-	deleteEntry: (e: MouseEvent) => void,
+    chat: Chat,
 }>();
 
+const { setPinned, isOpened, renameChat, deleteChat } = useChatsStore();
+const { chatsGeneratingTitles } = useMessagesStore();
+
+const entryTextRef = ref<HTMLInputElement | null>(null);
+const isHoveringOverIcon = ref<boolean>(false);
+const isEditingName = ref<boolean>(false);
+
+const isPinned = computed(() => props.chat.pinned === 1 || false);
+const isGeneratingTitle = computed(() => chatsGeneratingTitles.includes(props.chat.id));
+const isChatOpened = computed(() => isOpened(props.chat.id));
+
+const hoverMessage = `${props.chat.title}
+Last message: ${getDateTimeString(props.chat.lastestMessageDate)}
+Created: ${getDateTimeString(props.chat.createdAt)}`;
+
+
+// Editing
 function editKeyPressed(e: KeyboardEvent) {
     if (e.key === "Enter") {
-        props.stopEditing();
+        stopEditing();
     } else if (e.key === "Escape") {
-        props.stopEditing(false);
+        stopEditing(false);
     }
 }
 
-function setPinned(value: boolean) {
-    chatsStore.setPinned(props.id, value);
+function editChatName(e: MouseEvent) {
+    e.preventDefault();
+    const chatTextElem = entryTextRef.value;
+
+    if (!chatTextElem) {
+        return;
+    }
+
+    chatTextElem.setAttribute('data-originaltext', chatTextElem.value);
+    chatTextElem.removeAttribute('readonly');
+    chatTextElem.focus();
+    chatTextElem.select();
+    chatTextElem.setSelectionRange(0, 999);
+    isEditingName.value = true;
 }
 
-defineExpose({
-	entryTextRef,
-});
+function stopEditing(save = true) {
+    const chatTextElem = entryTextRef.value;
+
+    if (!chatTextElem) {
+        return;
+    }
+
+    chatTextElem.setAttribute('readonly', '');
+    isEditingName.value = false;
+
+    if (!save) {
+        chatTextElem.value = chatTextElem.getAttribute('data-originaltext') || "Unnamed chat";
+        chatTextElem.removeAttribute('data-originaltext');
+        return;
+    }
+
+    renameChat(props.chat.id, chatTextElem.value);
+}
+
+// Chat controls
+function promptDeleteChat(e: MouseEvent) {
+    e.preventDefault();
+
+    if (confirm(`Are you sure you want to delete "${props.chat.title}"?`)) {
+        deleteChat(props.chat.id);
+        router.push('/');
+    }
+}
 </script>
 
 <template>
 	<SidebarRouterLink 
-        :to="`/${props.type}/${props.id}`" 
+        :to="`/chat/${props.chat.id}`" 
         class="my-2 flex flex-col"
         :title="hoverMessage" 
-        @dblclick="editName" 
-        role="listitem"
-    >
-        <div class="group w-full h-10 flex flex-row gap-2 p-2 pointer-coarse:p-3 relative rounded-lg hover:text-text hover:bg-background transition-all duration-dynamic"
-            :class="{ '!bg-background-light ring-1 ring-inset ring-border': props.isOpened }">
-            <div class="box-content aspect-square" @mouseenter="hoveringOverIcon = true"
-                @mouseleave="hoveringOverIcon = false">
+        @dblclick="editChatName" 
+        role="listitem" >
+        <div 
+            class="group w-full h-10 flex flex-row gap-2 p-2 pointer-coarse:p-3 relative rounded-lg hover:text-text hover:bg-background transition-quick"
+            :class="{ '!bg-background-light ring-1 ring-inset ring-border': isChatOpened }">
+            <div 
+                class="box-content aspect-square"
+                @mouseenter="isHoveringOverIcon = true"
+                @mouseleave="isHoveringOverIcon = false" >
                 <component
-                    v-if="hoveringOverIcon || pinned"
-                    :is="pinned ? BiSolidPin : BiPin"
+                    v-if="isHoveringOverIcon || isPinned"
+                    :is="isPinned ? BiSolidPin : BiPin"
                     class="box-border p-0.5 text-primary"
-                    @mousedown.stop="setPinned(!pinned)" />
-                <component 
+                    @mousedown.stop="setPinned(chat.id, !isPinned)" />
+                <component
                     v-else 
                     :is="BiChat" 
                     class="box-border p-0.5" />
             </div>
-            <div></div>
-            <input type="text"
+            <input
+                type="text"
+                ref="entryTextRef" 
                 class="cursor-pointer text-ellipsis w-full group-hover:w-[calc(100%-1rem)] outline-none group-hover:pointer-coarse:w-[calc(100%-1.5rem)]"
-                @blur="stopEditing()" @keydown="editKeyPressed" ref="entryTextRef" :value="props.title" readonly
+                :value="props.chat.title" 
+                @blur="stopEditing()" 
+                @keydown="editKeyPressed" 
+                readonly
                 :class="{ 
-                    'rounded-sm border-2 border-border-muted': editing,
-                    'opacity-50': props.isGeneratingTitle
-                    }">
+                    'rounded-sm border-2 border-border-muted': isEditingName,
+                    'animate-blink': isGeneratingTitle,
+                }">
             <div 
-                class="hidden group-hover:block hover:text-danger transition-colors duration-dynamic ease-in-out" 
-                @click="deleteEntry">
+                class="hidden group-hover:block hover:text-danger transition-all duration-dynamic" 
+                @click="promptDeleteChat">
                 <BiX />
             </div>
         </div>

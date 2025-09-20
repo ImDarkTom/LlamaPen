@@ -157,6 +157,7 @@ progress::-moz-progress-bar {
     --color-info: oklch(0.7 0.13 260);
 
     --animate-breathe: breathe 2s ease-in-out infinite;
+    --animate-blink: blink 1s ease-in-out infinite;
 
     @keyframes breathe {
         0%,
@@ -166,6 +167,17 @@ progress::-moz-progress-bar {
 
         50% {
             transform: scale(1);
+        }
+    }
+    
+    @keyframes blink {
+        0%,
+        100% {
+            opacity: 80%;
+        }
+
+        50% {
+            opacity: 40%;
         }
     }
 }
