@@ -5,7 +5,6 @@ import useChatsStore from '@/stores/chatsStore';
 import SidebarEntry from './SidebarEntry.vue';
 import { getDateTimeString } from '@/utils/core/getDateTimeString';
 import useMessagesStore from '@/stores/messagesStore';
-import { BiChat } from 'vue-icons-plus/bi';
 
 const chatsStore = useChatsStore();
 const messagesStore = useMessagesStore();
@@ -71,17 +70,11 @@ function stopEditing(save = true) {
 const hoverTitle = `${props.chat.title}
 Last message: ${getDateTimeString(props.chat.lastestMessageDate)}
 Created: ${getDateTimeString(props.chat.createdAt)}`;
-
-
-function setPinned(value: boolean) {
-    chatsStore.setPinned(props.chat.id, value);
-}
 </script>
 
 <template>
     <SidebarEntry 
         ref="entryRef"
-        :icon="BiChat"
         type="chat"
         :id="props.chat.id"
         :title="props.chat.title"
@@ -90,7 +83,6 @@ function setPinned(value: boolean) {
         :editing="editing"
         :is-generating-title="messagesStore.chatsGeneratingTitles.includes(props.chat.id)"
         :is-opened="chatsStore.isOpened(props.chat.id)"
-        :set-pinned="setPinned" 
         :edit-name="editChatName"
         :stop-editing="stopEditing"
         :delete-entry="deleteChat"

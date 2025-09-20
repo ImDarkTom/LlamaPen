@@ -1,8 +1,10 @@
 <script setup lang="ts">
 import { computed, ref } from 'vue';
 import SidebarRouterLink from './SidebarRouterLink.vue';
-import type { IconType } from 'vue-icons-plus';
-import { BiPin, BiSolidPin, BiX } from 'vue-icons-plus/bi';
+import { BiChat, BiPin, BiSolidPin, BiX } from 'vue-icons-plus/bi';
+import useChatsStore from '@/stores/chatsStore';
+
+const chatsStore = useChatsStore();
 
 const hoveringOverIcon = ref<boolean>(false);
 const entryTextRef = ref<HTMLInputElement | null>(null);
@@ -10,7 +12,6 @@ const entryTextRef = ref<HTMLInputElement | null>(null);
 const pinned = computed(() => props.pinned === 1 || false);
 
 const props = defineProps<{
-	icon: IconType,
 	type: string,
 	id: number,
 	title: string,
@@ -19,7 +20,6 @@ const props = defineProps<{
 	isOpened: boolean,
 	editing: boolean,
 	isGeneratingTitle: boolean,
-	setPinned: (pinned: boolean) => void,
 	editName: (e: MouseEvent) => void,
 	stopEditing: (save?: boolean) => void,
 	deleteEntry: (e: MouseEvent) => void,
@@ -31,6 +31,10 @@ function editKeyPressed(e: KeyboardEvent) {
     } else if (e.key === "Escape") {
         props.stopEditing(false);
     }
+}
+
+function setPinned(value: boolean) {
+    chatsStore.setPinned(props.id, value);
 }
 
 defineExpose({
@@ -50,12 +54,15 @@ defineExpose({
             :class="{ '!bg-background-light ring-1 ring-inset ring-border': props.isOpened }">
             <div class="box-content aspect-square" @mouseenter="hoveringOverIcon = true"
                 @mouseleave="hoveringOverIcon = false">
-                <template v-if="hoveringOverIcon || pinned">
-                    <BiSolidPin v-if="pinned" class="box-border p-0.5 text-primary"
-                        @mousedown="setPinned(false)" />
-                    <BiPin v-else class="box-border p-0.5" @mousedown="setPinned(true)" />
-                </template>
-                <component :is="icon" v-else class="box-border p-0.5" />
+                <component
+                    v-if="hoveringOverIcon || pinned"
+                    :is="pinned ? BiSolidPin : BiPin"
+                    class="box-border p-0.5 text-primary"
+                    @mousedown.stop="setPinned(!pinned)" />
+                <component 
+                    v-else 
+                    :is="BiChat" 
+                    class="box-border p-0.5" />
             </div>
             <div></div>
             <input type="text"
