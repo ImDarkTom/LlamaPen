@@ -79,20 +79,19 @@ async function handleKeyDown(e: KeyboardEvent) {
 }
 
 function inputKeyDown(e: KeyboardEvent) {
-    if (e.key !== 'Enter') {
-        return;
-    }
+    if (e.key === "Enter" && !e.shiftKey) { 
+        e.preventDefault();
 
-    if (e.shiftKey) {
-        return;
+        if (!canGenerate.value) {
+            return;
+        }
+        
+        startGeneration();
+        messageInputValue.value = "";
+        if (messageInputRef.value) {
+            messageInputRef.value.innerText = "";
+        }
     }
-    
-    e.preventDefault();
-    if (!canGenerate.value) {
-        return;
-    }
-
-    startGeneration();
 }
 
 async function startGeneration() {
@@ -157,6 +156,15 @@ function handlePastedImage(file: File) {
     uploadFile({ target: fakeInput } as unknown as Event);
 }
 
+function onInput(e: Event) {
+    const target = (e.target as HTMLDivElement);
+    messageInputValue.value = target.innerText;
+
+    if (messageInputValue.value === "\n" || messageInputValue.value === "\r\n") {
+        target.innerHTML = "";
+    }
+}
+
 </script>
 
 <template>
@@ -165,15 +173,13 @@ function handlePastedImage(file: File) {
             class="min-w-[calc(100%-1rem)] lg:min-w-3xl mx-4 mb-2 p-2
                 box-border flex flex-col items-center max-h-[48rem] relative bg-background-light rounded-xl">
             <ScrollToBottomButton />
-            <!-- todo: make this a contenteditable div so we can auto-resize it on line break -->
-            <textarea 
-                class="w-full box-border p-2 pb-8 text-base border-none outline-none resize-none overflow-y-auto break-words"
-                :rows="Math.min(messageInputValue.split('\n').length, 12)"
-                v-model="messageInputValue" 
-                placeholder="Enter a message..."
-                @keydown="inputKeyDown"
-                ref="messageInputRef" 
-                ></textarea>
+            <div
+                ref="messageInputRef"
+                class="text-text    w-full box-border p-2 pb-8 text-base border-none outline-none resize-none max-h-48 overflow-y-auto break-words empty:before:content-[attr(data-placeholder)] empty:before:text-text-muted/60"
+                contenteditable="true"
+                :data-placeholder="'Enter a message...'"
+                @input="onInput"
+                @keydown="inputKeyDown" />
 
             <!-- List of uploaded files -->
             <div class="w-full max-h-16">
