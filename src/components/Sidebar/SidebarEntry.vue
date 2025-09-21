@@ -17,14 +17,17 @@ const { chatsGeneratingTitles } = useMessagesStore();
 const entryTextRef = ref<HTMLInputElement | null>(null);
 const isHoveringOverIcon = ref<boolean>(false);
 const isEditingName = ref<boolean>(false);
+const nameBeforeEdit = ref<string>('');
 
 const isPinned = computed(() => props.chat.pinned === 1 || false);
 const isGeneratingTitle = computed(() => chatsGeneratingTitles.includes(props.chat.id));
 const isChatOpened = computed(() => isOpened(props.chat.id));
 
-const hoverMessage = `${props.chat.title}
+const hoverMessage = computed(() => 
+`${props.chat.title}
 Last message: ${getDateTimeString(props.chat.lastestMessageDate)}
-Created: ${getDateTimeString(props.chat.createdAt)}`;
+Created: ${getDateTimeString(props.chat.createdAt)}`
+);
 
 
 // Editing
@@ -39,36 +42,31 @@ function editKeyPressed(e: KeyboardEvent) {
 function editChatName(e: MouseEvent) {
     e.preventDefault();
     const chatTextElem = entryTextRef.value;
-
     if (!chatTextElem) {
         return;
     }
 
-    chatTextElem.setAttribute('data-originaltext', chatTextElem.value);
-    chatTextElem.removeAttribute('readonly');
+    nameBeforeEdit.value = chatTextElem.value;
+    isEditingName.value = true;
     chatTextElem.focus();
     chatTextElem.select();
     chatTextElem.setSelectionRange(0, 999);
-    isEditingName.value = true;
 }
 
-function stopEditing(save = true) {
+function stopEditing(saveName = true) {
     const chatTextElem = entryTextRef.value;
-
     if (!chatTextElem) {
         return;
     }
 
-    chatTextElem.setAttribute('readonly', '');
     isEditingName.value = false;
 
-    if (!save) {
-        chatTextElem.value = chatTextElem.getAttribute('data-originaltext') || "Unnamed chat";
-        chatTextElem.removeAttribute('data-originaltext');
-        return;
+    if (saveName) {
+        renameChat(props.chat.id, chatTextElem.value);
+    } else {
+        chatTextElem.value = nameBeforeEdit.value || "Unnamed chat";
     }
-
-    renameChat(props.chat.id, chatTextElem.value);
+    
 }
 
 // Chat controls
@@ -110,17 +108,17 @@ function promptDeleteChat(e: MouseEvent) {
                 type="text"
                 ref="entryTextRef" 
                 class="cursor-pointer text-ellipsis w-full group-hover:w-[calc(100%-1rem)] outline-none group-hover:pointer-coarse:w-[calc(100%-1.5rem)]"
-                :value="props.chat.title" 
+                :value="props.chat.title"
                 @blur="stopEditing()" 
                 @keydown="editKeyPressed" 
-                readonly
+                :readonly="!isEditingName"
                 :class="{ 
                     'rounded-sm border-2 border-border-muted': isEditingName,
                     'animate-blink': isGeneratingTitle,
                 }">
             <div 
                 class="hidden group-hover:block hover:text-danger transition-all duration-dynamic" 
-                @click="promptDeleteChat">
+                @mousedown.stop="promptDeleteChat">
                 <BiX />
             </div>
         </div>
