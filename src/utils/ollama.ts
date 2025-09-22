@@ -20,6 +20,7 @@ export type ChatIteratorChunk = {
 } | {
 	type: 'done',
 	reason: 'completed' | 'cancelled' | 'error',
+	stats?: ModelChatMessage['stats']
 } | {
 	type: 'message',
 	data: OllamaChatResponseChunk;
@@ -265,11 +266,12 @@ class OllamaAPI {
 			if (done) {
 				return { type: 'done', reason: 'completed' };
 			}
-
+			
 			const chunkText = decoder.decode(value).trim().split('\n');
-
+			
 			for (const chunk of chunkText) {
 				const { data, error } = await tryCatch<OllamaChatResponseChunk | CustomErrorResponse>(JSON.parse(chunk));
+				console.log(data, { isDone: done });
 
 				if (error) {
 					console.error('Error parsing message chunk', error);
@@ -283,7 +285,18 @@ class OllamaAPI {
 				}
 
 				if (data.done) {
-					yield { type: 'done', reason: 'completed' };
+					yield { 
+						type: 'done', 
+						reason: 'completed', 
+						stats: {
+							evalCount: data.eval_count,
+							evalDuration: data.eval_duration,
+							loadDuration: data.load_duration,
+							promptEvalCount: data.prompt_eval_count,
+							promptEvalDuration: data.prompt_eval_duration,
+							totalDuration: data.total_duration
+						}
+					};
 					continue;
 				}
 
