@@ -170,7 +170,7 @@ function onInput(e: Event) {
 <template>
     <div class="w-full flex justify-center">
         <div
-            class="min-w-[calc(100%-1rem)] lg:min-w-3xl mx-4 mb-2 p-2
+            class="min-w-[calc(100%-1rem)] lg:min-w-3xl mx-4 mb-2 p-2 shadow-sm
                 box-border flex flex-col items-center max-h-[48rem] relative bg-background-light rounded-xl">
             <ScrollToBottomButton />
             <div
