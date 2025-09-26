@@ -2,7 +2,7 @@
 import { ref } from 'vue';
 import logger from '@/lib/logger';
 import MessageInteractionButton from './MessageInteractionButton.vue';
-import { BiCopy, BiInfoCircle, BiPencil, BiTrash } from 'vue-icons-plus/bi';
+import { BiBarChartAlt, BiCopy, BiInfoCircle, BiPencil, BiTrash } from 'vue-icons-plus/bi';
 import useMessagesStore from '@/stores/messagesStore';
 
 const props = defineProps<{
@@ -44,6 +44,46 @@ function deleteMessage() {
 function openInfo() {
     alert(JSON.stringify(props.message, null, 2));
 }
+
+function showGenStats() {
+    const formatTime = (time: number) => (time/1_000_000_000).toFixed(2);
+    const messageStats = (props.message as ModelChatMessage).stats!;
+    let popupText = 'Generation Stats:';
+    
+    // Load
+    if (messageStats.loadDuration) {
+        popupText += `\nLoad duration: ${formatTime(messageStats.loadDuration)}s\n`;
+    }
+
+    // Prompt
+    if (messageStats.promptEvalCount) {
+        popupText += `\nPrompt tokens: ${messageStats.promptEvalCount}`;
+    }
+
+    if (messageStats.promptEvalDuration) {
+        popupText += `\nPrompt processing: ${formatTime(messageStats.promptEvalDuration)}s\n`;
+    }
+
+    // Eval/generation
+    if (messageStats.evalCount) {
+        popupText += `\nResponse tokens: ${messageStats.evalCount}`;
+    }
+
+    if (messageStats.evalDuration) {
+        popupText += `\nResponse generation: ${formatTime(messageStats.evalDuration)}s`;
+    }
+
+    if (messageStats.evalCount && messageStats.evalDuration) {
+        popupText += `\nGeneration speed: ${(messageStats.evalCount/(messageStats.evalDuration/1_000_000_000)).toFixed(2)}tok/s`;
+    }
+
+    // Total
+    if (messageStats.totalDuration) {
+        popupText += `\n\nTotal time: ${formatTime(messageStats.totalDuration)}s`;
+    }
+
+    alert(popupText);
+}
 </script>
 
 <template>
@@ -58,8 +98,11 @@ function openInfo() {
         <MessageInteractionButton v-if="done || message.type === 'user'" text="Delete">
             <BiTrash class="size-full" title="Delete" @click="deleteMessage" />
         </MessageInteractionButton>
-        <MessageInteractionButton v-if="done" text="Message Info">
-            <BiInfoCircle class="size-full" title="Message Info" @click="openInfo" />
+        <MessageInteractionButton v-if="done && (message as ModelChatMessage).stats" text="Generation Stats">
+            <BiBarChartAlt class="size-full" title="Generation Stats" @click="showGenStats" />
+        </MessageInteractionButton>
+        <MessageInteractionButton v-if="done" text="Raw Info">
+            <BiInfoCircle class="size-full" title="Raw Info" @click="openInfo" />
         </MessageInteractionButton>
     </div>
 </template>

@@ -34,6 +34,14 @@ interface ModelChatMessage extends BaseChatMessage {
 			arguments: Record<string, string | number | boolean>,
 		}
 	}[];
+	stats?: {
+		evalCount?: number;
+		evalDuration?: number;
+		loadDuration?: number;
+		promptEvalCount?: number;
+		promptEvalDuration?: number;
+		totalDuration?: number;
+	};
 }
 
 type ModelMessageStatus = 'waiting' | 'generating' | 'finished' | 'cancelled';

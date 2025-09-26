@@ -15,16 +15,18 @@ import { useConfigStore } from '@/stores/config';
 import MessageOptions from './buttons/MessageOptions.vue';
 import { BiSolidXCircle } from 'vue-icons-plus/bi';
 import MessageTools from './buttons/MessageTools.vue';
+import { useModelList } from '@/composables/useModelList';
 
 const messagesStore = useMessagesStore();
 const chatsStore = useChatsStore();
 const config = useConfigStore();
+const { connectedToOllama } = useModelList();
 
 const messageInputRef = ref<HTMLTextAreaElement | null>(null);
 const messageInputValue = ref('');
 
 const canGenerate = computed<boolean>(() => {
-    return messageInputValue.value.trim() !== '';
+    return messageInputValue.value.trim() !== '' && connectedToOllama.value;
 });
 
 const focusInput = () => {
@@ -201,7 +203,7 @@ function onInput(e: Event) {
                     <MessageOptions />
                     <!-- we could revisit the persona selector later -->
                 </div>
-                <ActionButton :canGenerate="canGenerate" @startGeneration="startGeneration" />
+                <ActionButton :canGenerate @startGeneration="startGeneration" />
             </div>
         </div>
     </div>

@@ -5,7 +5,7 @@ import { ref, toRaw, watch, type Ref } from 'vue';
 import useChatsStore from './chatsStore';
 import logger from '@/lib/logger';
 import { emitter } from '@/lib/mitt';
-import ollamaApi, { type ChatIteratorError } from '@/utils/ollama';
+import ollamaApi, { type ChatIteratorChunk, type ChatIteratorError } from '@/utils/ollama';
 import { useConfigStore } from './config';
 import { filesAsBase64 } from '@/utils/core/filesAsBase64';
 import { useUiStore } from './uiStore';
@@ -301,6 +301,19 @@ const useMessagesStore = defineStore('messages', () => {
 			await db.messages.update(ollamaMessageId, { status: newStatus } as Partial<ModelChatMessage>);
 		}
 
+		const addMessagePostGenInfo = async (lastChunk: Partial<Extract<ChatIteratorChunk, { type: 'done' }>>) => {
+			await db.messages.update(ollamaMessageId, {
+				stats: {
+					evalCount: lastChunk.stats?.evalCount,
+					evalDuration: lastChunk.stats?.evalDuration,
+					loadDuration: lastChunk.stats?.loadDuration,
+					promptEvalCount: lastChunk.stats?.promptEvalCount,
+					promptEvalDuration: lastChunk.stats?.promptEvalDuration,
+					totalDuration: lastChunk.stats?.totalDuration,
+				}
+			} as Partial<ModelChatMessage>)
+		}
+
 		const syncMessageToDb = async () => {
 			const updateData: Partial<ModelChatMessage> = { content: generatedContent };
 			if (generatedThoughts) {
@@ -366,6 +379,8 @@ const useMessagesStore = defineStore('messages', () => {
 
 				const status = chunk.reason === 'completed' ? 'finished' : 'cancelled';
 				setMessageStatus(status);
+
+				addMessagePostGenInfo(chunk);
 
  				if (toolCalls.length > 0) {
 					const toolsStore = useToolsStore();
