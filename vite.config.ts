@@ -4,9 +4,16 @@ import path from "node:path";
 import tailwindcss from "@tailwindcss/vite";
 import svgLoader from 'vite-svg-loader';
 import { VitePWA } from 'vite-plugin-pwa';
+import { execSync } from "node:child_process";
+
+const commitHash = execSync('git rev-parse HEAD').toString().trim();
 
 // https://vite.dev/config/
 export default defineConfig({
+    define: {
+        __COMMIT_HASH__: JSON.stringify(commitHash),
+        __APP_VERSION__: JSON.stringify(process.env.npm_package_version),
+    },
     plugins: [
         vue(), 
         tailwindcss(), 
