@@ -40,7 +40,9 @@ const missingParams = computed(() => {
 
     return selectedTool.value.params
         .map(item => item.name)
-        .filter(item => !selectedTool.value?.url.includes(`{{${item}}}`));
+        .filter(item => 
+            !selectedTool.value?.url.includes(`{{${item}}}`) &&
+            !selectedTool.value?.requestOptions.body?.includes(`{{${item}}}`));
 });
 
 function updateEnums(param: AppToolSchema[number], newValue: string) {
