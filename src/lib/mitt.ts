@@ -1,20 +1,22 @@
-import mitt, { type EventType } from "mitt";
+import mitt from "mitt";
 
 export enum PopupButtons {
     CLOSE,
     OK_CANCEL
 }
 
-interface Events extends Record<EventType, unknown> {
-    scrollToBottom?: {
+type Events = {
+    scrollToBottom: {
         force: boolean,
     },
-    'popup:ollamanotconnected': void,
+    openNotConnectedPopup: void,
     openLightbox: {
         image: File | Blob,
     },
     openSearchbox: void,
     openChat: string,
+    stopChatGeneration: void,
+    hideSidebar: void,
 };
 
 export const emitter = mitt<Events>();

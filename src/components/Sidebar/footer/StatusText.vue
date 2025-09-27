@@ -20,7 +20,7 @@ onMounted(async () => {
             statusMessageText.value = error.value || 'Unknown Error';
         }
 
-        emitter.emit('popup:ollamanotconnected');
+        emitter.emit('openNotConnectedPopup');
     }
 });
 </script>

@@ -15,7 +15,7 @@ const dnsaCheckbox = ref<HTMLInputElement | null>(null);
 const showing = ref<boolean>(false);
 
 onMounted(() => {
-	emitter.on('popup:ollamanotconnected', () => {
+	emitter.on('openNotConnectedPopup', () => {
 		const shouldHide = localStorage.getItem('hideConnectionWarning') || "false";
 
 		if (shouldHide === "true") {
@@ -27,7 +27,7 @@ onMounted(() => {
 });
 
 onUnmounted(() => {
-	emitter.off('popup:ollamanotconnected');
+	emitter.off('openNotConnectedPopup');
 });
 
 function handleDNSAToggleCheck() {
