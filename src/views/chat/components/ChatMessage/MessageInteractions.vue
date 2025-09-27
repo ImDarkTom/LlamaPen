@@ -1,14 +1,17 @@
 <script setup lang="ts">
-import { ref } from 'vue';
+import { computed, ref } from 'vue';
 import logger from '@/lib/logger';
 import MessageInteractionButton from './MessageInteractionButton.vue';
 import { BiBarChartAlt, BiCopy, BiInfoCircle, BiPencil, BiTrash } from 'vue-icons-plus/bi';
 import useMessagesStore from '@/stores/messagesStore';
+import { useConfigStore } from '@/stores/config';
 
 const props = defineProps<{
     message: ChatMessage;
     done: boolean;
 }>();
+
+const config = useConfigStore();
 
 const emit = defineEmits(['editMessage']);
 
@@ -45,41 +48,43 @@ function openInfo() {
     alert(JSON.stringify(props.message, null, 2));
 }
 
+const messageStats = computed(() => (props.message as ModelChatMessage).stats);
+
 function showGenStats() {
     const formatTime = (time: number) => (time/1_000_000_000).toFixed(2);
-    const messageStats = (props.message as ModelChatMessage).stats!;
+    const messageStatsExisiting = messageStats.value!;
     let popupText = 'Generation Stats:';
     
     // Load
-    if (messageStats.loadDuration) {
-        popupText += `\nLoad duration: ${formatTime(messageStats.loadDuration)}s\n`;
+    if (messageStatsExisiting.loadDuration) {
+        popupText += `\nLoad duration: ${formatTime(messageStatsExisiting.loadDuration)}s\n`;
     }
 
     // Prompt
-    if (messageStats.promptEvalCount) {
-        popupText += `\nPrompt tokens: ${messageStats.promptEvalCount}`;
+    if (messageStatsExisiting.promptEvalCount) {
+        popupText += `\nPrompt tokens: ${messageStatsExisiting.promptEvalCount}`;
     }
 
-    if (messageStats.promptEvalDuration) {
-        popupText += `\nPrompt processing: ${formatTime(messageStats.promptEvalDuration)}s\n`;
+    if (messageStatsExisiting.promptEvalDuration) {
+        popupText += `\nPrompt processing: ${formatTime(messageStatsExisiting.promptEvalDuration)}s\n`;
     }
 
     // Eval/generation
-    if (messageStats.evalCount) {
-        popupText += `\nResponse tokens: ${messageStats.evalCount}`;
+    if (messageStatsExisiting.evalCount) {
+        popupText += `\nResponse tokens: ${messageStatsExisiting.evalCount}`;
     }
 
-    if (messageStats.evalDuration) {
-        popupText += `\nResponse generation: ${formatTime(messageStats.evalDuration)}s`;
+    if (messageStatsExisiting.evalDuration) {
+        popupText += `\nResponse generation: ${formatTime(messageStatsExisiting.evalDuration)}s`;
     }
 
-    if (messageStats.evalCount && messageStats.evalDuration) {
-        popupText += `\nGeneration speed: ${(messageStats.evalCount/(messageStats.evalDuration/1_000_000_000)).toFixed(2)}tok/s`;
+    if (messageStatsExisiting.evalCount && messageStatsExisiting.evalDuration) {
+        popupText += `\nGeneration speed: ${(messageStatsExisiting.evalCount/(messageStatsExisiting.evalDuration/1_000_000_000)).toFixed(2)}tok/s`;
     }
 
     // Total
-    if (messageStats.totalDuration) {
-        popupText += `\n\nTotal time: ${formatTime(messageStats.totalDuration)}s`;
+    if (messageStatsExisiting.totalDuration) {
+        popupText += `\n\nTotal time: ${formatTime(messageStatsExisiting.totalDuration)}s`;
     }
 
     alert(popupText);
@@ -87,7 +92,7 @@ function showGenStats() {
 </script>
 
 <template>
-    <div class="flex flex-row gap-1.5"
+    <div class="flex flex-row gap-1.5 mt-0.5"
         :class="{ 'justify-end': message.type === 'user', 'justify-start': message.type !== 'user' }">
         <MessageInteractionButton v-if="done || message.type === 'user'" :text="copyTooltipText">
             <BiCopy class="size-full" title="Copy Text" @click="copyMessage" />
@@ -104,5 +109,8 @@ function showGenStats() {
         <MessageInteractionButton v-if="done" text="Raw Info">
             <BiInfoCircle class="size-full" title="Raw Info" @click="openInfo" />
         </MessageInteractionButton>
+        <div v-if="done && messageStats?.evalCount && messageStats?.evalDuration && !config.chat.hideTPSInfoText" class="h-full flex items-center ml-1 text-text-muted/65 text-sm font-medium">
+            {{ ((messageStats?.evalCount/(messageStats.evalDuration/1_000_000_000)).toFixed(2)) }}tok/s
+        </div>
     </div>
 </template>

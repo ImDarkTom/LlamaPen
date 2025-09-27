@@ -274,6 +274,10 @@ async function checkOllamaVersion() {
                 v-model="config.chat.thinking.infoOpenByDefault"
                 label="Reasoning text open by default"
                 tooltip="Have reasoning/thinking text open by default for each message. (Default: Disabled)" />
+            <ToggleSetting 
+                v-model="config.chat.hideTPSInfoText"
+                label="Hide tokens/sec in message footer"
+                tooltip="Hide the <num>tok/s text in the message footer/controls for model messages. (Default: Disabled)" />
             <PrimaryButton
                 text="Clear all chats"
                 type="button"

@@ -55,6 +55,7 @@ interface Config {
         titleGenerationStyle: 'firstMessage' | 'generate' | 'chatId' | 'dynamic';
         hiddenModels: string[];
         modelRenames: Record<string, string>;
+        hideTPSInfoText: boolean;
     }
     developer: {
         mockRequests: boolean,
@@ -126,6 +127,7 @@ export const useConfigStore = defineStore('config', {
             titleGenerationStyle: 'generate',
             hiddenModels: [],
             modelRenames: {},
+            hideTPSInfoText: false,
         },
         developer: {
             mockRequests: false,
