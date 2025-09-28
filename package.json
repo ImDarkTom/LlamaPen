@@ -16,7 +16,6 @@
     "highlight.js": "^11.11.1",
     "katex": "^0.16.22",
     "marked": "^15.0.12",
-    "marked-highlight": "^2.2.2",
     "marked-katex-extension": "^5.1.5",
     "mitt": "^3.0.1",
     "normalize.css": "^8.0.1",

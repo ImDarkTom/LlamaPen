@@ -1,11 +1,22 @@
 import hljs from 'highlight.js';
-import { Marked } from 'marked';
-import { markedHighlight } from 'marked-highlight';
+import { Marked, type RendererObject } from 'marked';
 import markedKatex from 'marked-katex-extension';
 import DOMPurify from 'dompurify';
 
 import "katex/dist/katex.min.css";
-import "highlight.js/styles/atom-one-dark.min.css";
+import "highlight.js/styles/github-dark.min.css";
+
+function escape(html: string, encode = false) {
+    const escapeReplacements: Record<string, string> = {
+        '&': '&amp;',
+        '<': '&lt;',
+        '>': '&gt;',
+        '"': '&quot;',
+        "'": '&#39;',
+    };
+    if (encode) return html.replace(/[&<>"']/g, (ch) => escapeReplacements[ch]);
+    return html;
+}
 
 const renderer = {
     link(token: any) {
@@ -23,25 +34,36 @@ const renderer = {
         const externalIndicator = isInternal ? '' : ' ↗';
 
         return `<a href="${href}" ${titleAttr} ${targetAttrs}>${text}${externalIndicator}</a>`;
+    },
+    code(token: { lang: string, text: string, raw: string, type: string }) {
+        const lang = token.lang || '';
+        const language = hljs.getLanguage(lang) ? lang : '';
+        const languagePretty = hljs.getLanguage(lang)?.name || language;
+        
+        const highlighted = language
+            ? hljs.highlight(token.text, { language }).value
+            : escape(token.text, true);
+        
+        const classValue = language ? `hljs language-${language}` : 'hljs'; // add language to class if valid
+
+        const codeHtml = highlighted.replace(/\n$/, '');
+
+        return `
+            <div class="bg-[#0d1117] rounded-t-lg px-4 py-2 select-none text-xs flex flex-row justify-between border-b-[1px] border-text-muted items-center">
+                <span>${languagePretty}</span>
+                <button data-code="${encodeURIComponent(token.text)}" class="copy-code-button hover:text-text border-[1px] p-1 rounded-sm cursor-pointer">
+                    Copy
+                </button>
+            </div>
+                <pre><code class="${classValue} rounded-t-none! pt-1!">${codeHtml}\n</code></pre>`;
     }
-};
+} as RendererObject;
 
 const fullMarked = new Marked();
 
 fullMarked.use({ renderer });
 
 fullMarked.use(markedKatex());
-
-fullMarked.use(markedHighlight({
-    emptyLangClass: 'hljs',
-    langPrefix: 'hljs language-',
-    highlight(code, lang, _info) {
-        const language = hljs.getLanguage(lang) ? lang : 'plaintext';
-        
-        return hljs.highlight(code, { language }).value;
-    }
-}));
-
 
 /**
  * Handles rendering markdown, using DOMPurify to prevent XSS. Note: This may be ran many times 

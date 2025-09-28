@@ -20,6 +20,8 @@ const props = defineProps<{
     message: ChatMessage;
 }>();
 
+const messageTextContainer = ref<HTMLDivElement | null>(null);
+
 const images = ref<{ id: string; blobSrc: string; file: Blob }[]>([]);
 onMounted(async () => {
     const messageAttachments = await getMessageAttachmentBlobs(props.message.id);
@@ -30,6 +32,19 @@ onMounted(async () => {
             file: attachment,
         }
     });
+
+    messageTextContainer.value?.addEventListener('click', (e) => {
+        const target = e.target as HTMLElement;
+        if (target.classList.contains('copy-code-button')) {
+            const code = decodeURIComponent(target.dataset.code || "");
+            navigator.clipboard.writeText(code);
+
+            target.textContent = 'Copied!'
+            setTimeout(() => {
+                target.textContent = 'Copy';
+            }, 1000);
+        }
+    })
 })
 
 // === State ===
@@ -76,7 +91,7 @@ function renderText(text: string) {
         return renderMarkdown(text);
     }
 
-    const afterThinkRegex = /(?<=<\/think>)([\s\S]*)/i;;
+    const afterThinkRegex = /(?<=<\/think>)([\s\S]*)/i;
     const allAfterThinkBlock = afterThinkRegex.exec(text)?.[1] || '';
 
     return renderMarkdown(allAfterThinkBlock);
@@ -85,7 +100,7 @@ function renderText(text: string) {
 </script>
 
 <template>
-    <div class="group/message m-2 mb-0 flex flex-col">
+    <div class="group/message m-2 mb-0 flex flex-col" ref="messageTextContainer">
         <div class="box-border p-4 flex flex-col" :class="{
             'ml-auto rounded-2xl bg-background-light max-w-[70%] shadow-md shadow-background-dark/50': isUserMessage && !editing,
             'w-full max-w-[calc(100dvw-1rem)] box-border !p-2 !pb-1 !m-0': isModelMessage || editing,
