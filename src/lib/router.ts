@@ -25,7 +25,6 @@ const routes: RouteRecordRaw[] = [
             { path: '/models/:model(.*)', component: ModelsPage },
             { path: '/tools', component: ToolsPage },
             { path: '/tools/:tool(.*)', component: ToolsPage },
-            { path: '/new-tool', component: ToolsPage },
         ],
     },
 ];

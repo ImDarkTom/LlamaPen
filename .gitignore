@@ -28,3 +28,4 @@ dist-ssr
 icons_all/
 
 dev-dist/
+.vercel
