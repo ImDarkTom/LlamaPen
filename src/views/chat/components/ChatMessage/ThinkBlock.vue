@@ -1,7 +1,8 @@
 <script setup lang="ts">
 import { useConfigStore } from '@/stores/config';
 import { computed, ref } from 'vue';
-import { BiBrain, BiChevronDown, BiChevronUp } from 'vue-icons-plus/bi';
+import { AiOutlineLoading } from 'vue-icons-plus/ai';
+import { BiBrain, BiCheck, BiChevronDown, BiChevronUp } from 'vue-icons-plus/bi';
 
 const config = useConfigStore();
 
@@ -15,6 +16,17 @@ const thinkBlockText = computed<string | null>(() => {
 	const rule = /^<think>([\s\S]*?)(?=<\/think>|$)/i;
 	return rule.exec(props.message.content)?.[1].trim() || props.message.thinking || null;
 });
+
+const thinkStats = computed<{ ended: boolean, time: string } | null>(() => {
+	const started = props.message.thinkStats?.started;
+	if (!props.message.thinkStats || !started || started === -1) return null;
+
+	const ended = (!props.message.thinkStats.ended || props.message.thinkStats.ended !== -1) ? props.message.thinkStats.ended! : Date.now();
+
+	return { time: ((ended - started) / 1000).toFixed(2), ended: props.message.thinkStats.ended !== -1 };
+});
+
+const thinkingOngoing = computed(() => (thinkStats.value && !thinkStats.value.ended));
 </script>
 
 <template>
@@ -23,12 +35,19 @@ const thinkBlockText = computed<string | null>(() => {
 			class="flex flex-row items-center justify-between cursor-pointer" 
 			:class="{ '!pb-0': opened }"
 			@click="opened = !opened">
-			<div class="flex flex-row items-center gap-2">
+			<div class="flex flex-row items-center gap-2" :class="{ 'animate-blink': (thinkStats && !thinkStats.ended) }">
 				<BiBrain />
-				<span class="text-lg font-semibold select-none">Thoughts</span>
+				<span class="text-lg font-semibold select-none">{{ thinkingOngoing ? 'Thinking...' : 'Thoughts' }}</span>
 			</div>
-			<BiChevronUp v-if="opened" />
-			<BiChevronDown v-else />
+			<div class="flex flex-row gap-2">
+				<span v-if="thinkStats">
+					<span class="items-center">{{ thinkStats.time }}s</span>
+					<AiOutlineLoading v-if="thinkingOngoing" class="inline size-4 ml-2 animate-spin" />
+					<BiCheck v-else class="inline size-4 ml-1" />
+				</span>
+				<BiChevronUp v-if="opened" />
+				<BiChevronDown v-else />
+			</div>
 		</div>
 		<Transition name="expand-height">
 			<div v-if="opened" class="!pt-0">

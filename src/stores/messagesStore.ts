@@ -322,6 +322,12 @@ const useMessagesStore = defineStore('messages', () => {
 			if (toolCalls && toolCalls.length > 0) {
 				updateData.toolCalls = toolCalls;
 			}
+			if (thinkStarted || thinkEnded) {
+				updateData.thinkStats = {
+					started: thinkStarted,
+					ended: thinkEnded
+				};
+			}
 
 			await db.messages.update(ollamaMessageId, updateData);
 		}
@@ -354,6 +360,8 @@ const useMessagesStore = defineStore('messages', () => {
 
 		let generatedContent = "";
 		let generatedThoughts = "";
+		let thinkStarted = -1;
+		let thinkEnded = -1;
 		const toolCalls: ModelChatMessage['toolCalls'] = [];
 
 		if (options?.messageIdOverride) {
@@ -438,19 +446,30 @@ const useMessagesStore = defineStore('messages', () => {
 				generatedContent += messageChunk;
 				generatedThoughts += thoughtsChunk;
 
+				const updatedMessage = {
+					...openedChatMessages.value[messageIndex] as ModelChatMessage,
+					content: generatedContent,
+					thoughts: generatedThoughts,
+				} as ModelChatMessage;
+
+				if ((/<think>/i.test(generatedContent) || generatedThoughts !== '') && thinkStarted === -1) {
+					thinkStarted = Date.now();
+				}
+
+				if (((/<\/think>/i.test(generatedContent) || (thoughtsChunk === '' && generatedThoughts !== ''))) && thinkEnded === -1) {
+					thinkEnded = Date.now();
+				}
+
 				if (chunk.data.message.tool_calls) {
 					for (const toolCall of chunk.data.message.tool_calls) {
 						logger.info('Messages Store', 'Saved tool call to list', toolCall);
 						toolCalls.push(toolCall);
 					}
+
+					updatedMessage['toolCalls'] = toolCalls;
 				}
 
-				openedChatMessages.value[messageIndex] = {
-					...openedChatMessages.value[messageIndex] as ModelChatMessage,
-					content: generatedContent,
-					thinking: generatedThoughts,
-					...(toolCalls.length > 0 && { toolCalls }),
-				};
+				openedChatMessages.value[messageIndex] = updatedMessage;
 			}
 
 			messageSaveCounter++;

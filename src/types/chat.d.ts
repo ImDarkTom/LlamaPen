@@ -42,6 +42,10 @@ interface ModelChatMessage extends BaseChatMessage {
 		promptEvalDuration?: number;
 		totalDuration?: number;
 	};
+	thinkStats?: {
+		started?: number;
+		ended?: number;
+	};
 }
 
 type ModelMessageStatus = 'waiting' | 'generating' | 'finished' | 'cancelled';

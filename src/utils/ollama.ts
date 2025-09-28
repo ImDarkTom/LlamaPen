@@ -199,8 +199,8 @@ class OllamaAPI {
 	}
 
 	async* chatIterator(
-		messages: OllamaMessage[], 
-		abortSignal: AbortSignal, 
+		messages: OllamaMessage[],
+		abortSignal: AbortSignal,
 		additionalOptions?: {
 			modelOverride?: string,
 		}
@@ -271,7 +271,6 @@ class OllamaAPI {
 			
 			for (const chunk of chunkText) {
 				const { data, error } = await tryCatch<OllamaChatResponseChunk | CustomErrorResponse>(JSON.parse(chunk));
-				console.log(data, { isDone: done });
 
 				if (error) {
 					console.error('Error parsing message chunk', error);
