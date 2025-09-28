@@ -5,6 +5,7 @@ import MessageList from './components/MessageList.vue';
 import useChatsStore from '@/stores/chatsStore';
 import { onMounted, ref, watch } from 'vue';
 import useMessagesStore from '@/stores/messagesStore';
+import { emitter } from '@/lib/mitt';
 
 const chatsStore = useChatsStore();
 const messagesStore = useMessagesStore();
@@ -19,8 +20,15 @@ async function updateChatTitle() {
     }
 }
 
-onMounted(updateChatTitle);
-watch(() => messagesStore.openedChatId, updateChatTitle);
+onMounted(() => {
+    updateChatTitle();
+    emitter.emit('focusInputBar');
+});
+
+watch(() => messagesStore.openedChatId, () => {
+    updateChatTitle();
+    emitter.emit('focusInputBar');
+});
 
 function renameChat() {
     if (!messagesStore.openedChatId) return;

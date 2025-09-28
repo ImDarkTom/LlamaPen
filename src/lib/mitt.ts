@@ -17,6 +17,7 @@ type Events = {
     openChat: string,
     stopChatGeneration: void,
     hideSidebar: void,
+    focusInputBar: void,
 };
 
 export const emitter = mitt<Events>();

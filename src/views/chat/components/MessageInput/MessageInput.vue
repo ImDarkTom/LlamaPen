@@ -40,12 +40,16 @@ const focusInput = () => {
 onMounted(() => {
     document.addEventListener('keydown', handleKeyDown);
 
+    emitter.on('focusInputBar', focusInput);
+
     if (!messageInputRef.value) return;
     messageInputRef.value.addEventListener('paste', handleClipboardEvent);
 });
 
 onBeforeUnmount(() => {
     document.removeEventListener('keydown', handleKeyDown);
+
+    emitter.off('focusInputBar', focusInput);
 
     if (!messageInputRef.value) return;
     messageInputRef.value.addEventListener('paste', handleClipboardEvent);
