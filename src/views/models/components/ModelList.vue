@@ -19,10 +19,8 @@ defineProps<{
 
 <template>
     <div
-        class="h-4/12 md:h-full w-full md:w-3/12 bg-background-light rounded-lg flex flex-col gap-2 p-2 relative"
-        :class="{ 'cursor-not-allowed select-none overflow-hidden!': config.api.enabled }" >
+        class="h-4/12 md:h-full w-full md:w-3/12 bg-background-light rounded-lg flex flex-col gap-2 p-2 relative" >
             <!-- overlay -->
-            <div v-if="config.api.enabled" class="w-full h-full absolute top-0 left-0 bg-black/50"></div>
             <RouterLink to="/"
                 class="p-4 rounded-md flex flex-row items-center gap-2 font-semibold cursor-pointer hover:bg-surface! hover:text-text transition-colors duration-dynamic select-none">
                 <BiLeftArrowAlt class="size-6" />
@@ -30,23 +28,25 @@ defineProps<{
             </RouterLink>
 
             <div class="flex flex-col gap-2 overflow-y-auto">
-                <TextDivider text="Download" />
-                <PrimaryButton 
-                    class="w-full"
-                    text="Find models" 
-                    :icon="BiLinkExternal" 
-                    type="external-link" 
-                    href="https://ollama.com/search" />
-                <RouterLink to="/models/downloads" v-slot="{ isActive }">
-                    <button
-                        class="w-full text-text-muted enabled:hover:text-text bg-surface enabled:hover:bg-surface-light py-6 rounded-lg enabled:cursor-pointer select-none flex flex-row justify-center items-center gap-2 disabled:opacity-75"
-                        :class="{ 'bg-surface-light ring-2 ring-border ring-inset': isActive }"
-                        :disabled="!connectedToOllama">
-                        <BiDownload />
-                        Download Manager
-                    </button>
-                </RouterLink>
-
+                <template v-if="!config.api.enabled">
+                    <TextDivider text="Download" />
+                        <PrimaryButton 
+                        class="w-full"
+                        text="Find models" 
+                        :icon="BiLinkExternal" 
+                        type="external-link" 
+                        href="https://ollama.com/search" />
+                        <RouterLink to="/models/downloads" v-slot="{ isActive }">
+                            <button
+                            class="w-full text-text-muted enabled:hover:text-text bg-surface enabled:hover:bg-surface-light py-6 rounded-lg enabled:cursor-pointer select-none flex flex-row justify-center items-center gap-2 disabled:opacity-75"
+                            :class="{ 'bg-surface-light ring-2 ring-border ring-inset': isActive }"
+                            :disabled="!connectedToOllama">
+                            <BiDownload />
+                            Download Manager
+                        </button>
+                    </RouterLink>
+                </template>
+                
                 <TextDivider text="Models" />
 
                 <div v-if="!connectedToOllama">
@@ -55,8 +55,7 @@ defineProps<{
                 <div v-else-if="modelsList.length === 0">
                     No models found
                 </div>
-                <RouterLink 
-                    v-else-if="!config.api.enabled" 
+                <RouterLink
                     v-for="{ modelData, loadedInMemory, hidden, displayName } in modelsList" 
                     class="p-4 rounded-md flex flex-row items-center gap-2 hover:bg-surface! hover:text-text transition-all duration-dynamic"
                     exactActiveClass="!bg-surface-light ring-2 ring-border ring-inset"

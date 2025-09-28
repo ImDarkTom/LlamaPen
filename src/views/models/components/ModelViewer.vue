@@ -21,6 +21,8 @@ import PrimaryButton from '@/components/Buttons/PrimaryButton.vue';
 const { setModelHidden } = useModelList();
 const config = useConfigStore();
 
+const apiEnabled = computed(() => config.api.enabled);
+
 const props = defineProps<{
     modelFromParams: string | null,
     selectedModel: ModelViewInfo,
@@ -207,6 +209,7 @@ const isHidden = computed(() => config.chat.hiddenModels.includes(props.modelFro
         <h2 class="text-xl md:text-3xl pb-2 pt-4 text-text">Actions</h2>
         <div class="flex flex-row gap-2 overflow-x-auto pb-2" :class="{ 'opacity-50': selectedModel.state === 'loading' }">
             <PrimaryButton
+                v-if="!apiEnabled"
                 type="external-link"
                 text="Open in Ollama Library"
                 :icon="BiLinkExternal"
@@ -227,41 +230,47 @@ const isHidden = computed(() => config.chat.hiddenModels.includes(props.modelFro
                 :single-line="true"
                 @click="setModelHidden(modelFromParams, isHidden)" />
 
-            <PrimaryButton
-                v-if="modelFromParams && (selectedModel.state === 'data' && selectedModel.isLoaded)"
-                type="button"
-                text="Unload Model"
-                :icon="MemoryUnloadIcon"
-                :single-line="true"
-                @click="unloadModel" />
-            <PrimaryButton
-                v-else
-                type="button"
-                :text="loadModelText"
-                :icon="Fa6Memory"
-                :single-line="true"
-                @click="loadModelIntoOllama" />
-
-            <PrimaryButton
-                type="button"
-                text="Copy/duplicate model"
-                :icon="BiCopy"
-                :single-line="true"
-                @click="copyModel" />
-            <PrimaryButton
-                type="button"
-                color="danger"
-                text="Delete model"
-                :icon="BiTrash"
-                :single-line="true"
-                @click="deleteModel" />
+            <template v-if="!apiEnabled">
+                <PrimaryButton
+                    v-if="modelFromParams && (selectedModel.state === 'data' && selectedModel.isLoaded)"
+                    type="button"
+                    text="Unload Model"
+                    :icon="MemoryUnloadIcon"
+                    :single-line="true"
+                    @click="unloadModel" />
+                <PrimaryButton
+                    v-else
+                    type="button"
+                    :text="loadModelText"
+                    :icon="Fa6Memory"
+                    :single-line="true"
+                    @click="loadModelIntoOllama" />
+                <PrimaryButton
+                    type="button"
+                    text="Copy/duplicate model"
+                    :icon="BiCopy"
+                    :single-line="true"
+                    @click="copyModel" />
+                <PrimaryButton
+                    type="button"
+                    color="danger"
+                    text="Delete model"
+                    :icon="BiTrash"
+                    :single-line="true"
+                    @click="deleteModel" />
+            </template>
         </div>
 
-        <h2 class="text-xl md:text-3xl pt-4 pb-2 text-text">Info</h2>
-        <InfoSection title="License" :content="sanitizeSection(modelLicense)" />
-        <InfoSection title="Modelfile" :content="sanitizeSection(modelModelfile)" />
-        <InfoSection title="Template" :content="sanitizeSection(modelTemplate)" />
-        <InfoSection title="Details" :kv-list="modelDetails" />
-        <InfoSection title="Model Info" :kv-list="modelInfo" />
+        <div class="relative">
+            <div v-if="apiEnabled" class="absolute w-full min-h-full bg-black/35 rounded-lg backdrop-blur-sm flex items-center justify-center text-lg shadow-sm">
+                Info unavailable in API mode.
+            </div>
+            <h2 class="text-xl md:text-3xl pt-4 pb-2 text-text">Info</h2>
+            <InfoSection title="License" :content="sanitizeSection(modelLicense)" />
+            <InfoSection title="Modelfile" :content="sanitizeSection(modelModelfile)" />
+            <InfoSection title="Template" :content="sanitizeSection(modelTemplate)" />
+            <InfoSection title="Details" :kv-list="modelDetails" />
+            <InfoSection title="Model Info" :kv-list="modelInfo" />
+        </div>
     </ViewerContainer>
 </template>
