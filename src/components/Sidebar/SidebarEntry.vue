@@ -12,7 +12,7 @@ const props = defineProps<{
 }>();
 
 const { setPinned, isOpened, renameChat, deleteChat } = useChatsStore();
-const { chatsGeneratingTitles } = useMessagesStore();
+const messagesStore = useMessagesStore();
 
 const entryTextRef = ref<HTMLInputElement | null>(null);
 const isHoveringOverIcon = ref<boolean>(false);
@@ -20,7 +20,7 @@ const isEditingName = ref<boolean>(false);
 const nameBeforeEdit = ref<string>('');
 
 const isPinned = computed(() => props.chat.pinned === 1 || false);
-const isGeneratingTitle = computed(() => chatsGeneratingTitles.includes(props.chat.id));
+const isGeneratingTitle = computed(() => messagesStore.chatsGeneratingTitles.includes(props.chat.id));
 const isChatOpened = computed(() => isOpened(props.chat.id));
 
 const hoverMessage = computed(() => 
@@ -81,7 +81,7 @@ function promptDeleteChat(e: MouseEvent) {
 </script>
 
 <template>
-	<SidebarRouterLink 
+	<SidebarRouterLink
         :to="`/chat/${props.chat.id}`" 
         class="my-2 flex flex-col"
         :title="hoverMessage" 
