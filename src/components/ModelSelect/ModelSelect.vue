@@ -11,7 +11,8 @@ import Dropdown from '../Dropdown/Dropdown.vue';
 import { useModelList, type ModelInfoListItem } from '@/composables/useModelList';
 import { AiOutlineLoading } from 'vue-icons-plus/ai';
 import PrimaryButton from '../Buttons/PrimaryButton.vue';
-import { BiRefresh } from 'vue-icons-plus/bi';
+import { BiFilterAlt, BiRefresh } from 'vue-icons-plus/bi';
+import MultiItemSelect from './MultiItemSelect.vue';
 
 const config = useConfigStore();
 
@@ -138,6 +139,16 @@ function searchKeyDown(e: KeyboardEvent) {
             focusedItemIndex.value = Math.min(focusedItemIndex.value + 1, queriedModelList.value.length - 1); // up 1 index or keep at max
             scrollDown = true;
             break;
+        
+        case "/":
+            e.preventDefault();
+            filterMenuOpen.value = true;
+
+            nextTick(() => {
+                orderBySelect.value?.focus();
+            });
+            
+            break;
 
         default:
             focusedItemIndex.value = 0;
@@ -165,6 +176,41 @@ const modelName = computed(() => {
     
     return selectedModelInfo.value.data.displayName;
 });
+
+const orderBySelect = ref<HTMLSelectElement | null>(null);
+// const filterCapabilitiesSelect = ref<HTMLSelectElement | null>(null);
+
+const filterMenuOpen = ref(false);
+
+function toggleFilterMenu() {
+    filterMenuOpen.value = !filterMenuOpen.value;
+}
+
+const orderBy = ref<'default' | 'alphabetically' | 'size'>('default');
+const filterCapabilities = ref<OllamaCapability[]>([]);
+
+function userSort(items: ModelInfoListItem[]) {
+    switch (orderBy.value) {
+        case 'default':
+            break;
+        
+        case 'alphabetically':
+            items = items.sort((a, b) => {
+                const item1 = a.modelData.model.split('/')[1] ?? a.modelData.model;
+                const item2 = b.modelData.model.split('/')[1] ?? b.modelData.model;
+
+                return item1.localeCompare(item2, undefined, { sensitivity: 'base' });
+            });
+            break;
+
+        case 'size':
+            items = items.sort((a, b) => a.modelData.size - b.modelData.size);
+            break;
+    }
+
+    return items;
+}
+
 </script>
 
 <template>
@@ -205,13 +251,44 @@ const modelName = computed(() => {
                     @keydown="searchKeyDown" 
                     aria-label="Search for a model..."
                     aria-controls="model-list" >
+                <button
+                    @click="toggleFilterMenu"
+                    :class="{ 'hover:!bg-border': filterMenuOpen }"
+                    class="h6 p-3 text-background bg-primary hover:!bg-border cursor-pointer transition-colors duration-dynamic rounded-lg">
+                    <BiFilterAlt />
+                </button>
                 <RouterLink to="/models"
                     class="h-6 p-3 box-content text-background !bg-primary hover:!bg-border cursor-pointer transition-colors duration-dynamic rounded-lg">
                     <TbListDetails />
                 </RouterLink>
             </div>
 
-            <ul role="list" class="max-h-80 overflow-y-auto [scrollbar-width:thin] *:not-last:mb-2">
+            <div v-if="filterMenuOpen" class="max-h-16 relative flex flex-row gap-2">
+                <label class="flex flex-col">
+                    <span>Order:</span>
+                    <select 
+                        v-model="orderBy" 
+                        ref="orderBySelect"
+                        class="bg-surface-light p-2 rounded-md ring-inset ring-2 ring-border-muted focus:ring-border outline-0">
+                        <option value="default">Default ({{ config.api.enabled ? 'Creator Name' : 'Added date' }})</option>
+                        <option value="alphabetically">Alphabetically</option>
+                        <option value="size">Size</option>
+                    </select>
+                </label>
+                <label class="flex flex-col">
+                    <span>Filter:</span>
+                    <MultiItemSelect 
+                        v-model="filterCapabilities"
+                        :items="['thinking', 'vision', 'tools']"
+                        button-class="bg-surface-light max-w-40 p-2 rounded-md ring-inset ring-2 ring-border-muted focus:ring-border outline-0 line-clamp-1 "
+                        menu-class="bg-surface w-full min-w-fit p-2 rounded-md ring-inset ring-2 ring-border-muted focus:ring-border outline-0 max-h-48 overflow-y-auto"
+                        item-class="p-1 rounded-md hover:bg-surface-light"
+                        selected-item-class="bg-primary text-background"
+                        />
+                </label>
+            </div>
+
+            <ul role="list" :class="{ 'max-h-64!': filterMenuOpen }" class="max-h-80 overflow-y-auto [scrollbar-width:thin] *:not-last:mb-2">
                 <li v-if="modelsLoading" class="h-24 flex justify-center items-center">
                     <AiOutlineLoading class="animate-spin size-6" />
                 </li>
@@ -239,7 +316,7 @@ const modelName = computed(() => {
                 </li>
                 <ModelSelectItem 
                     v-else-if="queriedModelList.filter((item) => !item.hidden).length > 0"
-                    v-for="(model, index) in queriedModelList.filter((item) => !item.hidden)" 
+                    v-for="(model, index) in userSort(queriedModelList.filter((item) => !item.hidden))" 
                     :key="model.modelData.model" 
                     :index="index"
                     :model="model" 
