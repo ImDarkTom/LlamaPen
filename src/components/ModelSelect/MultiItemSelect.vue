@@ -1,10 +1,17 @@
 <script setup lang="ts">
 import { nextTick, ref } from 'vue';
+import type { IconType } from 'vue-icons-plus';
 import { BiCheck } from 'vue-icons-plus/bi';
+
+type ListItem = {
+    value: string;
+    label: string;
+    icon?: IconType;
+}
 
 const props = defineProps<{
     modelValue: string[];
-    items: string[];
+    items: ListItem[];
     buttonClass?: string;
     menuClass?: string;
     itemClass?: string;
@@ -36,11 +43,11 @@ function handleClickOutside() {
     }
 }
 
-function handleSelectItem(item: string) {
+function handleSelectItem(item: ListItem) {
     const newValue = [...props.modelValue];
-    const index = newValue.indexOf(item);
+    const index = newValue.indexOf(item.value);
     if (index === -1) {
-        newValue.push(item);
+        newValue.push(item.value);
     } else {
         newValue.splice(index, 1);
     }
@@ -92,7 +99,7 @@ function handleItemKeydown(e: KeyboardEvent) {
 <template>
     <div class="relative" v-click-outside="handleClickOutside">
         <button
-            class="overflow-hidden text-ellipsis whitespace-nowrap"
+            class="overflow-hidden text-ellipsis whitespace-nowrap flex flex-row items-center"
             :class="buttonClass"
             tabindex="0"
             role="button"
@@ -103,10 +110,18 @@ function handleItemKeydown(e: KeyboardEvent) {
             @keydown.space.prevent="toggleMenu"
             @keydown="handleKeydown"
         >
-            {{ modelValue.length > 0 ? modelValue.join(', ') : '(None)' }}
+            <template v-if="modelValue.length > 0">
+                <span v-for="item in items.filter(i => modelValue.includes(i.value))" :key="item.value" class="not-last:mr-1 inline-flex">
+                    <component v-if="item.icon" :is="item.icon" class="mr-1 size-5" />
+                    <span v-else>{{ item.label }}</span>
+                </span>
+            </template>
+            <template v-else>
+                (None)
+            </template>
             <svg 
                 :class="{ 'rotate-180': isMenuOpen }" 
-                class="inline w-3 h-3 transition-transform"
+                class="inline w-3 h-3 ml-1 transition-transform"
                 viewBox="0 0 12 12" 
                 fill="none"
                 stroke="currentColor"
@@ -132,11 +147,12 @@ function handleItemKeydown(e: KeyboardEvent) {
                     @keydown="handleItemKeydown"
                     @mouseenter="hoveringOverIndex = index; activeIndex = index"
                     @mouseleave="hoveringOverIndex = -1"
-                    class="flex items-center"
-                    :class="[itemClass, modelValue.includes(item) ? selectedItemClass : '']"
+                    class="flex items-center select-none"
+                    :class="[itemClass, modelValue.includes(item.value) ? selectedItemClass : '']"
                     >
-                    <BiCheck v-if="modelValue.includes(item)" class="mr-2" />
-                    {{ item }}
+                    <BiCheck v-if="modelValue.includes(item.value)" />
+                    <component v-if="item.icon" :is="item.icon" class="mr-2" />
+                    {{ item.label }}
                 </li>
             </ul>
         </div>

@@ -9,12 +9,13 @@ import { TbListDetails } from 'vue-icons-plus/tb';
 import isOnMobile from '@/utils/core/isOnMobile';
 import Dropdown from '../Dropdown/Dropdown.vue';
 import { useModelList, type ModelInfoListItem } from '@/composables/useModelList';
-import { AiOutlineLoading } from 'vue-icons-plus/ai';
+import { AiOutlineEye, AiOutlineLoading } from 'vue-icons-plus/ai';
 import PrimaryButton from '../Buttons/PrimaryButton.vue';
-import { BiFilterAlt, BiRefresh } from 'vue-icons-plus/bi';
+import { BiBrain, BiFilterAlt, BiRefresh, BiWrench } from 'vue-icons-plus/bi';
 import MultiItemSelect from './MultiItemSelect.vue';
 
 const config = useConfigStore();
+const { getModelCapabilities } = useModelList();
 
 // State
 const { 
@@ -178,8 +179,6 @@ const modelName = computed(() => {
 });
 
 const orderBySelect = ref<HTMLSelectElement | null>(null);
-// const filterCapabilitiesSelect = ref<HTMLSelectElement | null>(null);
-
 const filterMenuOpen = ref(false);
 
 function toggleFilterMenu() {
@@ -190,6 +189,13 @@ const orderBy = ref<'default' | 'alphabetically' | 'size'>('default');
 const filterCapabilities = ref<OllamaCapability[]>([]);
 
 function userSort(items: ModelInfoListItem[]) {
+    if (filterCapabilities.value.length > 0) {
+        items = items.filter((item) => {
+            const capabilities = getModelCapabilities(item);
+            return filterCapabilities.value.every((cap) => capabilities.includes(cap));
+        });
+    };
+
     switch (orderBy.value) {
         case 'default':
             break;
@@ -210,7 +216,6 @@ function userSort(items: ModelInfoListItem[]) {
 
     return items;
 }
-
 </script>
 
 <template>
@@ -263,7 +268,40 @@ function userSort(items: ModelInfoListItem[]) {
                 </RouterLink>
             </div>
 
-            <div v-if="filterMenuOpen" class="max-h-16 relative flex flex-row gap-2">
+            <div v-if="filterMenuOpen" class="max-h-16 relative flex flex-row gap-2 overflow-y-visible">
+                <div class="flex flex-col justify-end">
+                    <button 
+                        class="bg-surface-light p-2 rounded-md ring-inset ring-2 ring-border-muted h-min"
+                        @click="filterCapabilities = []; orderBy = 'default'">
+                        <BiRefresh class="size-5" />
+                    </button>
+                </div>
+                <label class="flex flex-col">
+                    <span>Filter:</span>
+                    <MultiItemSelect 
+                        v-model="filterCapabilities"
+                        :items="[
+                            {
+                                label: 'Thinking',
+                                value: 'thinking',
+                                icon: BiBrain,
+                            },
+                            {
+                                label: 'Vision',
+                                value: 'vision',
+                                icon: AiOutlineEye,
+                            },
+                            {
+                                label: 'Tools',
+                                value: 'tools',
+                                icon: BiWrench,
+                            }
+                        ]"
+                        button-class="bg-surface-light w-full p-2 rounded-md ring-inset ring-2 ring-border-muted focus:ring-border outline-0 line-clamp-1 "
+                        menu-class="bg-surface w-full min-w-fit p-2 rounded-md ring-inset ring-2 ring-border-muted focus:ring-border outline-0 max-h-48 overflow-y-auto"
+                        item-class="p-1 rounded-md hover:bg-surface-light"
+                        selected-item-class="bg-primary! text-background" />
+                </label>
                 <label class="flex flex-col">
                     <span>Order:</span>
                     <select 
@@ -274,17 +312,6 @@ function userSort(items: ModelInfoListItem[]) {
                         <option value="alphabetically">Alphabetically</option>
                         <option value="size">Size</option>
                     </select>
-                </label>
-                <label class="flex flex-col">
-                    <span>Filter:</span>
-                    <MultiItemSelect 
-                        v-model="filterCapabilities"
-                        :items="['thinking', 'vision', 'tools']"
-                        button-class="bg-surface-light max-w-40 p-2 rounded-md ring-inset ring-2 ring-border-muted focus:ring-border outline-0 line-clamp-1 "
-                        menu-class="bg-surface w-full min-w-fit p-2 rounded-md ring-inset ring-2 ring-border-muted focus:ring-border outline-0 max-h-48 overflow-y-auto"
-                        item-class="p-1 rounded-md hover:bg-surface-light"
-                        selected-item-class="bg-primary text-background"
-                        />
                 </label>
             </div>
 
