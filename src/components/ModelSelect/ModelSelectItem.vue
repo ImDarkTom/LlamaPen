@@ -89,7 +89,7 @@ const modelCapabilities = computed(() => getModelCapabilities(props.model));
 					<div 
 						v-if="modelCapabilities.includes('tools')"
 						class="bg-blue-400/25 rounded-sm ring-1 ring-blue-400 p-0.5"
-						title="Tools - can use external tools (to be added)">
+						title="Tools - can use external tools">
 						<BiWrench class="text-blue-400 size-4" />
 					</div>
 					<div 
