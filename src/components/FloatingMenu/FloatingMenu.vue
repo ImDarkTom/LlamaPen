@@ -5,10 +5,12 @@ import { nanoid } from 'nanoid';
 
 const props = withDefaults(defineProps<{
     isOpened?: boolean;
+    disabled?: boolean;
     unstyledMenu?: boolean;
     unstyledButton?: boolean;
 }>(), {
     isOpened: false,
+    disabled: false,
     unstyledMenu: false,
     unstyledButton: false,
 });
@@ -58,6 +60,7 @@ function toggleMenu() {
         emit('update:isOpened', false);
         emit('toggled', false);
     } else {
+        if (props.disabled) return;
         emit('update:isOpened', true);
         emit('toggled', true);
     }
