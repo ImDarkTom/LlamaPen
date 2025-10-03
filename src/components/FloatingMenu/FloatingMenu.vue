@@ -1,6 +1,6 @@
 <script setup lang="ts">
 import { computed, inject, onBeforeUnmount, onMounted, provide, ref } from 'vue';
-import { BiChevronDown, BiChevronUp } from 'vue-icons-plus/bi';
+import { BiChevronUp } from 'vue-icons-plus/bi';
 import { nanoid } from 'nanoid';
 
 const props = withDefaults(defineProps<{
@@ -110,19 +110,13 @@ onBeforeUnmount(() => {
                 'flex flex-row items-center gap-1 w-max select-none cursor-pointer rounded-lg transition-all duration-dynamic text-text-muted hover:text-text ring-1 ring-text-muted hover:ring-text h-10 p-2 pointer-coarse:p-3 box-border': !unstyledButton
             }"
             :aria-expanded="isOpened"
-            @click.stop="toggleMenu" 
+            @click="toggleMenu" 
             ref="buttonRef">
             <slot name="button" />
-            <template v-if="!unstyledButton">
-                <template v-if="true ">
-                    <BiChevronUp v-if="isOpened"  />
-                    <BiChevronDown v-else  />
-                </template>
-                <template v-else>
-                    <BiChevronDown v-if="isOpened" />
-                    <BiChevronUp v-else />
-                </template>
-            </template>
+            <BiChevronUp
+                v-if="!unstyledButton"
+                class="transition-transform" 
+                :class="{ 'rotate-180': isOpened  }" />
         </div>
         <Teleport to="body">
             <Transition 
