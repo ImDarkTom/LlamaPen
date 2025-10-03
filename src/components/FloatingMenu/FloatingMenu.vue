@@ -3,9 +3,6 @@ import { computed, inject, onBeforeUnmount, onMounted, provide, ref } from 'vue'
 import { BiChevronDown, BiChevronUp } from 'vue-icons-plus/bi';
 import { nanoid } from 'nanoid';
 
-const buttonRef = ref<HTMLElement | null>(null);
-const menuRef = ref<HTMLElement | null>(null);
-
 const props = withDefaults(defineProps<{
     isOpened?: boolean;
     unstyledMenu?: boolean;
@@ -20,6 +17,15 @@ const emit = defineEmits<{
     (e: 'update:isOpened', value: boolean): void
     (e: 'toggled', value: boolean): void;
 }>();
+
+// Provide/inject to manage nested dropdowns
+const myDropdownId = nanoid();
+const registerToParent = inject<((childId: string) => void) | undefined>('registerChild', undefined);
+const unregisterToParent = inject<((childId: string) => void) | undefined>('unregisterChild', undefined);
+
+const buttonRef = ref<HTMLElement | null>(null);
+const menuRef = ref<HTMLElement | null>(null);
+const childDropdowns = ref<string[]>([]);
 
 const padding = 8; // px
 const menuPosition = computed<{ top?: string, bottom?: string, left?: string }>(() => {
@@ -62,9 +68,9 @@ function handleClickOutside(e: Event) {
     if (
         buttonRef.value?.contains(target) ||
         menuRef.value?.contains(target) || 
-        children.value.some(childId => {
-            const childElement = document.querySelector(`[data-dropdown-id="${childId}"]`);
-            return childElement?.contains(target);
+        childDropdowns.value.some(childId => {
+            const childMenu = document.querySelector(`[data-dropdown-id="${childId}"]`);
+            return childMenu?.contains(target);
         })
     ) return;
     
@@ -73,35 +79,28 @@ function handleClickOutside(e: Event) {
     }
 }
 
-const myId = nanoid();
+const registerChild = (childId: string) => {
+    childDropdowns.value.push(childId);
+};
 
-const registerToParent = inject<((id: string) => void) | undefined>('registerChild', undefined);
-const unregisterToParent = inject<((id: string) => void) | undefined>('unregisterChild', undefined);
+const unregisterChild = (childId: string) => {
+    childDropdowns.value = childDropdowns.value.filter(id => id !== childId);
+};
+
+provide('registerChild', registerChild);
+provide('unregisterChild', unregisterChild);
 
 onMounted(() => {
     if (registerToParent) {
-        registerToParent(myId);
+        registerToParent(myDropdownId);
     }
 });
 
 onBeforeUnmount(() => {
     if (unregisterToParent) {
-        unregisterToParent(myId);
+        unregisterToParent(myDropdownId);
     }
 });
-
-const children = ref<string[]>([]);
-
-const registerChild = (childId: string) => {
-    children.value.push(childId);
-};
-
-const unregisterChild = (childId: string) => {
-    children.value = children.value.filter(id => id !== childId);
-};
-
-provide('registerChild', registerChild);
-provide('unregisterChild', unregisterChild);
 </script>
 
 <template>
@@ -143,7 +142,7 @@ provide('unregisterChild', unregisterChild);
                     v-if="isOpened"
                     ref="menuRef"
                     class="absolute z-[999]"
-                    :data-dropdown-id="myId"
+                    :data-dropdown-id="myDropdownId"
                     :class="{
                         'bg-surface p-1.5 flex flex-col gap-2 rounded-lg max-w-[100dvw-3rem] w-full sm:w-96 shadow-md shadow-background': !unstyledMenu,
                     }"

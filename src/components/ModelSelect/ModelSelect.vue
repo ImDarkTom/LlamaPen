@@ -266,11 +266,11 @@ function userSort(items: ModelInfoListItem[]) {
 
             <div v-if="filterMenuOpen" class="max-h-16 relative flex flex-row gap-2 overflow-y-visible">
                 <div class="flex flex-col justify-end">
-                    <!-- <button 
+                    <button 
                         class="bg-surface-light p-2 rounded-md ring-inset ring-2 ring-border-muted h-min"
                         @click="filterCapabilities = []; orderBy = 'default'">
-                        <BiRefresh class="size-5" />
-                    </button> -->
+                        <BiRefresh class="size-4" />
+                    </button>
                 </div>
                 <label class="flex flex-col">
                     <span>Filter:</span>
@@ -311,7 +311,7 @@ function userSort(items: ModelInfoListItem[]) {
                 </label>
             </div>
 
-            <ul role="list" :class="{ 'max-h-64!': filterMenuOpen }" class="max-h-80 overflow-y-auto [scrollbar-width:thin] *:not-last:mb-2">
+            <ul role="list" :class="{ 'h-64!': filterMenuOpen }" class="h-80 overflow-y-auto [scrollbar-width:thin] *:not-last:mb-2">
                 <li v-if="modelsLoading" class="h-24 flex justify-center items-center">
                     <AiOutlineLoading class="animate-spin size-6" />
                 </li>
@@ -336,6 +336,10 @@ function userSort(items: ModelInfoListItem[]) {
                     class="flex flex-col w-full p-4 justify-center items-center">
                     <span>No models found.</span>
                     <a href="https://ollama.com/search" target="_blank" class="text-secondary hover:underline">Search on Ollama</a>
+                </li>
+                <li v-else-if="userSort(queriedModelList.filter((item) => !item.hidden)).length === 0" 
+                    class="flex flex-col w-full p-4 justify-center items-center">
+                    <span>No models matched filter.</span>
                 </li>
                 <ModelSelectItem 
                     v-else-if="queriedModelList.filter((item) => !item.hidden).length > 0"

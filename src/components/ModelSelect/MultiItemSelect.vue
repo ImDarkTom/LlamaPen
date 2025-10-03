@@ -1,7 +1,7 @@
 <script setup lang="ts">
 import { nextTick, ref } from 'vue';
 import type { IconType } from 'vue-icons-plus';
-import { BiCheck } from 'vue-icons-plus/bi';
+import { BiCheck, BiChevronDown } from 'vue-icons-plus/bi';
 import FloatingMenu from '../FloatingMenu/FloatingMenu.vue';
 
 type ListItem = {
@@ -114,18 +114,7 @@ function handleItemKeydown(e: KeyboardEvent) {
                 <template v-else>
                     (None)
                 </template>
-                <svg 
-                    :class="{ 'rotate-180': isMenuOpen }" 
-                    class="inline w-3 h-3 ml-1 transition-transform"
-                    viewBox="0 0 12 12" 
-                    fill="none"
-                    stroke="currentColor"
-                    stroke-width="2"
-                    stroke-linecap="round"
-                    stroke-linejoin="round"
-                >
-                    <polyline points="2,4 6,8 10,4"/>
-                </svg>
+                <BiChevronDown class="size-4 ml-1 transition-transform inline" :class="{ 'rotate-180': isMenuOpen }" />
             </button>
         </template>
         <template #menu>
