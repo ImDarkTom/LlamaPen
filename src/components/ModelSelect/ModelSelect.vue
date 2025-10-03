@@ -183,6 +183,7 @@ function toggleFilterMenu() {
 
 const orderBy = ref<'default' | 'alphabetically' | 'size'>('default');
 const filterCapabilities = ref<OllamaCapability[]>([]);
+const direction = ref<'asc' | 'des'>('asc');
 
 function userSort(items: ModelInfoListItem[]) {
     if (filterCapabilities.value.length > 0) {
@@ -208,6 +209,10 @@ function userSort(items: ModelInfoListItem[]) {
         case 'size':
             items = items.sort((a, b) => a.modelData.size - b.modelData.size);
             break;
+    }
+
+    if (direction.value === 'des') {
+        items = items.reverse();
     }
 
     return items;
@@ -264,11 +269,11 @@ function userSort(items: ModelInfoListItem[]) {
                 </RouterLink>
             </div>
 
-            <div v-if="filterMenuOpen" class="max-h-16 relative flex flex-row gap-2 overflow-y-visible">
+            <div v-if="filterMenuOpen" class="max-h-16 relative flex flex-row gap-2 pb-2 overflow-auto">
                 <div class="flex flex-col justify-end">
                     <button 
                         class="bg-surface-light p-2 rounded-md ring-inset ring-2 ring-border-muted h-min"
-                        @click="filterCapabilities = []; orderBy = 'default'">
+                        @click="filterCapabilities = []; orderBy = 'default'; direction = 'asc'">
                         <BiRefresh class="size-4" />
                     </button>
                 </div>
@@ -309,9 +314,19 @@ function userSort(items: ModelInfoListItem[]) {
                         <option value="size">Size</option>
                     </select>
                 </label>
+                <label class="flex flex-col">
+                    <span>Direction:</span>
+                    <select 
+                        v-model="direction" 
+                        ref="directionSelect"
+                        class="bg-surface-light p-2 rounded-md ring-inset ring-2 ring-border-muted focus:ring-border outline-0">
+                        <option value="des">Descending</option>
+                        <option value="asc">Ascending</option>
+                    </select>
+                </label>
             </div>
 
-            <ul role="list" :class="{ 'h-64!': filterMenuOpen }" class="h-80 overflow-y-auto [scrollbar-width:thin] *:not-last:mb-2">
+            <ul role="list" :class="{ 'h-62!': filterMenuOpen }" class="h-80 overflow-y-auto [scrollbar-width:thin] *:not-last:mb-2">
                 <li v-if="modelsLoading" class="h-24 flex justify-center items-center">
                     <AiOutlineLoading class="animate-spin size-6" />
                 </li>
