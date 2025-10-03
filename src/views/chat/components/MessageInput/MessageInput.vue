@@ -16,7 +16,6 @@ import MessageOptions from './buttons/MessageOptions.vue';
 import { BiSolidXCircle } from 'vue-icons-plus/bi';
 import MessageTools from './buttons/MessageTools.vue';
 import { useModelList } from '@/composables/useModelList';
-import FloatingMenu from '@/components/FloatingMenu/FloatingMenu.vue';
 import FloatingMenuTest from '@/components/FloatingMenu/FloatingMenuTest.vue';
 
 const messagesStore = useMessagesStore();

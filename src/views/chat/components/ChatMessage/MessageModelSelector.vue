@@ -95,7 +95,7 @@ const warningText = computed(() => {
                     class="p-1 size-8 opacity-35 group-hover/msg-model:opacity-100 transition-opacity duration-dynamic" />
             </Tooltip>
         </div>
-        <DropdownMenu direction="down" :unstyled="true" :opened="isOpened" :include-notch="true">
+        <DropdownMenu :opened="isOpened" :include-notch="true">
             <div 
                 v-if="isOpened"
                 class="max-h-[50vh] w-max max-w-[min(65ch, 100vw)] overflow-y-auto absolute top-0 left-[50%] -translate-x-[50%] flex flex-col bg-surface z-20 p-2 rounded-xl gap-2 shadow-md shadow-background">

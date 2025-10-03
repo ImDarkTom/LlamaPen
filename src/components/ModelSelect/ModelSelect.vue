@@ -7,13 +7,12 @@ import logger from '@/lib/logger';
 import ModelIcon from '../Icon/ModelIcon.vue';
 import { TbListDetails } from 'vue-icons-plus/tb';
 import isOnMobile from '@/utils/core/isOnMobile';
-import Dropdown from '../Dropdown/Dropdown.vue';
 import { useModelList, type ModelInfoListItem } from '@/composables/useModelList';
 import { AiOutlineEye, AiOutlineLoading } from 'vue-icons-plus/ai';
 import PrimaryButton from '../Buttons/PrimaryButton.vue';
 import { BiBrain, BiFilterAlt, BiRefresh, BiWrench } from 'vue-icons-plus/bi';
 import MultiItemSelect from './MultiItemSelect.vue';
-import FloatingMenuTest from '../FloatingMenu/FloatingMenuTest.vue';
+import FloatingMenu from '../FloatingMenu/FloatingMenu.vue';
 
 const config = useConfigStore();
 const { getModelCapabilities } = useModelList();
@@ -32,9 +31,9 @@ const {
 const searchQuery = ref<string>('');
 const searchFocused = ref<boolean>(false);
 const focusedItemIndex = ref<number>(0);
+const isOpened = ref<boolean>(false);
 
 // Refs
-const dropdownRef = ref<ComponentPublicInstance & { toggleOpened: () => void } | null>(null);
 const searchBarRef = ref<HTMLInputElement | null>(null);
 const listItemsRef = ref<Array<ComponentPublicInstance<{ listItemRef: HTMLLIElement | null }>>>([]);
 
@@ -79,9 +78,9 @@ function handleKeyboardShortcuts(e: KeyboardEvent) {
     if (e.key === "M" && e.ctrlKey && e.shiftKey) {
         e.preventDefault();
 
-        if (dropdownRef.value) {
-            dropdownRef.value.toggleOpened();
-        }
+        console.log('Toggling model select', isOpened.value);
+
+        isOpened.value = !isOpened.value;
     }
 }
 
@@ -90,9 +89,7 @@ async function setModel(newModel: ModelListItem, skipUiUpdate: boolean = false) 
     config.selectedModel = newModelId;
 
     if (!skipUiUpdate) {
-        if (dropdownRef.value) {
-            dropdownRef.value.toggleOpened();
-        }
+        isOpened.value = false;
         searchQuery.value = "";
     };
 }
@@ -126,9 +123,7 @@ function searchKeyDown(e: KeyboardEvent) {
             break;
 
         case "Escape":
-            if (dropdownRef.value) {
-                dropdownRef.value.toggleOpened();
-            }
+            isOpened.value = false;
             resetState();
             break;
 
@@ -220,7 +215,7 @@ function userSort(items: ModelInfoListItem[]) {
 </script>
 
 <template>
-    <Dropdown :direction @opened="onToggled" ref="dropdownRef">
+    <FloatingMenu v-model:is-opened="isOpened" @toggled="onToggled">
         <template #button>
             <span v-if="modelsLoading" class="flex flex-row gap-2 items-center text-text-muted/75">
                 <AiOutlineLoading class="animate-spin size-6 inline" />
@@ -358,5 +353,5 @@ function userSort(items: ModelInfoListItem[]) {
                 </li>
             </ul>
         </template>
-    </Dropdown>
+    </FloatingMenu>
 </template>

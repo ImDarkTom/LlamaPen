@@ -1,8 +1,9 @@
 <script setup lang="ts">
-import Dropdown from '@/components/Dropdown/Dropdown.vue';
 import MessageOption from './MessageOption.vue';
 import { useConfigStore } from '@/stores/config';
 import { BiSliderAlt } from 'vue-icons-plus/bi';
+import FloatingMenu from '@/components/FloatingMenu/FloatingMenu.vue';
+import { ref } from 'vue';
 
 const config = useConfigStore();
 
@@ -18,10 +19,12 @@ const tooltips = {
     top_p: 'Lower values restrict choices to a smaller set of likely tokens, making output more conservative; higher values allow a wider range of options, increasing creativity.',
     min_p: 'Sets a minimum probability for tokens to be considered. Higher values make output more focused by ignoring unlikely words; lower values let in more variety.',
 };
+
+const isOpened = ref(false);
 </script>
 
 <template>
-    <Dropdown direction="up" title="Configure generation parameters">
+    <FloatingMenu v-model:is-opened="isOpened">
         <template #button>
             <div>
                 <BiSliderAlt class="p-1" />
@@ -45,5 +48,5 @@ const tooltips = {
                 </div>
             </div>
         </template>
-    </Dropdown>
+    </FloatingMenu>
 </template>

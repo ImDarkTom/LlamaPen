@@ -1,10 +1,10 @@
 <script setup lang="ts">
-import Dropdown from '@/components/Dropdown/Dropdown.vue';
 import { BiDotsHorizontalRounded, BiWrench } from 'vue-icons-plus/bi';
 import useToolsStore from '@/stores/toolsStore';
 import { computed, ref } from 'vue';
 import { useModelList } from '@/composables/useModelList';
 import { useConfigStore } from '@/stores/config';
+import FloatingMenu from '@/components/FloatingMenu/FloatingMenu.vue';
 
 const toolsStore = useToolsStore();
 const config = useConfigStore();
@@ -34,15 +34,17 @@ function onKeyDown(e: KeyboardEvent) {
         }
     }
 }
+
+const isOpened = ref(false);
 </script>
 
 <template>
-    <Dropdown
+    <FloatingMenu
+        v-model:is-opened="isOpened"
         :class="{ 
             'opacity-50': loading,
             'hidden': (config.ui.messageInput.hideUnusedButtons && !selectedModelCanCallTools) && !loading
         }"
-        direction="up" 
         title="Toggle available tools">
         <template #button>
             <span>
@@ -92,5 +94,5 @@ function onKeyDown(e: KeyboardEvent) {
                 </div>
             </div>
         </template>
-    </Dropdown>
+    </FloatingMenu>
 </template>
