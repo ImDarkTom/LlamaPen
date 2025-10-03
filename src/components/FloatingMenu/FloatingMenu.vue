@@ -21,32 +21,32 @@ const emit = defineEmits<{
 }>();
 
 const padding = 8; // px
-
-const menuTop = computed(() => {
-    if (!props.isOpened || !buttonRef.value) return 0;
-
+const menuPosition = computed<{ top?: string, bottom?: string, left?: string }>(() => {
+    if (
+        !props.isOpened || 
+        !buttonRef.value || 
+        !menuRef.value
+    ) return { top: '0px', left: '0px' };
+    
     const buttonRect = buttonRef.value.getBoundingClientRect();
-    const menuHeight = menuRef.value?.offsetHeight ?? 0;
+    const menuHeight = menuRef.value.offsetHeight;
+    const menuWidth = menuRef.value.offsetWidth;
+
     const spaceBelow = window.innerHeight - buttonRect.bottom;
     const spaceAbove = buttonRect.top;
 
-    // If not enough space below, show above
-    if (spaceBelow < menuHeight && spaceAbove >= menuHeight) {
-        return buttonRect.top + window.scrollY - menuHeight - padding;
-    }
-    // Otherwise, show below
-    return buttonRect.bottom + window.scrollY - padding;
-});
+    const shouldShowAbove = menuHeight > spaceBelow && spaceAbove >= menuHeight;
+    const vertical  = shouldShowAbove
+        ? { bottom: `${window.innerHeight - buttonRect.top - window.scrollY + padding}px` }
+        : { top: `${buttonRect.bottom + window.scrollY - padding}px` };
 
-const menuLeft = computed(() => {
-    if (!props.isOpened || !buttonRef.value) return 0;
+    const buttonCenter = buttonRect.left + buttonRect.width / 2 + window.scrollX;
+    const left = `${buttonCenter - (menuWidth / 2)}px`;
 
-    const buttonRect = buttonRef.value.getBoundingClientRect();
-    return buttonRect.left + window.scrollX;
+    return { ...vertical, left };
 });
 
 function toggleMenu() {
-    console.log('Toggling menu', !props.isOpened);
     emit('toggled', !props.isOpened);
     emit('update:isOpened', !props.isOpened);
 }
@@ -67,13 +67,13 @@ function handleClickOutside(e: Event) {
 </script>
 
 <template>
-    <div v-click-outside="handleClickOutside" @click.stop>
+    <div v-click-outside="handleClickOutside">
         <div
             :class="{
                 'flex flex-row items-center gap-1 w-max select-none cursor-pointer rounded-lg transition-all duration-dynamic text-text-muted hover:text-text ring-1 ring-text-muted hover:ring-text h-10 p-2 pointer-coarse:p-3 box-border': !unstyledButton
             }"
             :aria-expanded="isOpened"
-            @click.prevent="toggleMenu" 
+            @click.stop="toggleMenu" 
             ref="buttonRef">
             <slot name="button" />
             <template v-if="!unstyledButton">
@@ -91,26 +91,24 @@ function handleClickOutside(e: Event) {
             <Transition 
                 :enter-active-class="[
                     'motion-scale-in-[0.5]',
-                    // direction === 'up' ? 'motion-translate-y-in-[25%]' : 'motion-translate-y-in-[-25%]',
+                    menuPosition.top ? 'motion-translate-y-in-[25%]' : 'motion-translate-y-in-[-25%]',
                     'motion-opacity-in-[0%]',
                     'motion-duration-[var(--transition-duration)]'
                 ].join(' ')" 
                 :leave-active-class="[
                     'motion-scale-out-[0.5]',
-                    // direction === 'up' ? 'motion-translate-y-out-[25%]' : 'motion-translate-y-out-[-25%]',
+                    menuPosition.bottom ? 'motion-translate-y-out-[-25%]' : 'motion-translate-y-out-[25%]',
                     'motion-opacity-out-[0%]',
-                    'motion-duration-[var(--transition-duration)]'
+                    'motion-duration-[var(--transition-duration)]',
                 ].join(' ')" >
                 <div
                     v-if="isOpened"
-                    :opened="isOpened" 
-                    direction="down"
                     ref="menuRef"
                     class="absolute z-[999] dropdown-id"
                     :class="{
                         'bg-surface p-1.5 flex flex-col gap-2 rounded-lg max-w-[100dvw-3rem] w-full sm:w-96 shadow-md shadow-background': !unstyledMenu,
                     }"
-                    :style="[ { top: `${menuTop}px`, left: `${menuLeft}px` } ]">
+                    :style="menuPosition">
                     <slot name="menu" />
                 </div>
             </Transition>
