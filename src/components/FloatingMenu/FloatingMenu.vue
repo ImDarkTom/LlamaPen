@@ -1,6 +1,7 @@
 <script setup lang="ts">
-import { computed, ref } from 'vue';
+import { computed, inject, onBeforeUnmount, onMounted, provide, ref } from 'vue';
 import { BiChevronDown, BiChevronUp } from 'vue-icons-plus/bi';
+import { nanoid } from 'nanoid';
 
 const buttonRef = ref<HTMLElement | null>(null);
 const menuRef = ref<HTMLElement | null>(null);
@@ -47,8 +48,13 @@ const menuPosition = computed<{ top?: string, bottom?: string, left?: string }>(
 });
 
 function toggleMenu() {
-    emit('toggled', !props.isOpened);
-    emit('update:isOpened', !props.isOpened);
+    if (props.isOpened) {
+        emit('update:isOpened', false);
+        emit('toggled', false);
+    } else {
+        emit('update:isOpened', true);
+        emit('toggled', true);
+    }
 }
 
 function handleClickOutside(e: Event) {
@@ -56,14 +62,46 @@ function handleClickOutside(e: Event) {
     if (
         buttonRef.value?.contains(target) ||
         menuRef.value?.contains(target) || 
-        target.classList.contains('dropdown-id') ||
-        target.closest('.dropdown-id')
+        children.value.some(childId => {
+            const childElement = document.querySelector(`[data-dropdown-id="${childId}"]`);
+            return childElement?.contains(target);
+        })
     ) return;
-
+    
     if (props.isOpened) {
         toggleMenu();
     }
 }
+
+const myId = nanoid();
+
+const registerToParent = inject<((id: string) => void) | undefined>('registerChild', undefined);
+const unregisterToParent = inject<((id: string) => void) | undefined>('unregisterChild', undefined);
+
+onMounted(() => {
+    if (registerToParent) {
+        registerToParent(myId);
+    }
+});
+
+onBeforeUnmount(() => {
+    if (unregisterToParent) {
+        unregisterToParent(myId);
+    }
+});
+
+const children = ref<string[]>([]);
+
+const registerChild = (childId: string) => {
+    children.value.push(childId);
+};
+
+const unregisterChild = (childId: string) => {
+    children.value = children.value.filter(id => id !== childId);
+};
+
+provide('registerChild', registerChild);
+provide('unregisterChild', unregisterChild);
 </script>
 
 <template>
@@ -104,7 +142,8 @@ function handleClickOutside(e: Event) {
                 <div
                     v-if="isOpened"
                     ref="menuRef"
-                    class="absolute z-[999] dropdown-id"
+                    class="absolute z-[999]"
+                    :data-dropdown-id="myId"
                     :class="{
                         'bg-surface p-1.5 flex flex-col gap-2 rounded-lg max-w-[100dvw-3rem] w-full sm:w-96 shadow-md shadow-background': !unstyledMenu,
                     }"
