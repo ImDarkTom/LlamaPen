@@ -16,6 +16,8 @@ import MessageOptions from './buttons/MessageOptions.vue';
 import { BiSolidXCircle } from 'vue-icons-plus/bi';
 import MessageTools from './buttons/MessageTools.vue';
 import { useModelList } from '@/composables/useModelList';
+import FloatingMenu from '@/components/FloatingMenu/FloatingMenu.vue';
+import FloatingMenuTest from '@/components/FloatingMenu/FloatingMenuTest.vue';
 
 const messagesStore = useMessagesStore();
 const chatsStore = useChatsStore();
@@ -200,6 +202,7 @@ function onInput(e: Event) {
             </div>
             <div class="relative flex flex-row gap-2 justify-between w-full">
                 <div class="flex flex-row gap-2 overflow-x-auto p-[1px]">
+                    <FloatingMenuTest />
                     <FileUpload :onChange="uploadFile" />
                     <ModelSelect direction="up" />
                     <ThinkingButton v-model="config.chat.thinking.enabled" />

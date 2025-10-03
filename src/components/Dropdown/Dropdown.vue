@@ -2,12 +2,20 @@
 import { ref } from 'vue';
 import DropdownButton from '../Dropdown/DropdownButton.vue';
 import DropdownMenu from '../Dropdown/DropdownMenu.vue';
+import FloatingMenu from '../FloatingMenu/FloatingMenu.vue';
 
 // UI State
 const opened = ref<boolean>(false);
+const dropdownRef = ref<HTMLElement | null>(null);
 
 // Functions
-function handleClickOutside() {
+function handleClickOutside(e: Event) {
+    const target = e.target as HTMLElement;
+
+    if (
+        dropdownRef.value?.contains(target)
+    ) return;
+
     if (opened.value) {
         toggleOpened();
     }
@@ -32,7 +40,19 @@ defineExpose({
 </script>
 
 <template>
-    <div v-mousedown-outside="handleClickOutside">
+    <FloatingMenu v-model:is-opened="opened">
+        <template #button>
+            <DropdownButton :direction :opened>
+                <slot name="button" />
+            </DropdownButton>
+        </template>
+        <template #menu>
+            <DropdownMenu :direction :opened role="listbox">
+                <slot name="menu" />
+            </DropdownMenu>
+        </template>
+    </FloatingMenu>
+    <!-- <div v-mousedown-outside="handleClickOutside" ref="dropdownRef">
         <DropdownButton :direction :opened @update:opened="toggleOpened">
             <slot name="button" />
         </DropdownButton>
@@ -40,5 +60,5 @@ defineExpose({
         <DropdownMenu :direction :opened role="listbox">
             <slot name="menu" />
         </DropdownMenu>
-    </div>
+    </div> -->
 </template>

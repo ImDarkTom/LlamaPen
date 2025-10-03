@@ -13,6 +13,7 @@ import { AiOutlineEye, AiOutlineLoading } from 'vue-icons-plus/ai';
 import PrimaryButton from '../Buttons/PrimaryButton.vue';
 import { BiBrain, BiFilterAlt, BiRefresh, BiWrench } from 'vue-icons-plus/bi';
 import MultiItemSelect from './MultiItemSelect.vue';
+import FloatingMenuTest from '../FloatingMenu/FloatingMenuTest.vue';
 
 const config = useConfigStore();
 const { getModelCapabilities } = useModelList();
@@ -270,11 +271,11 @@ function userSort(items: ModelInfoListItem[]) {
 
             <div v-if="filterMenuOpen" class="max-h-16 relative flex flex-row gap-2 overflow-y-visible">
                 <div class="flex flex-col justify-end">
-                    <button 
+                    <!-- <button 
                         class="bg-surface-light p-2 rounded-md ring-inset ring-2 ring-border-muted h-min"
                         @click="filterCapabilities = []; orderBy = 'default'">
                         <BiRefresh class="size-5" />
-                    </button>
+                    </button> -->
                 </div>
                 <label class="flex flex-col">
                     <span>Filter:</span>
