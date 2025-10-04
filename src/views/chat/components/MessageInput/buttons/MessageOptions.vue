@@ -24,7 +24,7 @@ const isOpened = ref(false);
 </script>
 
 <template>
-    <FloatingMenu v-model:is-opened="isOpened">
+    <FloatingMenu v-model:is-opened="isOpened" preffered-position="top">
         <template #button>
             <div>
                 <BiSliderAlt class="p-1" />

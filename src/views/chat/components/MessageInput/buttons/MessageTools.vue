@@ -41,6 +41,7 @@ const isOpened = ref(false);
 <template>
     <FloatingMenu
         v-model:is-opened="isOpened"
+        preffered-position="top"
         :class="{ 
             'opacity-50': loading,
             'hidden': (config.ui.messageInput.hideUnusedButtons && !selectedModelCanCallTools) && !loading

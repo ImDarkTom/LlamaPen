@@ -160,10 +160,6 @@ function searchKeyDown(e: KeyboardEvent) {
     }
 }
 
-defineProps<{
-    direction: 'up' | 'down',
-}>();
-
 function setFocused(index: number) {
     focusedItemIndex.value = index;
 }
@@ -188,7 +184,7 @@ function userSort(items: ModelInfoListItem[]) {
 </script>
 
 <template>
-    <FloatingMenu v-model:is-opened="isOpened" @toggled="onToggled">
+    <FloatingMenu v-model:is-opened="isOpened" @toggled="onToggled" preffered-position="top">
         <template #button>
             <span v-if="modelsLoading" class="flex flex-row gap-2 items-center text-text-muted/75">
                 <AiOutlineLoading class="animate-spin size-6 inline" />

@@ -5,11 +5,13 @@ import { nanoid } from 'nanoid';
 
 const props = withDefaults(defineProps<{
     isOpened?: boolean;
+    prefferedPosition?: 'top' | 'bottom';
     disabled?: boolean;
     unstyledMenu?: boolean;
     unstyledButton?: boolean;
 }>(), {
     isOpened: false,
+    prefferedPosition: 'bottom',
     disabled: false,
     unstyledMenu: false,
     unstyledButton: false,
@@ -44,15 +46,19 @@ const menuPosition = computed<{ top?: string, bottom?: string, left?: string }>(
     const spaceBelow = window.innerHeight - buttonRect.bottom;
     const spaceAbove = buttonRect.top;
 
-    const shouldShowAbove = menuHeight > spaceBelow && spaceAbove >= menuHeight;
+    const shouldShowAbove = 
+        (menuHeight > spaceBelow && spaceAbove >= menuHeight) ||
+        (props.prefferedPosition === 'top' && spaceAbove >= menuHeight);
     const vertical  = shouldShowAbove
         ? { bottom: `${window.innerHeight - buttonRect.top - window.scrollY + padding}px` }
         : { top: `${buttonRect.bottom + window.scrollY - padding}px` };
 
     const buttonCenter = buttonRect.left + buttonRect.width / 2 + window.scrollX;
-    const left = `${buttonCenter - (menuWidth / 2)}px`;
 
-    return { ...vertical, left };
+    let left = buttonCenter - (menuWidth / 2);
+    left = Math.max(0, Math.min(left, window.innerWidth - menuWidth));
+
+    return { ...vertical, left: `${left}px` };
 });
 
 function toggleMenu() {
