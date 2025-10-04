@@ -201,7 +201,7 @@ function onInput(e: Event) {
             <div class="relative flex flex-row gap-2 justify-between w-full">
                 <div class="flex flex-row gap-2 overflow-x-auto p-[1px]">
                     <FileUpload :onChange="uploadFile" />
-                    <ModelSelect direction="up" />
+                    <ModelSelect />
                     <ThinkingButton v-model="config.chat.thinking.enabled" />
                     <MessageTools />
                     <MessageOptions />

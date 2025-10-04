@@ -7,11 +7,12 @@ import logger from '@/lib/logger';
 import ModelIcon from '../Icon/ModelIcon.vue';
 import { TbListDetails } from 'vue-icons-plus/tb';
 import isOnMobile from '@/utils/core/isOnMobile';
-import Dropdown from '../Dropdown/Dropdown.vue';
 import { useModelList, type ModelInfoListItem } from '@/composables/useModelList';
 import { AiOutlineLoading } from 'vue-icons-plus/ai';
 import PrimaryButton from '../Buttons/PrimaryButton.vue';
-import { BiRefresh } from 'vue-icons-plus/bi';
+import { BiFilterAlt, BiRefresh } from 'vue-icons-plus/bi';
+import FloatingMenu from '../FloatingMenu/FloatingMenu.vue';
+import FilterMenu from './FilterMenu.vue';
 
 const config = useConfigStore();
 
@@ -29,11 +30,12 @@ const {
 const searchQuery = ref<string>('');
 const searchFocused = ref<boolean>(false);
 const focusedItemIndex = ref<number>(0);
+const isOpened = ref<boolean>(false);
 
 // Refs
-const dropdownRef = ref<ComponentPublicInstance & { toggleOpened: () => void } | null>(null);
 const searchBarRef = ref<HTMLInputElement | null>(null);
 const listItemsRef = ref<Array<ComponentPublicInstance<{ listItemRef: HTMLLIElement | null }>>>([]);
+const filterMenu = ref<InstanceType<typeof FilterMenu> | null>(null);
 
 // Lifecycle hooks
 onMounted(async () => {
@@ -76,9 +78,8 @@ function handleKeyboardShortcuts(e: KeyboardEvent) {
     if (e.key === "M" && e.ctrlKey && e.shiftKey) {
         e.preventDefault();
 
-        if (dropdownRef.value) {
-            dropdownRef.value.toggleOpened();
-        }
+        isOpened.value = !isOpened.value;
+        onToggled(isOpened.value);
     }
 }
 
@@ -87,9 +88,7 @@ async function setModel(newModel: ModelListItem, skipUiUpdate: boolean = false) 
     config.selectedModel = newModelId;
 
     if (!skipUiUpdate) {
-        if (dropdownRef.value) {
-            dropdownRef.value.toggleOpened();
-        }
+        isOpened.value = false;
         searchQuery.value = "";
     };
 }
@@ -123,9 +122,7 @@ function searchKeyDown(e: KeyboardEvent) {
             break;
 
         case "Escape":
-            if (dropdownRef.value) {
-                dropdownRef.value.toggleOpened();
-            }
+            isOpened.value = false;
             resetState();
             break;
 
@@ -137,6 +134,16 @@ function searchKeyDown(e: KeyboardEvent) {
         case "ArrowDown":
             focusedItemIndex.value = Math.min(focusedItemIndex.value + 1, queriedModelList.value.length - 1); // up 1 index or keep at max
             scrollDown = true;
+            break;
+        
+        case "/":
+            e.preventDefault();
+            filterMenuOpen.value = true;
+
+            nextTick(() => {
+                orderBySelect.value?.focus();
+            });
+            
             break;
 
         default:
@@ -152,10 +159,6 @@ function searchKeyDown(e: KeyboardEvent) {
     }
 }
 
-defineProps<{
-    direction: 'up' | 'down',
-}>();
-
 function setFocused(index: number) {
     focusedItemIndex.value = index;
 }
@@ -165,10 +168,22 @@ const modelName = computed(() => {
     
     return selectedModelInfo.value.data.displayName;
 });
+
+const orderBySelect = ref<HTMLSelectElement | null>(null);
+const filterMenuOpen = ref(false);
+
+function toggleFilterMenu() {
+    filterMenuOpen.value = !filterMenuOpen.value;
+}
+
+function userSort(items: ModelInfoListItem[]) {
+    return filterMenu.value?.userSort(items) || items;
+}
+
 </script>
 
 <template>
-    <Dropdown :direction @opened="onToggled" ref="dropdownRef">
+    <FloatingMenu v-model:is-opened="isOpened" @toggled="onToggled" preffered-position="top">
         <template #button>
             <span v-if="modelsLoading" class="flex flex-row gap-2 items-center text-text-muted/75">
                 <AiOutlineLoading class="animate-spin size-6 inline" />
@@ -205,13 +220,21 @@ const modelName = computed(() => {
                     @keydown="searchKeyDown" 
                     aria-label="Search for a model..."
                     aria-controls="model-list" >
+                <button
+                    @click="toggleFilterMenu"
+                    :class="{ 'hover:!bg-border': filterMenuOpen }"
+                    class="h6 p-3 text-background bg-primary hover:!bg-border cursor-pointer transition-colors duration-dynamic rounded-lg">
+                    <BiFilterAlt />
+                </button>
                 <RouterLink to="/models"
                     class="h-6 p-3 box-content text-background !bg-primary hover:!bg-border cursor-pointer transition-colors duration-dynamic rounded-lg">
                     <TbListDetails />
                 </RouterLink>
             </div>
 
-            <ul role="list" class="max-h-80 overflow-y-auto [scrollbar-width:thin] *:not-last:mb-2">
+            <FilterMenu ref="filterMenu" :filterMenuOpen />
+
+            <ul role="list" :class="{ 'h-62!': filterMenuOpen }" class="h-80 overflow-y-auto [scrollbar-width:thin] *:not-last:mb-2">
                 <li v-if="modelsLoading" class="h-24 flex justify-center items-center">
                     <AiOutlineLoading class="animate-spin size-6" />
                 </li>
@@ -237,9 +260,13 @@ const modelName = computed(() => {
                     <span>No models found.</span>
                     <a href="https://ollama.com/search" target="_blank" class="text-secondary hover:underline">Search on Ollama</a>
                 </li>
+                <li v-else-if="userSort(queriedModelList.filter((item) => !item.hidden)).length === 0" 
+                    class="flex flex-col w-full p-4 justify-center items-center">
+                    <span>No models matched filter.</span>
+                </li>
                 <ModelSelectItem 
                     v-else-if="queriedModelList.filter((item) => !item.hidden).length > 0"
-                    v-for="(model, index) in queriedModelList.filter((item) => !item.hidden)" 
+                    v-for="(model, index) in userSort(queriedModelList.filter((item) => !item.hidden))" 
                     :key="model.modelData.model" 
                     :index="index"
                     :model="model" 
@@ -253,5 +280,5 @@ const modelName = computed(() => {
                 </li>
             </ul>
         </template>
-    </Dropdown>
+    </FloatingMenu>
 </template>

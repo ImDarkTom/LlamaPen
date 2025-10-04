@@ -7,6 +7,7 @@ import piniaPluginPersistedstate from "pinia-plugin-persistedstate";
 
 import mousedownOutside from "./directives/mousedownOutside";
 import router from './lib/router';
+import clickOutside from "./directives/clickOutside";
 
 const pinia = createPinia();
 
@@ -17,5 +18,6 @@ app.use(router);
 app.use(pinia);
 
 app.directive('mousedown-outside', mousedownOutside);
+app.directive('click-outside', clickOutside);
 
 app.mount("#app");
