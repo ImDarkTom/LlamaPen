@@ -68,7 +68,7 @@ const warningText = computed(() => {
             <BiError v-else class="text-warning ml-1" />
         </Tooltip>
         
-        <FloatingMenu v-model:is-opened="isOpened" :unstyled-button="true" :unstyled-menu="true" :disabled="!props.modelMessageDone">
+        <FloatingMenu v-model:is-opened="isOpened" preffered-position="bottom" :unstyled-button="true" :unstyled-menu="true" :disabled="!props.modelMessageDone">
             <template #button>
                 <div 
                     class="flex flex-row p-1 gap-1 group/msg-model bg-transparent rounded-xl items-center transition-all duration-dynamic"
