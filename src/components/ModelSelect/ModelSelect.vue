@@ -78,9 +78,8 @@ function handleKeyboardShortcuts(e: KeyboardEvent) {
     if (e.key === "M" && e.ctrlKey && e.shiftKey) {
         e.preventDefault();
 
-        console.log('Toggling model select', isOpened.value);
-
         isOpened.value = !isOpened.value;
+        onToggled(isOpened.value);
     }
 }
 
