@@ -6,7 +6,7 @@ import TextDivider from '@/components/TextDivider/TextDivider.vue';
 import Tooltip from '@/components/Tooltip/Tooltip.vue';
 import { useModelList, type ModelInfoListItem } from '@/composables/useModelList';
 import { useConfigStore } from '@/stores/config';
-import { BiDownload, BiLeftArrowAlt, BiLinkExternal } from 'vue-icons-plus/bi';
+import { BiDownload, BiLinkExternal } from 'vue-icons-plus/bi';
 import { BsEyeSlash } from 'vue-icons-plus/bs';
 
 const config = useConfigStore();
@@ -20,17 +20,10 @@ defineProps<{
 <template>
     <div
         class="h-4/12 md:h-full w-full md:w-3/12 bg-background-light rounded-lg flex flex-col gap-2 p-2 relative" >
-            <!-- overlay -->
-            <RouterLink to="/"
-                class="p-4 rounded-md flex flex-row items-center gap-2 font-semibold cursor-pointer hover:bg-surface! hover:text-text transition-colors duration-dynamic select-none">
-                <BiLeftArrowAlt class="size-6" />
-                Back to Chat
-            </RouterLink>
-
             <div class="flex flex-col gap-2 overflow-y-auto">
                 <template v-if="!config.api.enabled">
                     <TextDivider text="Download" />
-                        <PrimaryButton 
+                    <PrimaryButton 
                         class="w-full"
                         text="Find models" 
                         :icon="BiLinkExternal" 

@@ -93,8 +93,7 @@ async function setModelViewInfo(modelId: string) {
 </script>
 
 <template>
-    <div class="w-full h-full flex flex-col md:flex-row gap-2 p-2 box-border overflow-y-auto"
-        :class="{ 'pt-14 md:pt-2 md:pl-14': !config.showSidebar }">
+    <div class="w-full h-full flex flex-col md:flex-row gap-2 box-border overflow-y-auto">
         <ModelList
             :modelsList 
             @refresh-model-list="refreshModelList" />
