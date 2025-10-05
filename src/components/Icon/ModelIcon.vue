@@ -1,76 +1,32 @@
 <script setup lang="ts">
+import { shallowRef, watchEffect } from 'vue';
 import { useConfigStore } from '@/stores/config';
+import { useModelIcon } from '@/composables/useModelIcon';
 import Unknown from '@/icons/unknown.svg';
 
 const config = useConfigStore();
-
-const allIcons = import.meta.glob('@/icons/*.svg', { eager: true });
-const availableIcons: Record<string, any> = {
-	'unknown': Unknown,
-	'unknown-color': Unknown
-};
-
-for (const path in allIcons) {
-	const match = path.match(/\/([\w-]+)\.svg$/);
-	if (match) {
-		const slug = match[1];
-		availableIcons[slug] = (allIcons[path] as any).default;
-	}
-}
+const iconStore = useModelIcon();
 
 const props = defineProps<{
 	name: string;
-	ignoreStyling?: boolean;
 	forceMonochrome?: boolean;
+	ignoreStyling?: boolean;
 }>();
 
-const modelIconMap: Record<string, string> = {
-	llama: 'meta',
-	gemma: config.ui.modelIcons.alternateGemmaIcon ? 'google' : 'gemma',
-	gemini: 'gemini',
-	deepseek: 'deepseek',
-	qwen: 'qwen',
-	qwq: 'qwen',
-	mistral: 'mistral',
-	mixtral: 'mistral',
-	codestral: 'mistral',
-	'gpt': 'openai',
-	'phi': 'microsoft',
-	llava: 'llava',
-	nemotron: 'nvidia',
-	deepcoder: 'together',
-	'z.ai': 'zai',
-	zai: 'zai',
-	glm: 'zai',
-	hunyuan: 'hunyuan',
-	moonshot: 'moonshot',
-	kimi: 'moonshot',
-};
+const currentIcon = shallowRef<any>(Unknown);
 
-function getSlug(): string {
-	// In the case a ModelMessage has no model, without this check it break rendering this component
-	if (!props.name) return 'unknown';
-
-	for (const key in modelIconMap) {
-		if (props.name.includes(key)) {
-			return modelIconMap[key];
-		}
-	}
-
-	return 'unknown';
+async function loadIcon() {
+	currentIcon.value = await iconStore.loadIcon(props.name, props.forceMonochrome);
 }
 
-function getIconComponent() {
-	const slug = getSlug();
-
-	const slugFormated = config.ui.modelIcons.monochrome || props.forceMonochrome ? slug : `${slug}-color`;
-
-	return availableIcons[slugFormated];
-}
+watchEffect(() => {
+	// If any of the props change, re-run loading the icon, used for the messageInput icon
+	loadIcon();
+});
 </script>
 
 <template>
-	<component :is="getIconComponent()" :class="{
+	<component :is="currentIcon" :class="{
 		'bg-border-muted rounded-lg': !ignoreStyling && config.ui.modelIcons.background && config.ui.modelIcons.backgroundDark,
 		'bg-border rounded-lg': !ignoreStyling && config.ui.modelIcons.background && !config.ui.modelIcons.backgroundDark
 	}" />
