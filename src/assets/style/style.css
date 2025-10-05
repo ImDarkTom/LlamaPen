@@ -4,57 +4,50 @@
 @plugin "@tailwindcss/typography";
 @config "@/../tailwind.config.js";
 
-/* utils */
-@utility duration-dynamic {
-    transition-duration: var(--transition-duration);
+/* Z-Index Guidelines
+z-2: Virtual Textarea Overlay
+z-20: Model Selects
+z-30: Sidebar
+z-40: Tooltips
+z-99 - z-100: Popup
+*/
+
+/* Global Styles */
+:root {
+    font-family: Nebula Sans, Inter, system-ui, Avenir, Helvetica, Arial, sans-serif;
+    line-height: 1.5;
+    font-weight: 400;
+
+    color-scheme: light dark;
+    color: var(--color-text-muted);
+    background-color: var(--color-background);
+
+    font-synthesis: none;
+    text-rendering: optimizeLegibility;
+    -webkit-font-smoothing: antialiased;
+    -moz-osx-font-smoothing: grayscale;
+
+    --transition-duration: 0.125s;
 }
 
-@utility transition-quick {
-    @apply transition-all duration-dynamic hover:duration-0;
+html {
+    scroll-behavior: smooth;
+    overflow: hidden;
 }
 
-@utility btn-primary {
-    @apply bg-primary hover:bg-secondary text-background-light rounded-lg transition-colors duration-dynamic cursor-pointer;
+body:not([data-native-scrollbar]) {
+    scrollbar-color: var(--color-primary) var(--color-surface);
 }
 
-
-/* slider */
-.slider::-webkit-slider-thumb {
-    @apply w-5 h-5 bg-primary ring-2 ring-inset ring-text rounded-full border-0 shadow-md transition-all;
-    transition-duration: var(--transition-duration);
-    -webkit-appearance: none;
-    margin-top: -6px; /* center thumb */
+#app {
+    width: 100svw;
+    height: 100svh;
+    display: flex;
+    flex-direction: row;
+    overflow: hidden;
 }
 
-.slider::-moz-range-thumb {
-    @apply w-5 h-5 bg-primary ring-2 ring-inset ring-text rounded-full border-0 shadow-md transition-all;
-    transition-duration: var(--transition-duration);
-}
-
-.slider::-webkit-slider-runnable-track {
-    @apply h-1.5 bg-border rounded-lg;
-}
-
-.slider::-moz-range-track {
-    @apply h-1.5 bg-border rounded-lg;
-}
-
-.slider:hover::-webkit-slider-runnable-track,
-.slider:hover::-moz-range-track {
-    @apply bg-border;
-    transition-duration: var(--transition-duration);
-}
-
-.slider:hover::-webkit-slider-thumb,
-.slider:hover::-moz-range-thumb {
-    @apply bg-text-muted;
-}
-
-progress::-webkit-progress-value,
-progress::-moz-progress-bar {
-    @apply bg-secondary;
-}
-
+/* Themes */
 @layer base {
     html[theme='light'] {
         --color-background-dark: oklch(0.85 0.065 266);
@@ -182,117 +175,58 @@ progress::-moz-progress-bar {
     }
 }
 
+/* Utilities */
+@utility duration-dynamic {
+    transition-duration: var(--transition-duration);
+}
+
+@utility transition-quick {
+    @apply transition-all duration-dynamic hover:duration-0;
+}
+
+@utility btn-primary {
+    @apply bg-primary hover:bg-secondary text-background-light rounded-lg transition-colors duration-dynamic cursor-pointer;
+}
+
+
+/* Custom slider styling */
+.slider::-webkit-slider-thumb {
+    @apply w-5 h-5 bg-primary ring-2 ring-inset ring-text rounded-full border-0 shadow-md transition-all;
+    transition-duration: var(--transition-duration);
+    -webkit-appearance: none;
+    margin-top: -6px; /* center thumb */
+}
+
+.slider::-moz-range-thumb {
+    @apply w-5 h-5 bg-primary ring-2 ring-inset ring-text rounded-full border-0 shadow-md transition-all;
+    transition-duration: var(--transition-duration);
+}
+
+.slider::-webkit-slider-runnable-track {
+    @apply h-1.5 bg-border rounded-lg;
+}
+
+.slider::-moz-range-track {
+    @apply h-1.5 bg-border rounded-lg;
+}
+
+.slider:hover::-webkit-slider-runnable-track,
+.slider:hover::-moz-range-track {
+    @apply bg-border;
+    transition-duration: var(--transition-duration);
+}
+
+.slider:hover::-webkit-slider-thumb,
+.slider:hover::-moz-range-thumb {
+    @apply bg-text-muted;
+}
+
+progress::-webkit-progress-value,
+progress::-moz-progress-bar {
+    @apply bg-secondary;
+}
+
+/* HLJS */
 .hljs {
     @apply mb-4 rounded-lg;
-}
-
-html {
-    scroll-behavior: smooth;
-    overflow: hidden;
-}
-
-:root {
-    font-family: Nebula Sans, Inter, system-ui, Avenir, Helvetica, Arial, sans-serif;
-    line-height: 1.5;
-    font-weight: 400;
-
-    color-scheme: light dark;
-    color: var(--color-text-muted);
-    background-color: var(--color-background);
-
-    font-synthesis: none;
-    text-rendering: optimizeLegibility;
-    -webkit-font-smoothing: antialiased;
-    -moz-osx-font-smoothing: grayscale;
-
-    --transition-duration: 0.125s;
-}
-
-/* Z-Index Guidelines
-z-2: Virtual Textarea Overlay
-z-20: Model Selects
-z-30: Sidebar
-z-40: Tooltips
-z-99 - z-100: Popup
-
-*/
-
-#app {
-    width: 100svw;
-    height: 100svh;
-    display: flex;
-    flex-direction: row;
-    overflow: hidden;
-}
-
-body:not([data-native-scrollbar]) {
-    scrollbar-color: var(--color-primary) var(--color-surface);
-}
-
-/* Transitions */
-
-/* @media all { */
-@media (prefers-reduced-motion: reduce) {
-    * {
-        transition: none !important;
-        transition-duration: 0s;
-    }
-}
-
-body[data-reduce-motion] {
-    * {
-        transition: none !important;
-        transition-duration: 0s;
-    }
-}
-
-.page-switch-enter-active,
-.page-switch-leave-active {
-    transition: opacity var(--transition-duration) ease, transform var(--transition-duration) ease, filter var(--transition-duration) ease;
-    z-index: -100;
-}
-
-.page-switch-enter-from,
-.page-switch-leave-to {
-    transform: translateY(10%) scale(0.95);
-    opacity: 0;
-    filter: blur(0.1rem);
-}
-
-/* slide-left */
-.slide-left-enter-active,
-.slide-left-leave-active {
-    transition: transform var(--transition-duration) ease;
-}
-
-.slide-left-enter-from,
-.slide-left-leave-to {
-    transform: translateX(-115%);
-}
-
-/* open */
-.expand-height-enter-active,
-.expand-height-leave-active {
-    transition: transform var(--transition-duration) ease;
-    transform-origin: top;
-}
-
-.expand-height-enter-from,
-.expand-height-leave-to {
-    transform: scaleY(0) translateY(-10%);
-    transform-origin: top;
-}
-
-/* layout-fade */
-.layout-fade-enter-active,
-.layout-fade-leave-active {
-    transition: opacity var(--transition-duration) ease, transform var(--transition-duration) ease;
-    z-index: -100;
-}
-
-.layout-fade-enter-from,
-.layout-fade-leave-to {
-    transform: scale(0.95);
-    opacity: 0;
-    filter: blur(0.1rem);
 }

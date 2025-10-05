@@ -1,0 +1,55 @@
+/* for testing: @media all { */
+@media (prefers-reduced-motion: reduce) {
+    * {
+        transition: none !important;
+        transition-duration: 0s;
+    }
+}
+
+body[data-reduce-motion] {
+    * {
+        transition: none !important;
+        transition-duration: 0s;
+    }
+}
+
+/* page switch - for utils layout */
+.page-switch-enter-active,
+.page-switch-leave-active {
+    transition: opacity var(--transition-duration) ease, transform var(--transition-duration) ease, filter var(--transition-duration) ease;
+    z-index: -100;
+}
+
+.page-switch-enter-from,
+.page-switch-leave-to {
+    transform: translateY(10%) scale(0.95);
+    opacity: 0;
+    filter: blur(0.1rem);
+}
+
+/* expand height - for think block */
+.expand-height-enter-active,
+.expand-height-leave-active {
+    transition: transform var(--transition-duration) ease;
+    transform-origin: top;
+}
+
+.expand-height-enter-from,
+.expand-height-leave-to {
+    transform: scaleY(0) translateY(-10%);
+    transform-origin: top;
+}
+
+/* layout-fade - for layout switches */
+.layout-fade-enter-active,
+.layout-fade-leave-active {
+    transition: opacity var(--transition-duration) ease, transform var(--transition-duration) ease;
+    z-index: -100;
+}
+
+.layout-fade-enter-from,
+.layout-fade-leave-to {
+    transform: scale(0.95);
+    opacity: 0;
+    filter: blur(0.1rem);
+}
