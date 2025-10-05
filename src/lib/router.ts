@@ -6,14 +6,14 @@ import GuidePage from "@/views/guide/GuidePage.vue";
 import AccountPage from '@/views/account/AccountPage.vue';
 import ShortcutsPage from '@/views/shortcuts/ShortcutsPage.vue';
 import ModelsPage from '@/views/models/ModelsPage.vue';
-import MainLayout from '@/layouts/MainLayout.vue';
+import ChatLayout from '@/layouts/ChatLayout.vue';
 import ToolsPage from '@/views/tools/ToolsPage.vue';
 import UtilityLayout from '@/layouts/UtilityLayout.vue';
 
 const routes: RouteRecordRaw[] = [
     {
         path: "/",
-        component: MainLayout,
+        component: ChatLayout,
         children: [
             { path: "/", component: ChatPage },
             { 
