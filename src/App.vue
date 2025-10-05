@@ -13,9 +13,9 @@ onBeforeMount(() => {
 
 <template>
     <router-view v-slot="{ Component, route }">
-        <transition name="layout-fade">
+        <transition :name="route.meta.layer === 'utility' ? 'layout-to-utility' : 'layout-to-chat'">
             <component 
-                :is="Component" 
+                :is="Component"
                 :key="route.meta.layout || 'default'"
                 class="absolute inset-0 w-full h-full" />
         </transition>

@@ -14,6 +14,7 @@ const routes: RouteRecordRaw[] = [
     {
         path: "/",
         component: ChatLayout,
+        meta: { layer: "chat" },
         children: [
             { path: "/", component: ChatPage },
             { 
@@ -28,6 +29,7 @@ const routes: RouteRecordRaw[] = [
     {
         path: '/',
         component: UtilityLayout,
+        meta: { layer: 'utility' },
         children: [
             { path: '/settings', component: SettingsPage },
             { path: "/shortcuts", component: ShortcutsPage },
@@ -47,7 +49,7 @@ const routes: RouteRecordRaw[] = [
                     { path: '/tools/:tool(.*)', component: ToolsPage }
                 ]
             },
-        ]
+        ]   
     }
 ];
 

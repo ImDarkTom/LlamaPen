@@ -40,16 +40,22 @@ body[data-reduce-motion] {
     transform-origin: top;
 }
 
-/* layout-fade - for layout switches */
-.layout-fade-enter-active,
-.layout-fade-leave-active {
+/* layout-to-chat & layout-to-utility - for layout switches */
+.layout-to-chat-enter-active,
+.layout-to-chat-leave-active,
+.layout-to-utility-enter-active,
+.layout-to-utility-leave-active {
     transition: opacity var(--transition-duration) ease, transform var(--transition-duration) ease;
     z-index: -100;
 }
-
-.layout-fade-enter-from,
-.layout-fade-leave-to {
-    transform: scale(0.95);
+.layout-to-chat-leave-to,
+.layout-to-utility-enter-from {
+    transform: scale(0.75) translateY(100%);
     opacity: 0;
-    filter: blur(0.1rem);
+}
+
+.layout-to-chat-enter-from,
+.layout-to-utility-leave-to {
+    transform: scale(1) translateY(0%);
+    opacity: 0;
 }
