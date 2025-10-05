@@ -1,85 +1,67 @@
 import Unknown from '@/icons/unknown.svg';
 import { useConfigStore } from '@/stores/config';
 
-const allIcons = import.meta.glob('@/icons/*.svg');
+const iconModules = import.meta.glob('@/icons/*.svg', { import: 'default' });
 
-const availableIcons: Record<string, any> = {
-  'unknown': Unknown,
-  'unknown-color': Unknown
-};
+function getModelIconMap(config: ReturnType<typeof useConfigStore>): Record<string, string> {
+    return {
+        llama: 'meta',
+        gemma: 'gemma',
+        gemini: config.ui.modelIcons.alternateGemmaIcon ? 'google' : 'gemma',
+        deepseek: 'deepseek',
+        qwen: 'qwen',
+        qwq: 'qwen',
+        mistral: 'mistral',
+        mixtral: 'mistral',
+        codestral: 'mistral',
+        gpt: 'openai',
+        phi: 'microsoft',
+        llava: 'llava',
+        nemotron: 'nvidia',
+        deepcoder: 'together',
+        'z.ai': 'zai',
+        zai: 'zai',
+        glm: 'zai',
+        hunyuan: 'hunyuan',
+        moonshot: 'moonshot',
+        kimi: 'moonshot',
+    };
+}
 
-const modelIconMap: Record<string, string> = {
-	llama: 'meta',
-	gemma: 'gemma',
-	gemini: 'gemini',
-	deepseek: 'deepseek',
-	qwen: 'qwen',
-	qwq: 'qwen',
-	mistral: 'mistral',
-	mixtral: 'mistral',
-	codestral: 'mistral',
-	gpt: 'openai',
-	phi: 'microsoft',
-	llava: 'llava',
-	nemotron: 'nvidia',
-	deepcoder: 'together',
-	'z.ai': 'zai',
-	zai: 'zai',
-	glm: 'zai',
-	hunyuan: 'hunyuan',
-	moonshot: 'moonshot',
-	kimi: 'moonshot',
-};
-
-const loadedIcons: Record<string, any> = {};
+const loadedIcons: Record<string, string> = {};
 
 export function useModelIcon() {
     const config = useConfigStore();
 
-    async function getIcon(slug: string) {
-        if (loadedIcons[slug]) return loadedIcons[slug];
-
-        const loader = availableIcons[slug];
-        if (loader) {
-            const module = await loader();
-            loadedIcons[slug] = module.default;
-            return loadedIcons[slug];
-        }
-
-        return Unknown;
-    }
-
     function getSlug(modelName?: string): string {
         if (!modelName) return 'unknown';
-        for (const key in modelIconMap) {
-            if (modelName.includes(key)) return modelIconMap[key];
-        }
-        return 'unknown';
+
+        const modelIconMap = getModelIconMap(config);
+
+        const key = Object.keys(modelIconMap)
+            .find(modelKey => modelName.toLowerCase().includes(modelKey));
+
+        return key ? modelIconMap[key] : 'unknown';
     }
 
-    async function loadIcon(modelName: string, forceMonochrome?: boolean) {
+    async function getIcon(modelName: string, forceMonochrome?: boolean) {
         const slug = getSlug(modelName);
         const formattedSlug = config.ui.modelIcons.monochrome || forceMonochrome ? 
             slug : 
             `${slug}-color`;
 
-        if (!(formattedSlug in allIcons)) {
-            const match = Object.keys(allIcons).find(path => path.endsWith(`${formattedSlug}.svg`));
-            if (match) {
-                registerIcon(formattedSlug, allIcons[match]);
-            }
+        if (loadedIcons[formattedSlug]) return loadedIcons[formattedSlug]
+
+        const match = Object.entries(iconModules).find(([path]) => path.endsWith(`${formattedSlug}.svg`));
+        
+        if (match) {
+            const module = await match[1]();
+            loadedIcons[formattedSlug] = (module as any).default;
+            return (module as any).default;
         }
 
-        return await getIcon(formattedSlug);
+        return Unknown;
     }
 
-    function registerIcon(slug: string, loader: () => Promise<any>) {
-        if (!availableIcons[slug]) {
-            availableIcons[slug] = loader;
-        }
-    }
-
-    return {
-        loadIcon,
-    };
+    return { getIcon };
 }

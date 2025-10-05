@@ -4,19 +4,20 @@ import { useConfigStore } from '@/stores/config';
 import { useModelIcon } from '@/composables/useModelIcon';
 import Unknown from '@/icons/unknown.svg';
 
-const config = useConfigStore();
-const iconStore = useModelIcon();
-
 const props = defineProps<{
 	name: string;
 	forceMonochrome?: boolean;
 	ignoreStyling?: boolean;
 }>();
 
+const config = useConfigStore();
+const iconStore = useModelIcon();
+
 const currentIcon = shallowRef<any>(Unknown);
 
 async function loadIcon() {
-	currentIcon.value = await iconStore.loadIcon(props.name, props.forceMonochrome);
+	currentIcon.value = await iconStore.getIcon(props.name, props.forceMonochrome);
+	console.log(currentIcon.value);
 }
 
 watchEffect(() => {
