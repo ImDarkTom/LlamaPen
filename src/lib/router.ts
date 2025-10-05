@@ -16,8 +16,13 @@ const routes: RouteRecordRaw[] = [
         component: MainLayout,
         children: [
             { path: "/", component: ChatPage },
-            { path: "/chat", component: ChatPage },
-            { path: "/chat/:id", component: ChatPage },
+            { 
+                path: "/chat", 
+                component: ChatPage,
+                children: [
+                    { path: "/chat/:id", component: ChatPage }
+                ]
+            },
         ],
     },
     {
@@ -25,13 +30,23 @@ const routes: RouteRecordRaw[] = [
         component: UtilityLayout,
         children: [
             { path: '/settings', component: SettingsPage },
-            { path: '/models', component: ModelsPage },
-            { path: '/models/:model(.*)', component: ModelsPage },
-            { path: '/tools', component: ToolsPage },
-            { path: '/tools/:tool(.*)', component: ToolsPage },
             { path: "/shortcuts", component: ShortcutsPage },
             { path: '/guide', component: GuidePage },
             { path: '/account', component: AccountPage },
+            { 
+                path: '/models', 
+                component: ModelsPage,
+                children: [
+                    { path: '/models/:model(.*)', component: ModelsPage }
+                ]
+            },
+            { 
+                path: '/tools', 
+                component: ToolsPage,
+                children: [
+                    { path: '/tools/:tool(.*)', component: ToolsPage }
+                ]
+            },
         ]
     }
 ];

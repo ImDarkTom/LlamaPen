@@ -9,8 +9,8 @@ defineProps<{
 </script>
 
 <template>
-    <RouterLink :to active-class="group enabled">
-        <div class="flex p-2 hover:bg-surface rounded-md group-[.enabled]:ring-1 group-[.enabled]:bg-surface ring-border-muted">
+    <RouterLink :to class="group">
+        <div class="flex p-2 hover:bg-surface rounded-md group-[.router-link-active]:ring-1 group-[.router-link-active]:bg-surface ring-border-muted">
             <span class="items-center">
                 <component :is="icon" class="inline-block" :class="{ 'mr-2': text }" />
                 {{ text }}
