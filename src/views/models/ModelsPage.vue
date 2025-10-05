@@ -10,6 +10,7 @@ import { tryCatch } from '@/utils/core/tryCatch';
 import ViewerContainer from './components/ViewerContainer.vue';
 import { useModelList } from '@/composables/useModelList';
 import DownloadManager from './components/DownloadManager.vue';
+import logger from '@/lib/logger';
 
 const config = useConfigStore();
 
@@ -47,7 +48,7 @@ onMounted(async () => {
 });
 
 watch(router.currentRoute, () => {
-    console.log('Route changed, loading model info for:', modelFromParams.value);
+    logger.info('Models Page', 'Route changed, loading model info for:', modelFromParams.value);
 
     if (!modelFromParams.value) {
         selectedModel.value = { state: 'unselected' };

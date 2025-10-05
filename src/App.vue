@@ -12,7 +12,6 @@ onBeforeMount(() => {
 </script>
 
 <template>
-    <!-- <router-view></router-view> -->
     <router-view v-slot="{ Component, route }">
         <transition name="layout-fade">
             <component 
