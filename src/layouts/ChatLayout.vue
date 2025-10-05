@@ -26,7 +26,7 @@ const config = useConfigStore();
             
 
         <main 
-            class="flex-1 transition-discrete duration-dynamic"
+            class="flex-1 max-w-full transition-discrete duration-dynamic"
             :class="{ 'md:pl-72': config.showSidebar }">
             <RouterView />
         </main>

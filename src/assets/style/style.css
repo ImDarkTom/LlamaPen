@@ -254,9 +254,9 @@ body[data-reduce-motion] {
 
 .page-switch-enter-from,
 .page-switch-leave-to {
-    transform: translateY(50%) scale(0.75);
+    transform: translateY(10%) scale(0.95);
     opacity: 0;
-    filter: blur(0.25rem);
+    filter: blur(0.1rem);
 }
 
 /* slide-left */
@@ -281,4 +281,18 @@ body[data-reduce-motion] {
 .expand-height-leave-to {
     transform: scaleY(0) translateY(-10%);
     transform-origin: top;
+}
+
+/* layout-fade */
+.layout-fade-enter-active,
+.layout-fade-leave-active {
+    transition: opacity var(--transition-duration) ease, transform var(--transition-duration) ease;
+    z-index: -100;
+}
+
+.layout-fade-enter-from,
+.layout-fade-leave-to {
+    transform: scale(0.95);
+    opacity: 0;
+    filter: blur(0.1rem);
 }
