@@ -35,7 +35,7 @@ function handleEscape(e: KeyboardEvent) {
     *:mx-auto *:md:w-4/5 *:lg:w-3/5 *:max-w-3xl">
         <PageHeader text="Setup Guide" />
 
-        <div class="flex flex-col h-full box-border">
+        <div class="flex flex-col h-full w-full box-border">
             <h2 class="text-3xl font-semibold pb-2 text-text">Connecting to your local Ollama instance</h2>
             <p>Ollama does not allow connections from any external URLs by default, so for this app to work you need to add this app's URL to
                 Ollama's trusted origins and re-launch it. </p>
