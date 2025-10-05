@@ -121,7 +121,7 @@ async function checkOllamaVersion() {
 </script>
 
 <template>
-    <div class="w-full h-full flex flex-col items-center py-4 box-border overflow-y-auto px-2 gap-4
+    <div class="w-full h-full flex flex-col items-center py-4 box-border overflow-y-auto gap-4
     *:mx-auto *:md:w-4/5 *:lg:w-3/5 *:max-w-3xl">
         <PageHeader text="Settings" />
 
