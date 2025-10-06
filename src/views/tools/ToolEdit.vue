@@ -1,11 +1,9 @@
 <script setup lang="ts">
-import PrimaryButton from '@/components/Buttons/PrimaryButton.vue';
 import useToolsStore from '@/stores/toolsStore';
 import { computed } from 'vue';
-import { BiError, BiPencil, BiTrash } from 'vue-icons-plus/bi';
+import { BiError } from 'vue-icons-plus/bi';
 import TextInput from './TextInput.vue';
 import TextDivider from '@/components/TextDivider/TextDivider.vue';
-import router from '@/lib/router';
 import { ref } from 'vue';
 import ToolRequestOptions from './edit/ToolRequestOptions.vue';
 
@@ -20,20 +18,6 @@ const reqOptionsOpened = ref(false);
 const selectedTool = computed<AppTools[string] | null>(() => {
     return toolsStore.tools[props.tool] ?? null;
 });
-
-function rename() {
-    let newToolName = prompt('Rename tool to (lowercase & no spaces): ', props.tool);
-    if (!newToolName) return;
-    
-    newToolName = newToolName
-        .toLowerCase()
-        .replace(/ /g, '_');
-
-    toolsStore.tools[newToolName] = selectedTool.value!;
-    delete toolsStore.tools[props.tool];
-
-    router.push(`/tool/${newToolName}`);
-}
 
 const missingParams = computed(() => {
     if (!selectedTool.value) return;
@@ -70,13 +54,6 @@ function addParameter() {
     });
 }
 
-function deleteTool() {
-    if (!confirm(`Are you sure you want to delete the '${props.tool}' tool?`)) return;
-
-    delete toolsStore.tools[props.tool];
-    router.push('/tools');
-}
-
 </script>
 
 <template>
@@ -85,21 +62,6 @@ function deleteTool() {
     </div>
     <div v-else class="overflow-auto max-h-full flex flex-col">
         <h1 class="text-text font-bold">{{ props.tool }}</h1>
-        <div class="flex flex-row overflow-x-auto gap-2 min-h-12 md:min-h-14">
-            <PrimaryButton 
-                type="button" 
-                text="Rename" 
-                :icon="BiPencil" 
-                :single-line="true" 
-                @click="rename" />
-            <PrimaryButton 
-                type="button"
-                text="Delete" 
-                :icon="BiTrash" 
-                :single-line="true" 
-                :color="'danger'" 
-                @click="deleteTool" />
-        </div>
         <div 
             v-if="selectedTool.userHint"
             class="py-2">{{ selectedTool.userHint }}</div>

@@ -5,12 +5,14 @@ import { nanoid } from 'nanoid';
 
 const props = withDefaults(defineProps<{
     isOpened?: boolean;
+    anchored?: 'left' | 'center' | 'right';
     prefferedPosition?: 'top' | 'bottom';
     disabled?: boolean;
     unstyledMenu?: boolean;
     unstyledButton?: boolean;
 }>(), {
     isOpened: false,
+    anchored: 'center',
     prefferedPosition: 'bottom',
     disabled: false,
     unstyledMenu: false,
@@ -53,9 +55,16 @@ const menuPosition = computed<{ top?: string, bottom?: string, left?: string }>(
         ? { bottom: `${window.innerHeight - buttonRect.top - window.scrollY + padding}px` }
         : { top: `${buttonRect.bottom + window.scrollY - padding}px` };
 
-    const buttonCenter = buttonRect.left + buttonRect.width / 2 + window.scrollX;
+    let left: number;
+    if (props.anchored === 'left') {
+        left = buttonRect.left + window.scrollX;
+    } else if (props.anchored === 'right') {
+        left = buttonRect.right - menuWidth + window.scrollX;
+    } else { // center
+        const buttonCenter = buttonRect.left + buttonRect.width / 2 + window.scrollX;
+        left = buttonCenter - (menuWidth / 2);
+    }
 
-    let left = buttonCenter - (menuWidth / 2);
     left = Math.max(0, Math.min(left, window.innerWidth - menuWidth));
 
     return { ...vertical, left: `${left}px` };
@@ -116,7 +125,8 @@ onBeforeUnmount(() => {
     <div v-click-outside="handleClickOutside">
         <div
             :class="{
-                'flex flex-row items-center gap-1 w-max select-none cursor-pointer rounded-lg transition-all duration-dynamic text-text-muted hover:text-text ring-1 ring-text-muted hover:ring-text h-10 p-2 pointer-coarse:p-3 box-border': !unstyledButton
+                'flex flex-row items-center gap-1 w-max select-none cursor-pointer rounded-lg transition-all duration-dynamic text-text-muted hover:text-text ring-1 ring-text-muted hover:ring-text h-10 p-2 pointer-coarse:p-3 box-border': !unstyledButton,
+                'group active': isOpened,
             }"
             :aria-expanded="isOpened"
             @click="toggleMenu" 
@@ -132,12 +142,14 @@ onBeforeUnmount(() => {
                 :enter-active-class="[
                     'motion-scale-in-[0.5]',
                     prefferedPosition === 'top' ? 'motion-translate-y-in-[25%]' : 'motion-translate-y-in-[-25%]',
+                    (anchored !== 'center') ? (anchored === 'left' ? 'motion-translate-x-in-[-25%]' : 'motion-translate-x-in-[25%]')  : '',
                     'motion-opacity-in-[0%]',
                     'motion-duration-[var(--transition-duration)]'
                 ].join(' ')" 
                 :leave-active-class="[
                     'motion-scale-out-[0.5]',
                     prefferedPosition === 'bottom' ? 'motion-translate-y-out-[-25%]' : 'motion-translate-y-out-[25%]',
+                    (anchored !== 'center') ? (anchored === 'left' ? 'motion-translate-x-out-[-25%]' : 'motion-translate-x-out-[25%]')  : '',
                     'motion-opacity-out-[0%]',
                     'motion-duration-[var(--transition-duration)]',
                 ].join(' ')" >
