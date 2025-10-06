@@ -77,7 +77,8 @@ const modelInfo = computed(() =>
             <ModelIcon :name="modelFromParams ?? 'Unknown'" class="size-8 md:size-14! inline mr-2" />
 
             <span class="text-text font-bold mr-2">{{ modelName }}</span>
-            <span class="text-text-muted font-normal">({{ modelFromParams }})</span>
+            <br>
+            <span class="text-text-muted text-xl">{{ modelFromParams }}</span>
         </div>
 
         <CapabilitiesSkeleton v-if="selectedModel.state === 'loading'" />
