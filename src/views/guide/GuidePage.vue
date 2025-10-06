@@ -31,12 +31,12 @@ function handleEscape(e: KeyboardEvent) {
 </script>
 
 <template>
-    <div class="w-full h-full flex flex-col items-center py-4 box-border overflow-y-auto px-2
+    <div class="w-full h-full flex flex-col items-center py-4 box-border overflow-y-auto
     *:mx-auto *:md:w-4/5 *:lg:w-3/5 *:max-w-3xl">
         <PageHeader text="Setup Guide" />
 
-        <div class="flex flex-col h-full box-border">
-            <h2 class="text-3xl font-semibold pb-2 text-text">Connecting to your local Ollama instance</h2>
+        <div class="flex flex-col h-full w-full box-border">
+            <h2 class="text-3xl font-semibold pb-2">Connecting to your local Ollama instance</h2>
             <p>Ollama does not allow connections from any external URLs by default, so for this app to work you need to add this app's URL to
                 Ollama's trusted origins and re-launch it. </p>
             <br>
@@ -82,7 +82,7 @@ function handleEscape(e: KeyboardEvent) {
 
             <p>(This is assuming you are using <b>Bash</b>, other shells may have different ways of setting global variables)</p>
 
-            <h2 class="text-3xl font-semibold pb-2 pt-12 text-text">Troubleshooting</h2>
+            <h2 class="text-3xl font-semibold pb-2 pt-12">Troubleshooting</h2>
 
             <h3 class="text-2xl flex flex-row items-center">Common Issues</h3>
             <h4 class="text-xl pb-2 pt-4 flex flex-row items-center italic">Error: listen tcp

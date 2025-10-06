@@ -416,7 +416,7 @@ const useMessagesStore = defineStore('messages', () => {
 							)
 						);
 						
-						console.log('getting response after tools');
+						logger.info('Messages Store', 'Getting response after tools processed');
 						getOllamaResponse({ generateTitle: options?.generateTitle });
 					}
 				} else {

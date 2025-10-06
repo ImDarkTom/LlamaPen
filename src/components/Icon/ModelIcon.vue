@@ -48,6 +48,9 @@ const modelIconMap: Record<string, string> = {
 };
 
 function getSlug(): string {
+	// In the case a ModelMessage has no model, without this check it break rendering this component
+	if (!props.name) return 'unknown';
+
 	for (const key in modelIconMap) {
 		if (props.name.includes(key)) {
 			return modelIconMap[key];

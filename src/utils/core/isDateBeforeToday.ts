@@ -14,7 +14,5 @@ export default function isDateBeforeToday(dateStr: string): boolean {
 		now.getUTCDate()
 	);
 
-	console.log(inputDate.getTime(), todayMidnightUTC);
-
 	return inputDate.getTime() < todayMidnightUTC;
 }

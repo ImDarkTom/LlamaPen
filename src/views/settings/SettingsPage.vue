@@ -16,12 +16,11 @@ import NumberInputSetting from './components/NumberInputSetting.vue';
 import PageHeader from '@/components/Page/PageHeader.vue';
 import SelectionSetting from './components/SelectionSetting.vue';
 import ollamaRequest from '@/utils/ollamaRequest';
-import { TbListDetails } from 'vue-icons-plus/tb';
 import { useModelList } from '@/composables/useModelList';
 import OptionText from './components/OptionText.vue';
 import { usePWAState } from '@/composables/usePWAState';
 import StatusIndicator from './components/StatusIndicator.vue';
-import { BiInfoCircle, BiRocket, BiSolidKeyboard, BiTrash, BiUserCircle, BiWrench } from 'vue-icons-plus/bi';
+import { BiInfoCircle, BiRocket, BiTrash } from 'vue-icons-plus/bi';
 
 const config = useConfigStore();
 const router = useRouter();
@@ -122,7 +121,7 @@ async function checkOllamaVersion() {
 </script>
 
 <template>
-    <div class="w-full h-full flex flex-col items-center py-4 box-border overflow-y-auto px-2 gap-4
+    <div class="w-full h-full flex flex-col items-center py-4 box-border overflow-y-auto gap-4
     *:mx-auto *:md:w-4/5 *:lg:w-3/5 *:max-w-3xl">
         <PageHeader text="Settings" />
 
@@ -134,13 +133,6 @@ async function checkOllamaVersion() {
                 <BiRocket class="size-4 inline align-middle" />
                 Run more powerful models with LlamaPen API, an optional cloud service.
             </span>
-            
-            <PrimaryButton
-                v-else
-                text="Manage Account"
-                type="link" 
-                to="/account" 
-                :icon="BiUserCircle" />
         </OptionCategory>
 
         <OptionCategory label="Ollama">
@@ -168,12 +160,7 @@ async function checkOllamaVersion() {
                         tooltip="Loads model capabilities regardless of no. of models. (Default: Disabled)" />
                 </div>
 
-                <div class="flex flex-row gap-2 *:w-1/2">
-                    <PrimaryButton
-                        text="Manage Models"
-                        type="link" 
-                        to="/models" 
-                        :icon="TbListDetails" /> 
+                <div class="flex items-center justify-center">
                     <PrimaryButton
                         text="Check Ollama version"
                         type="button"
@@ -184,11 +171,6 @@ async function checkOllamaVersion() {
         </OptionCategory>
 
         <OptionCategory label="Appearance">
-            <PrimaryButton
-                text="View keyboard shortcuts"
-                type="link" 
-                to="/shortcuts" 
-                :icon="BiSolidKeyboard" />
             <SelectionSetting 
                 v-model="config.ui.theme" 
                 label="Theme" 
@@ -258,11 +240,6 @@ async function checkOllamaVersion() {
         </OptionCategory>
 
         <OptionCategory label="Chat">
-            <PrimaryButton
-                text="Manage Tools"
-                type="link" 
-                to="/tools"
-                :icon="BiWrench" />
             <SelectionSetting 
                 v-model="config.chat.titleGenerationStyle" 
                 label="Title generation style" 

@@ -12,5 +12,12 @@ onBeforeMount(() => {
 </script>
 
 <template>
-    <router-view></router-view>
+    <router-view v-slot="{ Component, route }">
+        <transition :name="route.meta.layer === 'utility' ? 'layout-to-utility' : 'layout-to-chat'">
+            <component 
+                :is="Component"
+                :key="route.meta.layout || 'default'"
+                class="absolute inset-0 w-full h-full" />
+        </transition>
+    </router-view>
 </template>

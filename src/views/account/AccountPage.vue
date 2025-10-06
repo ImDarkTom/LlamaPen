@@ -130,7 +130,6 @@ async function signIn() {
 		<div v-if="!userStore.user" class="flex flex-col items-center justify-center h-full">
 			<AccountSection class="items-center justify-center" flex-direction="col">
 				<div class="flex flex-col items-center gap-4">
-					<RouterLink to="/settings" class="text-primary! hover:underline">← Back to Settings</RouterLink>
 					<span class="font-bold text-xl">Welcome to LlamaPen API</span>
 					<PrimaryButton 
 						v-if="!userStore.isSignedIn" 
@@ -149,18 +148,14 @@ async function signIn() {
 			</AccountSection>
 		</div>
 		<div v-else>
-			<h1 class="font-bold text-4xl!">My Account</h1>
-			<AccountSection flex-direction="row" :apart="true">
-				<PrimaryButton 
-					text="← Go to Settings"
-					type="link" 
-					to="/settings" />
+			<div class="flex flex-row justify-between items-center">
+				<span class="font-bold text-4xl!">My Account</span>
 				<PrimaryButton
 					text="Sign out"
 					type="button" 
 					:icon="BiLogOut"
 					@click="signOut" />
-			</AccountSection>
+			</div>
 			<AccountSection flex-direction="row">
 				<img :src="userStore.user.user_metadata.avatar_url" alt="User avatar" 
 				class="size-28 rounded-full outline-2 outline-border-muted">

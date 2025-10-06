@@ -10,6 +10,7 @@ import { tryCatch } from '@/utils/core/tryCatch';
 import ViewerContainer from './components/ViewerContainer.vue';
 import { useModelList } from '@/composables/useModelList';
 import DownloadManager from './components/DownloadManager.vue';
+import logger from '@/lib/logger';
 
 const config = useConfigStore();
 
@@ -47,7 +48,7 @@ onMounted(async () => {
 });
 
 watch(router.currentRoute, () => {
-    console.log('Route changed, loading model info for:', modelFromParams.value);
+    logger.info('Models Page', 'Route changed, loading model info for:', modelFromParams.value);
 
     if (!modelFromParams.value) {
         selectedModel.value = { state: 'unselected' };
@@ -93,8 +94,7 @@ async function setModelViewInfo(modelId: string) {
 </script>
 
 <template>
-    <div class="w-full h-full flex flex-col md:flex-row gap-2 p-2 box-border overflow-y-auto"
-        :class="{ 'pt-14 md:pt-2 md:pl-14': !config.showSidebar }">
+    <div class="w-full h-full flex flex-col md:flex-row box-border overflow-y-auto gap-2 md:gap-0">
         <ModelList
             :modelsList 
             @refresh-model-list="refreshModelList" />

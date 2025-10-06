@@ -29,7 +29,6 @@ const updateValue = () => {
 		inputValue.value = valueToSave;
 	}
 	
-	console.log('Saving...', inputValue.value);
 	emit('update:modelValue', inputValue.value);
 
 	saveText.value = '✅';
