@@ -3,21 +3,17 @@ import ModelIcon from '@/components/Icon/ModelIcon.vue';
 import ollamaApi from '@/utils/ollama';
 import { computed, ref } from 'vue';
 import type { IconType } from 'vue-icons-plus';
-import { BiBrain, BiCopy, BiHide, BiLinkExternal, BiPencil, BiReflectVertical, BiShow, BiSkipNext, BiTrash, BiWrench } from 'vue-icons-plus/bi';
+import { BiBrain, BiReflectVertical, BiShow, BiSkipNext, BiWrench } from 'vue-icons-plus/bi';
 import DOMPurify from 'dompurify';
 import Unknown from '@/icons/unknown.svg';
-import ollamaRequest from '@/utils/ollamaRequest';
 import { Fa6Memory } from 'vue-icons-plus/fa6';
 import MemoryUnloadIcon from '@/components/Icon/MemoryUnloadIcon.vue';
 import InfoSection from './InfoSection.vue';
 import CapabilitiesSkeleton from './CapabilitiesSkeleton.vue';
-import router from '@/lib/router';
 import ViewerContainer from './ViewerContainer.vue';
 import { useConfigStore } from '@/stores/config';
-import { useModelList } from '@/composables/useModelList';
 import PrimaryButton from '@/components/Buttons/PrimaryButton.vue';
 
-const { setModelHidden } = useModelList();
 const config = useConfigStore();
 
 const apiEnabled = computed(() => config.api.enabled);
@@ -37,52 +33,6 @@ function refreshModelList() {
 }
 
 // Model actions
-async function copyModel() {
-    const modelName = props.modelFromParams;
-    if (!modelName) {
-        alert('No model selected to copy.');
-        return;
-    }
-
-    const destination = prompt('Enter name for the new model copy:', `${modelName}-copy`);
-
-    const { error } = await ollamaRequest('/api/copy', 'POST', {
-        source: modelName,
-        destination,
-    });
-
-    if (error) {
-        alert(`Error copying model: ${error.message}`);
-        return;
-    }
-
-    refreshModelList();
-}
-
-async function deleteModel() {
-    const modelName = props.modelFromParams;
-    if (!modelName) {
-        alert('No model selected to delete.');
-        return;
-    }
-
-    if (!confirm(`Are you sure you want to delete the model "${modelName}"? This action cannot be undone.`)) {
-        return;
-    }
-
-    const { error } = await ollamaRequest('/api/delete', 'DELETE', {
-        model: modelName,
-    });
-
-    if (error) {
-        alert(`Error deleting model: ${error.message}`);
-        return;
-    }
-
-    router.push('/models');
-    refreshModelList();
-}
-
 const loadModelText = ref('Load into memory');
 async function loadModelIntoOllama() {
     const modelName = props.modelFromParams;
@@ -114,23 +64,6 @@ async function unloadModel() {
 
     await ollamaApi.unloadModel(modelName);
     loadModelText.value = 'Load Model';
-    refreshModelList();
-}
-
-async function renameModel() {
-    const modelName = props.modelFromParams;
-    if (!modelName) {
-        alert('No model selected to rename.');
-        return;
-    }
-
-    let newName = prompt(`Enter a new name for '${modelName}' (app cosmetic only): '`, modelName);
-    if (newName === '' || !newName) {
-        newName = modelName;
-    }
-
-    useConfigStore().chat.modelRenames[modelName] = newName;
-
     refreshModelList();
 }
 
@@ -183,8 +116,6 @@ const modelDetails = computed(() =>
 const modelInfo = computed(() =>
     getModelValue<Record<string, unknown>>({}, {}, m => m.model_info)
 );
-
-const isHidden = computed(() => config.chat.hiddenModels.includes(props.modelFromParams || ''));
 </script>
 
 <template>
@@ -207,25 +138,6 @@ const isHidden = computed(() => config.chat.hiddenModels.includes(props.modelFro
 
         <h2 class="text-xl md:text-3xl pb-2 pt-4 text-text">Actions</h2>
         <div class="flex flex-row gap-2 overflow-x-auto pb-2" :class="{ 'opacity-50': selectedModel.state === 'loading' }">
-            <PrimaryButton
-                v-if="!apiEnabled"
-                type="external-link"
-                text="Open in Ollama Library"
-                :icon="BiLinkExternal"
-                :href="`https://ollama.com/library/${modelFromParams}`"/>
-            <PrimaryButton
-                type="button"
-                color="primary"
-                text="Rename model"
-                :icon="BiPencil"
-                @click="renameModel" />
-            <PrimaryButton
-                type="button"
-                :color="isHidden ? 'sunken' : 'primary'"
-                :text="isHidden ? 'Unhide from list' : 'Hide from list'"
-                :icon="isHidden ? BiHide : BiShow"
-                @click="setModelHidden(modelFromParams, isHidden)" />
-
             <template v-if="!apiEnabled">
                 <PrimaryButton
                     v-if="modelFromParams && (selectedModel.state === 'data' && selectedModel.isLoaded)"
@@ -239,17 +151,6 @@ const isHidden = computed(() => config.chat.hiddenModels.includes(props.modelFro
                     :text="loadModelText"
                     :icon="Fa6Memory"
                     @click="loadModelIntoOllama" />
-                <PrimaryButton
-                    type="button"
-                    text="Copy/duplicate model"
-                    :icon="BiCopy"
-                    @click="copyModel" />
-                <PrimaryButton
-                    type="button"
-                    color="danger"
-                    text="Delete model"
-                    :icon="BiTrash"
-                    @click="deleteModel" />
             </template>
         </div>
 

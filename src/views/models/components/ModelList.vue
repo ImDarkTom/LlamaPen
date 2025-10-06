@@ -1,19 +1,109 @@
 <script setup lang="ts">
 import PrimaryButton from '@/components/Buttons/PrimaryButton.vue';
+import ActionMenu, { type MenuEntry } from '@/components/FloatingMenu/ActionMenu.vue';
 import MemoryLoadIcon from '@/components/Icon/MemoryLoadIcon.vue';
 import ModelIcon from '@/components/Icon/ModelIcon.vue';
 import TextDivider from '@/components/TextDivider/TextDivider.vue';
 import Tooltip from '@/components/Tooltip/Tooltip.vue';
 import { useModelList, type ModelInfoListItem } from '@/composables/useModelList';
+import router from '@/lib/router';
 import { useConfigStore } from '@/stores/config';
-import { BiDownload, BiHide, BiLinkExternal } from 'vue-icons-plus/bi';
+import ollamaRequest from '@/utils/ollamaRequest';
+import { BiCopy, BiDotsVerticalRounded, BiDownload, BiHide, BiLinkExternal, BiPencil, BiShow, BiTrash } from 'vue-icons-plus/bi';
 
 const config = useConfigStore();
-const { connectedToOllama } = useModelList();
+const { setModelHidden } = useModelList();
+const { connectedToOllama, loading } = useModelList();
 
 defineProps<{
     modelsList: ModelInfoListItem[],
 }>();
+
+const emit = defineEmits<{
+    refreshModelList: [];
+}>();
+
+function refreshModelList() {
+    emit('refreshModelList');
+}
+
+const isHidden = (modelName: string) => config.chat.hiddenModels.includes(modelName);
+
+const modelActions: MenuEntry[] = [
+    {
+        text: 'Open in Ollama Library',
+        icon: BiLinkExternal,
+        onClick: ({ modelData }) => window.open(`https://ollama.com/library/${modelData.model}`, '_blank'),
+        condition: !config.api.enabled
+    },
+    {
+        text: ({ modelData }) => isHidden(modelData.model) ? 'Unhide model' : 'Hide model',
+        onClick: ({ modelData }) => setModelHidden(modelData.model, isHidden(modelData.model)),
+        icon: ({ modelData }) => isHidden(modelData.model) ? BiShow : BiHide,
+    },
+    {
+        text: 'Rename',
+        icon: BiPencil,
+        onClick: ({ modelData, displayName}) => renameModel(modelData, displayName),
+    },
+    {
+        text: 'Duplicate model',
+        icon: BiCopy,
+        onClick: ({ modelData }) => copyModel(modelData.model),
+        condition: !config.api.enabled
+    },
+    {
+        text: 'Delete model',
+        icon: BiTrash,
+        onClick: ({ modelData }) => deleteModel(modelData.model),
+        condition: !config.api.enabled,
+        category: 'danger'
+    }
+];
+
+async function renameModel(modelData: ModelListItem, displayName: string) {
+    let newName = prompt(`Enter a new name for '${displayName}' (app cosmetic only): '`, displayName);
+    if (newName === '' || !newName) {
+        newName = displayName;
+    }
+
+    config.chat.modelRenames[modelData.model] = newName;
+    refreshModelList();
+}
+
+async function copyModel(model: string) {
+    const destination = prompt('Enter name for the new model copy:', `${model}-copy`);
+
+    const { error } = await ollamaRequest('/api/copy', 'POST', {
+        source: model,
+        destination,
+    });
+
+    if (error) {
+        alert(`Error copying model: ${error.message}`);
+        return;
+    }
+
+    refreshModelList();
+}
+
+async function deleteModel(model: string) {
+    if (!confirm(`Are you sure you want to delete the model "${model}"? This action cannot be undone.`)) {
+        return;
+    }
+
+    const { error } = await ollamaRequest('/api/delete', 'DELETE', {
+        model,
+    });
+
+    if (error) {
+        alert(`Error deleting model: ${error.message}`);
+        return;
+    }
+
+    router.push('/models');
+    refreshModelList();
+}
 </script>
 
 <template>
@@ -41,7 +131,7 @@ defineProps<{
                 
                 <TextDivider text="Models" />
 
-                <div v-if="!connectedToOllama">
+                <div v-if="!connectedToOllama && !loading">
                     Not connected to Ollama
                 </div>
                 <div v-else-if="modelsList.length === 0">
@@ -51,7 +141,7 @@ defineProps<{
                     v-for="{ modelData, loadedInMemory, hidden, displayName } in modelsList" 
                     exactActiveClass="*:bg-surface-light *:ring-1 *:ring-highlight *:ring-inset *:text-text"
                     :to="`/models/${modelData.model}`" >
-                    <div class="flex flex-row items-center gap-2 p-4 rounded-md hover:bg-surface transition-colors duration-dynamic">
+                    <div class="flex flex-row items-center gap-2 p-2 rounded-md hover:bg-surface transition-colors duration-dynamic">
                         <ModelIcon :name="modelData.model ?? 'Unknown'" class="size-6" />
                         {{ displayName }}
 
@@ -64,6 +154,11 @@ defineProps<{
                             class="flex items-center justify-center">
                             <MemoryLoadIcon class="h-full" />
                         </Tooltip>
+                        <ActionMenu :passArgs="{ modelData, displayName }" :actions="modelActions" anchored="left">
+                            <button @click.prevent class="hover:bg-surface-light group-[.active]:bg-surface-light group-[.active]:text-text p-1.5 rounded-sm cursor-pointer">
+                                <BiDotsVerticalRounded />
+                            </button>
+                        </ActionMenu>
                     </div>
                 </RouterLink>
             </div>
