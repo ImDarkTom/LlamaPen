@@ -1,5 +1,4 @@
 <script setup lang="ts">
-import PopupLoader from '@/components/Popups/PopupLoader.vue';
 import Sidebar from '@/components/Sidebar/Sidebar.vue';
 import { useConfigStore } from '@/stores/config';
 
@@ -23,14 +22,11 @@ const config = useConfigStore();
                 @click="config.showSidebar = !config.showSidebar"
             ></div>
         </Transition>
-            
 
-        <main 
+        <main
             class="flex-1 max-w-full transition-discrete duration-dynamic"
             :class="{ 'md:pl-72': config.showSidebar }">
             <RouterView />
         </main>
-
-        <PopupLoader />
     </div>
 </template>

@@ -1,6 +1,7 @@
 <script setup lang="ts">
 import { onBeforeMount } from 'vue';
 import { useConfigStore } from './stores/config';
+import PopupLoader from './components/Popups/PopupLoader.vue';
 
 const config = useConfigStore();
 
@@ -20,4 +21,5 @@ onBeforeMount(() => {
                 class="absolute inset-0 w-full h-full" />
         </transition>
     </router-view>
+    <PopupLoader />
 </template>

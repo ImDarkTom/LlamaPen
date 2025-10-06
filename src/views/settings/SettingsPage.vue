@@ -144,7 +144,7 @@ async function checkOllamaVersion() {
                     :default="ollamaDefault"
                     :check="ollamaUrlCheck"
                     :tooltip="`The URL to connect to Ollama on. (Default: ${ollamaDefault})`" />
-                <span v-if="!connectedToOllama && !ollamaLoading">
+                <span class="text-sm" v-if="!connectedToOllama && !ollamaLoading">
                     Can't connect? Checkout the
                     <RouterLink to="/guide" class="text-text underline">setup guide</RouterLink>.
                 </span>
