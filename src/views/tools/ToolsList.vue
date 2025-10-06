@@ -34,7 +34,7 @@ function newTool() {
 </script>
 
 <template>
-    <div class="h-4/12 md:h-full w-full md:w-1/3 bg-background-light rounded-lg flex flex-col gap-2 p-2 relative overflow-y-auto">
+    <div class="h-4/12 md:h-full w-full md:w-1/3 bg-background-light rounded-lg flex flex-col gap-2 p-2 relative overflow-y-auto md:border-r-1 border-border md:rounded-r-none">
         <div class="flex flex-col gap-2 justify-between">
             <button class="bg-surface p-2 rounded-md text-primary hover:text-text cursor-pointer grow shrink" @click="newTool">
                 <BiPlus class="inline mr-1" />
@@ -45,10 +45,9 @@ function newTool() {
         <RouterLink 
             v-for="toolName in Object.keys(toolsStore.tools)"
             :to="`/tools/${toolName}`"
-            class="rounded-md hover:bg-surface! text-text transition-quick"
-            exactActiveClass="bg-surface-light!">
+            exactActiveClass="*:bg-surface *:ring-1 text-text">
             <div
-                class="p-2 pointer-coarse:py-4">
+                class="hover:bg-surface ring-highlight ring-inset p-2 pointer-coarse:py-4 rounded-md transition-colors duration-dynamic">
                 <span>{{ toolName }}</span>
             </div>
         </RouterLink>

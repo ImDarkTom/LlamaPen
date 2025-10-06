@@ -5,7 +5,7 @@ import ViewerContainer from '../models/components/ViewerContainer.vue';
 </script>
 
 <template>
-    <div class="w-full h-full flex flex-col md:flex-row gap-2 box-border overflow-y-auto">
+    <div class="w-full h-full flex flex-col md:flex-row gap-2 md:gap-0 box-border overflow-y-auto">
         <ToolsList />
 
         <ViewerContainer>
