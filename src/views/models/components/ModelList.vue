@@ -19,8 +19,8 @@ defineProps<{
 
 <template>
     <div
-        class="h-4/12 md:h-full w-full md:w-1/4 bg-background-light rounded-lg flex flex-col gap-2 p-2 relative" >
-            <div class="flex flex-col gap-2 overflow-y-auto">
+        class="h-4/12 md:h-full w-full md:w-2/6 bg-background-light rounded-lg md:rounded-r-none md:border-r-1 border-border flex flex-col gap-2 p-2 relative" >
+            <div class="flex flex-col gap-2 overflow-y-auto md:pr-3">
                 <template v-if="!config.api.enabled">
                     <TextDivider text="Download" />
                     <PrimaryButton 
