@@ -2,18 +2,21 @@
 import PrimaryButton from '@/components/Buttons/PrimaryButton.vue';
 import ActionMenu, { type MenuEntry } from '@/components/FloatingMenu/ActionMenu.vue';
 import MemoryLoadIcon from '@/components/Icon/MemoryLoadIcon.vue';
+import MemoryUnloadIcon from '@/components/Icon/MemoryUnloadIcon.vue';
 import ModelIcon from '@/components/Icon/ModelIcon.vue';
 import TextDivider from '@/components/TextDivider/TextDivider.vue';
 import Tooltip from '@/components/Tooltip/Tooltip.vue';
 import { useModelList, type ModelInfoListItem } from '@/composables/useModelList';
 import router from '@/lib/router';
 import { useConfigStore } from '@/stores/config';
+import ollamaApi from '@/utils/ollama';
 import ollamaRequest from '@/utils/ollamaRequest';
 import { BiCopy, BiDotsVerticalRounded, BiDownload, BiHide, BiLinkExternal, BiPencil, BiShow, BiTrash } from 'vue-icons-plus/bi';
+import { Fa6Memory } from 'vue-icons-plus/fa6';
 
 const config = useConfigStore();
 const { setModelHidden } = useModelList();
-const { connectedToOllama, loading } = useModelList();
+const { connectedToOllama, loading, models } = useModelList();
 
 defineProps<{
     modelsList: ModelInfoListItem[],
@@ -23,11 +26,10 @@ const emit = defineEmits<{
     refreshModelList: [];
 }>();
 
-function refreshModelList() {
-    emit('refreshModelList');
-}
+const refreshModelList = () => emit('refreshModelList');
 
 const isHidden = (modelName: string) => config.chat.hiddenModels.includes(modelName);
+const isLoadedInMemory = (modelName: string) => models.value.some(item => item.modelData.model === modelName && item.loadedInMemory);
 
 const modelActions: MenuEntry[] = [
     {
@@ -40,6 +42,12 @@ const modelActions: MenuEntry[] = [
         text: ({ modelData }) => isHidden(modelData.model) ? 'Unhide model' : 'Hide model',
         onClick: ({ modelData }) => setModelHidden(modelData.model, isHidden(modelData.model)),
         icon: ({ modelData }) => isHidden(modelData.model) ? BiShow : BiHide,
+    },
+    {
+        text: ({ modelData }) => isLoadedInMemory(modelData.model) ? 'Unload from memory' : 'Load into memory',
+        onClick: ({ modelData }) => toggleModelLoaded(modelData.model),
+        icon: ({ modelData }) => (isLoadedInMemory(modelData.model) ? MemoryUnloadIcon : Fa6Memory) as any,
+        condition: !config.api.enabled
     },
     {
         text: 'Rename',
@@ -60,6 +68,22 @@ const modelActions: MenuEntry[] = [
         category: 'danger'
     }
 ];
+
+async function toggleModelLoaded(modelName: string) {
+    if (isLoadedInMemory(modelName)) {
+        await ollamaApi.unloadModel(modelName);
+        refreshModelList();
+    } else {
+        const success = await ollamaApi.loadModelIntoMemory(modelName);
+
+        if (!success) {
+            alert(`Failed to load model "${modelName}".`);
+            return;
+        }
+
+        refreshModelList();
+    }
+}
 
 async function renameModel(modelData: ModelListItem, displayName: string) {
     let newName = prompt(`Enter a new name for '${displayName}' (app cosmetic only): '`, displayName);

@@ -1,18 +1,14 @@
 <script setup lang="ts">
 import ModelIcon from '@/components/Icon/ModelIcon.vue';
-import ollamaApi from '@/utils/ollama';
-import { computed, ref } from 'vue';
+import { computed } from 'vue';
 import type { IconType } from 'vue-icons-plus';
 import { BiBrain, BiReflectVertical, BiShow, BiSkipNext, BiWrench } from 'vue-icons-plus/bi';
 import DOMPurify from 'dompurify';
 import Unknown from '@/icons/unknown.svg';
-import { Fa6Memory } from 'vue-icons-plus/fa6';
-import MemoryUnloadIcon from '@/components/Icon/MemoryUnloadIcon.vue';
 import InfoSection from './InfoSection.vue';
 import CapabilitiesSkeleton from './CapabilitiesSkeleton.vue';
 import ViewerContainer from './ViewerContainer.vue';
 import { useConfigStore } from '@/stores/config';
-import PrimaryButton from '@/components/Buttons/PrimaryButton.vue';
 
 const config = useConfigStore();
 
@@ -23,50 +19,7 @@ const props = defineProps<{
     selectedModel: ModelViewInfo,
 }>();
 
-const emit = defineEmits<{
-    refreshModelList: [];
-    setSelectedModel: [m: ModelViewInfo]
-}>();
-
-function refreshModelList() {
-    emit('refreshModelList');
-}
-
 // Model actions
-const loadModelText = ref('Load into memory');
-async function loadModelIntoOllama() {
-    const modelName = props.modelFromParams;
-    if (!modelName) {
-        alert('No model selected to load.');
-        return;
-    }
-
-    loadModelText.value = 'Loading...';
-
-    const success = await ollamaApi.loadModelIntoMemory(modelName);
-
-    if (!success) {
-        alert(`Failed to load model "${modelName}".`);
-        loadModelText.value = 'Load Model';
-        return;
-    }
-
-    loadModelText.value = 'Unload Model';
-    refreshModelList();
-}
-
-async function unloadModel() {
-    const modelName = props.modelFromParams;
-    if (!modelName) {
-        alert('No model selected to unload.');
-        return;
-    }
-
-    await ollamaApi.unloadModel(modelName);
-    loadModelText.value = 'Load Model';
-    refreshModelList();
-}
-
 function sanitizeSection(text: string | null) {
     return DOMPurify.sanitize(text ?? '')
 }
@@ -134,24 +87,6 @@ const modelInfo = computed(() =>
                 <component :is="capabilityIcons[capability] ?? Unknown" class="size-6 p-1" />
                 <span class="capitalize">{{ capability }}</span>
             </div>
-        </div>
-
-        <h2 class="text-xl md:text-3xl pb-2 pt-4 text-text">Actions</h2>
-        <div class="flex flex-row gap-2 overflow-x-auto pb-2" :class="{ 'opacity-50': selectedModel.state === 'loading' }">
-            <template v-if="!apiEnabled">
-                <PrimaryButton
-                    v-if="modelFromParams && (selectedModel.state === 'data' && selectedModel.isLoaded)"
-                    type="button"
-                    text="Unload Model"
-                    :icon="MemoryUnloadIcon"
-                    @click="unloadModel" />
-                <PrimaryButton
-                    v-else
-                    type="button"
-                    :text="loadModelText"
-                    :icon="Fa6Memory"
-                    @click="loadModelIntoOllama" />
-            </template>
         </div>
 
         <div class="relative">

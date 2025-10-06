@@ -107,6 +107,6 @@ async function setModelViewInfo(modelId: string) {
                 'Select a model to view its details, or download a new model.' }}
         </ViewerContainer>
         <DownloadManager v-else-if="modelFromParams === 'downloads'" @refresh-model-list="refreshModelList" />
-        <ModelViewer v-else :modelFromParams :selectedModel @refresh-model-list="refreshModelList" />
+        <ModelViewer v-else :modelFromParams :selectedModel />
     </div>
 </template>
