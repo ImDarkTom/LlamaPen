@@ -2,8 +2,7 @@
 import { useModelList, type ModelInfoListItem } from '@/composables/useModelList';
 import { useConfigStore } from '@/stores/config';
 import { ref } from 'vue';
-import { AiOutlineEye } from 'vue-icons-plus/ai';
-import { BiBrain, BiRefresh, BiWrench } from 'vue-icons-plus/bi';
+import { BiBrain, BiRefresh, BiShow, BiWrench } from 'vue-icons-plus/bi';
 import MultiItemSelect from './MultiItemSelect.vue';
 
 const config = useConfigStore();
@@ -76,7 +75,7 @@ defineExpose({
                 {
                     label: 'Vision',
                     value: 'vision',
-                    icon: AiOutlineEye,
+                    icon: BiShow,
                 },
                 {
                     label: 'Tools',

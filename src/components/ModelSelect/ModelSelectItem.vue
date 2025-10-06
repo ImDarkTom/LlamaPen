@@ -1,10 +1,9 @@
 <script setup lang="ts">
 import router from '@/lib/router';
 import useUserStore from '@/stores/user';
-import { AiOutlineEye } from 'vue-icons-plus/ai';
 import ModelIcon from '../Icon/ModelIcon.vue';
 import { computed, ref } from 'vue';
-import { BiBrain, BiGlobe, BiLock, BiRightArrowAlt, BiStar, BiWrench } from 'vue-icons-plus/bi';
+import { BiBrain, BiGlobe, BiLock, BiRightArrowAlt, BiShow, BiStar, BiWrench } from 'vue-icons-plus/bi';
 import { useConfigStore } from '@/stores/config';
 import { useModelList, type ModelInfoListItem } from '@/composables/useModelList';
 
@@ -73,7 +72,7 @@ const modelCapabilities = computed(() => getModelCapabilities(props.model));
 						v-if="modelCapabilities.includes('vision')"
 						class="bg-green-400/25 rounded-sm ring-1 ring-green-400 p-0.5"
 						title="Vision - can process images">
-						<AiOutlineEye class="text-green-400 size-4" />
+						<BiShow class="text-green-400 size-4" />
 					</div>
 					<div 
 						v-if="modelCapabilities.includes('thinking')"
