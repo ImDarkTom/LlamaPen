@@ -19,7 +19,7 @@ defineProps<{
 
 <template>
     <div
-        class="h-4/12 md:h-full w-full md:w-3/12 bg-background-light rounded-lg flex flex-col gap-2 p-2 relative" >
+        class="h-4/12 md:h-full w-full md:w-1/4 bg-background-light rounded-lg flex flex-col gap-2 p-2 relative" >
             <div class="flex flex-col gap-2 overflow-y-auto">
                 <template v-if="!config.api.enabled">
                     <TextDivider text="Download" />
@@ -50,23 +50,22 @@ defineProps<{
                 </div>
                 <RouterLink
                     v-for="{ modelData, loadedInMemory, hidden, displayName } in modelsList" 
-                    class="p-4 rounded-md flex flex-row items-center gap-2 hover:bg-surface! hover:text-text transition-all duration-dynamic"
-                    exactActiveClass="!bg-surface-light ring-2 ring-border ring-inset"
+                    exactActiveClass="*:bg-surface-light *:ring-1 *:ring-highlight *:ring-inset *:text-text"
                     :to="`/models/${modelData.model}`" >
-                    <ModelIcon :name="modelData.model ?? 'Unknown'" class="size-6" />
+                    <div class="flex flex-row items-center gap-2 p-4 rounded-md hover:bg-surface transition-colors duration-dynamic">
+                        <ModelIcon :name="modelData.model ?? 'Unknown'" class="size-6" />
+                        {{ displayName }}
 
-                    {{ displayName }}
-
-                    <div class="grow"></div>
-
-                    <Tooltip v-if="hidden" text="Loaded in memory"
-                        class="flex items-center justify-center">
-                        <BsEyeSlash class="h-full" />
-                    </Tooltip>
-                    <Tooltip v-if="loadedInMemory" text="Loaded in memory"
-                        class="flex items-center justify-center">
-                        <MemoryLoadIcon class="h-full" />
-                    </Tooltip>
+                        <div class="grow"></div>
+                        <Tooltip v-if="hidden" text="Loaded in memory"
+                            class="flex items-center justify-center">
+                            <BsEyeSlash class="h-full" />
+                        </Tooltip>
+                        <Tooltip v-if="loadedInMemory" text="Loaded in memory"
+                            class="flex items-center justify-center">
+                            <MemoryLoadIcon class="h-full" />
+                        </Tooltip>
+                    </div>
                 </RouterLink>
             </div>
         </div>

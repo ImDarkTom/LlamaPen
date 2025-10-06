@@ -213,21 +213,18 @@ const isHidden = computed(() => config.chat.hiddenModels.includes(props.modelFro
                 type="external-link"
                 text="Open in Ollama Library"
                 :icon="BiLinkExternal"
-                :single-line="true"
                 :href="`https://ollama.com/library/${modelFromParams}`"/>
             <PrimaryButton
                 type="button"
                 color="primary"
                 text="Rename model"
                 :icon="BiPencil"
-                :single-line="true"
                 @click="renameModel" />
             <PrimaryButton
                 type="button"
                 :color="isHidden ? 'sunken' : 'primary'"
                 :text="isHidden ? 'Unhide from list' : 'Hide from list'"
                 :icon="isHidden ? BsEyeSlash : BsEye"
-                :single-line="true"
                 @click="setModelHidden(modelFromParams, isHidden)" />
 
             <template v-if="!apiEnabled">
@@ -236,27 +233,23 @@ const isHidden = computed(() => config.chat.hiddenModels.includes(props.modelFro
                     type="button"
                     text="Unload Model"
                     :icon="MemoryUnloadIcon"
-                    :single-line="true"
                     @click="unloadModel" />
                 <PrimaryButton
                     v-else
                     type="button"
                     :text="loadModelText"
                     :icon="Fa6Memory"
-                    :single-line="true"
                     @click="loadModelIntoOllama" />
                 <PrimaryButton
                     type="button"
                     text="Copy/duplicate model"
                     :icon="BiCopy"
-                    :single-line="true"
                     @click="copyModel" />
                 <PrimaryButton
                     type="button"
                     color="danger"
                     text="Delete model"
                     :icon="BiTrash"
-                    :single-line="true"
                     @click="deleteModel" />
             </template>
         </div>

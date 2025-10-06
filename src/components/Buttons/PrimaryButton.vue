@@ -23,7 +23,7 @@ const componentTypes: Record<ComponentTypes, unknown> = {
 <template>
 	<component 
 		:is="componentTypes[type ?? 'button']" 
-		class="text-background p-3 md:p-4 rounded-lg cursor-pointer transition-quick w-fit text-center"
+		class="text-background p-3 md:p-4 rounded-lg cursor-pointer transition-quick shrink-0 text-center"
 		:class="{
 			'whitespace-nowrap': singleLine,
 			'!bg-primary hover:!bg-secondary': color === 'primary' || !color,
