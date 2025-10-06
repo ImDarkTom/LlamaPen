@@ -6,8 +6,7 @@ import TextDivider from '@/components/TextDivider/TextDivider.vue';
 import Tooltip from '@/components/Tooltip/Tooltip.vue';
 import { useModelList, type ModelInfoListItem } from '@/composables/useModelList';
 import { useConfigStore } from '@/stores/config';
-import { BiDownload, BiLinkExternal } from 'vue-icons-plus/bi';
-import { BsEyeSlash } from 'vue-icons-plus/bs';
+import { BiDownload, BiHide, BiLinkExternal } from 'vue-icons-plus/bi';
 
 const config = useConfigStore();
 const { connectedToOllama } = useModelList();
@@ -57,9 +56,9 @@ defineProps<{
                         {{ displayName }}
 
                         <div class="grow"></div>
-                        <Tooltip v-if="hidden" text="Loaded in memory"
+                        <Tooltip v-if="hidden" text="Hidden in list"
                             class="flex items-center justify-center">
-                            <BsEyeSlash class="h-full" />
+                            <BiHide class="h-full" />
                         </Tooltip>
                         <Tooltip v-if="loadedInMemory" text="Loaded in memory"
                             class="flex items-center justify-center">

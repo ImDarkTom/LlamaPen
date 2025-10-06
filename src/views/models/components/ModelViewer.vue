@@ -3,8 +3,7 @@ import ModelIcon from '@/components/Icon/ModelIcon.vue';
 import ollamaApi from '@/utils/ollama';
 import { computed, ref } from 'vue';
 import type { IconType } from 'vue-icons-plus';
-import { BiBrain, BiCopy, BiLinkExternal, BiPencil, BiReflectVertical, BiSkipNext, BiTrash, BiWrench } from 'vue-icons-plus/bi';
-import { BsEye, BsEyeSlash } from 'vue-icons-plus/bs';
+import { BiBrain, BiCopy, BiHide, BiLinkExternal, BiPencil, BiReflectVertical, BiShow, BiSkipNext, BiTrash, BiWrench } from 'vue-icons-plus/bi';
 import DOMPurify from 'dompurify';
 import Unknown from '@/icons/unknown.svg';
 import ollamaRequest from '@/utils/ollamaRequest';
@@ -143,7 +142,7 @@ const capabilityIcons: Record<string, IconType> = {
     'completion': BiSkipNext,
     'tools': BiWrench,
     'thinking': BiBrain,
-    'vision': BsEye,
+    'vision': BiShow,
     'insert': BiReflectVertical
 };
 
@@ -224,7 +223,7 @@ const isHidden = computed(() => config.chat.hiddenModels.includes(props.modelFro
                 type="button"
                 :color="isHidden ? 'sunken' : 'primary'"
                 :text="isHidden ? 'Unhide from list' : 'Hide from list'"
-                :icon="isHidden ? BsEyeSlash : BsEye"
+                :icon="isHidden ? BiHide : BiShow"
                 @click="setModelHidden(modelFromParams, isHidden)" />
 
             <template v-if="!apiEnabled">
