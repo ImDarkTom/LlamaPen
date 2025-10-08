@@ -1,7 +1,8 @@
 <script setup lang="ts">
-import { computed, inject, onBeforeUnmount, onMounted, provide, ref } from 'vue';
+import { inject, onBeforeUnmount, onMounted, provide, ref, toRef } from 'vue';
 import { BiChevronUp } from 'vue-icons-plus/bi';
 import { nanoid } from 'nanoid';
+import { useFloatingMenu } from '@/composables/useFloatingMenu';
 
 const props = withDefaults(defineProps<{
     isOpened?: boolean;
@@ -33,41 +34,13 @@ const buttonRef = ref<HTMLElement | null>(null);
 const menuRef = ref<HTMLElement | null>(null);
 const childDropdowns = ref<string[]>([]);
 
-const padding = 8; // px
-const menuPosition = computed<{ top?: string, bottom?: string, left?: string }>(() => {
-    if (
-        !props.isOpened || 
-        !buttonRef.value || 
-        !menuRef.value
-    ) return { top: '0px', left: '0px' };
-    
-    const buttonRect = buttonRef.value.getBoundingClientRect();
-    const menuHeight = menuRef.value.offsetHeight;
-    const menuWidth = menuRef.value.offsetWidth;
-
-    const spaceBelow = window.innerHeight - buttonRect.bottom;
-    const spaceAbove = buttonRect.top;
-
-    const shouldShowAbove = 
-        (menuHeight > spaceBelow && spaceAbove >= menuHeight) ||
-        (props.prefferedPosition === 'top' && spaceAbove >= menuHeight);
-    const vertical  = shouldShowAbove
-        ? { bottom: `${window.innerHeight - buttonRect.top - window.scrollY + padding}px` }
-        : { top: `${buttonRect.bottom + window.scrollY - padding}px` };
-
-    let left: number;
-    if (props.anchored === 'left') {
-        left = buttonRect.left + window.scrollX;
-    } else if (props.anchored === 'right') {
-        left = buttonRect.right - menuWidth + window.scrollX;
-    } else { // center
-        const buttonCenter = buttonRect.left + buttonRect.width / 2 + window.scrollX;
-        left = buttonCenter - (menuWidth / 2);
-    }
-
-    left = Math.max(0, Math.min(left, window.innerWidth - menuWidth));
-
-    return { ...vertical, left: `${left}px` };
+const { menuPosition } = useFloatingMenu({
+    isOpened: toRef(props, 'isOpened'),
+    buttonRef,
+    menuRef,
+    anchored: props.anchored,
+    prefferedPosition: props.prefferedPosition,
+    paddingPx: 8
 });
 
 function toggleMenu() {

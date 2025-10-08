@@ -1,8 +1,7 @@
 <script setup lang="ts">
+import { useFloatingMenu } from '@/composables/useFloatingMenu';
 import { useConfigStore } from '@/stores/config';
 import { onUnmounted, ref } from 'vue';
-
-const config = useConfigStore();
 
 const props = withDefaults(defineProps<{
     text: string;
@@ -13,15 +12,29 @@ const props = withDefaults(defineProps<{
     size: 'medium',
 });
 
-let visible = ref<boolean>(false);
+const config = useConfigStore();
+
+const isVisible = ref<boolean>(false);
+const timeoutDuration = config.ui.tooltip.waitTimeoutMs;
 let timeoutId: null | NodeJS.Timeout = null;
-let timeoutDuration = config.ui.tooltip.waitTimeoutMs;
+
+const buttonRef = ref<HTMLElement | null>(null);
+const menuRef = ref<HTMLElement | null>(null);
+
+const { menuPosition } = useFloatingMenu({
+    isOpened: isVisible,
+    buttonRef,
+    menuRef,
+    anchored: 'center',
+    paddingPx: 8,
+    prefferedPosition: 'bottom'
+});
 
 function showTooltip() {
     if (props.disabled) return;
 
     timeoutId = setTimeout(() => {
-        visible.value = true;
+        isVisible.value = true;
     }, timeoutDuration);
 }
 
@@ -30,7 +43,7 @@ function hideTooltip() {
         clearTimeout(timeoutId);
         timeoutId = null;
     }
-    visible.value = false;
+    isVisible.value = false;
 }
 
 onUnmounted(() => {
@@ -41,18 +54,28 @@ onUnmounted(() => {
 </script>
 
 <template>
-    <div class="relative inline-block" @mouseenter="showTooltip" @mouseleave="hideTooltip">
-        <slot></slot>
-        <div v-if="visible"
-            class="bg-surface-light max-w-prose absolute top-[110%] left-[50%] w-max -translate-x-[50%] p-2 rounded-lg shadow-md shadow-background-dark z-40">
-            <div class="absolute -top-[0.15ch] left-[50%] rotate-45 -translate-x-[50%] w-[1ch] h-[1ch] bg-surface-light">
-            </div>
-            <span
-                :class="{ 
-                    'text-sm': size === 'small',
-                    'text-md': size === 'medium',
-                    'text-lg': size === 'large',
-                }">{{ text }}</span>
+    <div class="inline-block" @mouseenter="showTooltip" @mouseleave="hideTooltip">
+        <div ref="buttonRef">
+            <slot />
         </div>
+        <Teleport to="body" v-if="isVisible">
+            <div 
+                ref="menuRef"
+                class="absolute z-[45]"
+                :style="menuPosition">
+                <div
+                    class="bg-surface-light ring-border ring-1 max-w-prose w-max p-2 rounded-lg shadow-md"
+                    :class="{ 'p-1.5!': size === 'small' }">
+                    <span
+                        :class="{ 
+                            'text-sm': size === 'small',
+                            'text-md': size === 'medium',
+                            'text-lg': size === 'large',
+                        }">
+                        {{ text }}
+                    </span>
+                </div>
+            </div>
+        </Teleport>
     </div>
 </template>
