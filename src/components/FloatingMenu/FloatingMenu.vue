@@ -129,7 +129,7 @@ onBeforeUnmount(() => {
                 <div
                     v-if="isOpened"
                     ref="menuRef"
-                    class="absolute z-[25]"
+                    class="absolute z-[45]"
                     :data-dropdown-id="myDropdownId"
                     :class="{
                         'bg-surface p-1.5 flex flex-col gap-2 rounded-lg max-w-[100dvw-3rem] w-full sm:w-96 shadow-md shadow-background': !unstyledMenu,

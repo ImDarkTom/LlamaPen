@@ -1,11 +1,12 @@
 <script setup lang="ts">
 import { computed, ref } from 'vue';
 import SidebarRouterLink from './SidebarRouterLink.vue';
-import { BiChat, BiPin, BiSolidPin, BiX } from 'vue-icons-plus/bi';
+import { BiChat, BiDotsVerticalRounded, BiPencil, BiPin, BiSolidPin, BiTrash, BiX } from 'vue-icons-plus/bi';
 import useChatsStore from '@/stores/chatsStore';
 import router from '@/lib/router';
 import useMessagesStore from '@/stores/messagesStore';
 import { getDateTimeString } from '@/utils/core/getDateTimeString';
+import ActionMenu, { type MenuEntry } from '../FloatingMenu/ActionMenu.vue';
 
 const props = defineProps<{
     chat: Chat,
@@ -39,8 +40,8 @@ function editKeyPressed(e: KeyboardEvent) {
     }
 }
 
-function editChatName(e: MouseEvent) {
-    e.preventDefault();
+function editChatName(e?: MouseEvent) {
+    e?.preventDefault();
     const chatTextElem = entryTextRef.value;
     if (!chatTextElem) {
         return;
@@ -70,14 +71,34 @@ function stopEditing(saveName = true) {
 }
 
 // Chat controls
-function promptDeleteChat(e: MouseEvent) {
-    e.preventDefault();
+function promptDeleteChat(e?: MouseEvent) {
+    e?.preventDefault();
 
     if (confirm(`Are you sure you want to delete "${props.chat.title}"?`)) {
         deleteChat(props.chat.id);
         router.push('/');
     }
 }
+
+const actions: MenuEntry[] = [
+    {
+        text: 'Pin',
+        icon: BiPin,
+        onClick: () => setPinned(props.chat.id, !isPinned),
+    },
+    {
+        text: 'Rename',
+        icon: BiPencil,
+        onClick: editChatName,
+    },
+    {
+        text: 'Delete',
+        icon: BiTrash,
+        onClick: promptDeleteChat,
+        category: 'danger',
+    }
+]
+
 </script>
 
 <template>
@@ -116,10 +137,17 @@ function promptDeleteChat(e: MouseEvent) {
                     'rounded-sm border-2 border-border-muted': isEditingName,
                     'animate-blink': isGeneratingTitle,
                 }">
-            <div 
-                class="hidden group-hover:block hover:text-danger transition-all duration-dynamic" 
-                @mousedown.stop="promptDeleteChat">
-                <BiX />
+            <div class="flex md:not-group-hover:hidden gap-1">
+                <div 
+                    class="hover:text-danger hidden md:block transition-all duration-dynamic"
+                    @mousedown.left.stop="promptDeleteChat">
+                    <BiX />
+                </div>
+                <ActionMenu :actions>
+                    <div @mousedown.left.stop>
+                        <BiDotsVerticalRounded />
+                    </div>
+                </ActionMenu>
             </div>
         </div>
     </SidebarRouterLink>
