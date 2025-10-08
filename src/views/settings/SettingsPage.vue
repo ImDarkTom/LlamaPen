@@ -89,7 +89,7 @@ onBeforeUnmount(() => {
 });
 
 const inProduction = import.meta.env.VITE_PRODUCTION === 'true';
-const ollamaDefault = import.meta.env.VITE_PRODUCTION ?? 'http://localhost:11434';
+const ollamaDefault = import.meta.env.VITE_DEFAULT_OLLAMA ?? 'http://localhost:11434';
 
 watch(
     () => config.cloud.enabled,
@@ -236,16 +236,16 @@ async function checkOllamaVersion() {
             <ToggleSetting 
                 v-model="config.closeSidebarOnNavMobile" 
                 label="Hide sidebar on navigate"
-                tooltip="Hides the sidebar after pressing a button to change the page. (Default: Enabled)" />
+                tooltip="Hide the sidebar after navigating to a different page on mobile. (Default: Enabled)" />
         </OptionCategory>
 
         <OptionCategory label="Chat">
             <SelectionSetting 
                 v-model="config.chat.titleGenerationStyle" 
                 label="Title generation style" 
-                :items="['firstMessage', 'generate', 'chatId', 'dynamic']" 
-                :itemNames="['Use first message', 'Generate with current model', 'Use chat ID', 'Dynamic (default)']"
-                tooltip="Dynamic: First message if question, else generate. (Default: Generate with current model)"
+                :items="['dynamic', 'firstMessage', 'generate', 'chatId']" 
+                :itemNames="['Dynamic (default)', 'Use first message', 'Generate with current model', 'Use chat ID']"
+                tooltip="Dynamic: First message if question, otherwise generate. (Default: Dynamic)"
             />
             <ToggleSetting 
                 v-model="config.chat.thinking.infoOpenByDefault"
