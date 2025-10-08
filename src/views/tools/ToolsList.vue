@@ -107,7 +107,7 @@ function renameItem(toolName: string) {
                 <span class="align-middle">New Tool</span>
             </button>
             <ActionMenu :actions="toolsActions" anchored="left">
-                <button class="bg-surface group-[.active]:bg-surface group-[.active]:text-text p-2 rounded-md cursor-pointer">
+                <button class="btn-ghost">
                     <BiDotsVerticalRounded />
                 </button>
             </ActionMenu>

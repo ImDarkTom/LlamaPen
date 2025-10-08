@@ -42,16 +42,20 @@ async function load(force: boolean = false) {
             // Get the base model list
             state.models = (await ollamaApi.getModels(force))
                 .map((model) => {
+                    const modelId = model.model;
+
                     const displayName = 
                         config.chat.modelRenames[model.model] ||
                         model.name ||
-                        model.model;
+                        modelId;
+
+                    const isHidden = config.chat.hiddenModels.includes(modelId);
 
                     return {
                         modelData: model,
                         displayName,
                         loadedInMemory: loadedModelIds.includes(model.model),
-                        hidden: config.chat.hiddenModels.includes(model.model),
+                        hidden: isHidden,
                     }
                 });
 

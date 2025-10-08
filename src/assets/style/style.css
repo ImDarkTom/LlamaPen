@@ -188,6 +188,10 @@ body:not([data-native-scrollbar]) {
     @apply bg-primary hover:bg-secondary text-background-light rounded-lg transition-colors duration-dynamic cursor-pointer;
 }
 
+@utility btn-ghost {
+    @apply bg-surface group-[.active]:bg-surface-light hover:bg-surface-light group-[.active]:text-text p-2 rounded-md cursor-pointer;
+}
+
 
 /* Custom slider styling */
 .slider::-webkit-slider-thumb {

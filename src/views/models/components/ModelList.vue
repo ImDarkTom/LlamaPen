@@ -11,14 +11,15 @@ import router from '@/lib/router';
 import { useConfigStore } from '@/stores/config';
 import ollamaApi from '@/utils/ollama';
 import ollamaRequest from '@/utils/ollamaRequest';
+import { computed, ref } from 'vue';
 import { BiCopy, BiDotsVerticalRounded, BiDownload, BiHide, BiLinkExternal, BiPencil, BiShow, BiTrash } from 'vue-icons-plus/bi';
 import { Fa6Memory } from 'vue-icons-plus/fa6';
 
 const config = useConfigStore();
 const { setModelHidden } = useModelList();
-const { connectedToOllama, loading, models } = useModelList();
+const { connectedToOllama, loading, models, modelIds } = useModelList();
 
-defineProps<{
+const props = defineProps<{
     modelsList: ModelInfoListItem[],
 }>();
 
@@ -128,6 +129,35 @@ async function deleteModel(model: string) {
     router.push('/models');
     refreshModelList();
 }
+
+const showAll = () => {
+    config.chat.hiddenModels = [];
+    refreshModelList();
+};
+const hideAll = () => {
+    config.chat.hiddenModels = modelIds.value;
+    refreshModelList();
+};
+
+const searchQuery = ref('');
+
+const queriedModels = computed(() => props.modelsList.filter((m) => 
+    m.displayName.includes(searchQuery.value) ||
+    m.modelData.model.includes(searchQuery.value)
+));
+
+const batchActions: MenuEntry[] = [
+    {
+        text: 'Hide all',
+        icon: BiHide,
+        onClick: hideAll
+    },
+    {
+        text: 'Show all',
+        icon: BiShow,
+        onClick: showAll,
+    },
+];
 </script>
 
 <template>
@@ -154,6 +184,22 @@ async function deleteModel(model: string) {
                 </template>
                 
                 <TextDivider text="Models" />
+                
+                <div 
+                    class="flex flex-row gap-2"
+                    :class="{ 'pointer-events-none': !connectedToOllama }">
+                    <input 
+                        type="text" 
+                        v-model="searchQuery" 
+                        placeholder="Search..."
+                        :disabled="!connectedToOllama"
+                        class="bg-background p-2 rounded-md outline-none focus:ring-1 ring-highlight ring-inset">
+                    <ActionMenu :actions="batchActions">
+                        <button class="btn-ghost">
+                            <BiDotsVerticalRounded />
+                        </button>
+                    </ActionMenu>
+                </div>
 
                 <div v-if="!connectedToOllama && !loading">
                     Not connected to Ollama
@@ -162,15 +208,17 @@ async function deleteModel(model: string) {
                     No models found
                 </div>
                 <RouterLink
-                    v-for="{ modelData, loadedInMemory, hidden, displayName } in modelsList" 
+                    v-for="{ modelData, loadedInMemory, hidden, displayName } in queriedModels" 
                     exactActiveClass="*:bg-surface-light *:ring-1 *:ring-highlight *:ring-inset *:text-text"
                     :to="`/models/${modelData.model}`" >
-                    <div class="flex flex-row items-center gap-2 p-2 rounded-md hover:bg-surface transition-colors duration-dynamic">
+                    <div 
+                        class="flex flex-row items-center gap-2 p-2 rounded-md hover:bg-surface transition-colors duration-dynamic"
+                        :class="{ 'opacity-75': hidden }">
                         <ModelIcon :name="modelData.model ?? 'Unknown'" class="size-6" />
                         {{ displayName }}
 
                         <div class="grow"></div>
-                        <Tooltip v-if="hidden" text="Hidden in list"
+                        <Tooltip v-if="hidden" text="Hidden"
                             class="flex items-center justify-center">
                             <BiHide class="h-full" />
                         </Tooltip>
