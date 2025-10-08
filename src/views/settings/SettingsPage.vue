@@ -92,13 +92,13 @@ const inProduction = import.meta.env.VITE_PRODUCTION === 'true';
 const ollamaDefault = import.meta.env.VITE_PRODUCTION ?? 'http://localhost:11434';
 
 watch(
-    () => config.api.enabled,
+    () => config.cloud.enabled,
     async (newValue) => {
-        if (newValue === false && config.api.signoutBeforeDisable) {
+        if (newValue === false && config.cloud.signoutBeforeDisable) {
             // TODO: Fix/make this work
             if (!supabase) return;
 
-            logger.info('Settings Page', 'Signing out before disabling API');
+            logger.info('Settings Page', 'Signing out before disabling Cloud');
             await supabase.auth.signOut();
         }
 
@@ -127,16 +127,16 @@ async function checkOllamaVersion() {
 
         <OptionCategory label="Account" v-if="inProduction">
             <ToggleSetting 
-                v-model="config.api.enabled" 
-                label="Enable Llamapen API" />
-            <span v-if="!config.api.enabled" class="text-text-muted/80 text-sm">
+                v-model="config.cloud.enabled" 
+                label="Enable Llamapen Cloud" />
+            <span v-if="!config.cloud.enabled" class="text-text-muted/80 text-sm">
                 <BiRocket class="size-4 inline align-middle" />
-                Run more powerful models with LlamaPen API, an optional cloud service.
+                Run more powerful models with LlamaPen's cloud service.
             </span>
         </OptionCategory>
 
         <OptionCategory label="Ollama">
-            <div v-if="config.api.enabled">Ollama not available while LlamaPen API is enabled.</div>
+            <div v-if="config.cloud.enabled">Ollama not available while LlamaPen Cloud is enabled.</div>
             <template v-else>
                 <TextInputSetting 
                     label="Ollama URL" 

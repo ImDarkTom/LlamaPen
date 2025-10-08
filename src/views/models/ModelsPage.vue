@@ -102,7 +102,7 @@ async function setModelViewInfo(modelId: string) {
         <ViewerContainer 
             v-if="selectedModel.state === 'unselected' && modelFromParams !== 'downloads'" 
             class="flex items-center justify-center text-xl" >
-            {{ config.api.enabled ?
+            {{ config.cloud.enabled ?
                 'Model management is only available without API mode.' :
                 'Select a model to view its details, or download a new model.' }}
         </ViewerContainer>

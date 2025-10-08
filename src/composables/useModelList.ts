@@ -60,7 +60,7 @@ async function load(force: boolean = false) {
                 });
 
             if (
-                !config.api.enabled && 
+                !config.cloud.enabled && 
                 (
                     config.ollama.modelCapabilities.autoload && state.models.length < 31
                     || config.ollama.modelCapabilities.alwaysAutoload

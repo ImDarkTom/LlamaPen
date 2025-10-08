@@ -8,7 +8,7 @@ export default async function ollamaRequest(
     options?: { signal?: AbortSignal },
 ) {
     return await tryCatch(
-        fetch(useConfigStore().apiUrl(route), {
+        fetch(useConfigStore().requestUrl(route), {
             method,
             body: body ? JSON.stringify(body) : null,
             signal: options?.signal,

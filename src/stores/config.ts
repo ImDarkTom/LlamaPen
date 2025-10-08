@@ -33,7 +33,7 @@ interface Config {
             hideUnusedButtons: boolean;
         }
     },
-    api: {
+    cloud: {
         enabled: boolean,
         apiUrl: string,
         signoutBeforeDisable: boolean,
@@ -110,7 +110,7 @@ export const useConfigStore = defineStore('config', {
                 hideUnusedButtons: true
             }
         },
-        api: {
+        cloud: {
             enabled: false,
             apiUrl: import.meta.env.VITE_API_URL,
             signoutBeforeDisable: false,
@@ -135,7 +135,7 @@ export const useConfigStore = defineStore('config', {
         }
     }),
     getters: {
-        apiUrl: (state) => (path: string) => `${state.api.enabled ? state.api.apiUrl : state.ollamaUrl}${path}`,
+        requestUrl: (state) => (path: string) => `${state.cloud.enabled ? state.cloud.apiUrl : state.ollamaUrl}${path}`,
     },
     actions: {
         setTransitionSpeed(speed: number) {

@@ -16,7 +16,7 @@ const config = useConfigStore();
             <UtilSidebarItem to="/models" text="Models" :icon="TbListDetails" />
             <UtilSidebarItem to="/tools" text="Tools" :icon="BiWrench" />
             <div class="grow"></div>
-            <UtilSidebarItem v-if="config.api.enabled" to="/account" text="My Account" :icon="BiUserCircle" />
+            <UtilSidebarItem v-if="config.cloud.enabled" to="/account" text="My Account" :icon="BiUserCircle" />
             <UtilSidebarItem to="/shortcuts" text="Shortcuts" :icon="BsKeyboard" />
             <UtilSidebarItem to="/guide" text="Guide" :icon="BiHelpCircle" />
         </aside>
@@ -25,7 +25,7 @@ const config = useConfigStore();
             <UtilSidebarItem to="/settings" :icon="BiCog" />
             <UtilSidebarItem to="/models" :icon="TbListDetails" />
             <UtilSidebarItem to="/tools" :icon="BiWrench" />
-            <UtilSidebarItem v-if="config.api.enabled" to="/account" :icon="BiUserCircle" />
+            <UtilSidebarItem v-if="config.cloud.enabled" to="/account" :icon="BiUserCircle" />
             <UtilSidebarItem class="hidden md:block" to="/shortcuts" :icon="BsKeyboard" />
             <UtilSidebarItem to="/guide" :icon="BiHelpCircle" />
         </nav>

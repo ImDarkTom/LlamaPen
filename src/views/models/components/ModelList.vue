@@ -37,7 +37,7 @@ const modelActions: MenuEntry[] = [
         text: 'Open in Ollama Library',
         icon: BiLinkExternal,
         onClick: ({ modelData }) => window.open(`https://ollama.com/library/${modelData.model}`, '_blank'),
-        condition: !config.api.enabled
+        condition: !config.cloud.enabled
     },
     {
         text: ({ modelData }) => isHidden(modelData.model) ? 'Unhide model' : 'Hide model',
@@ -48,7 +48,7 @@ const modelActions: MenuEntry[] = [
         text: ({ modelData }) => isLoadedInMemory(modelData.model) ? 'Unload from memory' : 'Load into memory',
         onClick: ({ modelData }) => toggleModelLoaded(modelData.model),
         icon: ({ modelData }) => (isLoadedInMemory(modelData.model) ? MemoryUnloadIcon : Fa6Memory) as any,
-        condition: !config.api.enabled
+        condition: !config.cloud.enabled
     },
     {
         text: 'Rename',
@@ -59,13 +59,13 @@ const modelActions: MenuEntry[] = [
         text: 'Duplicate model',
         icon: BiCopy,
         onClick: ({ modelData }) => copyModel(modelData.model),
-        condition: !config.api.enabled
+        condition: !config.cloud.enabled
     },
     {
         text: 'Delete model',
         icon: BiTrash,
         onClick: ({ modelData }) => deleteModel(modelData.model),
-        condition: !config.api.enabled,
+        condition: !config.cloud.enabled,
         category: 'danger'
     }
 ];
@@ -164,7 +164,7 @@ const batchActions: MenuEntry[] = [
     <div
         class="h-4/12 md:h-full w-full md:w-2/6 bg-background-light rounded-lg md:rounded-r-none md:border-r-1 border-border flex flex-col gap-2 p-2 relative" >
             <div class="flex flex-col gap-2 overflow-y-auto md:pr-3">
-                <template v-if="!config.api.enabled">
+                <template v-if="!config.cloud.enabled">
                     <TextDivider text="Download" />
                     <PrimaryButton 
                         class="w-full"

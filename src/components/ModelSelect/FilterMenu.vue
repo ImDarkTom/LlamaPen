@@ -91,7 +91,7 @@ defineExpose({
             <span class="text-sm">Order</span>
             <select v-model="orderBy" ref="orderBySelect"
                 class="bg-surface-light p-2 rounded-md ring-inset ring-2 ring-border-muted focus:ring-border outline-0">
-                <option value="default">Default ({{ config.api.enabled ? 'Creator Name' : 'Added date' }})</option>
+                <option value="default">Default ({{ config.cloud.enabled ? 'Creator Name' : 'Added date' }})</option>
                 <option value="alphabetically">Alphabetically</option>
                 <option value="size">Size</option>
             </select>

@@ -14,8 +14,8 @@ export async function authedFetch(url: string, options?: RequestInit): Promise<R
         ...(options?.headers || {}),
     };
 
-    // Only send auth token if api is explicitly enabled.
-    if (useConfigStore().api.enabled) {
+    // Only send auth token if cloud is explicitly enabled.
+    if (useConfigStore().cloud.enabled) {
         headers['Authorization'] = `Bearer ${session?.access_token}`;
     }
 

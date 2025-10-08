@@ -12,7 +12,7 @@ import { useConfigStore } from '@/stores/config';
 
 const config = useConfigStore();
 
-const apiEnabled = computed(() => config.api.enabled);
+const cloudEnabled = computed(() => config.cloud.enabled);
 
 const props = defineProps<{
     modelFromParams: string | null,
@@ -91,8 +91,8 @@ const modelInfo = computed(() =>
         </div>
 
         <div class="relative">
-            <div v-if="apiEnabled" class="absolute w-full min-h-full bg-black/35 rounded-lg backdrop-blur-sm flex items-center justify-center text-lg shadow-sm">
-                Info unavailable in API mode.
+            <div v-if="cloudEnabled" class="absolute w-full min-h-full bg-black/35 rounded-lg backdrop-blur-sm flex items-center justify-center text-lg shadow-sm">
+                Info unavailable in Cloud mode.
             </div>
             <h2 class="text-xl md:text-3xl pt-4 pb-2 text-text">Info</h2>
             <InfoSection title="License" :content="sanitizeSection(modelLicense)" />

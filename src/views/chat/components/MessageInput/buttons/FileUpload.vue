@@ -19,8 +19,8 @@ const selectedModelHasVision = computed(() => {
     return selectedModelCapabilities.value.includes('vision')
 });
 
-const apiNotAllowed = computed(() => {
-    return config.api.enabled && !userStore.subscription.subscribed;
+const cloudNotAllowed = computed(() => {
+    return config.cloud.enabled && !userStore.subscription.subscribed;
 });
 
 function onClick(e: MouseEvent) {
@@ -29,8 +29,8 @@ function onClick(e: MouseEvent) {
         return;
     }
 
-    if (apiNotAllowed.value) {
-        alert('Send attachments to API models with LlamaPen API Premium. Visit the Account page to learn more.');
+    if (cloudNotAllowed.value) {
+        alert('Send attachments to Cloud models with LlamaPen Cloud Premium. Visit the Account page to learn more.');
         e.preventDefault();
         return;
     }
@@ -42,7 +42,7 @@ function onClick(e: MouseEvent) {
         class="aspect-square p-0!"
         :class="{ 
             'opacity-50 cursor-not-allowed': !selectedModelHasVision,
-            'opacity-60': apiNotAllowed
+            'opacity-60': cloudNotAllowed
         }"
         :title="selectedModelHasVision ? 'Upload file(s)' : 'Selected model does not have vision capabilities'"
     >

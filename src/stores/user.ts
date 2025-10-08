@@ -21,7 +21,7 @@ async function fetchSession() {
 }
 
 async function fetchSubInfo() {
-    const subscriptionResponse = await authedFetch(useConfigStore().apiUrl('/user/subscription-info'));
+    const subscriptionResponse = await authedFetch(useConfigStore().requestUrl('/user/subscription-info'));
     if (!subscriptionResponse) return;
 
     const subscriptionInfoResponse = await subscriptionResponse.json();
@@ -57,8 +57,8 @@ const subscriptionInfo = ref<{
  * Store to manage auth with LlamaPen account.
  */
 const useUserStore = defineStore('user', () => {
-    // If in prod, api is enabled, and user info not already loaded.
-    if (inProduction && useConfigStore().api.enabled && user.value === null) {
+    // If in prod, cloud is enabled, and user info not already loaded, fetch the info.
+    if (inProduction && useConfigStore().cloud.enabled && user.value === null) {
         fetchUser();
         fetchSession();
         fetchSubInfo();

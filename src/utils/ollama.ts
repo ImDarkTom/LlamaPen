@@ -73,7 +73,7 @@ class OllamaAPI {
 			content: 'You are a helpful assistant that generates concise titles for chat histories. Use the following chat to generate a title based on the chat history in the chat\'s language.' + chatTitleExamples,
 		})
 
-		const response = await authedFetch(useConfigStore().apiUrl('/api/chat'), {
+		const response = await authedFetch(useConfigStore().requestUrl('/api/chat'), {
 			method: 'POST',
 			headers: {
 				'Content-Type': 'application/json',
@@ -150,7 +150,7 @@ class OllamaAPI {
 			});
 		}
 
-		return authedFetch(useConfigStore().apiUrl('/api/chat'), {
+		return authedFetch(useConfigStore().requestUrl('/api/chat'), {
 			method: 'POST',
 			headers: {
 				'Content-Type': 'application/json',
@@ -220,7 +220,7 @@ class OllamaAPI {
 			reqBody.tools = this.appToolsToOllama();
 		}
 
-		const response = await authedFetch(config.apiUrl('/api/chat'), {
+		const response = await authedFetch(config.requestUrl('/api/chat'), {
 			method: 'POST',
 			headers: {
 				'Content-Type': 'application/json',
@@ -311,7 +311,7 @@ class OllamaAPI {
 	async getModels(force?: boolean) {
 		if (this.modelList.length !== 0 && !force) return this.modelList;
 
-		const response = await fetch(useConfigStore().apiUrl('/api/tags'));
+		const response = await fetch(useConfigStore().requestUrl('/api/tags'));
 		const responseJson: { models: ModelList } = await response.json();
 
 		this.modelList = responseJson.models;

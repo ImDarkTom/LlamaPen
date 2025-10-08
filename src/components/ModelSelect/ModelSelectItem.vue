@@ -21,7 +21,7 @@ const props = defineProps<{
 const emit = defineEmits<(e: 'setModel', model: ModelListItem) => void>();
 
 function setModel(model: ModelListItem) {
-	if (config.api.enabled && !userStore.isSignedIn) {
+	if (config.cloud.enabled && !userStore.isSignedIn) {
 		// Show toast to sign in
 		router.push('/account');
 		return;
@@ -47,7 +47,7 @@ const modelCapabilities = computed(() => getModelCapabilities(props.model));
 		:class="{
 			'bg-surface-light': selected && !isCurrentModel,
 			'bg-surface-light ring-2 ring-border ring-inset': isCurrentModel,
-			'opacity-50': (!userStore.subscription.subscribed && model.modelData.llamapenMetadata?.premium) || (config.api.enabled && !userStore.isSignedIn),
+			'opacity-50': (!userStore.subscription.subscribed && model.modelData.llamapenMetadata?.premium) || (config.cloud.enabled && !userStore.isSignedIn),
 		}" @click="setModel(model.modelData)" ref="listItemRef" :aria-selected="selected">
 
 		<ModelIcon :name="model.modelData.model" class="size-10 p-1" />
@@ -64,7 +64,7 @@ const modelCapabilities = computed(() => getModelCapabilities(props.model));
 					<div 
 						v-if="model.modelData.llamapenMetadata?.premium"
 						class="bg-yellow-400/25 rounded-sm ring-1 ring-yellow-400 p-0.5"
-						title="Premium model - requires an active LlamaPen API Premium subscription">
+						title="Premium model - requires LlamaPen Cloud Premium">
 						<BiStar class="text-yellow-400 size-4" />
 					</div>
 					<!-- Capability tags -->

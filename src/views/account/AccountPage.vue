@@ -25,7 +25,7 @@ onMounted(() => {
 async function subscriptionButtonClick() {
 	loadingSubButtonPage.value = true;
 	if (userStore.subscription.subscribed) {
-		const url = config.apiUrl('/stripe/manage');
+		const url = config.requestUrl('/stripe/manage');
 
 		const response = await authedFetch(url)	;
 		const { redirect } = await response.json();
@@ -34,7 +34,7 @@ async function subscriptionButtonClick() {
 		
 		window.location.href = redirect;
 	} else {
-		const url = config.apiUrl('/stripe/checkout');
+		const url = config.requestUrl('/stripe/checkout');
 
 		const response = await authedFetch(url)	;
 		const { redirect } = await response.json();
@@ -48,7 +48,7 @@ async function subscriptionButtonClick() {
 async function deleteAccount() {
 	if (confirm('Are you sure you want to delete your account? This cannot be undone. Any subscriptions will be cancelled.')) {
 		
-		const response = await authedFetch(config.apiUrl('/user/delete-account'), {
+		const response = await authedFetch(config.requestUrl('/user/delete-account'), {
 			method: 'POST'
 		});
 		
@@ -62,7 +62,7 @@ async function deleteAccount() {
 	}
 }
 
-// API's used token amount only updates when the user sends a request, therefore we can otherwise assume that it is at limit.
+// Cloud's used token amount only updates when the user sends a request, therefore we can otherwise assume that it is at limit.
 const realRemaining = computed(() => {
 	const lastUpdatedRaw = userStore.subscription.usage.lastUpdated;
 	if (!lastUpdatedRaw) return userStore.subscription.usage.remaining;
@@ -130,7 +130,7 @@ async function signIn() {
 		<div v-if="!userStore.user" class="flex flex-col items-center justify-center h-full">
 			<AccountSection class="items-center justify-center" flex-direction="col">
 				<div class="flex flex-col items-center gap-4">
-					<span class="font-bold text-xl">Welcome to LlamaPen API</span>
+					<span class="font-bold text-xl">Welcome to LlamaPen Cloud</span>
 					<PrimaryButton 
 						v-if="!userStore.isSignedIn" 
 						class="font-medium px-16" 
@@ -139,10 +139,10 @@ async function signIn() {
 						:icon="BiLogoGoogle" 
 						@click="signIn" />
 					<span>
-						By signing up, you agree to our 
-						<a href="https://api.llamapen.app/terms" target="_blank" class="text-secondary hover:underline">Terms of Service</a> 
+						By signing up, you agree to LlamaPen Cloud's 
+						<a href="https://cloud.llamapen.app/terms" target="_blank" class="text-secondary hover:underline">Terms of Service</a> 
 						and 
-						<a href="https://api.llamapen.app/privacy" target="_blank" class="text-secondary hover:underline">Privacy Policy</a>.
+						<a href="https://cloud.llamapen.app/privacy" target="_blank" class="text-secondary hover:underline">Privacy Policy</a>.
 					</span>
 				</div>
 			</AccountSection>
@@ -246,13 +246,13 @@ async function signIn() {
 					title="Terms of Service"
 					description="Read the terms of service."
 					:icon="BiFile"
-					link="https://api.llamapen.app/terms" 
+					link="https://cloud.llamapen.app/terms" 
 				/>
 				<ContactSection
 					title="Privacy Policy"
 					description="Read the privacy policy."
 					:icon="BiShield"
-					link="https://api.llamapen.app/privacy" 
+					link="https://cloud.llamapen.app/privacy" 
 				/>
 				<ContactSection
 					title="App issues"

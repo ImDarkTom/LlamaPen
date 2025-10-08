@@ -60,11 +60,11 @@ bun run local
 
 *That's it!* If you are contributing and using VSCode you can optionally install the extensions in the `extensions.json` file for a smoother development experience.
 
-## LlamaPen API
+## LlamaPen Cloud
 
-If you are using the [official site](https://llamapen.app/) (`https://llamapen.app`), you can **optionally** enable LlamaPen API. LlamaPen API is a cloud service that lets you run the most powerful version of up-to-date models if you are not able to run them locally. Note that while LlamaPen is free and open-source, LlamaPen API offers an optional subscription for increasing rate limits and accessing more expensive models. 
+If you are using the [official site](https://llamapen.app/) (`https://llamapen.app`), you may choose to enable LlamaPen Cloud. LlamaPen Cloud is an optional service that lets you run the most powerful versions of the latest models using a cloud provider if you are not able to run them locally. While LlamaPen is free and open-source, LlamaPen Cloud offers an optional subscription for increasing rate limits and accessing more expensive models. 
 
-For security purposes, LlamaPen API is **not** open-source, however we strive to ensure your privacy (as outlined in the API [privacy policy](https://api.llamapen.app/privacy)), and the only time we have access to your chats is when you explicitly enable LlamaPen API in the settings and send a chat request using one of the models. If you do not want to use this, keeping the toggle off will ensure that **no data is ever sent** to LlamaPen API servers.
+For security reasons, LlamaPen Cloud is **not** open-source, however we strive to ensure your privacy (as outlined in the Cloud service [privacy policy](https://cloud.llamapen.app/privacy)), and the only time we have access to your chats is if you explicitly enable LlamaPen Cloud in the settings and send chat requests using one of the provided models. **No data is ever sent to LlamaPen Cloud if you do not enable it in the settings**.
 
 ## Donating
 

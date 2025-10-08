@@ -21,7 +21,7 @@ const userStore = useUserStore();
 const { models, getModelInfo, modelIds, loading } = useModelList();
 
 const isOpened = ref<boolean>(false);
-const messageModelIsApi = computed<boolean>(() => /\//g.test(props.message.model));
+const usedCloudForMessage = computed<boolean>(() => /\//g.test(props.message.model));
 const messageModelInfo = computed<{
     exists: true;
     data: ModelInfoListItem;
@@ -49,8 +49,8 @@ function regenerateMessage(model: string) {
 }
 
 const warningText = computed(() => {
-    if (messageModelIsApi.value) {
-        return "This message was generated using LlamaPen API. Regeneration may not be possible unless LlamaPen API is enabled."
+    if (usedCloudForMessage.value) {
+        return "This message was generated using LlamaPen Cloud. Regeneration may not be possible unless LlamaPen Cloud is enabled."
     } else {
         return "Model not found in current model list. You may not be able to regenerate this message with the same model.";
     }
@@ -64,7 +64,7 @@ const warningText = computed(() => {
             v-if="!messageModelInfo.exists && !loading"
             :text=warningText
             size="small">
-            <BsCloudSlash v-if="messageModelIsApi" class="text-warning size-5 ml-1 translate-y-0.5" />
+            <BsCloudSlash v-if="usedCloudForMessage" class="text-warning size-5 ml-1 translate-y-0.5" />
             <BiError v-else class="text-warning ml-1" />
         </Tooltip>
         
