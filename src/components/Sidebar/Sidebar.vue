@@ -55,7 +55,7 @@ onUnmounted(() => {
             <SidebarFooter />
         </aside>
         <div class="absolute top-0 left-0 h-12 w-12 p-2 z-30">
-            <div class="size-10 p-1.5 cursor-pointer rounded-lg text-text hover:bg-surface hover:shadow-md shadow-background-dark transition-all duration-dynamic"
+            <div class="size-10 p-1.5 cursor-pointer rounded-lg text-text bg-background-light hover:bg-surface hover:shadow-md shadow-background-dark transition-all duration-dynamic"
                 @pointerdown="handlePointerDown" aria-label="Toggle Sidebar">
                 <TbLayoutSidebarFilled class="size-full" />
             </div>
