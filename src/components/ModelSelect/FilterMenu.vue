@@ -22,31 +22,41 @@ function userSort(items: ModelInfoListItem[]) {
             const capabilities = getModelCapabilities(item);
             return filterCapabilities.value.every((cap) => capabilities.includes(cap));
         });
-    };
+    }
+
+    const favoriteModels = config.models.favoriteModels ?? [];
+    const favorites: ModelInfoListItem[] = [];
+    const nonFavorites: ModelInfoListItem[] = [];
+
+    items.forEach(item => {
+        if (favoriteModels.includes(item.modelData.model)) {
+            favorites.push(item);
+        } else {
+            nonFavorites.push(item);
+        }
+    });
 
     switch (orderBy.value) {
         case 'default':
             break;
-        
         case 'alphabetically':
-            items = items.sort((a, b) => {
+            nonFavorites.sort((a, b) => {
                 const item1 = a.modelData.model.split('/')[1] ?? a.modelData.model;
                 const item2 = b.modelData.model.split('/')[1] ?? b.modelData.model;
-
                 return item1.localeCompare(item2, undefined, { sensitivity: 'base' });
             });
             break;
-
         case 'size':
-            items = items.sort((a, b) => a.modelData.size - b.modelData.size);
+            nonFavorites.sort((a, b) => a.modelData.size - b.modelData.size);
             break;
     }
 
     if (direction.value === 'des') {
-        items = items.reverse();
+        nonFavorites.reverse();
+        favorites.reverse();
     }
 
-    return items;
+    return [...favorites, ...nonFavorites];
 }
 
 defineExpose({

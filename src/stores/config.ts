@@ -56,7 +56,11 @@ interface Config {
         hiddenModels: string[];
         modelRenames: Record<string, string>;
         hideTPSInfoText: boolean;
-    }
+    },
+    models: {
+        favoriteModels: string[];
+        favoriteCloudModels: string[];
+    },
     developer: {
         mockRequests: boolean,
         infoLogs: boolean,
@@ -128,6 +132,10 @@ export const useConfigStore = defineStore('config', {
             hiddenModels: [],
             modelRenames: {},
             hideTPSInfoText: false,
+        },
+        models: {
+            favoriteModels: [],
+            favoriteCloudModels: [],
         },
         developer: {
             mockRequests: false,

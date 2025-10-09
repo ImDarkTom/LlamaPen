@@ -3,9 +3,10 @@ import router from '@/lib/router';
 import useUserStore from '@/stores/user';
 import ModelIcon from '../Icon/ModelIcon.vue';
 import { computed, ref } from 'vue';
-import { BiBrain, BiGlobe, BiLock, BiRightArrowAlt, BiShow, BiStar, BiWrench } from 'vue-icons-plus/bi';
+import { BiBrain, BiDotsHorizontalRounded, BiDotsVerticalRounded, BiGlobe, BiHeart, BiLock, BiShow, BiSolidHeart, BiStar, BiWrench } from 'vue-icons-plus/bi';
 import { useConfigStore } from '@/stores/config';
 import { useModelList, type ModelInfoListItem } from '@/composables/useModelList';
+import ActionMenu, { type MenuEntry } from '../FloatingMenu/ActionMenu.vue';
 
 const userStore = useUserStore();
 const config = useConfigStore();
@@ -20,7 +21,11 @@ const props = defineProps<{
 
 const emit = defineEmits<(e: 'setModel', model: ModelListItem) => void>();
 
-function setModel(model: ModelListItem) {
+const actionMenuButton = ref<HTMLElement | null>(null);
+
+function setModel(e: MouseEvent, model: ModelListItem) {
+	if (actionMenuButton.value && actionMenuButton.value.contains(e.target as Node)) return;
+
 	if (config.cloud.enabled && !userStore.isSignedIn) {
 		// Show toast to sign in
 		router.push('/account');
@@ -39,7 +44,31 @@ defineExpose({
 	listItemRef
 });
 
+const isFavorited = () => config.models.favoriteModels.includes(props.model.modelData.model);
+
 const modelCapabilities = computed(() => getModelCapabilities(props.model));
+
+const favoriteModel = () => {
+	const modelId = props.model.modelData.model;
+	if (isFavorited()) {
+		config.models.favoriteModels = config.models.favoriteModels.filter(m => m !== modelId);
+	} else {
+		config.models.favoriteModels.push(modelId);
+	}
+};
+
+const selectActions: MenuEntry[] = [
+	{
+		text: () => isFavorited() ? 'Unfavorite' : 'Favorite',
+		icon: () => isFavorited() ? BiSolidHeart : BiHeart,
+		onClick: favoriteModel
+	},
+	{
+		text: 'Manage Model',
+		icon: BiDotsHorizontalRounded,
+		onClick: () => router.push(`/models/${props.model.modelData.model}`)
+	}
+];
 </script>
 
 <template>
@@ -48,7 +77,7 @@ const modelCapabilities = computed(() => getModelCapabilities(props.model));
 			'bg-surface-light': selected && !isCurrentModel,
 			'bg-surface-light ring-2 ring-border ring-inset': isCurrentModel,
 			'opacity-50': (!userStore.subscription.subscribed && model.modelData.llamapenMetadata?.premium) || (config.cloud.enabled && !userStore.isSignedIn),
-		}" @click="setModel(model.modelData)" ref="listItemRef" :aria-selected="selected">
+		}" @click="setModel($event, model.modelData)" ref="listItemRef" :aria-selected="selected">
 
 		<ModelIcon :name="model.modelData.model" class="size-10 p-1" />
 
@@ -61,6 +90,12 @@ const modelCapabilities = computed(() => getModelCapabilities(props.model));
 					{{ model.displayName}}
 				</span>
 				<div class="flex flex-row gap-2 ml-2 shrink-0 min-w-fit">
+					<div 
+						v-if="isFavorited()"
+						class="bg-red-400/25 rounded-sm ring-1 ring-red-400 p-0.5"
+						title="Favorited model">
+						<BiHeart class="text-red-400 size-4" />
+					</div>
 					<div 
 						v-if="model.modelData.llamapenMetadata?.premium"
 						class="bg-yellow-400/25 rounded-sm ring-1 ring-yellow-400 p-0.5"
@@ -100,12 +135,18 @@ const modelCapabilities = computed(() => getModelCapabilities(props.model));
 				</div>
 			</div>
 			<span class="text-sm text-text-muted">{{ model.modelData.details.parameter_size }}</span>
-			<div class="absolute text-text hidden items-center justify-center right-0 top-0 h-full w-16 bg-gradient-to-r from-transparent to-surface-light group-hover:flex"
+			<div class="absolute hidden items-center justify-center right-0 top-0 h-full w-16 bg-gradient-to-r from-transparent to-surface-light group-hover:flex"
 				:class="{ 
 					'!flex': selected,
 					'!to-border': isCurrentModel,
 				}">
-				<BiRightArrowAlt class="size-8" />
+				<ActionMenu :actions="selectActions">
+					<div
+						ref="actionMenuButton"
+						class="p-1 ring-2 ring-text-muted hover:ring-text hover:text-text rounded-md">
+						<BiDotsVerticalRounded class="size-8" />
+					</div>
+				</ActionMenu>
 			</div>
 		</div>
 	</li>
