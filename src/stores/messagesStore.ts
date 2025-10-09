@@ -212,6 +212,9 @@ const useMessagesStore = defineStore('messages', () => {
 
 	function handleMessageChunkError(chunk: ChatIteratorError) {
 		switch (chunk.error.type) {
+			case 'cloud-no-suitable-provider': 
+				alert('No suitable provider for this model with your current data retention settings.');
+				break;
 			case '401-parse-fail':
 				alert(`Error parsing 401 response: ${chunk.error.message}`);
 				break;

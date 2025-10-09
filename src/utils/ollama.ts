@@ -14,7 +14,7 @@ const chatTitleExamples = `\nExamples of titles:\n📉 Stock Market Trends\n🍪
 export type ChatIteratorChunk = {
 	type: 'error',
 	error: {
-		type: '401-parse-fail' | 'no-response-body' | 'user-not-premium' | 'user-not-authed' | 'rate-limit' | 'unknown-401' | 'parse-fail' | 'custom-error';
+		type: '401-parse-fail' | 'no-response-body' | 'user-not-premium' | 'user-not-authed' | 'rate-limit' | 'unknown-401' | 'parse-fail' | 'cloud-no-suitable-provider' | 'custom-error';
 		message?: string;
 	};
 } | {
@@ -247,10 +247,10 @@ class OllamaAPI {
 			} else {
 				return { type: 'error', error: { type: 'unknown-401', message: data.error.text } };
 			}
-		}
-
-		if (response.status === 429) {
+		} else if (response.status === 429) {
 			return { type: 'error', error: { type: 'rate-limit' } };
+		} else if (response.status === 404) {
+			return { type: 'error', error: { type: 'cloud-no-suitable-provider' } };
 		}
 
 
