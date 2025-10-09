@@ -8,9 +8,8 @@ import ModelIcon from '../Icon/ModelIcon.vue';
 import { TbListDetails } from 'vue-icons-plus/tb';
 import isOnMobile from '@/utils/core/isOnMobile';
 import { useModelList, type ModelInfoListItem } from '@/composables/useModelList';
-import { AiOutlineLoading } from 'vue-icons-plus/ai';
 import PrimaryButton from '../Buttons/PrimaryButton.vue';
-import { BiFilterAlt, BiRefresh } from 'vue-icons-plus/bi';
+import { BiFilterAlt, BiLoaderAlt, BiRefresh } from 'vue-icons-plus/bi';
 import FloatingMenu from '../FloatingMenu/FloatingMenu.vue';
 import FilterMenu from './FilterMenu.vue';
 
@@ -186,7 +185,7 @@ function userSort(items: ModelInfoListItem[]) {
     <FloatingMenu v-model:is-opened="isOpened" @toggled="onToggled" preffered-position="top">
         <template #button>
             <span v-if="modelsLoading" class="flex flex-row gap-2 items-center text-text-muted/75">
-                <AiOutlineLoading class="animate-spin size-6 inline" />
+                <BiLoaderAlt class="animate-spin size-6 inline" />
                 Loading models...
             </span>
 
@@ -236,7 +235,7 @@ function userSort(items: ModelInfoListItem[]) {
 
             <ul role="list" :class="{ 'h-62!': filterMenuOpen }" class="h-80 overflow-y-auto [scrollbar-width:thin] *:not-last:mb-2">
                 <li v-if="modelsLoading" class="h-24 flex justify-center items-center">
-                    <AiOutlineLoading class="animate-spin size-6" />
+                    <BiLoaderAlt class="animate-spin size-6" />
                 </li>
                 <li v-else-if="!connectedToOllama" class="h-24 flex flex-col px-3 py-2 justify-center items-center font-bold gap-2">
                     <span>

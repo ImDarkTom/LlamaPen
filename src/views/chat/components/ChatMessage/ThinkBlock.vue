@@ -1,8 +1,7 @@
 <script setup lang="ts">
 import { useConfigStore } from '@/stores/config';
 import { computed, ref } from 'vue';
-import { AiOutlineLoading } from 'vue-icons-plus/ai';
-import { BiBrain, BiCheck, BiChevronDown, BiChevronUp } from 'vue-icons-plus/bi';
+import { BiBrain, BiCheck, BiChevronDown, BiChevronUp, BiLoaderAlt } from 'vue-icons-plus/bi';
 
 const config = useConfigStore();
 
@@ -42,7 +41,7 @@ const thinkingOngoing = computed(() => (thinkStats.value && !thinkStats.value.en
 			<div class="flex flex-row gap-2">
 				<span v-if="thinkStats">
 					<span class="items-center">{{ thinkStats.time }}s</span>
-					<AiOutlineLoading v-if="thinkingOngoing" class="inline size-4 ml-2 animate-spin" />
+					<BiLoaderAlt v-if="thinkingOngoing" class="inline size-4 ml-2 animate-spin" />
 					<BiCheck v-else class="inline size-4 ml-1" />
 				</span>
 				<BiChevronUp v-if="opened" />
