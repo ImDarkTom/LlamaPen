@@ -83,7 +83,7 @@ const isOpened = ref(false);
                                 @change="toggleSelection(toolName)">
                             <div class="flex flex-col ml-3">
                                 <span class="text-text font-medium">{{ toolName }}</span>
-                                <span>{{ tool.description }}</span>
+                                <span>{{ tool.description || '<blank description>' }}</span>
                             </div>
                             <RouterLink :to="`/tools/${toolName}`" class="ml-auto">
                                 <div class="ring-border hover:ring-primary ring-1 p-2 rounded-md transition-quick ">
