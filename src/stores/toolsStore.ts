@@ -74,15 +74,28 @@ const useToolsStore = defineStore('tools', () => {
             ...(reqOptions.body && { body: completedBody }),
         };
 
-        const response = await fetch(completedUrl, fetchOptions);
+        const controller = new AbortController();
+        const timeout = setTimeout(() => controller.abort(), 10000);
+
+        let response: Response;
+        try {
+            response = await fetch(completedUrl, { ...fetchOptions, signal: controller.signal });
+            clearTimeout(timeout);
+
+            if (!response.ok) {
+                return `HTTP error ${response.status}: ${response.statusText || 'Unknown Error'}`;
+            }
+        } catch (error: any) {
+            if ('name' in error && error.name === 'AbortError') {
+                return 'Tool request timeout.';
+            }
+
+            return `Network error: ${error.message || 'Unknown error occured'}`
+        } finally {
+            clearTimeout(timeout);
+        }
 
         let content = await response.text();
-
-        try {
-            const parsed = JSON.parse(content);
-
-            content = typeof parsed === 'string' ? parsed : JSON.stringify(parsed);
-        } catch { }
 
         return content;
     }
