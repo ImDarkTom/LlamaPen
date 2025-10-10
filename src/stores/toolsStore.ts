@@ -1,6 +1,23 @@
 import logger from '@/lib/logger';
 import { defineStore } from 'pinia';
 import { ref } from 'vue';
+import Mustache from 'mustache';
+import { tryCatch } from '@/utils/core/tryCatch';
+
+const webSearchResponseFormatting = `
+{
+  "query": "{{query}}",
+  "results": [
+    {{#results}}
+    {
+      "title": "{{title}}",
+      "content": "{{content}}",
+      "publishedDate": "{{publishedDate}}"
+    }{{^last}},{{/last}}
+    {{/results}}
+  ]
+}
+`;
 
 const useToolsStore = defineStore('tools', () => {
     const tools = ref<AppTools>({
@@ -35,6 +52,7 @@ const useToolsStore = defineStore('tools', () => {
             ],
             required: ['query'],
             url: 'http://localhost:8080/search?q={{query}}&categories={{categories}}&language=all&time_range={{time_range}}&safesearch=0&format=json',
+            responseFormatting: webSearchResponseFormatting
         }
     });
 
@@ -96,8 +114,21 @@ const useToolsStore = defineStore('tools', () => {
         }
 
         let content = await response.text();
+        let formatted = '';
 
-        return content;
+        if (toCall.responseFormatting && toCall.responseFormatting.trim() !== '') {
+            const { data: responseAsJson, error } = await tryCatch(JSON.parse(content));
+            if (error) {
+                formatted = content;
+                throw new Error('Failed to parse response as JSON for formatting.');
+            }
+
+            formatted = Mustache.render(toCall.responseFormatting, responseAsJson);
+        } else {
+            formatted = content;
+        }
+
+        return formatted;
     }
 
     /**

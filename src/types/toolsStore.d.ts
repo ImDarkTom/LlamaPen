@@ -25,4 +25,5 @@ type AppTools = Record<string, {
     required: string[];
     userHint?: string;
     url: string;
+    responseFormatting?: string;
 }>;

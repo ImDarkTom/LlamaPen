@@ -18,6 +18,7 @@
     "marked": "^15.0.12",
     "marked-katex-extension": "^5.1.5",
     "mitt": "^3.0.1",
+    "mustache": "^4.2.0",
     "normalize.css": "^8.0.1",
     "path": "^0.12.7",
     "pinia": "^2.3.1",
@@ -31,6 +32,7 @@
   "devDependencies": {
     "@tailwindcss/typography": "^0.5.16",
     "@tailwindcss/vite": "^4.1.12",
+    "@types/mustache": "^4.2.6",
     "@types/node": "^22.17.1",
     "@types/readable-stream": "^4.0.21",
     "@vitejs/plugin-vue": "^5.2.4",

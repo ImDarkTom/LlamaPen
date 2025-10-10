@@ -1,7 +1,7 @@
 <script setup lang="ts">
 import useToolsStore from '@/stores/toolsStore';
 import { computed } from 'vue';
-import { BiError } from 'vue-icons-plus/bi';
+import { BiError, BiLinkExternal } from 'vue-icons-plus/bi';
 import TextInput from './TextInput.vue';
 import TextDivider from '@/components/TextDivider/TextDivider.vue';
 import { ref } from 'vue';
@@ -117,5 +117,17 @@ function addParameter() {
                 Add parameter
             </button>
         </div>
+        <TextDivider text="Response formatting" />
+        <p class="mb-2">
+            If the response comes as JSON, you may choose to format it before returning it to the LLM.
+            <a href="https://mustache.github.io/mustache.5.html" target="_blank" class="text-secondary underline w-fit">
+                <span class="items-center">Full formatting guide</span>
+                <BiLinkExternal class="inline size-4 ml-1" />
+            </a>
+        </p>
+        <textarea
+            class="bg-surface p-4 rounded-md min-h-40 h-max outline-none focus:ring-1 ring-primary ring-inset"
+            v-model="selectedTool.responseFormatting"
+            :placeholder="`# {{title}}\n{{description}}\n\n## Items:\n{{#items}}\n- {{itemName}}: {{itemPrice}} \n{{/items}}`"></textarea>
     </div>
 </template>
