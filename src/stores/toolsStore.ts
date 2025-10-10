@@ -38,6 +38,60 @@ const useToolsStore = defineStore('tools', () => {
         }
     });
 
+    async function runToolCall(tool: NonNullable<ModelChatMessage['toolCalls']>[number], toCall: AppTools[string]): Promise<string> {
+        if (
+            toCall.userConfirmation &&
+            !confirm(`AI wants to use the '${tool.function.name}'. OK to allow. Cancel to deny.`)
+        ) {
+            return 'User denied tool call request.';
+        }
+
+        // Replace each item in the url with the arg
+        const completedUrl = toCall.url.replace(/{{(.*?)}}/g, (_, key) => {
+            const argValue = tool.function.arguments[key];
+            return encodeURIComponent(argValue ?? '')
+        });
+
+        let completedBody: string | null = null;
+        if (toCall.requestOptions.body) {
+            completedBody = toCall.requestOptions.body.replace(/{{(.*?)}}/g, (_, key) => {
+                return encodeURIComponent(tool.function.arguments[key] ?? '');
+            });
+        }
+
+        const reqOptions = toCall.requestOptions;
+
+        const fetchOptions: RequestInit = {
+            method: reqOptions.method,
+            credentials: 'omit',
+            referrer: 'no-referrer',
+            headers: {
+                'Accept': reqOptions.accept,
+                'User-Agent': reqOptions.userAgent,
+                'Content-Type': reqOptions.contentType,
+                ...(reqOptions.authorization && { 'Authorization': reqOptions.authorization }),
+            },
+            ...(reqOptions.body && { body: completedBody }),
+        };
+
+        const response = await fetch(completedUrl, fetchOptions);
+
+        let content = await response.text();
+
+        try {
+            const parsed = JSON.parse(content);
+
+            content = typeof parsed === 'string' ? parsed : JSON.stringify(parsed);
+        } catch { }
+
+        return content;
+    }
+
+    /**
+     * 
+     * @param toolCalls The tool calls to run
+     * @returns The tool called along with the response.
+     */
     async function handleToolCalls(toolCalls: ModelChatMessage['toolCalls']): Promise<{toolName: string, content: string}[] | null> {
         if (!toolCalls || toolCalls.length === 0) return null;
         logger.info('Tools Store', 'Processing tool calls', toolCalls);
@@ -48,53 +102,9 @@ const useToolsStore = defineStore('tools', () => {
             const toCall = tools.value[tool.function.name];
             if (!toCall) throw new Error(`Tool not found when calling '${tool.function.name}'`);
 
-            if (
-                toCall.userConfirmation &&
-                !confirm(`AI wants to use the '${tool.function.name}'. OK to allow. Cancel to deny.`)
-            ) {
-                responses.push({toolName: tool.function.name, content: 'User denied tool call request.' });
-                return;
-            }
+            const response = await runToolCall(tool, toCall);
 
-            // Replace each item in the url with the arg
-            const completedUrl = toCall.url.replace(/{{(.*?)}}/g, (_, key) => {
-                const argValue = tool.function.arguments[key];
-                return encodeURIComponent(argValue ?? '')
-            });
-
-            let completedBody: string | null = null;
-            if (toCall.requestOptions.body) {
-                completedBody = toCall.requestOptions.body.replace(/{{(.*?)}}/g, (_, key) => {
-                    return encodeURIComponent(tool.function.arguments[key] ?? '');
-                });
-            }
-
-            const reqOptions = toCall.requestOptions;
-
-            const fetchOptions: RequestInit = {
-                method: reqOptions.method,
-                credentials: 'omit',
-                referrer: 'no-referrer',
-                headers: {
-                    'Accept': reqOptions.accept,
-                    'User-Agent': reqOptions.userAgent,
-                    'Content-Type': reqOptions.contentType,
-                    ...(reqOptions.authorization && { 'Authorization': reqOptions.authorization }),
-                },
-                ...(reqOptions.body && { body: completedBody }),
-            };
-
-            const response = await fetch(completedUrl, fetchOptions);
-
-            let content = await response.text();
-
-            try {
-                const parsed = JSON.parse(content);
-
-                content = typeof parsed === 'string' ? parsed : JSON.stringify(parsed);
-            } catch { }
-
-            responses.push({toolName: tool.function.name, content });
+            responses.push({toolName: tool.function.name, content: response });
         });
 
         await Promise.all(promises);
@@ -107,7 +117,8 @@ const useToolsStore = defineStore('tools', () => {
     return {
         tools,
         toggled,
-        handleToolCalls
+        handleToolCalls,
+        runToolCall
     };
 
 },
