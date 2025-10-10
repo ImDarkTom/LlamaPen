@@ -17,7 +17,9 @@ const showing = ref<boolean>(false);
                     :is="message.completed ? BiSolidCheckSquare : BiLoaderAlt" 
                     class="size-5 mr-1 inline" 
                     :class="{ 'animate-spin': !message.completed }" />
-                <span class="align-middle">{{ message.toolName }}</span>
+                <span class="align-middle">
+                    {{ message.toolName }}
+                </span>
             </span>
             <div class="grow"></div>
             <span :title="message.completed?.toLocaleString() ?? ''">

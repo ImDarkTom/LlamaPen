@@ -77,7 +77,7 @@ const isOpened = ref(false);
                     <label class="cursor-pointer">
                         <div class="flex flex-row items-center ml-3 select-none ">
                             <input
-                                class="size-5 accent-primary hover:accent-secondary transition-quick"
+                                class="size-5 shrink-0 accent-primary hover:accent-secondary transition-quick"
                                 type="checkbox" 
                                 :checked="toolsStore.toggled.includes(toolName)" 
                                 @change="toggleSelection(toolName)">

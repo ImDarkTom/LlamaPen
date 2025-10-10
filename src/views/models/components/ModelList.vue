@@ -193,7 +193,7 @@ const batchActions: MenuEntry[] = [
                         v-model="searchQuery" 
                         placeholder="Search..."
                         :disabled="!connectedToOllama"
-                        class="bg-background p-2 rounded-md outline-none focus:ring-1 ring-highlight ring-inset">
+                        class="bg-background p-2 rounded-md outline-none focus:ring-1 ring-highlight ring-inset w-full">
                     <ActionMenu :actions="batchActions">
                         <button class="btn-ghost">
                             <BiDotsVerticalRounded />

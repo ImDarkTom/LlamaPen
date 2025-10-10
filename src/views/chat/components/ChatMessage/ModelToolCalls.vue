@@ -25,15 +25,17 @@ function toggleShowing(index: number) {
 			class="flex flex-row items-center justify-between pt-4 pl-4">
 			<div class="">
 				<BiWrench class="inline mr-1 size-4" />
-				<span class="font-semibold select-none align-middle">Requested Tools</span>
+				<span class="font-semibold select-none align-middle text-lg">Requested Tools</span>
 			</div>
 		</div>
 		<!-- todo: add transition group -->
-		<div v-for="call, index in message.toolCalls" :key="index" class="bg-surface-light m-2 p-2 rounded-lg group" @click="toggleShowing(index)">
-			<span class="select-none cursor-pointer group-hover:text-text" :class="{ 'text-text': showingTools.includes(index) }">• {{ call.function.name }}</span>
+		<div v-for="call, index in message.toolCalls" :key="index" class="bg-surface-light m-2 p-2 rounded-lg group cursor-pointer" @click="toggleShowing(index)">
+			<span class="select-none group-hover:text-text" :class="{ '': showingTools.includes(index) }">
+				{{ call.function.name }}
+			</span>
 
 			<div v-if="showingTools.includes(index)">
-				<div v-for="[key, value] in Object.entries(call.function.arguments)">
+				<div v-for="[key, value] in Object.entries(call.function.arguments)" class="text-sm pt-1">
 					{{ key }}: <span class="italic">{{ value }}</span>
 				</div>
 			</div>
