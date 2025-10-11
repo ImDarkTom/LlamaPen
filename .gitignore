@@ -29,3 +29,5 @@ icons_all/
 
 dev-dist/
 .vercel
+
+coverage/

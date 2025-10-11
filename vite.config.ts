@@ -1,3 +1,4 @@
+/// <reference types="vitest" />
 import { defineConfig } from "vite";
 import vue from "@vitejs/plugin-vue";
 import path from "node:path";
@@ -5,6 +6,7 @@ import tailwindcss from "@tailwindcss/vite";
 import svgLoader from 'vite-svg-loader';
 import { VitePWA } from 'vite-plugin-pwa';
 import { execSync } from "node:child_process";
+import removeAttribute from '@castlenine/vite-remove-attribute';
 
 const commitHash = execSync('git rev-parse HEAD').toString().trim();
 
@@ -98,10 +100,20 @@ export default defineConfig({
                 enabled: true
             },
         }),
+        process.env.NODE_ENV == 'production'
+            ? removeAttribute({
+                    extensions: [ 'vue' ],
+                    attributes: [ 'data-testid' ]
+                })
+            : null,
     ],
     resolve: {
         alias: {
             "@": path.resolve(__dirname, "src"),
         }
     },
+    test: {
+        environment: 'jsdom',
+        setupFiles: './tests/setup.ts'
+    }
 });

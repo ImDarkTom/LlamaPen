@@ -5,6 +5,7 @@
   "type": "module",
   "scripts": {
     "dev": "bunx --bun vite",
+    "test": "bunx vitest",
     "build": "vue-tsc -b && vite build",
     "preview": "vite preview",
     "local": "bun run build && echo \"✅ App should be running locally at http://localhost:8080\" && bunx --bun serve dist --listen 8080 --single"
@@ -30,20 +31,28 @@
     "vue-router": "^4.5.1"
   },
   "devDependencies": {
+    "@castlenine/vite-remove-attribute": "^1.0.2",
+    "@pinia/testing": "^1.0.2",
     "@tailwindcss/typography": "^0.5.19",
     "@tailwindcss/vite": "^4.1.14",
     "@types/mustache": "^4.2.6",
     "@types/node": "^22.18.10",
     "@types/readable-stream": "^4.0.21",
     "@vitejs/plugin-vue": "^5.2.4",
+    "@vitest/coverage-v8": "3.2.4",
+    "@vitest/ui": "3.2.4",
     "@vue/eslint-config-typescript": "^14.6.0",
+    "@vue/test-utils": "^2.4.6",
     "@vue/tsconfig": "^0.7.0",
+    "fake-indexeddb": "^6.2.3",
+    "jsdom": "^27.0.0",
     "tailwindcss": "^4.1.14",
     "tailwindcss-motion": "^1.1.1",
     "typescript": "~5.6.3",
     "vite": "^6.3.6",
     "vite-plugin-pwa": "^1.0.3",
     "vite-svg-loader": "^5.1.0",
+    "vitest": "^3.2.4",
     "vue-tsc": "^2.2.12"
   }
 }

@@ -67,6 +67,7 @@ onUnmounted(() => {
                     class="bg-surface-light ring-border ring-1 max-w-prose w-max p-2 rounded-lg shadow-md"
                     :class="{ 'p-1.5!': size === 'small' }">
                     <span
+                        data-testid="tooltip-text"
                         :class="{ 
                             'text-sm': size === 'small',
                             'text-md': size === 'medium',

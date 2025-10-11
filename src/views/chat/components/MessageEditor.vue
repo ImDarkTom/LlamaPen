@@ -46,7 +46,8 @@ defineExpose({
         @submit.prevent="submit" > 
         <textarea 
             class="border-none outline-none p-4 resize-y w-full" 
-            :value="message.content" 
+            :value="message.content"
+            data-testid="message-editor-textarea"
             ref="editorRef" 
             @keyup="onKeyUp"></textarea>
         <div class="min-w-full flex flex-row gap-2 justify-end p-2 font-medium">

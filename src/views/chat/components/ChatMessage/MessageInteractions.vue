@@ -94,11 +94,11 @@ function showGenStats() {
 <template>
     <div class="flex flex-row gap-1.5 mt-0.5"
         :class="{ 'justify-end': message.type === 'user', 'justify-start': message.type !== 'user' }">
-        <MessageInteractionButton v-if="done || message.type === 'user'" :text="copyTooltipText">
-            <BiCopy class="size-full" title="Copy Text" @click="copyMessage" />
+        <MessageInteractionButton v-if="done || message.type === 'user'" :text="copyTooltipText" @click="copyMessage" data-testid="copy-btn">
+            <BiCopy class="size-full" title="Copy Text" />
         </MessageInteractionButton>
-        <MessageInteractionButton v-if="done || message.type === 'user'" text="Edit">
-            <BiPencil class="size-full" title="Edit" @click="editMessage" />
+        <MessageInteractionButton v-if="done || message.type === 'user'" text="Edit" @click="editMessage" data-testid="edit-btn">
+            <BiPencil class="size-full" title="Edit" />
         </MessageInteractionButton>
         <MessageInteractionButton v-if="done || message.type === 'user'" text="Delete">
             <BiTrash class="size-full" title="Delete" @click="deleteMessage" />
