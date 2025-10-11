@@ -2,13 +2,14 @@
 
 A no-install needed GUI for Ollama.
 
-![Preview](https://github.com/user-attachments/assets/5243a538-db02-4296-9baf-70f99a566b8c)
+![Preview](https://github.com/user-attachments/assets/f16f82f4-9759-4b7d-8b8a-1abe64407c9f)
 
 ## Features
 
-- 🌐 Web-based interface accessible on both desktop and mobile.
+- 🌐 Web-based interface usable on both desktop and mobile.
 - ✅ Easy setup & configuration.
-- 🛠️ Renders markdown, think text, LaTeX math.
+- 🖥️ Renders markdown, think text, LaTeX math.
+- 🛠️ Custom tool call support.
 - ⚡ Keyboard shortcuts for quick navigation.
 - 🗃️ Built-in model & download manager.
 - 🔌 Offline & PWA support.
