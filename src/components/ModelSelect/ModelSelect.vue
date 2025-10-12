@@ -12,8 +12,10 @@ import PrimaryButton from '../Buttons/PrimaryButton.vue';
 import { BiFilterAlt, BiLoaderAlt, BiRefresh } from 'vue-icons-plus/bi';
 import FloatingMenu from '../FloatingMenu/FloatingMenu.vue';
 import FilterMenu from './FilterMenu.vue';
+import useUserStore from '@/stores/user';
 
 const config = useConfigStore();
+const userStore = useUserStore();
 
 // State
 const { 
@@ -175,8 +177,16 @@ function toggleFilterMenu() {
     filterMenuOpen.value = !filterMenuOpen.value;
 }
 
-function userSort(items: ModelInfoListItem[]) {
-    return filterMenu.value?.userSort(items) || items;
+function sortItems(items: ModelInfoListItem[]) {
+    items = filterMenu.value?.userSort(items) || items;
+
+    if (config.cloud.enabled && !userStore.subscription.subscribed) {
+        items.sort((a, b) => {
+            return (a.modelData.llamapenMetadata?.premium ? 1 : 0) - (b.modelData.llamapenMetadata?.premium ? 1 : 0)
+        });
+    }
+
+    return items;
 }
 
 </script>
@@ -259,13 +269,13 @@ function userSort(items: ModelInfoListItem[]) {
                     <span>No models found.</span>
                     <a href="https://ollama.com/search" target="_blank" class="text-secondary hover:underline">Search on Ollama</a>
                 </li>
-                <li v-else-if="userSort(queriedModelList.filter((item) => !item.hidden)).length === 0" 
+                <li v-else-if="sortItems(queriedModelList.filter((item) => !item.hidden)).length === 0" 
                     class="flex flex-col w-full p-4 justify-center items-center">
                     <span>No models matched filter.</span>
                 </li>
                 <ModelSelectItem 
                     v-else-if="queriedModelList.filter((item) => !item.hidden).length > 0"
-                    v-for="(model, index) in userSort(queriedModelList.filter((item) => !item.hidden))" 
+                    v-for="(model, index) in sortItems(queriedModelList.filter((item) => !item.hidden))" 
                     :key="model.modelData.model" 
                     :index="index"
                     :model="model" 
