@@ -59,3 +59,15 @@ body[data-reduce-motion] {
     transform: scale(1) translateY(0%);
     opacity: 0;
 }
+
+/* open-search - search menu */
+.open-search-enter-active,
+.open-search-leave-active {
+    transition: opacity var(--transition-duration) ease, transform var(--transition-duration) ease;
+}
+
+.open-search-enter-from,
+.open-search-leave-to {
+    transform: scale(0.95);
+    opacity: 0;
+}
