@@ -11,6 +11,7 @@ import isDateBeforeToday from '@/utils/core/isDateBeforeToday';
 import { BiBug, BiFile, BiLogoGoogle, BiLogoStripe, BiLogOut, BiMailSend, BiShield, BiSolidCheckSquare, BiTimeFive, BiUserMinus } from 'vue-icons-plus/bi';
 import ContactSection from './components/ContactSection.vue';
 import PrimaryButton from '../../components/Buttons/PrimaryButton.vue';
+import AccountOptions from './components/AccountOptions.vue';
 
 const userStore = useUserStore();
 const config = useConfigStore();
@@ -260,6 +261,10 @@ async function signIn() {
 					:icon="BiBug"
 					link="https://github.com/ImDarkTom/LlamaPen/issues" 
 				/>
+			</AccountSection>
+
+			<AccountSection title="Options">
+				<AccountOptions />
 			</AccountSection>
 
 			<AccountSection title="Danger Zone">

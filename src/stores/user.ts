@@ -2,7 +2,7 @@ import supabase from '@/lib/supabase';
 import { authedFetch } from '@/utils/core/authedFetch';
 import type { Session, User } from '@supabase/supabase-js';
 import { defineStore } from 'pinia';
-import { computed, ref } from 'vue';
+import { computed, ref, type UnwrapRef } from 'vue';
 import { useConfigStore } from './config';
 import logger from '@/lib/logger';
 
@@ -53,6 +53,10 @@ const subscriptionInfo = ref<{
     cancel_at_period_end: false
 });
 
+export interface AccountSettings {
+    providerSelection: 'all' | 'no_training' | 'no_retention';
+}
+
 /**
  * Store to manage auth with LlamaPen account.
  */
@@ -69,7 +73,31 @@ const useUserStore = defineStore('user', () => {
 
     const refreshSubInfo = fetchSubInfo;
 
-    return { user, subscription, isSignedIn, refreshSubInfo };
+    async function updateAccountSettings(newSettings: UnwrapRef<AccountSettings>): Promise<{ success: true, message: null } | { success: false, message: string }> {
+        if (!useConfigStore().cloud.enabled) return { success: false, message: 'Cloud not enabled.' };
+
+        const updateResponse = await authedFetch(
+            useConfigStore().requestUrl('/user/account-settings'),
+            {
+                method: 'PUT',
+                headers: {
+                    'Content-Type': 'application/json',
+                },
+                body: JSON.stringify({ providerSelection: newSettings.providerSelection } as AccountSettings)
+            }
+        );
+
+        if (updateResponse.ok) return { success: true, message: null };
+        else return { success: false, message: await updateResponse.text() }
+    }
+
+    return { 
+        user, 
+        subscription, 
+        isSignedIn, 
+        refreshSubInfo,
+        updateAccountSettings
+    };
 });
 
 export default useUserStore;
