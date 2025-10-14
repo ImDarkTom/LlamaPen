@@ -1,6 +1,6 @@
 <script setup lang="ts">
 import StatusText from './StatusText.vue';
-import { BiCog, BiHelpCircle, BiLogoGithub } from 'vue-icons-plus/bi';
+import { BiCloud, BiCog, BiHelpCircle, BiLogoGithub } from 'vue-icons-plus/bi';
 import SidebarRouterLink from '../SidebarRouterLink.vue';
 import useUserStore from '@/stores/user';
 import { useConfigStore } from '@/stores/config';
@@ -25,7 +25,7 @@ const buttonClasses = 'w-full border-none p-1.5 m-0 box-border rounded-lg h-8 bg
                         <span class="bg-highlight/75 w-12 h-4 rounded-sm animate-pulse"></span>
                     </div>
                 </template>
-                <template v-else>
+                <template v-else-if="userStore.isSignedIn">
                     <div class="flex items-center mr-3 p-1">
                         <img :src="userStore.userInfo.details.pictureUrl" alt="User avatar"
                             class="size-10 rounded-full">
@@ -33,6 +33,14 @@ const buttonClasses = 'w-full border-none p-1.5 m-0 box-border rounded-lg h-8 bg
                     <div class="flex flex-col grow">
                         <span class="font-bold">{{ userStore.userInfo.details.name }}</span>
                         <span class="text-sm">{{userStore.subName }}</span>
+                    </div>
+                </template>
+                <template v-else>
+                    <div class="flex flex-row gap-1 grow items-center justify-center">
+                        <BiCloud />
+                        <span class="font-semibold">
+                            Sign Up/Log In
+                        </span>
                     </div>
                 </template>
             </div>

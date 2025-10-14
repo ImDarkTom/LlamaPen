@@ -33,7 +33,13 @@ async function fetchSignInState() {
 
     const { data, error } = await supabase.auth.getUser();
     if (error) {
-        console.error('Error fetching user sign in state', error.message);
+        // If the errors is anything other than the user not being signed in.
+        if (error.name !== "AuthSessionMissingError") {
+            console.error('Error fetching user sign in state', error.message);
+        } 
+
+        isSignedIn.value = false;
+        isLoading.value = false;
         return;
     }
 
@@ -41,6 +47,8 @@ async function fetchSignInState() {
 }
 
 async function fetchUserInfo() {
+    if (!isSignedIn.value) return;
+
     const userInfoResRaw = await authedFetch(useConfigStore().requestUrl('/user/userInfo'));
     if (!userInfoResRaw) return;
 

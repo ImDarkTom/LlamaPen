@@ -17,12 +17,9 @@ export async function authedFetch(url: string, options?: RequestInit): Promise<R
     if (useConfigStore().cloud.enabled) {
         const token = await getSessionToken();
 
-        if (!token) {
-            alert('Error getting session token.');
-            throw new Error('Error getting session token.');
+        if (token) {
+            headers['Authorization'] = `Bearer ${token}`;
         }
-
-        headers['Authorization'] = `Bearer ${token}`;
     }
 
     return fetch(url, {
