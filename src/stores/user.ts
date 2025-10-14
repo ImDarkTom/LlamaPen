@@ -6,6 +6,7 @@ import { useConfigStore } from './config';
 
 const IN_PRODUCTION = import.meta.env.VITE_PRODUCTION === 'true';
 
+const doneFirstLoad = ref(false);
 const isLoading = ref(true);
 const isSignedIn = ref(false);
 
@@ -72,17 +73,26 @@ export interface AccountSettings {
  * Store to manage auth with LlamaPen account.
  */
 const useUserStore = defineStore('user', () => {
+    if (!doneFirstLoad.value) {
+        doneFirstLoad.value = true;
+
+        refreshUserInfo();
+    }
+
     // If in prod, cloud is enabled, and user info not already loaded, fetch the info.
     if (IN_PRODUCTION && useConfigStore().cloud.enabled && !isSignedIn.value) {
-        isLoading.value = true;
-        fetchSignInState();
-        fetchUserInfo();
+        refreshUserInfo();
     }
 
     const userInfo = computed(() => userInfoRef.value);
     const subName = computed(() => userInfoRef.value.subscription.isPremium ? 'Premium' : 'Free');
     const isPremium = computed(() => userInfo.value.subscription.isPremium);
-    const refreshUserInfo = fetchUserInfo;
+    
+    async function refreshUserInfo() {
+        isLoading.value = true;
+        await fetchSignInState();
+        await fetchUserInfo();
+    }
 
     async function updateAccountSettings(newSettings: UnwrapRef<AccountSettings>): Promise<{ success: true, message: null } | { success: false, message: string }> {
         if (!useConfigStore().cloud.enabled) return { success: false, message: 'Cloud not enabled.' };

@@ -33,8 +33,13 @@ async function signIn() {
         <AccountSection class="items-center justify-center" flex-direction="col">
             <div class="flex flex-col items-center gap-4">
                 <span class="font-bold text-xl">Welcome to LlamaPen Cloud</span>
-                <PrimaryButton v-if="!userStore.isSignedIn" class="font-medium px-16" :class="{ 'opacity-75': isSigningIn }"
-                    :text="isSigningIn ? 'Signing in...' : 'Continue with Google'" :icon="BiLogoGoogle" @click="signIn" />
+                <PrimaryButton 
+                    v-if="!userStore.isSignedIn" 
+                    class="font-medium px-16" 
+                    :class="{ 'opacity-75': isSigningIn }"
+                    :text="isSigningIn ? 'Signing in...' : 'Continue with Google'" 
+                    :icon="BiLogoGoogle" 
+                    @click="signIn" />
                 <span>
                     By signing up, you agree to LlamaPen Cloud's
                     <a href="https://cloud.llamapen.app/terms" target="_blank" class="text-secondary hover:underline">Terms
