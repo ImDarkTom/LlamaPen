@@ -102,7 +102,7 @@ const warningText = computed(() => {
                         :key="model.modelData.digest"
                         :modelId="model.modelData.model"
                         :modelName="model.displayName"
-                        :modelIsAvailable="(model.modelData.llamapenMetadata?.premium && userStore.subscription.subscribed) ?? true"
+                        :modelIsAvailable="(model.modelData.llamapenMetadata?.premium && userStore.isPremium) ?? true"
                         :regenerate-message="regenerateMessage" />
                 </div>
             </template>

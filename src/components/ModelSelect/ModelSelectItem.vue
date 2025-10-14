@@ -30,7 +30,7 @@ function setModel(e: MouseEvent, model: ModelListItem) {
 		// Show toast to sign in
 		router.push('/account');
 		return;
-	} else if (model.llamapenMetadata?.premium && !userStore.subscription.subscribed) {
+	} else if (model.llamapenMetadata?.premium && !userStore.isPremium) {
 		// Show toast to check out premium
 		router.push('/account#plan');
 		return;
@@ -76,7 +76,7 @@ const selectActions: MenuEntry[] = [
 		:class="{
 			'bg-surface-light': selected && !isCurrentModel,
 			'bg-surface-light ring-2 ring-border ring-inset': isCurrentModel,
-			'opacity-50': (!userStore.subscription.subscribed && model.modelData.llamapenMetadata?.premium) || (config.cloud.enabled && !userStore.isSignedIn),
+			'opacity-50': (!userStore.isPremium && model.modelData.llamapenMetadata?.premium) || (config.cloud.enabled && !userStore.isSignedIn),
 		}" @click="setModel($event, model.modelData)" ref="listItemRef" :aria-selected="selected">
 
 		<ModelIcon :name="model.modelData.model" class="size-10 p-1" />

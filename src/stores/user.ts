@@ -1,57 +1,60 @@
 import supabase from '@/lib/supabase';
 import { authedFetch } from '@/utils/core/authedFetch';
-import type { Session, User } from '@supabase/supabase-js';
 import { defineStore } from 'pinia';
 import { computed, ref, type UnwrapRef } from 'vue';
 import { useConfigStore } from './config';
-import logger from '@/lib/logger';
 
-const inProduction = import.meta.env.VITE_PRODUCTION === 'true';
+const IN_PRODUCTION = import.meta.env.VITE_PRODUCTION === 'true';
 
-async function fetchUser() {
-    const userResponse = await supabase?.auth.getUser();
-    user.value = userResponse?.data.user || null;
+const isLoading = ref(true);
+const isSignedIn = ref(false);
 
-    logger.info('User Store', 'User data set to', user.value);
-}
-
-async function fetchSession() {
-    const userResponse = await supabase?.auth.getSession();
-    session.value = userResponse?.data.session || null;
-}
-
-async function fetchSubInfo() {
-    const subscriptionResponse = await authedFetch(useConfigStore().requestUrl('/user/subscription-info'));
-    if (!subscriptionResponse) return;
-
-    const subscriptionInfoResponse = await subscriptionResponse.json();
-    subscriptionInfo.value = subscriptionInfoResponse;
-}
-
-const user = ref<User | null>(null);
-const session = ref<Session | null>(null);
-const subscriptionInfo = ref<{ 
-    name: string, 
-    subscribed: boolean,
-    status?: string, 
-    period_end: number,
-    cancel_at_period_end: boolean, 
-    usage: {
-        limit: number, 
-        remaining: number, 
-        lastUpdated: string | null;
-    }
-}>({
-    name: 'Loading...',
-    subscribed: false,
-    usage: {
-        limit: 20,
-        remaining: 20,
-        lastUpdated: null,
+const userInfoRef = ref<CloudUserInfo>({
+    details: {
+        email: '',
+        name: '',
+        pictureUrl: 'data;,',
     },
-    period_end: -1,
-    cancel_at_period_end: false
+    subscription: {
+        isPremium: false,
+    },
+    usage: {
+        limit: 0,
+        remaining: 0,
+        lastUpdated: null
+    },
+    options: {
+        providerSelection: 'all',
+    }
 });
+
+async function fetchSignInState() {
+    if (!supabase) return;
+
+    const { data, error } = await supabase.auth.getUser();
+    if (error) {
+        console.error('Error fetching user sign in state', error.message);
+        return;
+    }
+
+    isSignedIn.value = !!data.user;
+}
+
+async function fetchUserInfo() {
+    const userInfoResRaw = await authedFetch(useConfigStore().requestUrl('/user/userInfo'));
+    if (!userInfoResRaw) return;
+
+    const userInfoResponse = await userInfoResRaw.json() as CloudUserInfo | { error: { type: string, text: string } };
+
+    if ('error' in userInfoResponse) {
+        isLoading.value = false;
+        alert(`Error fetching account info: ${userInfoResponse.error.text}`);
+        return;
+    }
+
+    userInfoRef.value = userInfoResponse;
+    isLoading.value = false;
+}
 
 export interface AccountSettings {
     providerSelection: 'all' | 'no_training' | 'no_retention';
@@ -62,16 +65,16 @@ export interface AccountSettings {
  */
 const useUserStore = defineStore('user', () => {
     // If in prod, cloud is enabled, and user info not already loaded, fetch the info.
-    if (inProduction && useConfigStore().cloud.enabled && user.value === null) {
-        fetchUser();
-        fetchSession();
-        fetchSubInfo();
+    if (IN_PRODUCTION && useConfigStore().cloud.enabled && !isSignedIn.value) {
+        isLoading.value = true;
+        fetchSignInState();
+        fetchUserInfo();
     }
 
-    const isSignedIn = computed(() => user.value !== null);
-    const subscription = computed(() => subscriptionInfo.value);
-
-    const refreshSubInfo = fetchSubInfo;
+    const userInfo = computed(() => userInfoRef.value);
+    const subName = computed(() => userInfoRef.value.subscription.isPremium ? 'Premium' : 'Free');
+    const isPremium = computed(() => userInfo.value.subscription.isPremium);
+    const refreshUserInfo = fetchUserInfo;
 
     async function updateAccountSettings(newSettings: UnwrapRef<AccountSettings>): Promise<{ success: true, message: null } | { success: false, message: string }> {
         if (!useConfigStore().cloud.enabled) return { success: false, message: 'Cloud not enabled.' };
@@ -92,12 +95,19 @@ const useUserStore = defineStore('user', () => {
     }
 
     return { 
-        user, 
-        subscription, 
-        isSignedIn, 
-        refreshSubInfo,
-        updateAccountSettings
+        userInfo,
+        isLoading,
+        isSignedIn,
+        isPremium,
+        subName,
+        refreshUserInfo,
+        updateAccountSettings,
     };
 });
+
+export async function getSessionToken() {
+    const session = await supabase?.auth.getSession();
+    return session?.data.session?.access_token;
+}
 
 export default useUserStore;

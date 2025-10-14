@@ -20,7 +20,7 @@ const selectedModelHasVision = computed(() => {
 });
 
 const cloudNotAllowed = computed(() => {
-    return config.cloud.enabled && !userStore.subscription.subscribed;
+    return config.cloud.enabled && !userStore.isPremium;
 });
 
 function onClick(e: MouseEvent) {

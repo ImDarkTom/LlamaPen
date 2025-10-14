@@ -1,12 +1,18 @@
 <script setup lang="ts">
+import Tooltip from '@/components/Tooltip/Tooltip.vue';
 import type { AccountSettings } from '@/stores/user';
 import useUserStore from '@/stores/user';
-import { reactive, ref } from 'vue';
+import { onMounted, reactive, ref } from 'vue';
+import { BiHelpCircle } from 'vue-icons-plus/bi';
 
 const userStore = useUserStore();
 
 const form = reactive<AccountSettings>({
-    providerSelection: 'all',
+    providerSelection: 'all'
+});
+
+onMounted(() => {
+    Object.assign(form, userStore.userInfo.options);
 });
 
 const saveBtnText = ref('Save');
@@ -37,7 +43,14 @@ async function updateOptions() {
         <form @submit.prevent="updateOptions">
             <div class="mb-2">
                 <label>
-                    <span>Model providers</span>
+                    <span class="flex flex-row items-center gap-1">
+                        <span>Model providers</span>
+                        <Tooltip 
+                            text="Choose what providers to use when routing your cloud chat requests. Note that free models may not have providers that do not store your information in some way. " 
+                            size="small">
+                            <BiHelpCircle class="size-4" />
+                        </Tooltip>
+                    </span>
                     <select 
                         v-model="form.providerSelection"
                         class="bg-surface p-2 rounded-md ring-1 ring-border-muted focus:ring-border w-full overflow-hidden text-ellipsis">

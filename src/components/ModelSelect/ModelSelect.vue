@@ -180,7 +180,7 @@ function toggleFilterMenu() {
 function sortItems(items: ModelInfoListItem[]) {
     items = filterMenu.value?.userSort(items) || items;
 
-    if (config.cloud.enabled && !userStore.subscription.subscribed) {
+    if (config.cloud.enabled && !userStore.isPremium) {
         items.sort((a, b) => {
             return (a.modelData.llamapenMetadata?.premium ? 1 : 0) - (b.modelData.llamapenMetadata?.premium ? 1 : 0)
         });
