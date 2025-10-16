@@ -37,7 +37,12 @@ async function load(force: boolean = false) {
     loadPromise = (async () => {
         try {
             // Get loaded models so we can tag which are loaded when we get the full list
-            const loadedModelIds = await ollamaApi.getLoadedModelIds();
+            let loadedModelIds: string[]; 
+            if (config.cloud.enabled) {
+                loadedModelIds = [];
+            } else {
+                loadedModelIds = await ollamaApi.getLoadedModelIds();
+            }
 
             // Get the base model list
             state.models = (await ollamaApi.getModels(force))
