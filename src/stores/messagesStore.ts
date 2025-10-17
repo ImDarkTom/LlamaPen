@@ -13,6 +13,12 @@ import setPageTitle from '@/utils/core/setPageTitle';
 import { getMessageAttachmentBlobs } from '@/utils/core/getMessageAttachments';
 import useToolsStore from './toolsStore';
 
+type GetResponseOptions = {
+	modelOverride?: string
+	messageIdOverride?: number,
+	generateTitle?: boolean,
+};
+
 // ----
 // Init
 // ----
@@ -212,6 +218,9 @@ const useMessagesStore = defineStore('messages', () => {
 
 	function handleMessageChunkError(chunk: ChatIteratorError) {
 		switch (chunk.error.type) {
+			case 'model-not-found': 
+				alert('Model not found.');
+				break;
 			case 'cloud-no-suitable-provider': 
 				alert('No suitable provider for this model with your current data retention settings.');
 				break;
@@ -236,11 +245,82 @@ const useMessagesStore = defineStore('messages', () => {
 			case 'parse-fail':
 				alert(`Failed to parse message chunk.`);
 				break;
+			case 'custom-error':
+				alert(`Error: ${chunk.error.message}`);
+				break;
 			default:
 				alert(`Unknown error when generating message: ${chunk.error.message}`);
 		}
 
 		emitter.emit('stopChatGeneration');
+	}
+
+	async function handleMessageChunkDone(
+		chunk: Extract<ChatIteratorChunk, { type: 'done' }>,
+		toolCalls: NonNullable<ModelChatMessage['toolCalls']>,
+		chatId: number,
+		ollamaMessageId: number,
+		syncMessageToDb: () => void,
+		setMessageStatus: (newStatus: ModelMessageStatus) => void,
+		options?: GetResponseOptions,
+	) {
+		const addMessagePostGenInfo = async (lastChunk: Partial<Extract<ChatIteratorChunk, { type: 'done' }>>) => {
+			await db.messages.update(ollamaMessageId, {
+				stats: {
+					evalCount: lastChunk.stats?.evalCount,
+					evalDuration: lastChunk.stats?.evalDuration,
+					loadDuration: lastChunk.stats?.loadDuration,
+					promptEvalCount: lastChunk.stats?.promptEvalCount,
+					promptEvalDuration: lastChunk.stats?.promptEvalDuration,
+					totalDuration: lastChunk.stats?.totalDuration,
+				}
+			} as Partial<ModelChatMessage>)
+		}
+
+		syncMessageToDb();
+
+		const status = chunk.reason === 'completed' ? 'finished' : 'cancelled';
+		setMessageStatus(status);
+
+		addMessagePostGenInfo(chunk);
+
+ 		if (toolCalls.length > 0) {
+			const toolsStore = useToolsStore();
+			const toolMessagesInitialised: Omit<ToolChatMessage, 'id'>[] = toolCalls.map(tool => {
+				return {
+					type: 'tool',
+					created: new Date(),
+					chatId,
+					content: '',
+					toolName: tool.function.name
+				}
+			});
+
+			const messageIds = await db.messages.bulkPut(toolMessagesInitialised, { allKeys: true });
+
+			const toolResponses = await toolsStore.handleToolCalls(toolCalls);
+					
+			if (toolResponses && toolResponses.length > 0) {
+				await Promise.all(
+					toolResponses.map((response, index) =>
+						db.messages.update(messageIds[index], {
+							content: response.content,
+							completed: new Date(),
+						} as Partial<ToolChatMessage>)
+					)
+				);
+						
+				logger.info('Messages Store', 'Getting response after tools processed');
+				getOllamaResponse({ generateTitle: options?.generateTitle });
+			}
+		} else {
+			if (options?.generateTitle) {
+				const chatTitle = await generateChatTitle();
+				setPageTitle(`${chatTitle} | Chat`);
+			}
+		}
+
+		logger.info('Messages Store', 'Finished generating response with status', status);
 	}
 
 	/**
@@ -291,30 +371,13 @@ const useMessagesStore = defineStore('messages', () => {
 	 * 
 	 * @param modelOverride Optional model to override the current selected model.
 	 */
-	async function getOllamaResponse(options?: {
-		modelOverride?: string
-		messageIdOverride?: number,
-		generateTitle?: boolean,
-	}) {
+	async function getOllamaResponse(options?: GetResponseOptions) {
 		logger.info('Messages Store', 'Get ollama response with options', options);
 		const messageSaveInterval = useConfigStore().chat.tokenSaveInterval;
 
 		// Helpers
 		const setMessageStatus = async (newStatus: ModelMessageStatus) => {
 			await db.messages.update(ollamaMessageId, { status: newStatus } as Partial<ModelChatMessage>);
-		}
-
-		const addMessagePostGenInfo = async (lastChunk: Partial<Extract<ChatIteratorChunk, { type: 'done' }>>) => {
-			await db.messages.update(ollamaMessageId, {
-				stats: {
-					evalCount: lastChunk.stats?.evalCount,
-					evalDuration: lastChunk.stats?.evalDuration,
-					loadDuration: lastChunk.stats?.loadDuration,
-					promptEvalCount: lastChunk.stats?.promptEvalCount,
-					promptEvalDuration: lastChunk.stats?.promptEvalDuration,
-					totalDuration: lastChunk.stats?.totalDuration,
-				}
-			} as Partial<ModelChatMessage>)
 		}
 
 		const syncMessageToDb = async () => {
@@ -386,55 +449,19 @@ const useMessagesStore = defineStore('messages', () => {
 				handleMessageChunkError(chunk);
 				break;
 			} else if (chunk.type === 'done') {
-				syncMessageToDb();
-
-				const status = chunk.reason === 'completed' ? 'finished' : 'cancelled';
-				setMessageStatus(status);
-
-				addMessagePostGenInfo(chunk);
-
- 				if (toolCalls.length > 0) {
-					const toolsStore = useToolsStore();
-					const toolMessagesInitialised: Omit<ToolChatMessage, 'id'>[] = toolCalls.map(tool => {
-						return {
-							type: 'tool',
-							created: new Date(),
-							chatId,
-							content: '',
-							toolName: tool.function.name
-						}
-					});
-
-					const messageIds = await db.messages.bulkPut(toolMessagesInitialised, { allKeys: true });
-
-					const toolResponses = await toolsStore.handleToolCalls(toolCalls);
-					
-					if (toolResponses && toolResponses.length > 0) {
-						await Promise.all(
-							toolResponses.map((response, index) =>
-								db.messages.update(messageIds[index], {
-									content: response.content,
-									completed: new Date(),
-								} as Partial<ToolChatMessage>)
-							)
-						);
-						
-						logger.info('Messages Store', 'Getting response after tools processed');
-						getOllamaResponse({ generateTitle: options?.generateTitle });
-					}
-				} else {
-					if (options?.generateTitle) {
-						const chatTitle = await generateChatTitle();
-						setPageTitle(`${chatTitle} | Chat`);
-					}
-				}
-
-				logger.info('Messages Store', 'Finished generating response with status', status);
+				handleMessageChunkDone(
+					chunk,
+					toolCalls,
+					chatId,
+					ollamaMessageId,
+					syncMessageToDb,
+					setMessageStatus,
+					options,
+				);
 				break;
 			}
 
 			// If not, process the message chunk.
-
 			// If message is not an error or stream end chunk.
 			if (!isGenerating) {
 				isGenerating = true;
