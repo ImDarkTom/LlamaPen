@@ -44,9 +44,8 @@ const toolsActions: MenuEntry[] = [
 
 function resetToDefault() {
     if (!confirm("Are you sure you want to delete all custom tools (page will refresh)?")) return;
-
-    localStorage.removeItem('tools');
-    toolsStore.toggled = [];
+    toolsStore.resetToDefault();
+    location.reload();
 }
 
 const itemActions: MenuEntry[] = [

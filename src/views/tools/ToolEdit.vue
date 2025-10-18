@@ -1,7 +1,7 @@
 <script setup lang="ts">
 import useToolsStore from '@/stores/toolsStore';
 import { computed } from 'vue';
-import { BiError, BiLinkExternal } from 'vue-icons-plus/bi';
+import { BiError, BiLinkExternal, BiTrash } from 'vue-icons-plus/bi';
 import TextInput from './TextInput.vue';
 import TextDivider from '@/components/TextDivider/TextDivider.vue';
 import { ref } from 'vue';
@@ -70,7 +70,7 @@ const timeoutValue = computed({
     <div v-if="!selectedTool" class="w-full h-full flex items-center justify-center">
         Invalid tool name.
     </div>
-    <div v-else class="overflow-auto max-h-full flex flex-col">
+    <div v-else class="overflow-auto flex flex-col md:pr-4">
         <h1 class="text-text font-bold">{{ props.tool }}</h1>
         <div 
             v-if="selectedTool.userHint"
@@ -105,9 +105,9 @@ const timeoutValue = computed({
                 <div class="flex flex-row gap-2">
                     <TextInput v-model="param.name" placeholder="Parameter name (e.g. page)" class="w-full font-medium" />
                     <button 
-                        class="cursor-pointer bg-danger text-background-light px-2 rounded-md hover hover:saturate-200 transition-quick"
+                        class="bg-danger text-background-light p-2 cursor-pointer aspect-square rounded-md hover hover:saturate-200 transition-quick"
                         @click="deleteParam(param.name)">
-                        Delete
+                        <BiTrash class="mx-auto" />
                     </button>
                 </div>
                 <div class="flex flex-row gap-2 w-full">
@@ -134,16 +134,18 @@ const timeoutValue = computed({
             v-model="timeoutValue"
             label="Request timeout (ms)"
             placeholder="10000" />
-        <p class="mb-2">
-            If the response comes as JSON, you may choose to format it before returning it to the LLM.
+        <h2 class="mt-2">Formatting</h2>
+        <p class="mb-2 text-sm">
+            If the response comes as JSON, you may choose to format it before returning it to the LLM. If not leaving it blank will return the raw response.
             <a href="https://mustache.github.io/mustache.5.html" target="_blank" class="text-secondary underline w-fit">
                 <span class="items-center">Full formatting guide</span>
                 <BiLinkExternal class="inline size-4 ml-1" />
-            </a>
+            </a>.
         </p>
         <textarea
-            class="bg-surface p-4 rounded-md min-h-40 h-max outline-none focus:ring-1 ring-primary ring-inset"
+            class="p-4 min-h-64 tools-input resize-y"
             v-model="selectedTool.responseFormatting"
             :placeholder="`# {{title}}\n{{description}}\n\n## Items:\n{{#items}}\n- {{itemName}}: {{itemPrice}} \n{{/items}}`"></textarea>
+        <div class="min-h-48 w-full"></div>
     </div>
 </template>

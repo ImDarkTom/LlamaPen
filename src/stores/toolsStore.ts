@@ -11,42 +11,48 @@ const webSearchResponseFormatting =
     {{#results}}
     {
       "title": "{{title}}",
-      "content": "{{content}}",
+      "content": "{{content}}"
+      "url": "{{{url}}}",
+      {{#publishedDate}},
       "publishedDate": "{{publishedDate}}"
+      {{/publishedDate}}
     }{{^last}},{{/last}}
     {{/results}}
   ]
-}`;
+}
+`;
+
+const defaultTools: AppTools = {
+    'web_search': {
+        description: 'Search the internet for a query',
+        userConfirmation: false,
+        userHint: 'Web search is intended to be used with a SearXNG instance. For a guide, see: https://github.com/ImDarkTom/LlamaPen-Search',
+        requestOptions: {
+            method: 'GET',
+            accept: 'application/json',
+            contentType: 'application/json',
+            userAgent: 'LlamaPen/1.0 (user tool call)',
+        },
+        params: [
+            {
+                name: 'query',
+                type: 'string',
+                description: 'The query to search for.'
+            },
+        ],
+        required: ['query'],
+        url: 'http://localhost:8080/search?q={{query}}&categories=general&language=all&time_range=&safesearch=0&format=json',
+        responseFormatting: webSearchResponseFormatting
+    }
+};
 
 const useToolsStore = defineStore('tools', () => {
-    const tools = ref<AppTools>({
-        'web_search': {
-            description: 'Search the internet for a query',
-            userConfirmation: false,
-            userHint: 'Web search is intended to be used with a SearXNG instance. For a guide, see: https://github.com/ImDarkTom/LlamaPen-Search',
-            requestOptions: {
-                method: 'GET',
-                accept: 'application/json',
-                contentType: 'application/json',
-                userAgent: 'LlamaPen/1.0 (user tool call)',
-            },
-            params: [
-                {
-                    name: 'query',
-                    type: 'string',
-                    description: 'The query to search for.'
-                },
-            ],
-            required: ['query'],
-            url: 'http://localhost:8080/search?q={{query}}&categories=general&language=all&time_range=&safesearch=0&format=json',
-            responseFormatting: webSearchResponseFormatting
-        }
-    });
+    const tools = ref<AppTools>(structuredClone(defaultTools));
 
     async function runToolCall(tool: NonNullable<ModelChatMessage['toolCalls']>[number], toCall: AppTools[string]): Promise<string> {
         if (
             toCall.userConfirmation &&
-            !confirm(`AI wants to use the '${tool.function.name}'. OK to allow. Cancel to deny.`)
+            !confirm(`LLM wants to use the '${tool.function.name}' tool. OK to allow. Cancel to deny.`)
         ) {
             return 'User denied tool call request.';
         }
@@ -143,13 +149,19 @@ const useToolsStore = defineStore('tools', () => {
         return responses;
     }
 
+    function resetToDefault() {
+        tools.value = structuredClone(defaultTools);
+        toggled.value = [];
+    }
+
     const toggled = ref<string[]>([]);
 
     return {
         tools,
         toggled,
         handleToolCalls,
-        runToolCall
+        runToolCall,
+        resetToDefault
     };
 
 },

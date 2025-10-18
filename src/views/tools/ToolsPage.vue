@@ -11,7 +11,7 @@ import ViewerContainer from '../models/components/ViewerContainer.vue';
         <ViewerContainer>
             <ToolEdit v-if="$route.params.tool" :tool="($route.params.tool as string)" />
             <div v-else class="w-full h-full flex items-center justify-center">
-                Edit an existing tool or create a new one
+                Create a new tool or select an existing one to edit.
             </div>
         </ViewerContainer>
     </div>
