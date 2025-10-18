@@ -5,9 +5,7 @@ import { ref } from 'vue';
 import logger from '@/lib/logger';
 import { emitter } from '@/lib/mitt';
 import ollamaApi, { type ChatIteratorChunk, type ChatIteratorError } from '@/utils/ollama';
-import { filesAsBase64 } from '@/utils/core/filesAsBase64';
 import setPageTitle from '@/utils/core/setPageTitle';
-import { getMessageAttachmentBlobs } from '@/utils/core/getMessageAttachments';
 import { useConfigStore } from '../config';
 import useChatsStore from '../chatsStore';
 import { useUiStore } from '../uiStore';
@@ -15,6 +13,7 @@ import useToolsStore from '../toolsStore';
 import { initLiveSync } from './initLiveSync';
 import { createNewChat } from './utils/createNewChat';
 import { addAttachmentsToDB } from './utils/addAttachmentsToDB';
+import { getMessagesInOllamaFormat } from './utils/getMessagesInOllamaFormat';
 
 /**
  * Handles messages, opened chat messages, and opened chat ID. Seperate from chatsStore.
@@ -183,25 +182,21 @@ const useMessagesStore = defineStore('messages', () => {
 		setMessageStatus: (newStatus: ModelMessageStatus) => void,
 		options?: GetResponseOptions,
 	) {
-		const addMessagePostGenInfo = async (lastChunk: Partial<Extract<ChatIteratorChunk, { type: 'done' }>>) => {
-			await db.messages.update(ollamaMessageId, {
-				stats: {
-					evalCount: lastChunk.stats?.evalCount,
-					evalDuration: lastChunk.stats?.evalDuration,
-					loadDuration: lastChunk.stats?.loadDuration,
-					promptEvalCount: lastChunk.stats?.promptEvalCount,
-					promptEvalDuration: lastChunk.stats?.promptEvalDuration,
-					totalDuration: lastChunk.stats?.totalDuration,
-				}
-			} as Partial<ModelChatMessage>)
-		}
-
 		syncMessageToDb();
 
 		const status = chunk.reason === 'completed' ? 'finished' : 'cancelled';
 		setMessageStatus(status);
 
-		addMessagePostGenInfo(chunk);
+		await db.messages.update(ollamaMessageId, {
+			stats: {
+				evalCount: chunk.stats?.evalCount,
+				evalDuration: chunk.stats?.evalDuration,
+				loadDuration: chunk.stats?.loadDuration,
+				promptEvalCount: chunk.stats?.promptEvalCount,
+				promptEvalDuration: chunk.stats?.promptEvalDuration,
+				totalDuration: chunk.stats?.totalDuration,
+			}
+		} as Partial<ModelChatMessage>);
 
  		if (toolCalls.length > 0) {
 			const toolsStore = useToolsStore();
@@ -240,48 +235,6 @@ const useMessagesStore = defineStore('messages', () => {
 		}
 
 		logger.info('Messages Store', 'Finished generating response with status', status);
-	}
-
-	/**
-	 * Formats messages from the database into the format expected by Ollama.
-	 * 
-	 * @returns An array of messages formatted for Ollama.
-	 */
-	async function getMessagesInOllamaFormat(chatId: number): Promise<OllamaMessage[]> {
-		const sortedMessages = await db.messages
-			.where('chatId')
-			.equals(chatId)
-			.sortBy('created');
-
-		const formattedMessages = sortedMessages.map(async (message) => {
-			const attachmentBlobsInMessage = await getMessageAttachmentBlobs(message.id);
-
-			if (message.type === 'tool') {
-				return {
-					role: 'tool' as const,
-					tool_name: message.toolName,
-					content: message.content,
-				}
-			}
-
-			const role: MessageRole = message.type === 'model' ? 'assistant' : 'user';
-
-			const builtMessage: OllamaMessage = {
-				role: role,
-				content: message.content,
-				images: await filesAsBase64(attachmentBlobsInMessage),
-			};
-
-			if (message.type === 'model' && message.toolCalls) {
-				builtMessage['tool_calls'] = message.toolCalls;
-			}
-
-			return builtMessage;
-		});
-
-		logger.info('Messages Store', 'Formatted messages into Ollama format', await Promise.all(formattedMessages));
-
-		return Promise.all(formattedMessages);
 	}
 
 	/**
@@ -341,7 +294,7 @@ const useMessagesStore = defineStore('messages', () => {
 		emitter.on('stopChatGeneration', cancelHandler);
 		logger.info('Messages Store', 'Added stop chat generation emit listener');
 
-		const chatMessageList = await getMessagesInOllamaFormat(chatId);
+		const chatMessageList = await getMessagesInOllamaFormat(openedChatMessages.value);
 
 		let generatedContent = "";
 		let generatedThoughts = "";
