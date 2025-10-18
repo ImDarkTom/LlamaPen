@@ -1,67 +1,20 @@
 import db from '@/lib/db';
-import Dexie, { liveQuery } from 'dexie';
+import Dexie from 'dexie';
 import { defineStore } from 'pinia';
-import { ref, toRaw, watch, type Ref } from 'vue';
-import useChatsStore from './chatsStore';
+import { ref } from 'vue';
 import logger from '@/lib/logger';
 import { emitter } from '@/lib/mitt';
 import ollamaApi, { type ChatIteratorChunk, type ChatIteratorError } from '@/utils/ollama';
-import { useConfigStore } from './config';
 import { filesAsBase64 } from '@/utils/core/filesAsBase64';
-import { useUiStore } from './uiStore';
 import setPageTitle from '@/utils/core/setPageTitle';
 import { getMessageAttachmentBlobs } from '@/utils/core/getMessageAttachments';
-import useToolsStore from './toolsStore';
-
-type GetResponseOptions = {
-	modelOverride?: string
-	messageIdOverride?: number,
-	generateTitle?: boolean,
-};
-
-// ----
-// Init
-// ----
-let liveSyncInitialised = false;
-
-type RefReturn<T> = ReturnType<typeof ref<T>>;
-
-function initLiveSync(
-	openedChatMessages: RefReturn<ChatMessage[]>,
-	openedChatIdRef: Ref<number | null, number | null>
-) {
-	if (liveSyncInitialised) return;
-	liveSyncInitialised = true;
-
-	let openedMessagesSubscription: { unsubscribe: () => void } | null = null;
-
-	watch(openedChatIdRef, (newId) => {
-		if (openedMessagesSubscription) {
-			openedMessagesSubscription.unsubscribe();
-			openedMessagesSubscription = null;
-		}
-
-		if (newId === null) {
-			openedChatMessages.value = [];
-			return;
-		}
-
-		openedMessagesSubscription = liveQuery(() => db.messages.where('chatId').equals(newId).toArray()).subscribe({
-			next: data => {
-				openedChatMessages.value = data;
-			},
-			error: (e) => {
-				console.error('Error during liveQuery for opened chat messages', e)
-			}
-		});
-	});
-
-	logger.info('Messages Store', 'Initialized live sync for messages store.');
-}
-
-// -----
-// Store
-// -----
+import { useConfigStore } from '../config';
+import useChatsStore from '../chatsStore';
+import { useUiStore } from '../uiStore';
+import useToolsStore from '../toolsStore';
+import { initLiveSync } from './initLiveSync';
+import { createNewChat } from './utils/createNewChat';
+import { addAttachmentsToDB } from './utils/addAttachmentsToDB';
 
 /**
  * Handles messages, opened chat messages, and opened chat ID. Seperate from chatsStore.
@@ -75,61 +28,27 @@ const useMessagesStore = defineStore('messages', () => {
 
 	async function sendMessage(content: string, attachments: File[] = []) {
 		if (content.length === 0) return;
-		const config = useConfigStore();
-		const chatsStore = useChatsStore();
-
-		let shouldGenerateTitle = false;
-
 		logger.info('Messages Store', 'Sending message', content, attachments);
 
+		let shouldGenerateTitle = false;
 		if (openedChatId.value === null) {
-			// If there was no opened chat, create a new line
-			const newChatId = await chatsStore.createNewChat();
+			const { newChatId, shouldGenTitle } = await createNewChat(content);
+
 			openedChatId.value = newChatId;
-
-			if (config.chat.titleGenerationStyle === 'generate') {
-				shouldGenerateTitle = true;
-			} else if (config.chat.titleGenerationStyle === 'firstMessage') {
-				const firstMessageTitle = content.length > 50 ? content.slice(0, 47) + '...' : content;
-				chatsStore.renameChat(newChatId, firstMessageTitle);
-			} else if (config.chat.titleGenerationStyle === 'chatId') {
-				chatsStore.renameChat(newChatId, `Chat #${newChatId}`);
-			} else if (config.chat.titleGenerationStyle === 'dynamic') {
-				const questionRegex = /^(who|what|when|where|why|how|which|whose|is|are|do|does|did|can|could|would|should|will)\b.*\?$/i;
-				
-				if (questionRegex.test(content.trim())) {
-					const firstMessageTitle = content.length > 50 ? content.slice(0, 47) + '...' : content;
-					chatsStore.renameChat(newChatId, firstMessageTitle);
-				} else {
-					shouldGenerateTitle = true;
-				}
-			}
-
-			logger.info('Messages Store', 'No opened chat, created new with ID', openedChatId.value);
+			shouldGenerateTitle = shouldGenTitle;
 		}
 
-		const messageData = {
+		const messageId = await db.messages.add({
+			type: 'user',
 			chatId: openedChatId.value,
 			content,
 			created: new Date(),
-			type: 'user' as 'user' | 'model',
-		};
+		});
 
-		const messageId = await db.messages.add(messageData);
-
-		const allAttachments = toRaw(attachments);
-		const attachmentMap: Omit<UserAttachment, 'id'>[] = allAttachments.map((attachment) => {
-			return {
-				content: attachment,
-				created: new Date(),
-				messageId,
-			}
-		})
-
-		await db.attachments.bulkAdd(attachmentMap);
+		await addAttachmentsToDB(attachments, messageId)
 
 		await db.chats.update(openedChatId.value, { lastestMessageDate: new Date() });
-		logger.info('Messages Store', 'Added message', messageData);
+		logger.info('Messages Store', 'Added message', messageId);
 
 		await getOllamaResponse({ generateTitle: shouldGenerateTitle });
 	}
