@@ -2,17 +2,17 @@
 import { computed, nextTick, onMounted, ref } from 'vue';
 
 import { emitter } from '@/lib/mitt';
-import useMessagesStore from '@/stores/messagesStore';
 
 import { nanoid } from 'nanoid';
 import { renderMarkdown } from '@/lib/marked';
-import { getMessageAttachmentBlobs } from '@/utils/core/getMessageAttachments';
+import { getMessageAttachments } from '@/utils/core/getMessageAttachments';
 import ThinkBlock from './ThinkBlock.vue';
 import MessageInteractions from './MessageInteractions.vue';
 import MessageEditor from '../MessageEditor.vue';
 import ModelMessageHeader from './ModelMessage/ModelMessageHeader.vue';
 import ModelToolCalls from './ModelToolCalls.vue';
 import ToolCallsMessage from './ToolCallsMessage.vue';
+import useMessagesStore from '@/stores/messagesStore';
 
 const messagesStore = useMessagesStore();
 
@@ -24,7 +24,7 @@ const messageTextContainer = ref<HTMLDivElement | null>(null);
 
 const images = ref<{ id: string; blobSrc: string; file: Blob }[]>([]);
 onMounted(async () => {
-    const messageAttachments = await getMessageAttachmentBlobs(props.message.id);
+    const messageAttachments = (await getMessageAttachments(props.message.id)).map(item => item.content);
     images.value = messageAttachments.map((attachment) => {
         return {
             id: nanoid(),

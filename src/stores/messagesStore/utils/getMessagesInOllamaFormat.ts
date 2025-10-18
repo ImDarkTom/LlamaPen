@@ -1,11 +1,8 @@
-import db from "@/lib/db";
 import logger from "@/lib/logger";
+import { getMessageAttachments } from "@/utils/core/getMessageAttachments";
 
 async function getMessageAttachmentBase64(messageId: number): Promise<string[]> {
-	const attachments = await db.attachments
-		.where('messageId')
-		.equals(messageId)
-		.toArray();
+	const attachments = await getMessageAttachments(messageId);
 
     return Promise.all(attachments.map(attachment => {
         return new Promise<string>((resolve, reject) => {
