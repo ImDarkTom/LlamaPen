@@ -25,6 +25,7 @@ const webSearchResponseFormatting =
 const defaultTools: AppTools = {
     'web_search': {
         description: 'Search the internet for a query',
+        isInternal: true,
         userConfirmation: false,
         userHint: 'Web search is intended to be used with a SearXNG instance. For a guide, see: https://github.com/ImDarkTom/LlamaPen-Search',
         requestOptions: {

@@ -12,6 +12,7 @@ type AppToolSchema = ({
 
 type AppTools = Record<string, {
     description: string;
+    isInternal?: boolean;
     userConfirmation: boolean;
     timeout?: number;
     requestOptions: {

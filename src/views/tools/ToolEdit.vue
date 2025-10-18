@@ -7,6 +7,7 @@ import TextDivider from '@/components/TextDivider/TextDivider.vue';
 import { ref } from 'vue';
 import ToolRequestOptions from './edit/ToolRequestOptions.vue';
 import NumberInput from './NumberInput.vue';
+import ExternalLink from './ExternalLink.vue';
 
 const props = defineProps<{
     tool: string;
@@ -72,8 +73,15 @@ const timeoutValue = computed({
     </div>
     <div v-else class="overflow-auto flex flex-col md:pr-4">
         <h1 class="text-text font-bold">{{ props.tool }}</h1>
-        <div 
-            v-if="selectedTool.userHint"
+        <div v-if="selectedTool.isInternal"
+            class="py-2">
+            <template v-if="props.tool === 'web_search'">
+                This tool is intended to be used with a running SearXNG instance. If you have one set up (with JSON requests enabled), you may use it here, otherwise, to set up SearXNG for LlamaPen specifically, see 
+                <ExternalLink href="https://github.com/ImDarkTom/LlamaPen-Search">https://github.com/ImDarkTom/LlamaPen-Search</ExternalLink>.
+            </template>
+        </div>
+        <div
+            v-else-if="selectedTool.userHint"
             class="py-2">{{ selectedTool.userHint }}</div>
         <TextDivider text="User-facing" />
         <label class="text-lg mb-2">
@@ -139,7 +147,7 @@ const timeoutValue = computed({
             If the response comes as JSON, you may choose to format it before returning it to the LLM. If not leaving it blank will return the raw response.
             <a href="https://mustache.github.io/mustache.5.html" target="_blank" class="text-secondary underline w-fit">
                 <span class="items-center">Full formatting guide</span>
-                <BiLinkExternal class="inline size-4 ml-1" />
+                <BiLinkExternal class="inline size-3 ml-0.5" />
             </a>.
         </p>
         <textarea
