@@ -4,8 +4,8 @@ import { ref } from 'vue';
 import Mustache from 'mustache';
 import { tryCatch } from '@/utils/core/tryCatch';
 
-const webSearchResponseFormatting = `
-{
+const webSearchResponseFormatting = 
+`{
   "query": "{{query}}",
   "results": [
     {{#results}}
@@ -16,8 +16,7 @@ const webSearchResponseFormatting = `
     }{{^last}},{{/last}}
     {{/results}}
   ]
-}
-`;
+}`;
 
 const useToolsStore = defineStore('tools', () => {
     const tools = ref<AppTools>({
@@ -37,21 +36,9 @@ const useToolsStore = defineStore('tools', () => {
                     type: 'string',
                     description: 'The query to search for.'
                 },
-                {
-                    name: 'categories',
-                    type: 'string',
-                    description: 'The search category.',
-                    enum: ['general', 'news']
-                },
-                {
-                    name: 'time_range',
-                    type: 'string',
-                    description: 'Limit results to a timeframe. Leave blank for no limit.',
-                    enum: ['day', 'month', 'year']
-                },
             ],
             required: ['query'],
-            url: 'http://localhost:8080/search?q={{query}}&categories={{categories}}&language=all&time_range={{time_range}}&safesearch=0&format=json',
+            url: 'http://localhost:8080/search?q={{query}}&categories=general&language=all&time_range=&safesearch=0&format=json',
             responseFormatting: webSearchResponseFormatting
         }
     });
@@ -93,7 +80,7 @@ const useToolsStore = defineStore('tools', () => {
         };
 
         const controller = new AbortController();
-        const timeout = setTimeout(() => controller.abort(), 10000);
+        const timeout = setTimeout(() => controller.abort(), toCall.timeout ?? 10000);
 
         let response: Response;
         try {

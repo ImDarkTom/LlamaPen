@@ -13,6 +13,7 @@ type AppToolSchema = ({
 type AppTools = Record<string, {
     description: string;
     userConfirmation: boolean;
+    timeout?: number;
     requestOptions: {
         method: 'GET' | 'POST' | 'PUT' | 'PATCH';
         accept: string;

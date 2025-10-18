@@ -8,7 +8,7 @@ const emit = defineEmits(['update:modelValue']);
         <span>{{ label }}</span>
         <input
             class="w-full p-4 tools-input"
-            type="text"
+            type="number"
             :placeholder
             :value="props.modelValue"
             @input="emit('update:modelValue', ($event.target as HTMLInputElement).value)">

@@ -192,6 +192,10 @@ body:not([data-native-scrollbar]) {
     @apply bg-surface group-[.active]:bg-surface-light hover:bg-surface-light group-[.active]:text-text p-2 rounded-md cursor-pointer;
 }
 
+@utility tools-input {
+    @apply bg-surface-light rounded-md focus:ring-1 ring-highlight ring-inset outline-none
+}
+
 
 /* Custom slider styling */
 .slider::-webkit-slider-thumb {

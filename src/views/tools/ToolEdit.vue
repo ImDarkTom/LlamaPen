@@ -6,6 +6,7 @@ import TextInput from './TextInput.vue';
 import TextDivider from '@/components/TextDivider/TextDivider.vue';
 import { ref } from 'vue';
 import ToolRequestOptions from './edit/ToolRequestOptions.vue';
+import NumberInput from './NumberInput.vue';
 
 const props = defineProps<{
     tool: string;
@@ -24,9 +25,9 @@ const missingParams = computed(() => {
 
     return selectedTool.value.params
         .map(item => item.name)
-        .filter(item => 
-            !selectedTool.value?.url.includes(`{{${item}}}`) &&
-            !selectedTool.value?.requestOptions.body?.includes(`{{${item}}}`));
+        .filter(paramName => 
+            !selectedTool.value?.url.includes(`{{${paramName}}}`) &&
+            !selectedTool.value?.requestOptions.body?.includes(`{{${paramName}}}`));
 });
 
 function updateEnums(param: AppToolSchema[number], newValue: string) {
@@ -41,8 +42,9 @@ function updateEnums(param: AppToolSchema[number], newValue: string) {
 }
 
 function deleteParam(paramName: string) {
-    if (!confirm(`Are you sure you want to delete the '${paramName ?? '<empty>'}' parameter?`)) return;
-    toolsStore.tools[props.tool].params = selectedTool.value?.params.filter(param => param.name !== paramName) || [];
+    if (paramName === '' || confirm(`Are you sure you want to delete the '${paramName}' parameter?`)) {
+        toolsStore.tools[props.tool].params = selectedTool.value?.params.filter(param => param.name !== paramName) || [];
+    }
 }
 
 function addParameter() {
@@ -54,6 +56,14 @@ function addParameter() {
     });
 }
 
+const timeoutValue = computed({
+    get: () => selectedTool.value?.timeout ?? 10000, // default or fallback
+    set: (value: number) => {
+        if (selectedTool.value) {
+            selectedTool.value.timeout = value;
+        }
+    },
+});
 </script>
 
 <template>
@@ -76,22 +86,24 @@ function addParameter() {
             @click="reqOptionsOpened = !reqOptionsOpened">
             More options
         </button>
-        <ToolRequestOptions v-if="reqOptionsOpened" :toolName="props.tool" :selectedTool />
+        <ToolRequestOptions v-if="reqOptionsOpened" :toolName="props.tool" :selectedTool="selectedTool" />
         <div v-if="missingParams && missingParams.length > 0" class="text-warning">
             <BiError class="inline" />
             <span class="align-middle">Params not found in query URL: </span>
             <ul>
-                <li v-for="param in missingParams"><span class="select-none">• </span>{{ `\{\{${param}\}\}` }}</li>
+                <li v-for="param in missingParams"><span class="select-none">• </span>{{ `\{\{${param || '<blank>'}\}\}` }}</li>
             </ul>
         </div>
-        <TextDivider text="Model-facing" />
+        <TextDivider class="mt-2" text="Model-facing" />
         <div class="flex flex-col gap-2">
-            <h2 class="text-text font-semibold">Description</h2>
-            <TextInput v-model="selectedTool.description" placeholder="How/when to use the tool (e.g. Search the internet for a query)" />
-            <h2 class="text-text font-semibold">Parameters</h2>
+            <TextInput 
+                v-model="selectedTool.description" 
+                label="Description" 
+                placeholder="How/when to use the tool (e.g. Search the internet for a query)" />
+            <h2>Parameters</h2>
             <div v-for="(param, index) in selectedTool.params" :key="index" class="flex flex-col bg-surface p-2 gap-2 rounded-lg">
                 <div class="flex flex-row gap-2">
-                    <TextInput v-model="param.name" placeholder="Parameter name (e.g. page)" class="w-full" />
+                    <TextInput v-model="param.name" placeholder="Parameter name (e.g. page)" class="w-full font-medium" />
                     <button 
                         class="cursor-pointer bg-danger text-background-light px-2 rounded-md hover hover:saturate-200 transition-quick"
                         @click="deleteParam(param.name)">
@@ -99,7 +111,7 @@ function addParameter() {
                     </button>
                 </div>
                 <div class="flex flex-row gap-2 w-full">
-                    <select class="p-2 bg-surface-light rounded-md" v-model="param.type">
+                    <select class="p-4 tools-input" v-model="param.type">
                         <option value="string">String</option>
                         <option value="number">Number</option>
                         <option value="integer">Integer</option>
@@ -108,7 +120,7 @@ function addParameter() {
                 </div>
                 <label>
                     <span>Enums (optional):</span>
-                    <input class="bg-surface-light p-4 rounded-md w-full" type="text"
+                    <input class="p-4 w-full tools-input" type="text"
                         placeholder="Options seperated by commas (e.g. apple,banana,cherry,...)" :value="param.enum"
                         @input="updateEnums(param, ($event.target as HTMLInputElement).value)">
                 </label>
@@ -117,7 +129,11 @@ function addParameter() {
                 Add parameter
             </button>
         </div>
-        <TextDivider text="Response formatting" />
+        <TextDivider class="mt-2" text="Response" />
+        <NumberInput
+            v-model="timeoutValue"
+            label="Request timeout (ms)"
+            placeholder="10000" />
         <p class="mb-2">
             If the response comes as JSON, you may choose to format it before returning it to the LLM.
             <a href="https://mustache.github.io/mustache.5.html" target="_blank" class="text-secondary underline w-fit">
