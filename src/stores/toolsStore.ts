@@ -41,7 +41,7 @@ const defaultTools: AppTools = {
             },
         ],
         required: ['query'],
-        url: 'http://localhost:8080/search?q={{query}}&categories=general&language=all&time_range=&safesearch=0&format=json',
+        url: 'https://localhost/search?q={{query}}&categories=general&language=all&time_range=&safesearch=0&format=json',
         responseFormatting: webSearchResponseFormatting
     }
 };
