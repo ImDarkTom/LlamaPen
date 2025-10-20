@@ -297,6 +297,9 @@ class OllamaAPI {
 				}
 
 				if (data.done) {
+					// Process final chunk
+					yield { type: 'message', data };
+
 					yield { 
 						type: 'done', 
 						reason: 'completed', 

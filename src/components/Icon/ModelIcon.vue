@@ -45,6 +45,7 @@ const modelIconMap: Record<string, string> = {
 	hunyuan: 'hunyuan',
 	moonshot: 'moonshot',
 	kimi: 'moonshot',
+	grok: 'grok',
 };
 
 function getSlug(): string {
