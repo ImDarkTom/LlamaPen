@@ -37,7 +37,7 @@ async function fetchSignInState() {
         // If the errors is anything other than the user not being signed in.
         if (error.name !== "AuthSessionMissingError") {
             console.error('Error fetching user sign in state', error.message);
-        } 
+        }
 
         isSignedIn.value = false;
         isLoading.value = false;
@@ -48,7 +48,7 @@ async function fetchSignInState() {
 }
 
 async function fetchUserInfo() {
-    if (!isSignedIn.value) return;
+    if (!IN_PRODUCTION || !useConfigStore().cloud.enabled || !isSignedIn.value) return;
 
     const userInfoResRaw = await authedFetch(useConfigStore().requestUrl('/user/userInfo'));
     if (!userInfoResRaw) return;
@@ -65,6 +65,15 @@ async function fetchUserInfo() {
     isLoading.value = false;
 }
 
+async function init() {
+    if (doneFirstLoad.value) return;
+    doneFirstLoad.value = true;
+    isLoading.value = true;
+
+    await fetchSignInState();
+    await fetchUserInfo();
+}
+
 export interface AccountSettings {
     providerSelection: 'all' | 'no_training' | 'no_retention';
 }
@@ -73,23 +82,13 @@ export interface AccountSettings {
  * Store to manage auth with LlamaPen account.
  */
 const useUserStore = defineStore('user', () => {
-    if (!doneFirstLoad.value) {
-        doneFirstLoad.value = true;
-
-        refreshUserInfo();
-    }
-
-    // If in prod, cloud is enabled, and user info not already loaded, fetch the info.
-    if (IN_PRODUCTION && useConfigStore().cloud.enabled && !isSignedIn.value) {
-        refreshUserInfo();
-    }
+    init();
 
     const userInfo = computed(() => userInfoRef.value);
-    const subName = computed(() => userInfoRef.value.subscription.isPremium ? 'Premium' : 'Free');
     const isPremium = computed(() => userInfo.value.subscription.isPremium);
-    
+    const subName = computed(() => userInfoRef.value.subscription.isPremium ? 'Premium' : 'Free');
+
     async function refreshUserInfo() {
-        isLoading.value = true;
         await fetchSignInState();
         await fetchUserInfo();
     }
@@ -112,7 +111,7 @@ const useUserStore = defineStore('user', () => {
         else return { success: false, message: await updateResponse.text() }
     }
 
-    return { 
+    return {
         userInfo,
         isLoading,
         isSignedIn,

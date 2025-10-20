@@ -20,6 +20,12 @@ const config = useConfigStore();
 const loadingSubButtonPage = ref(false);
 
 onMounted(() => {
+	if (!config.cloud.enabled) {
+		// TODO: Use $router.push once we fix it.
+		window.location.href = '/settings';
+		return;
+	}
+
 	userStore.refreshUserInfo();
 	setPageTitle('My Account');
 });
