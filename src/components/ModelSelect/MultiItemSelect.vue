@@ -120,21 +120,20 @@ function handleItemKeydown(e: KeyboardEvent) {
         <template #menu>
             <ul
                 role="listbox"
-                class="absolute mt-1 z-10"
+                class="absolute z-10"
                 :class="menuClass">
                 <li 
                     tabindex="-1"
                     v-for="(item, index) in items"
                     :key="index"
                     role="option"
-                    ref="itemRefs" 
+                    ref="itemRefs"
                     @click.prevent="handleSelectItem(item)"
                     @keydown="handleItemKeydown"
                     @mouseenter="hoveringOverIndex = index; activeIndex = index"
                     @mouseleave="hoveringOverIndex = -1"
                     class="flex items-center select-none"
-                    :class="[itemClass, modelValue.includes(item.value) ? selectedItemClass : '']"
-                    >
+                    :class="[itemClass, modelValue.includes(item.value) ? selectedItemClass : '']" >
                     <BiCheck v-if="modelValue.includes(item.value)" />
                     <component v-if="item.icon" :is="item.icon" class="mr-2" />
                     {{ item.label }}

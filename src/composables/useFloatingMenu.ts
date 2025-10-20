@@ -1,4 +1,4 @@
-import { computed, type Ref } from "vue";
+import { nextTick, ref, watch, type Ref } from "vue";
 
 interface FloatingMenuOptions {
     isOpened: Ref<boolean>;
@@ -17,7 +17,9 @@ export function useFloatingMenu({
     anchored = 'left',
     paddingPx = 0,
 }: FloatingMenuOptions) {
-    const menuPosition = computed<{ top?: string, bottom?: string, left?: string }>(() => {
+    const menuPosition = ref<{ top?: string, bottom?: string, left?: string }>({});
+
+    const computePosition = () => {
         if (
             !isOpened.value || 
             !buttonRef.value || 
@@ -51,7 +53,14 @@ export function useFloatingMenu({
         left = Math.max(0, Math.min(left, window.innerWidth - menuWidth));
 
         return { ...vertical, left: `${left}px` };
-    });
+    };
 
-    return { menuPosition };
+    const recomputePosition = async () => {
+        await nextTick();
+        menuPosition.value = computePosition();
+    }
+
+    watch(isOpened, () => recomputePosition(), { immediate: true });
+
+    return { menuPosition, recomputePosition };
 }

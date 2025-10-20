@@ -1,5 +1,5 @@
 <script setup lang="ts">
-import { inject, onBeforeUnmount, onMounted, provide, ref, toRef } from 'vue';
+import { inject, onBeforeUnmount, onMounted, provide, ref, toRef, watch } from 'vue';
 import { BiChevronUp } from 'vue-icons-plus/bi';
 import { nanoid } from 'nanoid';
 import { useFloatingMenu } from '@/composables/useFloatingMenu';
@@ -8,6 +8,7 @@ const props = withDefaults(defineProps<{
     isOpened?: boolean;
     anchored?: 'left' | 'center' | 'right';
     prefferedPosition?: 'top' | 'bottom';
+    menuWidth?: string;
     disabled?: boolean;
     unstyledMenu?: boolean;
     unstyledButton?: boolean;
@@ -34,7 +35,7 @@ const buttonRef = ref<HTMLElement | null>(null);
 const menuRef = ref<HTMLElement | null>(null);
 const childDropdowns = ref<string[]>([]);
 
-const { menuPosition } = useFloatingMenu({
+const { menuPosition, recomputePosition } = useFloatingMenu({
     isOpened: toRef(props, 'isOpened'),
     buttonRef,
     menuRef,
@@ -92,6 +93,13 @@ onBeforeUnmount(() => {
         unregisterToParent(myDropdownId);
     }
 });
+
+watch(
+    () => props.menuWidth,
+    async () => {
+        await recomputePosition();
+    }
+);
 </script>
 
 <template>
@@ -131,9 +139,12 @@ onBeforeUnmount(() => {
                     ref="menuRef"
                     class="absolute z-[45]"
                     :data-dropdown-id="myDropdownId"
-                    :class="{
-                        'bg-surface p-1.5 flex flex-col gap-2 rounded-lg max-w-[100dvw-3rem] w-full sm:w-96 shadow-md shadow-background': !unstyledMenu,
-                    }"
+                    :class="[
+                        {
+                            'bg-surface p-1.5 flex flex-col gap-2 rounded-lg max-w-[100dvw-3rem] w-full shadow-md shadow-background': !unstyledMenu,
+                        },
+                        menuWidth ? menuWidth : unstyledMenu ? '' : 'sm:w-96'
+                    ]"
                     :style="menuPosition">
                     <slot name="menu" />
                 </div>

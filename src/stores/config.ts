@@ -15,7 +15,7 @@ interface Config {
     },
     ui: {
         modelList: {
-            hideUpgradePrompt: boolean, // Hide the upgrade message in the model list
+            useGridView: boolean;
         }
         modelIcons: {
             monochrome: boolean,
@@ -96,7 +96,7 @@ export const useConfigStore = defineStore('config', {
         },
         ui: {
             modelList: {
-                hideUpgradePrompt: false,
+                useGridView: false,
             },
             modelIcons: {
                 monochrome: true,

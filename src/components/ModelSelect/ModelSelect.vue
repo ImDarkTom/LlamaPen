@@ -2,19 +2,20 @@
 import { computed, nextTick, onBeforeUnmount, onMounted, ref, type ComponentPublicInstance } from 'vue';
 import { useConfigStore } from '../../stores/config';
 import { VscDebugDisconnect } from 'vue-icons-plus/vsc';
-import ModelSelectItem from './ModelSelectItem.vue';
+import ModelSelectItem from './ModelSelectListItem.vue';
 import logger from '@/lib/logger';
 import ModelIcon from '../Icon/ModelIcon.vue';
 import { TbListDetails } from 'vue-icons-plus/tb';
 import isOnMobile from '@/utils/core/isOnMobile';
 import { useModelList } from '@/composables/useModelList';
 import PrimaryButton from '../Buttons/PrimaryButton.vue';
-import { BiFilterAlt, BiLoaderAlt, BiRefresh } from 'vue-icons-plus/bi';
+import { BiExpand, BiFilterAlt, BiLoaderAlt, BiRefresh } from 'vue-icons-plus/bi';
 import FloatingMenu from '../FloatingMenu/FloatingMenu.vue';
 import FilterMenu from './FilterMenu.vue';
 import { storeToRefs } from 'pinia';
 import { useModelSelect } from '@/stores/useModelSelect';
 import { emitter } from '@/lib/mitt';
+import ModelSelectGridItem from './ModelSelectGridItem.vue';
 
 const config = useConfigStore();
 
@@ -148,10 +149,12 @@ const modelName = computed(() => {
     return selectedModelInfo.value.data.displayName;
 });
 
+const menuWidth = computed(() => config.ui.modelList.useGridView ? 'sm:w-xl': 'sm:w-96');
+
 </script>
 
 <template>
-    <FloatingMenu v-model:is-opened="isOpened" @toggled="onToggled" preffered-position="top">
+    <FloatingMenu v-model:is-opened="isOpened" @toggled="onToggled" preffered-position="top" :menu-width="menuWidth" >
         <template #button>
             <span v-if="modelsLoading" class="flex flex-row gap-2 items-center text-text-muted/75">
                 <BiLoaderAlt class="animate-spin size-6 inline" />
@@ -175,27 +178,36 @@ const modelName = computed(() => {
         <template #menu>
             <div class="flex flex-row gap-2 items-center justify-center" role="listbox">
                 <!-- Search bar -->
-                <input 
-                    class="border-2 border-primary focus:border-border w-full rounded-lg h-6 box-content p-3 outline-0"
-                    :class="{ 'cursor-not-allowed': !connectedToOllama }" 
-                    ref="searchBarRef" 
-                    type="search"
-                    placeholder="Search a model..."
-                    :disabled="!connectedToOllama"
-                    v-model="searchQuery" 
-                    @keydown="searchKeyDown" 
-                    aria-label="Search for a model..."
-                    aria-controls="model-list" >
-                <button
-                    @click="filterMenuOpen = !filterMenuOpen"
-                    :class="{ 'hover:!bg-border': filterMenuOpen }"
-                    class="h6 p-3 text-background bg-primary hover:!bg-border cursor-pointer transition-colors duration-dynamic rounded-lg">
-                    <BiFilterAlt />
-                </button>
-                <RouterLink to="/models"
-                    class="h-6 p-3 box-content text-background !bg-primary hover:!bg-border cursor-pointer transition-colors duration-dynamic rounded-lg">
-                    <TbListDetails />
+                <div class="flex flex-row w-full rounded-lg border-2 overflow-hidden border-border focus-within:border-highlight hover:bg-surface-light">
+                    <input 
+                        class="w-full h-6 box-content p-3 outline-0"
+                        :class="{ 'cursor-not-allowed': !connectedToOllama }" 
+                        ref="searchBarRef" 
+                        type="search"
+                        placeholder="Search a model..."
+                        :disabled="!connectedToOllama"
+                        v-model="searchQuery" 
+                        @keydown="searchKeyDown" 
+                        aria-label="Search for a model..."
+                        aria-controls="model-list" >
+                    <button
+                        @click="filterMenuOpen = !filterMenuOpen"
+                        :class="{ '!bg-border-muted': filterMenuOpen }"
+                        class="p-3 hover:text-primary cursor-pointer transition-colors duration-dynamic">
+                        <BiFilterAlt />
+                    </button>
+                </div>
+                <RouterLink to="/models">
+                    <div class="p-3 box-content text-background bg-primary hover:bg-highlight cursor-pointer transition-colors duration-dynamic rounded-lg">
+                        <TbListDetails />
+                    </div>
                 </RouterLink>
+                <button
+                    @click="config.ui.modelList.useGridView = !config.ui.modelList.useGridView"
+                    :class="{ '!bg-border': config.ui.modelList.useGridView }"
+                    class="relative p-3 text-background bg-primary hover:bg-highlight cursor-pointer transition-colors duration-dynamic rounded-lg">
+                    <BiExpand />
+                </button>
             </div>
 
             <FilterMenu />
@@ -230,20 +242,33 @@ const modelName = computed(() => {
                     class="flex flex-col w-full p-4 justify-center items-center">
                     <span>No models matched filter.</span>
                 </div>
-                <ul 
-                    v-else-if="queriedModelList.filter((item) => !item.hidden).length > 0"
-                    class="*:not-last:mb-1"
-                    role="list" >
-                    <ModelSelectItem 
-                        v-for="(model, index) in sortedItems" 
-                        :key="model.modelData.model" 
-                        :index
-                        :model 
-                        :isCurrentModel="model.modelData.model === selectedModelInfo.data?.modelData.model" 
-                        :selected="index === focusedItemIndex"
-                        @mouseover="setFocused(index)"
-                        ref="listItemsRef" />
-                </ul>
+                <template v-else-if="queriedModelList.filter((item) => !item.hidden).length > 0">
+                    <ul
+                        v-if="!config.ui.modelList.useGridView"
+                        class="*:not-last:mb-1"
+                        role="list" >
+                        <ModelSelectItem 
+                            v-for="(model, index) in sortedItems" 
+                            :key="model.modelData.model" 
+                            :index
+                            :model 
+                            :isCurrentModel="model.modelData.model === selectedModelInfo.data?.modelData.model" 
+                            :selected="index === focusedItemIndex"
+                            @mouseover="setFocused(index)"
+                            ref="listItemsRef" />
+                    </ul>
+                    <div v-else class="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-5 gap-2 m-2">
+                        <ModelSelectGridItem
+                            v-for="(model, index) in sortedItems" 
+                            :key="model.modelData.model" 
+                            :index
+                            :model 
+                            :isCurrentModel="model.modelData.model === selectedModelInfo.data?.modelData.model" 
+                            :selected="index === focusedItemIndex"
+                            @mouseover="setFocused(index)"
+                            ref="listItemsRef" />
+                    </div>
+                </template>
                 <li v-else class="flex flex-col w-full p-4 justify-center items-center">
                     <span>No unhidden models found. </span>
                 </li>

@@ -73,10 +73,10 @@ const selectActions: MenuEntry[] = [
 </script>
 
 <template>
-	<li class="relative group flex flex-row gap-3 cursor-pointer p-3 hover:bg-surface-light transition-colors duration-dynamic rounded-lg overflow-x-hidden"
+	<li class="relative group flex flex-row gap-3 ring-1 ring-border-muted ring-inset cursor-pointer p-3 hover:bg-surface-light transition-colors duration-dynamic rounded-lg overflow-x-hidden"
 		:class="{
 			'bg-surface-light': selected && !isCurrentModel,
-			'bg-surface-light ring-2 ring-border ring-inset': isCurrentModel,
+			'bg-surface-light ring-highlight!': isCurrentModel,
 			'opacity-50': (!userStore.isPremium && model.modelData.llamapenMetadata?.premium) || (config.cloud.enabled && !userStore.isSignedIn),
 		}" @click="setModel($event, model.modelData)" ref="listItemRef" :aria-selected="selected">
 
