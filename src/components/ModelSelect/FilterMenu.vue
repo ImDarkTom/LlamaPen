@@ -1,72 +1,30 @@
 <script setup lang="ts">
-import { useModelList, type ModelInfoListItem } from '@/composables/useModelList';
 import { useConfigStore } from '@/stores/config';
-import { ref } from 'vue';
 import { BiBrain, BiRefresh, BiShow, BiWrench } from 'vue-icons-plus/bi';
 import MultiItemSelect from './MultiItemSelect.vue';
+import { useModelSelect } from '@/stores/useModelSelect';
+import { storeToRefs } from 'pinia';
+import { onBeforeUnmount, onMounted, ref } from 'vue';
+import { emitter } from '@/lib/mitt';
 
 const config = useConfigStore();
-const { getModelCapabilities } = useModelList();
 
-defineProps<{
-    filterMenuOpen: boolean;
-}>();
+const { filterCapabilities, direction, orderBy, filterMenuOpen } = storeToRefs(useModelSelect());
 
-const orderBy = ref<'default' | 'alphabetically' | 'size'>('default');
-const filterCapabilities = ref<OllamaCapability[]>([]);
-const direction = ref<'asc' | 'des'>('asc');
+const filterMenu = ref<HTMLElement | null>(null);
 
-function userSort(items: ModelInfoListItem[]) {
-    if (filterCapabilities.value.length > 0) {
-        items = items.filter((item) => {
-            const capabilities = getModelCapabilities(item);
-            return filterCapabilities.value.every((cap) => capabilities.includes(cap));
-        });
-    }
-
-    const favoriteModels = config.models.favoriteModels ?? [];
-    const favorites: ModelInfoListItem[] = [];
-    const nonFavorites: ModelInfoListItem[] = [];
-
-    items.forEach(item => {
-        if (favoriteModels.includes(item.modelData.model)) {
-            favorites.push(item);
-        } else {
-            nonFavorites.push(item);
-        }
-    });
-
-    switch (orderBy.value) {
-        case 'default':
-            break;
-        case 'alphabetically':
-            nonFavorites.sort((a, b) => {
-                const item1 = a.modelData.model.split('/')[1] ?? a.modelData.model;
-                const item2 = b.modelData.model.split('/')[1] ?? b.modelData.model;
-                return item1.localeCompare(item2, undefined, { sensitivity: 'base' });
-            });
-            break;
-        case 'size':
-            nonFavorites.sort((a, b) => a.modelData.size - b.modelData.size);
-            break;
-    }
-
-    if (direction.value === 'des') {
-        nonFavorites.reverse();
-        favorites.reverse();
-    }
-
-    return [...favorites, ...nonFavorites];
-}
-
-defineExpose({
-    userSort,
+onMounted(() => {
+    emitter.on('modelSelectFocusFilter', () => filterMenu.value?.focus());
 });
+
+onBeforeUnmount(() => {
+    emitter.off('modelSelectFocusFilter', () => filterMenu.value?.focus());
+})
 
 </script>
 
 <template>
-    <div v-if="filterMenuOpen" class="max-h-16 relative flex flex-row gap-2 pb-2 overflow-x-auto">
+    <div v-if="filterMenuOpen" class="max-h-16 relative flex flex-row gap-2 pb-2 overflow-x-auto" ref="filterMenu">
         <div class="flex flex-col justify-end">
             <button 
                 class="bg-surface-light p-2 rounded-md ring-inset ring-2 ring-border-muted focus:ring-border outline-0"

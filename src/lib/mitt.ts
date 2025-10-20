@@ -18,6 +18,7 @@ type Events = {
     stopChatGeneration: void,
     hideSidebar: void,
     focusInputBar: void,
+    modelSelectFocusFilter: void,
 };
 
 export const emitter = mitt<Events>();

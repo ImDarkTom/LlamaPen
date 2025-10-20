@@ -7,15 +7,16 @@ import logger from '@/lib/logger';
 import ModelIcon from '../Icon/ModelIcon.vue';
 import { TbListDetails } from 'vue-icons-plus/tb';
 import isOnMobile from '@/utils/core/isOnMobile';
-import { useModelList, type ModelInfoListItem } from '@/composables/useModelList';
+import { useModelList } from '@/composables/useModelList';
 import PrimaryButton from '../Buttons/PrimaryButton.vue';
 import { BiFilterAlt, BiLoaderAlt, BiRefresh } from 'vue-icons-plus/bi';
 import FloatingMenu from '../FloatingMenu/FloatingMenu.vue';
 import FilterMenu from './FilterMenu.vue';
-import useUserStore from '@/stores/user';
+import { storeToRefs } from 'pinia';
+import { useModelSelect } from '@/stores/useModelSelect';
+import { emitter } from '@/lib/mitt';
 
 const config = useConfigStore();
-const userStore = useUserStore();
 
 // State
 const { 
@@ -27,16 +28,23 @@ const {
     connectedToOllama
 } = useModelList();
 
-// UI State
-const searchQuery = ref<string>('');
-const searchFocused = ref<boolean>(false);
-const focusedItemIndex = ref<number>(0);
-const isOpened = ref<boolean>(false);
+const {
+    isMenuOpened: isOpened,
+    searchQuery,
+    queriedModelList,
+    focusedItemIndex,
+    filterMenuOpen,
+    sortedItems
+} = storeToRefs(useModelSelect());
+
+const {
+    setModel,
+    resetState
+} = useModelSelect();
 
 // Refs
 const searchBarRef = ref<HTMLInputElement | null>(null);
 const listItemsRef = ref<Array<ComponentPublicInstance<{ listItemRef: HTMLLIElement | null }>>>([]);
-const filterMenu = ref<InstanceType<typeof FilterMenu> | null>(null);
 
 // Lifecycle hooks
 onMounted(async () => {
@@ -60,20 +68,6 @@ onBeforeUnmount(() => {
     document.removeEventListener('keydown', handleKeyboardShortcuts);
 });
 
-// Computed properties
-const queriedModelList = computed<ModelInfoListItem[]>(() => {
-    return modelsList.value
-        .filter((model) => {
-            const query = (searchQuery.value || "").toLowerCase();
-
-            return (
-                model.modelData.name.toLowerCase().includes(query) ||
-                model.displayName.toLowerCase().includes(query) ||
-                model.modelData.model.toLowerCase().includes(query)
-            );
-        });
-});
-
 // Functions
 function handleKeyboardShortcuts(e: KeyboardEvent) {
     if (e.key === "M" && e.ctrlKey && e.shiftKey) {
@@ -82,21 +76,6 @@ function handleKeyboardShortcuts(e: KeyboardEvent) {
         isOpened.value = !isOpened.value;
         onToggled(isOpened.value);
     }
-}
-
-async function setModel(newModel: ModelListItem, skipUiUpdate: boolean = false) {
-    const newModelId = newModel.model;
-    config.selectedModel = newModelId;
-
-    if (!skipUiUpdate) {
-        isOpened.value = false;
-        searchQuery.value = "";
-    };
-}
-
-function resetState() {
-    searchQuery.value = "";
-    focusedItemIndex.value = 0;
 }
 
 function onToggled(opened: boolean) {
@@ -119,11 +98,10 @@ function searchKeyDown(e: KeyboardEvent) {
     let scrollDown = false;
     switch (e.key) {
         case "Enter":
-            setModel(queriedModelList.value[focusedItemIndex.value].modelData);
+            setModel(sortedItems.value[focusedItemIndex.value].modelData);
             break;
 
         case "Escape":
-            isOpened.value = false;
             resetState();
             break;
 
@@ -142,7 +120,7 @@ function searchKeyDown(e: KeyboardEvent) {
             filterMenuOpen.value = true;
 
             nextTick(() => {
-                orderBySelect.value?.focus();
+                emitter.emit('modelSelectFocusFilter');
             });
             
             break;
@@ -169,31 +147,6 @@ const modelName = computed(() => {
     
     return selectedModelInfo.value.data.displayName;
 });
-
-const orderBySelect = ref<HTMLSelectElement | null>(null);
-const filterMenuOpen = ref(false);
-
-function toggleFilterMenu() {
-    filterMenuOpen.value = !filterMenuOpen.value;
-}
-
-function sortItems(items: ModelInfoListItem[]) {
-    items = filterMenu.value?.userSort(items) || items;
-
-    if (config.cloud.enabled) {
-        if (!userStore.isPremium) {
-            items.sort((a, b) => {
-                return (a.modelData.llamapenMetadata?.premium ? 1 : 0) - (b.modelData.llamapenMetadata?.premium ? 1 : 0)
-            });
-        }
-
-        if (userStore.userInfo.options.showProprietaryModels === false) {
-            items = items.filter(item => !item.modelData.llamapenMetadata?.tags?.includes('closedSource'));
-        }
-    }
-
-    return items;
-}
 
 </script>
 
@@ -230,13 +183,11 @@ function sortItems(items: ModelInfoListItem[]) {
                     placeholder="Search a model..."
                     :disabled="!connectedToOllama"
                     v-model="searchQuery" 
-                    @focus="searchFocused = true"
-                    @blur="searchFocused = false" 
                     @keydown="searchKeyDown" 
                     aria-label="Search for a model..."
                     aria-controls="model-list" >
                 <button
-                    @click="toggleFilterMenu"
+                    @click="filterMenuOpen = !filterMenuOpen"
                     :class="{ 'hover:!bg-border': filterMenuOpen }"
                     class="h6 p-3 text-background bg-primary hover:!bg-border cursor-pointer transition-colors duration-dynamic rounded-lg">
                     <BiFilterAlt />
@@ -247,13 +198,13 @@ function sortItems(items: ModelInfoListItem[]) {
                 </RouterLink>
             </div>
 
-            <FilterMenu ref="filterMenu" :filterMenuOpen />
+            <FilterMenu />
 
-            <ul role="list" :class="{ 'h-62!': filterMenuOpen }" class="h-80 overflow-y-auto [scrollbar-width:thin] *:not-last:mb-2">
-                <li v-if="modelsLoading" class="h-24 flex justify-center items-center">
+            <div :class="{ 'h-62!': filterMenuOpen }" class="h-80 overflow-y-auto [scrollbar-width:thin] ">
+                <div v-if="modelsLoading" class="h-24 flex justify-center items-center">
                     <BiLoaderAlt class="animate-spin size-6" />
-                </li>
-                <li v-else-if="!connectedToOllama" class="h-24 flex flex-col px-3 py-2 justify-center items-center font-bold gap-2">
+                </div>
+                <div v-else-if="!connectedToOllama" class="h-24 flex flex-col px-3 py-2 justify-center items-center font-bold gap-2">
                     <span>
                         <VscDebugDisconnect class="inline" />
                         Not connected to Ollama.
@@ -265,35 +216,38 @@ function sortItems(items: ModelInfoListItem[]) {
                         :icon="BiRefresh"
                         @click="loadModels(true)"
                     />
-                </li>
-                <li v-else-if="queriedModelList.length === 0 && searchQuery !== ''"
+                </div>
+                <div v-else-if="queriedModelList.length === 0 && searchQuery !== ''"
                     class="flex w-full p-4 justify-center items-center">
                     No results.
-                </li>
-                <li v-else-if="queriedModelList.length === 0 && searchQuery === ''"
+                </div>
+                <div v-else-if="queriedModelList.length === 0 && searchQuery === ''"
                     class="flex flex-col w-full p-4 justify-center items-center">
                     <span>No models found.</span>
                     <a href="https://ollama.com/search" target="_blank" class="text-secondary hover:underline">Search on Ollama</a>
-                </li>
-                <li v-else-if="sortItems(queriedModelList.filter((item) => !item.hidden)).length === 0" 
+                </div>
+                <div v-else-if="sortedItems.length === 0" 
                     class="flex flex-col w-full p-4 justify-center items-center">
                     <span>No models matched filter.</span>
-                </li>
-                <ModelSelectItem 
+                </div>
+                <ul 
                     v-else-if="queriedModelList.filter((item) => !item.hidden).length > 0"
-                    v-for="(model, index) in sortItems(queriedModelList.filter((item) => !item.hidden))" 
-                    :key="model.modelData.model" 
-                    :index="index"
-                    :model="model" 
-                    :isCurrentModel="model.modelData.model === selectedModelInfo.data?.modelData.model" 
-                    :selected="index === focusedItemIndex"
-                    @setModel="setModel" 
-                    @mouseover="setFocused(index)"
-                    ref="listItemsRef" />
+                    class="*:not-last:mb-1"
+                    role="list" >
+                    <ModelSelectItem 
+                        v-for="(model, index) in sortedItems" 
+                        :key="model.modelData.model" 
+                        :index
+                        :model 
+                        :isCurrentModel="model.modelData.model === selectedModelInfo.data?.modelData.model" 
+                        :selected="index === focusedItemIndex"
+                        @mouseover="setFocused(index)"
+                        ref="listItemsRef" />
+                </ul>
                 <li v-else class="flex flex-col w-full p-4 justify-center items-center">
                     <span>No unhidden models found. </span>
                 </li>
-            </ul>
+            </div>
         </template>
     </FloatingMenu>
 </template>

@@ -7,6 +7,7 @@ import { BiBrain, BiDotsHorizontalRounded, BiDotsVerticalRounded, BiGlobe, BiHea
 import { useConfigStore } from '@/stores/config';
 import { useModelList, type ModelInfoListItem } from '@/composables/useModelList';
 import ActionMenu, { type MenuEntry } from '../FloatingMenu/ActionMenu.vue';
+import { useModelSelect } from '@/stores/useModelSelect';
 
 const userStore = useUserStore();
 const config = useConfigStore();
@@ -19,7 +20,7 @@ const props = defineProps<{
 	selected: boolean,
 }>();
 
-const emit = defineEmits<(e: 'setModel', model: ModelListItem) => void>();
+const { setModel: setModelInfo } = useModelSelect();
 
 const actionMenuButton = ref<HTMLElement | null>(null);
 
@@ -36,7 +37,7 @@ function setModel(e: MouseEvent, model: ModelListItem) {
 		return;
 	}
 
-	emit('setModel', model);
+	setModelInfo(model);
 }
 
 const listItemRef = ref<HTMLLIElement | null>(null);
