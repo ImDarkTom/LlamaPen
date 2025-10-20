@@ -9,6 +9,7 @@ import Tooltip from '@/components/Tooltip/Tooltip.vue';
 import { useModelList, type ModelInfoListItem } from '@/composables/useModelList';
 import router from '@/lib/router';
 import { useConfigStore } from '@/stores/config';
+import useUserStore from '@/stores/user';
 import ollamaApi from '@/utils/ollama';
 import ollamaRequest from '@/utils/ollamaRequest';
 import { computed, ref } from 'vue';
@@ -18,6 +19,7 @@ import { Fa6Memory } from 'vue-icons-plus/fa6';
 const config = useConfigStore();
 const { setModelHidden } = useModelList();
 const { connectedToOllama, loading, models, modelIds } = useModelList();
+const user = useUserStore();
 
 const props = defineProps<{
     modelsList: ModelInfoListItem[],
@@ -139,12 +141,18 @@ const hideAll = () => {
     refreshModelList();
 };
 
+const showProprietaryModels = ref(user.userInfo.options.showProprietaryModels);
+
 const searchQuery = ref('');
 
-const queriedModels = computed(() => props.modelsList.filter((m) => 
-    m.displayName.includes(searchQuery.value) ||
-    m.modelData.model.includes(searchQuery.value)
-));
+const queriedModels = computed(() => props.modelsList.filter((m) => {
+    if (!showProprietaryModels.value && m.modelData.llamapenMetadata?.tags?.includes('closedSource')) {
+        return false;
+    }
+
+    return m.displayName.includes(searchQuery.value) ||
+        m.modelData.model.includes(searchQuery.value)
+}));
 
 const batchActions: MenuEntry[] = [
     {

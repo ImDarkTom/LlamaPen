@@ -3,7 +3,7 @@ import router from '@/lib/router';
 import useUserStore from '@/stores/user';
 import ModelIcon from '../Icon/ModelIcon.vue';
 import { computed, ref } from 'vue';
-import { BiBrain, BiDotsHorizontalRounded, BiDotsVerticalRounded, BiGlobe, BiHeart, BiLock, BiShow, BiSolidHeart, BiStar, BiWrench } from 'vue-icons-plus/bi';
+import { BiBrain, BiDotsHorizontalRounded, BiDotsVerticalRounded, BiGlobe, BiHeart, BiLock, BiShow, BiSolidBox, BiSolidHeart, BiStar, BiWrench } from 'vue-icons-plus/bi';
 import { useConfigStore } from '@/stores/config';
 import { useModelList, type ModelInfoListItem } from '@/composables/useModelList';
 import ActionMenu, { type MenuEntry } from '../FloatingMenu/ActionMenu.vue';
@@ -101,6 +101,13 @@ const selectActions: MenuEntry[] = [
 						class="bg-yellow-400/25 rounded-sm ring-1 ring-yellow-400 p-0.5"
 						title="Premium model - requires LlamaPen Cloud Premium">
 						<BiStar class="text-yellow-400 size-4" />
+					</div>
+					<div 
+						v-if="model.modelData.llamapenMetadata?.tags?.includes('closedSource')"
+						class="bg-orange-400/25 rounded-sm ring-1 ring-orange-400 p-0.5"
+						title="Proprietary model - closed-source model that is not open-source.">
+						<BiSolidBox class="text-orange-400 size-4" />
+
 					</div>
 					<!-- Capability tags -->
 					<div 

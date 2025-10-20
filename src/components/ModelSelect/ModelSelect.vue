@@ -180,10 +180,16 @@ function toggleFilterMenu() {
 function sortItems(items: ModelInfoListItem[]) {
     items = filterMenu.value?.userSort(items) || items;
 
-    if (config.cloud.enabled && !userStore.isPremium) {
-        items.sort((a, b) => {
-            return (a.modelData.llamapenMetadata?.premium ? 1 : 0) - (b.modelData.llamapenMetadata?.premium ? 1 : 0)
-        });
+    if (config.cloud.enabled) {
+        if (!userStore.isPremium) {
+            items.sort((a, b) => {
+                return (a.modelData.llamapenMetadata?.premium ? 1 : 0) - (b.modelData.llamapenMetadata?.premium ? 1 : 0)
+            });
+        }
+
+        if (userStore.userInfo.options.showProprietaryModels === false) {
+            items = items.filter(item => !item.modelData.llamapenMetadata?.tags?.includes('closedSource'));
+        }
     }
 
     return items;

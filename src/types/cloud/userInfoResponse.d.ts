@@ -16,6 +16,7 @@ type CloudUserInfo = {
         lastUpdated: string | null;
     },
     options: {
-        providerSelection: ProviderDataRetention
+        providerSelection: ProviderDataRetention;
+        showProprietaryModels: boolean;
     }
 };

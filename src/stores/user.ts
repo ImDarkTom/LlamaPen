@@ -26,6 +26,7 @@ const userInfoRef = ref<CloudUserInfo>({
     },
     options: {
         providerSelection: 'all',
+        showProprietaryModels: false,
     }
 });
 
@@ -76,6 +77,7 @@ async function init() {
 
 export interface AccountSettings {
     providerSelection: 'all' | 'no_training' | 'no_retention';
+    showProprietaryModels: boolean;
 }
 
 /**
@@ -103,7 +105,10 @@ const useUserStore = defineStore('user', () => {
                 headers: {
                     'Content-Type': 'application/json',
                 },
-                body: JSON.stringify({ providerSelection: newSettings.providerSelection } as AccountSettings)
+                body: JSON.stringify({ 
+                    providerSelection: newSettings.providerSelection,
+                    showProprietaryModels: newSettings.showProprietaryModels,
+                } as AccountSettings)
             }
         );
 
