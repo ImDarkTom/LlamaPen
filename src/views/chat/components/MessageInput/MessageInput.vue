@@ -16,6 +16,7 @@ import MessageOptions from './buttons/MessageOptions.vue';
 import { BiSolidXCircle } from 'vue-icons-plus/bi';
 import MessageTools from './buttons/MessageTools.vue';
 import { useModelList } from '@/composables/useModelList';
+import isOnMobile from '@/utils/core/isOnMobile';
 
 const messagesStore = useMessagesStore();
 const chatsStore = useChatsStore();
@@ -85,27 +86,29 @@ async function handleKeyDown(e: KeyboardEvent) {
 }
 
 function inputKeyDown(e: KeyboardEvent) {
-    if (e.key === "Enter" && !e.shiftKey) { 
-        e.preventDefault();
-
-        if (!canGenerate.value) {
+    if (e.key === "Enter" && !e.shiftKey) {
+        if (isOnMobile()) {
+            // On mobile, let the user add new lines with Enter
             return;
         }
-        
+
+        e.preventDefault();
         startGeneration();
-        messageInputValue.value = "";
-        if (messageInputRef.value) {
-            messageInputRef.value.innerText = "";
-        }
     }
 }
 
 async function startGeneration() {
-    const message = messageInputValue.value.trim();
+    if (!canGenerate.value) return;
 
+    const message = messageInputValue.value.trim();
     messagesStore.sendMessage(message, filesToUpload.value);
+    
     messageInputValue.value = "";
     filesToUpload.value = [];
+
+    if (messageInputRef.value) {
+        messageInputRef.value.innerText = "";
+    }
 }
 
 function uploadFile(e: Event) {

@@ -9,6 +9,12 @@ import { useConfigStore } from '@/stores/config';
 const messagesStore = useMessagesStore();
 const config = useConfigStore();
 
+defineProps<{
+    canGenerate: boolean,
+}>();
+
+const emit = defineEmits(['startGeneration']);
+
 const isChatGenerating = computed<boolean>(() => {
     const lastestMessage = messagesStore.openedChatMessages[messagesStore.openedChatMessages.length - 1];
 
@@ -18,25 +24,6 @@ const isChatGenerating = computed<boolean>(() => {
 
     return lastestMessage.status === 'generating' || lastestMessage.status === 'waiting';
 });
-
-const emit = defineEmits(['startGeneration']);
-
-const props = defineProps<{
-    canGenerate: boolean,
-}>();
-
-function handleClick() {
-    if (isChatGenerating.value) {
-        logger.info('Action Button Component', 'Stopping chat generation...');
-        emitter.emit('stopChatGeneration');
-    } else {
-        if (!props.canGenerate) {
-            return;
-        }
-
-        emit('startGeneration');
-    }
-}
 
 const buttonIcon = computed(() => {
     if (isChatGenerating.value) {
@@ -49,6 +36,15 @@ const buttonIcon = computed(() => {
         return BiUpArrowAlt;
     }
 });
+
+function handleClick() {
+    if (isChatGenerating.value) {
+        logger.info('Action Button Component', 'Stopping chat generation...');
+        emitter.emit('stopChatGeneration');
+    } else {
+        emit('startGeneration');
+    }
+}
 </script>
 
 <template>
