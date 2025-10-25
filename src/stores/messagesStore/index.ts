@@ -4,7 +4,7 @@ import { defineStore } from 'pinia';
 import { ref } from 'vue';
 import logger from '@/lib/logger';
 import { emitter } from '@/lib/mitt';
-import ollamaApi, { type ChatIteratorChunk, type ChatIteratorError } from '@/utils/ollama';
+import ollamaApi, { type ChatIteratorChunk } from '@/utils/ollama';
 import setPageTitle from '@/utils/core/setPageTitle';
 import { useConfigStore } from '../config';
 import useChatsStore from '../chatsStore';
@@ -134,45 +134,6 @@ const useMessagesStore = defineStore('messages', () => {
 		return ollamaMessageId;
 	}
 
-	function handleMessageChunkError(chunk: ChatIteratorError) {
-		switch (chunk.error.type) {
-			case 'model-not-found': 
-				alert('Model not found.');
-				break;
-			case 'cloud-no-suitable-provider': 
-				alert('No suitable provider for this model with your current data retention settings.');
-				break;
-			case '401-parse-fail':
-				alert(`Error parsing 401 response: ${chunk.error.message}`);
-				break;
-			case 'no-response-body':
-				alert('No response body found for message chunk');
-				break;
-			case 'unknown-401':
-				alert(`Unknown 401 error: ${chunk.error.message}`);
-				break;
-			case 'user-not-authed':
-				alert('You need to be signed in to use this model.');
-				break;
-			case 'user-not-premium':
-				alert('You need premium to use this model.');
-				break;
-			case 'rate-limit':
-				alert('Rate limit reached. Please choose a different model or try again later.');
-				break;
-			case 'parse-fail':
-				alert(`Failed to parse message chunk.`);
-				break;
-			case 'custom-error':
-				alert(`Error: ${chunk.error.message}`);
-				break;
-			default:
-				alert(`Unknown error when generating message: ${chunk.error.message}`);
-		}
-
-		emitter.emit('stopChatGeneration');
-	}
-
 	async function handleMessageChunkDone(
 		chunk: Extract<ChatIteratorChunk, { type: 'done' }>,
 		toolCalls: NonNullable<ModelChatMessage['toolCalls']>,
@@ -252,6 +213,10 @@ const useMessagesStore = defineStore('messages', () => {
 			await db.messages.update(ollamaMessageId, { status: newStatus } as Partial<ModelChatMessage>);
 		}
 
+		const setMessageError = async (errorMessage: string) => {
+			await db.messages.update(ollamaMessageId, { errorText: errorMessage, status: 'error' } as Partial<ModelChatMessage>);
+		}
+
 		const syncMessageToDb = async () => {
 			const updateData: Partial<ModelChatMessage> = { content: generatedContent };
 			if (generatedThoughts) {
@@ -315,69 +280,79 @@ const useMessagesStore = defineStore('messages', () => {
 
 		let isGenerating = false;
 		let messageSaveCounter = 0;
-		for await (const chunk of ollamaApi.chat(chatMessageList, abortController.signal, { modelOverride: selectedModel })) {
-			// First, check if the chunk is an error or done indicator.
-			if (chunk.type === 'error') {
-				handleMessageChunkError(chunk);
-				break;
-			} else if (chunk.type === 'done') {
-				handleMessageChunkDone(
-					chunk,
-					toolCalls,
-					chatId,
-					ollamaMessageId,
-					syncMessageToDb,
-					setMessageStatus,
-					options,
-				);
-				break;
-			}
-
-			// If not, process the message chunk.
-			// If message is not an error or stream end chunk.
-			if (!isGenerating) {
-				isGenerating = true;
-				setMessageStatus('generating');
-			}
-
-			const messageChunk = chunk.data.message.content;
-			const thoughtsChunk = chunk.data.message.thinking || '';
-
-			const messageIndex = openedChatMessages.value.findIndex(message => message.id === ollamaMessageId);
-			if (messageIndex !== -1) {
-				generatedContent += messageChunk;
-				generatedThoughts += thoughtsChunk;
-
-				const updatedMessage = {
-					...openedChatMessages.value[messageIndex] as ModelChatMessage,
-					content: generatedContent,
-					thoughts: generatedThoughts,
-				} as ModelChatMessage;
-
-				if ((/<think>/i.test(generatedContent) || generatedThoughts !== '') && thinkStarted === -1) {
-					thinkStarted = Date.now();
+		try {
+			for await (const chunk of ollamaApi.chat(chatMessageList, abortController.signal, { modelOverride: selectedModel })) {
+				// First, check if the chunk is an error or done indicator.
+				if (chunk.type === 'error') {
+					throw chunk;
+				} else if (chunk.type === 'done') {
+					handleMessageChunkDone(
+						chunk,
+						toolCalls,
+						chatId,
+						ollamaMessageId,
+						syncMessageToDb,
+						setMessageStatus,
+						options,
+					);
+					break;
 				}
 
-				if (((/<\/think>/i.test(generatedContent) || (thoughtsChunk === '' && generatedThoughts !== ''))) && thinkEnded === -1) {
-					thinkEnded = Date.now();
+				// If not, process the message chunk.
+				// If message is not an error or stream end chunk.
+				if (!isGenerating) {
+					isGenerating = true;
+					setMessageStatus('generating');
 				}
 
-				if (chunk.data.message.tool_calls) {
-					for (const toolCall of chunk.data.message.tool_calls) {
-						logger.info('Messages Store', 'Saved tool call to list', toolCall);
-						toolCalls.push(toolCall);
+				const messageChunk = chunk.data.message.content;
+				const thoughtsChunk = chunk.data.message.thinking || '';
+
+				const messageIndex = openedChatMessages.value.findIndex(message => message.id === ollamaMessageId);
+				if (messageIndex !== -1) {
+					generatedContent += messageChunk;
+					generatedThoughts += thoughtsChunk;
+
+					const updatedMessage = {
+						...openedChatMessages.value[messageIndex] as ModelChatMessage,
+						content: generatedContent,
+						thoughts: generatedThoughts,
+					} as ModelChatMessage;
+
+					if ((/<think>/i.test(generatedContent) || generatedThoughts !== '') && thinkStarted === -1) {
+						thinkStarted = Date.now();
 					}
 
-					updatedMessage['toolCalls'] = toolCalls;
+					if (((/<\/think>/i.test(generatedContent) || (thoughtsChunk === '' && generatedThoughts !== ''))) && thinkEnded === -1) {
+						thinkEnded = Date.now();
+					}
+
+					if (chunk.data.message.tool_calls) {
+						for (const toolCall of chunk.data.message.tool_calls) {
+							logger.info('Messages Store', 'Saved tool call to list', toolCall);
+							toolCalls.push(toolCall);
+						}
+
+						updatedMessage['toolCalls'] = toolCalls;
+					}
+
+					openedChatMessages.value[messageIndex] = updatedMessage;
 				}
 
-				openedChatMessages.value[messageIndex] = updatedMessage;
+				messageSaveCounter++;
+				if (messageSaveCounter >= messageSaveInterval) {
+					messageSaveCounter = 0;
+					syncMessageToDb();
+				}
 			}
-
-			messageSaveCounter++;
-			if (messageSaveCounter >= messageSaveInterval) {
-				messageSaveCounter = 0;
-				syncMessageToDb();
+		} catch (errorObject: CustomErrorResponse | any) {
+			logger.info('Messages Store', 'Caught error when getting Ollama response', errorObject);
+			if (errorObject.type === 'error') {
+				setMessageError(errorObject.error.message || 'An error occurred during message generation.');
+				emitter.emit('stopChatGeneration');
+			} else {
+				logger.warn('Messages Store', 'Unknown error when getting Ollama response', errorObject);
+				alert(`Unknown error when generating message: ${errorObject.message || errorObject}`);
 			}
 		}
 

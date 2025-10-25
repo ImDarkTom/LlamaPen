@@ -14,17 +14,8 @@ const chatTitleExamples = `\nExamples of titles:\n📉 Stock Market Trends\n🍪
 export type ChatIteratorChunk = {
 	type: 'error',
 	error: {
-		type: '401-parse-fail'
-			| 'no-response-body'
-			| 'user-not-premium'
-			| 'user-not-authed'
-			| 'rate-limit'
-			| 'unknown-401'
-			| 'parse-fail'
-			| 'cloud-no-suitable-provider'
-			| 'custom-error'
-			| 'model-not-found';
-		message?: string;
+		type: string;
+		message: string;
 	};
 } | {
 	type: 'done',
@@ -207,6 +198,13 @@ class OllamaAPI {
 		return toolsList;
 	}
 
+	/**
+	 * 
+	 * @param messages Ollama messages to use as context.
+	 * @param abortSignal Abort signal to cancel generation.
+	 * @param additionalOptions Client-side generation options
+	 * @returns Yields chunks normally. Throws if control flow error.
+	 */
 	async* chatIterator(
 		messages: OllamaMessage[],
 		abortSignal: AbortSignal,
@@ -239,33 +237,24 @@ class OllamaAPI {
 		});
 
 		if (!response.body) {
-			return { type: 'error', error: { type: 'no-response-body' } };
+			throw { type: 'error', error: { type: 'app:no-response-body', message: 'Error: No response body.' } };
 		}
 
-		if (response.status === 401) {
-			const { data, error } = await tryCatch<{ error: { text: string, type: string } }>(await response.json());
+		if (!response.ok) {
+			const { data, error: parseError } = await tryCatch<CustomErrorResponse>(await response.json());
 
-			if (error || !data.error) {
-				return { type: 'error', error: { type: '401-parse-fail', message: error?.message || 'Failed to parse 401 response' } };
+			if (parseError || !data.error) {
+				throw { type: 'error', error: { type: 'app:parse-fail', message: parseError?.message || `Failed to parse response error: ${parseError}` } };
 			}
 
-			if (data.error.type === 'premium') {
-				return { type: 'error', error: { type: 'user-not-premium' } };
-			} else if (data.error.type === 'auth') {
-				return { type: 'error', error: { type: 'user-not-authed' } };
-			} else {
-				return { type: 'error', error: { type: 'unknown-401', message: data.error.text } };
+			if (response.status === 401 && data.error.type === 'auth:not-authed') {
+				throw { type: 'error', error: { type: 'app:not-authed', message: 'You need to be signed in to send messages.' } };
+			} else if (response.status === 404 && !config.cloud.enabled) {
+				throw { type: 'error', error: { type: 'app:model-not-found', message: data.error as unknown as string } };
 			}
-		} else if (response.status === 429) {
-			return { type: 'error', error: { type: 'rate-limit' } };
-		} else if (response.status === 404) {
-			if (config.cloud.enabled) {
-				return { type: 'error', error: { type: 'cloud-no-suitable-provider' } };
-			} else {
-				return { type: 'error', error: { type: 'model-not-found' } };
-			}
+
+			throw data;
 		}
-
 
 		const decoder = new TextDecoder();
 		const reader = response.body.getReader();
@@ -287,12 +276,12 @@ class OllamaAPI {
 
 				if (error) {
 					console.error('Error parsing message chunk', error);
-					yield { type: 'error', error: { type: 'parse-fail' } };
+					yield { type: 'error', error: { type: 'chunk-parse-error', message: 'Error parsing message chunk: ' + error.message } };
 					continue;
 				}
 
 				if ('error' in data) {
-					yield { type: 'error', error: { type: 'custom-error', message: data.error }};
+					yield data;
 					continue;
 				}
 

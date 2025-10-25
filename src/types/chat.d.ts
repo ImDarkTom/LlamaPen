@@ -21,6 +21,7 @@ type BaseChatMessage = {
 	chatId: number;
 	content: string;
 	created: Date;
+	errorText?: string;
 };
 
 interface ModelChatMessage extends BaseChatMessage {
@@ -48,7 +49,7 @@ interface ModelChatMessage extends BaseChatMessage {
 	};
 }
 
-type ModelMessageStatus = 'waiting' | 'generating' | 'finished' | 'cancelled';
+type ModelMessageStatus = 'waiting' | 'generating' | 'finished' | 'cancelled' | 'error';
 
 interface UserChatMessage extends BaseChatMessage {
 	type: 'user';

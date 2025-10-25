@@ -13,6 +13,7 @@ import ModelMessageHeader from './ModelMessage/ModelMessageHeader.vue';
 import ModelToolCalls from './ModelToolCalls.vue';
 import ToolCallsMessage from './ToolCallsMessage.vue';
 import useMessagesStore from '@/stores/messagesStore';
+import { BiError } from 'vue-icons-plus/bi';
 
 const messagesStore = useMessagesStore();
 
@@ -123,6 +124,10 @@ function renderText(text: string) {
                 @onFinishAndContinue="finishAndContinue" />
 
             <div class="relative" v-else>
+                <div v-if="message.errorText" class="italic bg-danger/25 p-2 rounded-lg ring-1 ring-danger/50 text-danger">
+                    <BiError class="inline mr-1 pb-0.5" />
+                    <span class="text-center">{{ message.errorText }}</span>
+                </div>
                 <article 
                     v-if="message.type === 'user'" 
                     class="max-w-none prose prose-app! dark:prose-invert" >

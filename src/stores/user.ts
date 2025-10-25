@@ -54,11 +54,11 @@ async function fetchUserInfo() {
     const userInfoResRaw = await authedFetch(useConfigStore().requestUrl('/user/userInfo'));
     if (!userInfoResRaw) return;
 
-    const userInfoResponse = await userInfoResRaw.json() as CloudUserInfo | { error: { type: string, text: string } };
+    const userInfoResponse = await userInfoResRaw.json() as CloudUserInfo | CustomErrorResponse;
 
     if ('error' in userInfoResponse) {
         isLoading.value = false;
-        alert(`Error fetching account info: ${userInfoResponse.error.text}`);
+        alert(`Error fetching account info: ${userInfoResponse.error.message}`);
         return;
     }
 

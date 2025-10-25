@@ -89,25 +89,44 @@ function showGenStats() {
 
     alert(popupText);
 }
+
+const isDoneOrUserMessage = computed(() => props.done || props.message.type === 'user');
 </script>
 
 <template>
     <div class="flex flex-row gap-1.5 mt-0.5"
         :class="{ 'justify-end': message.type === 'user', 'justify-start': message.type !== 'user' }">
-        <MessageInteractionButton v-if="done || message.type === 'user'" :text="copyTooltipText" @click="copyMessage" data-testid="copy-btn">
+        <MessageInteractionButton 
+            v-if="isDoneOrUserMessage && !message.errorText" 
+            :text="copyTooltipText" 
+            @click="copyMessage" 
+            data-testid="copy-btn" >
             <BiCopy class="size-full" title="Copy Text" />
         </MessageInteractionButton>
-        <MessageInteractionButton v-if="done || message.type === 'user'" text="Edit" @click="editMessage" data-testid="edit-btn">
+        <MessageInteractionButton 
+            v-if="isDoneOrUserMessage && !message.errorText" 
+            text="Edit" 
+            @click="editMessage" 
+            data-testid="edit-btn" >
             <BiPencil class="size-full" title="Edit" />
         </MessageInteractionButton>
-        <MessageInteractionButton v-if="done || message.type === 'user'" text="Delete">
-            <BiTrash class="size-full" title="Delete" @click="deleteMessage" />
+        <MessageInteractionButton 
+            v-if="isDoneOrUserMessage" 
+            text="Delete"
+            @click="deleteMessage">
+            <BiTrash class="size-full" title="Delete" />
         </MessageInteractionButton>
-        <MessageInteractionButton v-if="done && (message as ModelChatMessage).stats" text="Generation Stats">
-            <BiBarChartAlt class="size-full" title="Generation Stats" @click="showGenStats" />
+        <MessageInteractionButton 
+            v-if="done && (message as ModelChatMessage).stats" 
+            text="Generation Stats"
+            @click="showGenStats">
+            <BiBarChartAlt class="size-full" title="Generation Stats" />
         </MessageInteractionButton>
-        <MessageInteractionButton v-if="done" text="Raw Info">
-            <BiInfoCircle class="size-full" title="Raw Info" @click="openInfo" />
+        <MessageInteractionButton 
+            v-if="done" 
+            text="Raw Info"
+            @click="openInfo">
+            <BiInfoCircle class="size-full" title="Raw Info" />
         </MessageInteractionButton>
         <div v-if="done && messageStats?.evalCount && messageStats?.evalDuration && !config.chat.hideTPSInfoText" class="h-full flex items-center ml-1 text-text-muted/65 text-sm font-medium">
             {{ ((messageStats?.evalCount/(messageStats.evalDuration/1_000_000_000)).toFixed(2)) }}tok/s

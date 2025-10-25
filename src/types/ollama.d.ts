@@ -38,7 +38,11 @@ type ModelListResponse = {
 }
 
 type CustomErrorResponse = {
-    error: string;
+    type: 'error';
+    error: {
+        type: string;
+        message: string;
+    }
 }
 
 type OllamaChatResponseChunk = {
