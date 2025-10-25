@@ -89,7 +89,7 @@ const selectActions: MenuEntry[] = [
 				{{ model.displayName}}
 			</span>
 			<span class="text-xs text-text-muted">{{ model.modelData.details.parameter_size }}</span>
-            <div class="flex flex-row gap-2 shrink-0 min-w-fit">
+            <div class="flex flex-row flex-wrap justify-center gap-2 shrink-0 min-w-fit">
 				<div 
 					v-if="isFavorited()"
 					class="bg-red-400/25 rounded-sm ring-1 ring-red-400 p-0.5"
@@ -145,7 +145,7 @@ const selectActions: MenuEntry[] = [
 						<div
 							v-if="selected"
 							ref="actionMenuButton"
-							class="p-0.5 ring-1 ring-text-muted hover:ring-text hover:text-text rounded-md">
+							class="p-0.5 bg-surface-light ring-1 ring-text-muted hover:ring-text hover:text-text rounded-md">
 							<BiDotsVerticalRounded class="size-6" />
 						</div>
 					</Transition>
