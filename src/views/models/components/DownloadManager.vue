@@ -1,12 +1,14 @@
 <script setup lang="ts">
-import logger from '@/lib/logger';
-import ollamaRequest from '@/utils/ollamaRequest';
-import { streamChunks } from '@/utils/streamChunks';
 import { ref } from 'vue';
 import ViewerContainer from './ViewerContainer.vue';
 import ModelIcon from '@/components/Icon/ModelIcon.vue';
 import PrimaryButton from '@/components/Buttons/PrimaryButton.vue';
 import { BiCloudDownload, BiStopCircle } from 'vue-icons-plus/bi';
+import useDownloadsStore from '@/stores/useDownloadsStore';
+import { storeToRefs } from 'pinia';
+
+const downloadsStore = useDownloadsStore();
+const { progressChunks } = storeToRefs(downloadsStore)
 
 const emit = defineEmits<{
     refreshModelList: [];
@@ -14,19 +16,6 @@ const emit = defineEmits<{
 
 const modelInputValue = ref<string>('');
 
-// example chunk:
-// const downloadChunks = ref<Record<string, OllamaPullResponseChunk>>({
-//     'deepseek granite-embedding:30m': {
-//         status: "pulling 27d24c87a53d",
-//         digest: "sha256:27d24c87a53d110b95abecbff83f966206857a9dc0ba1efd336d08dbd0afc833",
-//         total: 62523136,
-//         completed: 9641984
-//     }
-// });
-
-const controllerMap: Map<string, AbortController> = new Map();
-
-const downloadChunks = ref<Record<string, OllamaPullResponseChunk>>({});
 async function downloadModel() {
     if (!modelInputValue.value) return;
 
@@ -35,52 +24,13 @@ async function downloadModel() {
         return;
     }
 
-    const abortController = new AbortController();
-    const { data: request, error } = await ollamaRequest('/api/pull', 'POST', {
-        model: modelName,
-    }, { signal: abortController.signal });
-
-    if (error) {
-        alert(`Error downloading model: ${error.message}`);
-        return;
-    }
-
-    controllerMap.set(modelName, abortController);
-
-    for await (const { error, chunk } of streamChunks<OllamaPullResponseChunk>(request)) {
-        if (error) {
-            if (error.message === 'userRequestCancel') {
-                delete downloadChunks.value[modelName];
-                return;
-            }
-            
-            alert(`Error downloading model: ${error.message}`);
-            return;
-        }
-
-        downloadChunks.value[modelName] = chunk;
-
-        if (chunk.error) {
-            alert(`Error downloading model (chunk error): ${chunk.error}`);
-            delete downloadChunks.value[modelName];
-            return;
-        }
-
-        if (chunk.status === 'success') {
-            logger.info('Models Page', `Model ${modelName} downloaded successfully.`);
-            delete downloadChunks.value[modelName];
-            emit('refreshModelList');
-        }
+    const { success, reason } = await downloadsStore.downloadModel(modelName);
+    if (success) {
+        emit('refreshModelList');
+    } else {
+        alert(reason);
     }
 }
-
-function cancelDownload(model: string) {
-    if (!downloadChunks.value[model]) return;
-
-    const abortController = controllerMap.get(model);
-    abortController?.abort('userRequestCancel');
-}
-
 </script>
 
 <template>
@@ -106,9 +56,11 @@ function cancelDownload(model: string) {
         </form>
 
         <div
-            v-if="Object.keys(downloadChunks).length !== 0"
+            v-if="Object.keys(progressChunks).length !== 0"
             class="flex flex-col gap-2">
-            <div v-for="(status, modelName) in downloadChunks"
+            <div 
+                v-for="(status, modelName) in progressChunks"
+                :key="modelName"
                 class="p-4 rounded-md flex flex-col gap-4 bg-surface" >
                 <div class="flex flex-row gap-4">
                     <ModelIcon :name="modelName" class="size-12" />
@@ -136,7 +88,10 @@ function cancelDownload(model: string) {
                         class="bg-background w-full h-8 rounded-md"
                         :max="status.total" 
                         :value="status.completed">32%</progress>
-                    <PrimaryButton text="Cancel" :icon="BiStopCircle" @click="cancelDownload(modelName)" />
+                    <PrimaryButton 
+                        text="Cancel" 
+                        :icon="BiStopCircle" 
+                        @click="downloadsStore.cancelDownload(modelName)" />
                 </div>
             </div>
         </div>
