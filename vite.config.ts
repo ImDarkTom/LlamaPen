@@ -94,7 +94,7 @@ export default defineConfig({
             },
             registerType: 'autoUpdate',
             workbox: {
-                globPatterns: ['**/*.{js,css,html,ico,png,svg,txt,xml}']
+                globPatterns: ['**/*.{js,wasm,css,html,ico,png,svg,txt,xml}']
             },
             devOptions: {
                 enabled: true

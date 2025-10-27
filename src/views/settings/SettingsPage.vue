@@ -18,9 +18,8 @@ import SelectionSetting from './components/SelectionSetting.vue';
 import ollamaRequest from '@/utils/ollamaRequest';
 import { useModelList } from '@/composables/useModelList';
 import OptionText from './components/OptionText.vue';
-import { usePWAState } from '@/composables/usePWAState';
-import StatusIndicator from './components/StatusIndicator.vue';
-import { BiInfoCircle, BiRocket, BiTrash } from 'vue-icons-plus/bi';
+import { BiInfoCircle, BiRefresh, BiRocket, BiTrash } from 'vue-icons-plus/bi';
+import { useRegisterSW } from 'virtual:pwa-register/vue';
 
 const config = useConfigStore();
 const router = useRouter();
@@ -28,7 +27,12 @@ const router = useRouter();
 const chatsStore = useChatsStore();
 const messagesStore = useMessagesStore();
 const { connectedToOllama, loading: ollamaLoading } = useModelList();
-const pwaState = usePWAState();
+
+const { 
+    offlineReady,
+    needRefresh,
+    updateServiceWorker
+} = useRegisterSW();
 
 // transition speed
 const transitionSpeed = ref(0.125);
@@ -264,9 +268,15 @@ async function checkOllamaVersion() {
         </OptionCategory>
 
         <OptionCategory label="PWA">
-            <StatusIndicator :state="pwaState.isOnline.value" label="Online?" />
-            <StatusIndicator :state="pwaState.offlineReady.value" label="Offline ready?" />
-            <StatusIndicator :state="pwaState.needRefresh.value" label="Needs refresh?" />
+            <span v-if="offlineReady">App is ready to work offline.</span>
+            <span v-else>Caching app...</span>
+            <span v-if="needRefresh">A new version is available, reload to update.</span>
+            <PrimaryButton
+                v-if="needRefresh"
+                text="Reload"
+                type="button"
+                :icon="BiRefresh"
+                @click="updateServiceWorker()" />
         </OptionCategory>
 
         <OptionCategory label="Developer" v-if="!inProduction">
