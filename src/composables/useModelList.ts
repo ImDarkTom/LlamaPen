@@ -153,6 +153,16 @@ export function useModelList() {
         }
     }
 
+    function renameModel(modelId: string, newName: string) {
+        const config = useConfigStore();
+
+        config.chat.modelRenames[modelId] = newName;
+
+        // Update in state
+        const target = state.models.find(modelItem => modelItem.modelData.model === modelId);
+        if (target) target.displayName = newName;
+    }
+
     return {
         ...toRefs(state),
         load,
@@ -161,6 +171,7 @@ export function useModelList() {
         selectedModelInfo,
         selectedModelCapabilities,
         getModelCapabilities,
-        getModelInfo
+        getModelInfo,
+        renameModel,
     };
 };

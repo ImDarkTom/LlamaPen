@@ -253,7 +253,7 @@ const useMessagesStore = defineStore('messages', () => {
 
 		const cancelHandler = async () => {
 			setMessageStatus('cancelled');
-			abortController.abort("message generation cancelled by user.");
+			abortController.abort("user-cancelled");
 		}
 
 		emitter.on('stopChatGeneration', cancelHandler);
@@ -346,6 +346,8 @@ const useMessagesStore = defineStore('messages', () => {
 				}
 			}
 		} catch (errorObject: CustomErrorResponse | any) {
+			if (typeof errorObject === 'string' && errorObject === "user-cancelled") return; 
+
 			logger.info('Messages Store', 'Caught error when getting Ollama response', errorObject);
 			if (errorObject.type === 'error') {
 				setMessageError(errorObject.error.message || 'An error occurred during message generation.');

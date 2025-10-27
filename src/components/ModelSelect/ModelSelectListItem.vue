@@ -3,7 +3,7 @@ import router from '@/lib/router';
 import useUserStore from '@/stores/user';
 import ModelIcon from '../Icon/ModelIcon.vue';
 import { computed, ref } from 'vue';
-import { BiBrain, BiDotsHorizontalRounded, BiDotsVerticalRounded, BiGlobe, BiHeart, BiLock, BiShow, BiSolidBox, BiSolidHeart, BiStar, BiWrench } from 'vue-icons-plus/bi';
+import { BiBrain, BiDotsHorizontalRounded, BiDotsVerticalRounded, BiGlobe, BiHeart, BiLock, BiPencil, BiShow, BiSolidBox, BiSolidHeart, BiStar, BiWrench } from 'vue-icons-plus/bi';
 import { useConfigStore } from '@/stores/config';
 import { useModelList, type ModelInfoListItem } from '@/composables/useModelList';
 import ActionMenu, { type MenuEntry } from '../FloatingMenu/ActionMenu.vue';
@@ -18,6 +18,7 @@ const props = defineProps<{
 	index: number,
 	isCurrentModel: boolean,
 	selected: boolean,
+	renameModel: () => void,
 }>();
 
 const { setModel: setModelInfo } = useModelSelect();
@@ -63,6 +64,11 @@ const selectActions: MenuEntry[] = [
 		text: () => isFavorited() ? 'Unfavorite' : 'Favorite',
 		icon: () => isFavorited() ? BiSolidHeart : BiHeart,
 		onClick: favoriteModel
+	},
+	{
+		text: 'Rename Model',
+		icon: BiPencil,
+		onClick: props.renameModel
 	},
 	{
 		text: 'Manage Model',
