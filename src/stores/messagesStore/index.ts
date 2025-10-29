@@ -128,7 +128,7 @@ const useMessagesStore = defineStore('messages', () => {
 			created: new Date(),
 			type: 'model',
 			model,
-			status: 'waiting',
+			status: 'inProgress',
 			attachments: [],
 		} as Omit<ModelChatMessage, 'id'>);
 

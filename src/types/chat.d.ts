@@ -49,7 +49,7 @@ interface ModelChatMessage extends BaseChatMessage {
 	};
 }
 
-type ModelMessageStatus = 'waiting' | 'finished' | 'cancelled' | 'error';
+type ModelMessageStatus = 'inProgress' | 'finished' | 'cancelled' | 'error';
 
 interface UserChatMessage extends BaseChatMessage {
 	type: 'user';

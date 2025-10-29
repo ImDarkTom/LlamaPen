@@ -61,7 +61,7 @@ const modelMessageNotGenerating = computed(() =>
     && (
         props.message.status === 'finished'
         || props.message.status === 'cancelled'
-        || (props.message.status === 'waiting' && !messageState.value.generating)
+        || (props.message.status === 'inProgress' && !messageState.value.generating)
     )
 );
 
