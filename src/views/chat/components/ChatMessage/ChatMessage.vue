@@ -13,7 +13,7 @@ import ModelMessageHeader from './ModelMessage/ModelMessageHeader.vue';
 import ModelToolCalls from './ModelToolCalls.vue';
 import ToolCallsMessage from './ToolCallsMessage.vue';
 import useMessagesStore from '@/stores/messagesStore';
-import { BiError } from 'vue-icons-plus/bi';
+import { BiError, BiRefresh } from 'vue-icons-plus/bi';
 
 const { editMessage, isMessageGenerating } = useMessagesStore();
 
@@ -151,6 +151,19 @@ function renderText(text: string) {
                             'size-6': messageState.status === 'waiting',
                             'size-4': messageState.status === 'generating',
                         }"></div>
+                    <div v-else-if="message.status === 'inProgress'">
+                        <!-- if state is marked as 'inProgress', but we don't have an associated messageState, generation got interrupted -->
+                        <div>
+                            <div class="w-full h-[1px] bg-text-muted/50 my-2"></div>
+                            <span class="text-text-muted/75 italic mr-2">Generation interrupted.</span>
+                            <button 
+                                class="bg-background-light p-2 ring-1 ring-border rounded-md cursor-pointer outline-0 hover:outline-2 outline-highlight transition-all duration-dynamic"
+                                @click="editMessage(message.id, message.content, message.type, true);">
+                                <BiRefresh class="inline mr-1" />
+                                <span>Continue</span>
+                            </button>
+                        </div>
+                    </div>
                 </div>
                 <ToolCallsMessage :message v-else-if="message.type === 'tool'" />
             </div>
