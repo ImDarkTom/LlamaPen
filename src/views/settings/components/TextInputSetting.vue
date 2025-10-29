@@ -1,6 +1,7 @@
 <script setup lang="ts">
 import { ref, watch } from 'vue';
 import OptionText from './OptionText.vue';
+import { BiCheck, BiSave } from 'vue-icons-plus/bi';
 
 const emit = defineEmits(['update:modelValue']);
 
@@ -12,7 +13,7 @@ const props = defineProps<{
 	tooltip?: string;
 }>();
 
-const saveText = ref('💾');
+const showSaveSuccess = ref(false);
 
 const inputValue = ref(props.modelValue);
 
@@ -31,10 +32,10 @@ const updateValue = () => {
 	
 	emit('update:modelValue', inputValue.value);
 
-	saveText.value = '✅';
+	showSaveSuccess.value = true;
 	setTimeout(() => {
-		saveText.value = '💾';
-	}, 500);
+		showSaveSuccess.value = false;
+	}, 1000);
 }
 </script>
 
@@ -49,11 +50,11 @@ const updateValue = () => {
 				:placeholder="default"
 				:aria-label="label || 'Text Input'"
 				@keyup.enter="updateValue"
-				class="w-full border-2 border-border-muted focus:border-border outline-none p-2 rounded-lg"
+				class="w-full p-2 rounded-lg ring-1 ring-border hover:ring-highlight outline-highlight outline-0 focus:outline-2 transition-all duration-dynamic"
 			/>
-			<div class="w-fit p-2 rounded-lg bg-border-muted hover:bg-border cursor-pointer" @click="updateValue">
-				{{ saveText }}
-			</div>
+			<div class="w-fit p-2 rounded-lg text-center aspect-square bg-primary hover:bg-highlight text-surface cursor-pointer" @click="updateValue">
+                <component :is="showSaveSuccess ? BiCheck : BiSave" />
+            </div>
 		</div>
 	</label>
 </template>

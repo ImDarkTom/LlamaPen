@@ -1,6 +1,5 @@
 <script setup lang="ts">
-import Tooltip from '@/components/Tooltip/Tooltip.vue';
-import { BiHelpCircle } from 'vue-icons-plus/bi';
+import OptionText from './OptionText.vue';
 
 const emit = defineEmits(['update:modelValue']);
 
@@ -16,15 +15,8 @@ const updateValue = () => {
 </script>
 
 <template>
-	<label class="w-full flex flex-row justify-between items-center cursor-pointer transition-all duration-dynamic" @click="updateValue">
-		<span class="text-lg text-text-muted">
-			<span class="align-middle hover:text-text">
-				{{ label }}
-			</span>
-			<Tooltip v-if="tooltip" :text="tooltip" size="small">
-				<BiHelpCircle class="hover:text-text inline align-middle ml-1" />
-			</Tooltip>
-		</span>
+	<label class="w-full flex flex-row justify-between items-center transition-all duration-dynamic" @click="updateValue">
+		<OptionText :label :tooltip />
 		
 		<input 
 			class="sr-only"
@@ -35,7 +27,7 @@ const updateValue = () => {
 		/>
 
 		<div
-			class="w-12 h-6 flex items-center bg-background-dark rounded-full p-0.5 transition-all duration-dynamic"
+			class="w-12 h-6 flex items-center bg-background-dark rounded-full p-0.5 cursor-pointer transition-all duration-dynamic"
 			:class="{ 'bg-primary': modelValue }"
 			role="switch"
 			:aria-checked="modelValue"

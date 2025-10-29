@@ -14,7 +14,7 @@ defineProps<{
             {{ label }}
         </span>
         <Tooltip v-if="tooltip" :text="tooltip" size="small">
-            <BiHelpCircle class="hover:text-text inline align-middle ml-1" />
+            <BiHelpCircle class="hover:text-text inline align-middle ml-1 size-5" />
         </Tooltip>
     </span>
 </template>

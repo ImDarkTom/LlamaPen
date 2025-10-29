@@ -35,7 +35,7 @@ const updateValue = () => {
 		<div class="w-full flex flex-row gap-2">
             <select 
                 v-model="inputValue" 
-                class="w-full border-2 bg-background-light text-text-muted border-border-muted focus:border-border outline-none p-2 rounded-lg" 
+                class="w-full p-2 rounded-lg ring-1 ring-border hover:ring-highlight outline-highlight outline-0 focus:outline-2 transition-all duration-dynamic" 
                 @change="updateValue" 
                 :aria-label="label"
             >
