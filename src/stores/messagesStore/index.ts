@@ -269,8 +269,6 @@ const useMessagesStore = defineStore('messages', () => {
 		const cancelHandler = async () => {
 			setMessageStatus('cancelled');
 			abortController.abort("user-cancelled");
-
-			delete messageGenerationStates.value[ollamaMessageId];
 		}
 
 		emitter.on('stopChatGeneration', cancelHandler);
@@ -365,7 +363,8 @@ const useMessagesStore = defineStore('messages', () => {
 				}
 			}
 		} catch (errorObject: CustomErrorResponse | any) {
-			if (typeof errorObject === 'string' && errorObject === "user-cancelled") return; 
+			delete messageGenerationStates.value[ollamaMessageId];
+			if (typeof errorObject === 'string' && errorObject === "user-cancelled") return;
 
 			logger.info('Messages Store', 'Caught error when getting Ollama response', errorObject);
 			if (errorObject.type === 'error') {
