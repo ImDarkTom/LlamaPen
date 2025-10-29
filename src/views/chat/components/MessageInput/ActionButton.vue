@@ -22,7 +22,7 @@ const isChatGenerating = computed<boolean>(() => {
         return false;
     }
 
-    return lastestMessage.status === 'generating' || lastestMessage.status === 'waiting';
+    return messagesStore.isMessageGenerating(lastestMessage).generating;
 });
 
 const buttonIcon = computed(() => {
