@@ -141,7 +141,7 @@ function renderText(text: string) {
                 </article>
                 <div 
                     v-else-if="message.type === 'model'" >
-                    <ThinkBlock :message="(message as ModelChatMessage)" />
+                    <ThinkBlock :message="(message as ModelChatMessage)" :messageState />
                     <ModelToolCalls :message="(message as ModelChatMessage)" />
                     <article class="max-w-none prose prose-app! dark:prose-invert" v-html="renderText(message.content)"></article>
                     <div

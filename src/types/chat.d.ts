@@ -51,6 +51,8 @@ interface ModelChatMessage extends BaseChatMessage {
 
 type ModelMessageStatus = 'inProgress' | 'finished' | 'cancelled' | 'error';
 
+type MessageGenerationState = { generating: true, status: 'waiting' | 'generating' } | { generating: false, status: null };
+
 interface UserChatMessage extends BaseChatMessage {
 	type: 'user';
 }
