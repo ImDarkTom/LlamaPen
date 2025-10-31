@@ -22,6 +22,8 @@ const useMessagesStore = defineStore('messages', () => {
 	const openedChatId = ref<number | null>(null);
 	const openedChatMessages = ref<ChatMessage[]>([]);
 	const chatsGeneratingTitles = ref<number[]>([]);
+	
+	const messageGenerationStates = ref<Record<number, { status: 'waiting' | 'generating' }>>({});
 
 	initLiveSync(openedChatMessages, openedChatId);
 
@@ -126,7 +128,7 @@ const useMessagesStore = defineStore('messages', () => {
 			created: new Date(),
 			type: 'model',
 			model,
-			status: 'waiting',
+			status: 'inProgress',
 			attachments: [],
 		} as Omit<ModelChatMessage, 'id'>);
 
@@ -148,7 +150,9 @@ const useMessagesStore = defineStore('messages', () => {
 		const status = chunk.reason === 'completed' ? 'finished' : 'cancelled';
 		setMessageStatus(status);
 
-		await db.messages.update(ollamaMessageId, {
+		delete messageGenerationStates.value[ollamaMessageId];
+
+		const updateData = {
 			stats: {
 				evalCount: chunk.stats?.evalCount,
 				evalDuration: chunk.stats?.evalDuration,
@@ -157,7 +161,13 @@ const useMessagesStore = defineStore('messages', () => {
 				promptEvalDuration: chunk.stats?.promptEvalDuration,
 				totalDuration: chunk.stats?.totalDuration,
 			}
-		} as Partial<ModelChatMessage>);
+		} as Partial<ModelChatMessage>;
+
+		if (updateData.thinkStats?.started) {
+			updateData.thinkStats.ended = Date.now();
+		}
+
+		await db.messages.update(ollamaMessageId, updateData);
 
  		if (toolCalls.length > 0) {
 			const toolsStore = useToolsStore();
@@ -196,6 +206,15 @@ const useMessagesStore = defineStore('messages', () => {
 		}
 
 		logger.info('Messages Store', 'Finished generating response with status', status);
+	}
+
+	function isMessageGenerating(message: ChatMessage): MessageGenerationState {
+		const state = messageGenerationStates.value[message.id];
+		if (!state) {
+			return { generating: false, status: null };
+		}
+
+		return { generating: true, status: state.status };
 	}
 
 	/**
@@ -278,7 +297,9 @@ const useMessagesStore = defineStore('messages', () => {
 			generatedThoughts = (message as ModelChatMessage).thinking ?? '';
 		}
 
-		let isGenerating = false;
+		messageGenerationStates.value[ollamaMessageId] = { status: 'waiting' };
+
+		let hasAbortTrigger = false;
 		let messageSaveCounter = 0;
 		try {
 			for await (const chunk of ollamaApi.chat(chatMessageList, abortController.signal, { modelOverride: selectedModel })) {
@@ -300,9 +321,9 @@ const useMessagesStore = defineStore('messages', () => {
 
 				// If not, process the message chunk.
 				// If message is not an error or stream end chunk.
-				if (!isGenerating) {
-					isGenerating = true;
-					setMessageStatus('generating');
+				if (!hasAbortTrigger) {
+					hasAbortTrigger = true;
+					messageGenerationStates.value[ollamaMessageId] = { status: 'generating' };
 				}
 
 				const messageChunk = chunk.data.message.content;
@@ -346,7 +367,13 @@ const useMessagesStore = defineStore('messages', () => {
 				}
 			}
 		} catch (errorObject: CustomErrorResponse | any) {
-			if (typeof errorObject === 'string' && errorObject === "user-cancelled") return; 
+			delete messageGenerationStates.value[ollamaMessageId];
+
+			if (thinkStarted !== -1) {
+				await db.messages.update(ollamaMessageId, { thinkStats: { started: thinkStarted, ended: Date.now() } } as Partial<ChatMessage>);
+			}
+
+			if (typeof errorObject === 'string' && errorObject === "user-cancelled") return;
 
 			logger.info('Messages Store', 'Caught error when getting Ollama response', errorObject);
 			if (errorObject.type === 'error') {
@@ -414,6 +441,7 @@ const useMessagesStore = defineStore('messages', () => {
 		openedChatMessages,
 		openedChatId,
 		chatsGeneratingTitles,
+		isMessageGenerating,
 		openChat,
 		sendMessage,
 		editMessage,

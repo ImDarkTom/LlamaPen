@@ -57,7 +57,7 @@ body:not([data-native-scrollbar]) {
         --color-surface-light: oklch(1 0.065 266);
         --color-text: oklch(0.15 0.13 266);
         --color-text-muted: oklch(0.4 0.13 266);
-        --color-highlight: oklch(1 0.13 266);
+        --color-highlight: oklch(0.5 0.13 266);
         --color-border: oklch(0.6 0.13 266);
         --color-border-muted: oklch(0.7 0.13 266);
         --color-primary: oklch(0.4 0.13 266);
@@ -95,7 +95,7 @@ body:not([data-native-scrollbar]) {
         --color-surface-light: oklch(1 0.005 266);
         --color-text: oklch(0.15 0.01 266);
         --color-text-muted: oklch(0.4 0.01 266);
-        --color-highlight: oklch(1 0.01 266);
+        --color-highlight: oklch(0.5 0.01 266);
         --color-border: oklch(0.6 0.01 266);
         --color-border-muted: oklch(0.7 0.01 266);
         --color-primary: oklch(0.4 0.1 266);

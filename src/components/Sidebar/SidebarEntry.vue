@@ -1,7 +1,7 @@
 <script setup lang="ts">
 import { computed, ref } from 'vue';
 import SidebarRouterLink from './SidebarRouterLink.vue';
-import { BiChat, BiDotsVerticalRounded, BiPencil, BiPin, BiSolidPin, BiTrash, BiX } from 'vue-icons-plus/bi';
+import { BiChat, BiDotsVerticalRounded, BiPencil, BiPin, BiSolidChat, BiSolidPin, BiTrash, BiX } from 'vue-icons-plus/bi';
 import useChatsStore from '@/stores/chatsStore';
 import router from '@/lib/router';
 import useMessagesStore from '@/stores/messagesStore';
@@ -99,6 +99,30 @@ const actions: MenuEntry[] = [
     }
 ]
 
+const icon = computed(() => {
+    if (isHoveringOverIcon.value) {
+        if (isPinned.value) {
+            return BiSolidPin;
+        } else { 
+            return BiPin;
+        };
+    }
+
+    if (isPinned.value && isChatOpened.value) {
+        return BiSolidPin;
+    }
+
+    if (isPinned.value) {
+        return BiPin;
+    }
+
+    if (isChatOpened.value) {
+        return BiSolidChat;
+    }
+
+    return BiChat;
+});
+
 </script>
 
 <template>
@@ -110,20 +134,15 @@ const actions: MenuEntry[] = [
         role="listitem" >
         <div 
             class="group w-full h-10 flex flex-row gap-2 p-2 pointer-coarse:p-3 relative rounded-lg hover:text-text hover:bg-background transition-quick"
-            :class="{ '!bg-background-light ring-1 ring-inset ring-border': isChatOpened }">
+            :class="{ '!bg-background-light ring-1 ring-inset ring-border is-opened': isChatOpened }">
             <div 
                 class="box-content aspect-square"
                 @mouseenter="isHoveringOverIcon = true"
                 @mouseleave="isHoveringOverIcon = false" >
                 <component
-                    v-if="isHoveringOverIcon || isPinned"
-                    :is="isPinned ? BiSolidPin : BiPin"
-                    class="box-border p-0.5 text-primary"
+                    :is="icon"
+                    class="box-border p-0.5 group-[.is-opened]:text-secondary"
                     @mousedown.stop="setPinned(chat.id, !isPinned)" />
-                <component
-                    v-else 
-                    :is="BiChat" 
-                    class="box-border p-0.5" />
             </div>
             <input
                 type="text"

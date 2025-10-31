@@ -13,9 +13,9 @@ import ModelMessageHeader from './ModelMessage/ModelMessageHeader.vue';
 import ModelToolCalls from './ModelToolCalls.vue';
 import ToolCallsMessage from './ToolCallsMessage.vue';
 import useMessagesStore from '@/stores/messagesStore';
-import { BiError } from 'vue-icons-plus/bi';
+import { BiError, BiRefresh } from 'vue-icons-plus/bi';
 
-const messagesStore = useMessagesStore();
+const { editMessage, isMessageGenerating } = useMessagesStore();
 
 const props = defineProps<{
     message: ChatMessage;
@@ -23,7 +23,11 @@ const props = defineProps<{
 
 const messageTextContainer = ref<HTMLDivElement | null>(null);
 
+// === State ===
+const editing = ref<boolean>(false);
+const messageEditorRef = ref<InstanceType<typeof MessageEditor> | null>(null);
 const images = ref<{ id: string; blobSrc: string; file: Blob }[]>([]);
+
 onMounted(async () => {
     const messageAttachments = (await getMessageAttachments(props.message.id)).map(item => item.content);
     images.value = messageAttachments.map((attachment) => {
@@ -48,21 +52,23 @@ onMounted(async () => {
     })
 })
 
-// === State ===
-const editing = ref<boolean>(false);
-const messageEditorRef = ref<InstanceType<typeof MessageEditor> | null>(null);
-
 // === Computed ===
 const isUserMessage = computed(() => props.message.type === 'user');
 const isModelMessage = computed(() => props.message.type === 'model');
-const modelMessageDone = computed(() => props.message.type === 'model' &&
-    (props.message.status === 'finished' || props.message.status === 'cancelled')
+const messageState = computed(() => isMessageGenerating(props.message));
+const modelMessageNotGenerating = computed(() => 
+    props.message.type === 'model' 
+    && (
+        props.message.status === 'finished'
+        || props.message.status === 'cancelled'
+        || (props.message.status === 'inProgress' && !messageState.value.generating)
+    )
 );
 
 // === Functions ===
 
 // Editing
-function editMessage() {
+function handleEditBtnClick() {
     editing.value = true;
 
     nextTick(() => {
@@ -77,13 +83,13 @@ function cancelEditing() {
 function finishEdit(newText: string) {
     editing.value = false;
 
-    messagesStore.editMessage(props.message.id, newText, props.message.type, false);
+    editMessage(props.message.id, newText, props.message.type, false);
 }
 
 function finishAndContinue(newText: string) {
     editing.value = false;
 
-    messagesStore.editMessage(props.message.id, newText, props.message.type, true);
+    editMessage(props.message.id, newText, props.message.type, true);
 }
 
 // Rendering
@@ -107,7 +113,7 @@ function renderText(text: string) {
             'w-full max-w-[calc(100dvw-1rem)] box-border !p-2 !pb-1 !m-0': isModelMessage || editing,
             'bg-surface !m-0 rounded-xl': props.message.type === 'tool'
         }">
-            <ModelMessageHeader v-if="message.type === 'model'" :message :modelMessageDone />
+            <ModelMessageHeader v-if="message.type === 'model'" :message :modelMessageDone="modelMessageNotGenerating" />
             <img 
                 v-for="image of images" 
                 :key="image.id" 
@@ -135,16 +141,29 @@ function renderText(text: string) {
                 </article>
                 <div 
                     v-else-if="message.type === 'model'" >
-                    <ThinkBlock :message="(message as ModelChatMessage)" />
+                    <ThinkBlock :message="(message as ModelChatMessage)" :messageState />
                     <ModelToolCalls :message="(message as ModelChatMessage)" />
                     <article class="max-w-none prose prose-app! dark:prose-invert" v-html="renderText(message.content)"></article>
                     <div
-                        v-if="message.status === 'waiting' || message.status === 'generating'"
+                        v-if="messageState.generating"
                         class="animate-breathe rounded-full bg-text inline-block"
                         :class="{
-                            'size-6': message.status === 'waiting',
-                            'size-4': message.status === 'generating',
+                            'size-6': messageState.status === 'waiting',
+                            'size-4': messageState.status === 'generating',
                         }"></div>
+                    <div v-else-if="message.status === 'inProgress'">
+                        <!-- if state is marked as 'inProgress', but we don't have an associated messageState, generation got interrupted -->
+                        <div>
+                            <div class="w-full h-[1px] bg-text-muted/50 my-2"></div>
+                            <span class="text-text-muted/75 italic mr-2">Generation interrupted.</span>
+                            <button 
+                                class="bg-background-light p-2 ring-1 ring-border rounded-md cursor-pointer outline-0 hover:outline-2 outline-highlight transition-all duration-dynamic"
+                                @click="editMessage(message.id, message.content, message.type, true);">
+                                <BiRefresh class="inline mr-1" />
+                                <span>Continue</span>
+                            </button>
+                        </div>
+                    </div>
                 </div>
                 <ToolCallsMessage :message v-else-if="message.type === 'tool'" />
             </div>
@@ -156,7 +175,7 @@ function renderText(text: string) {
             }"
             v-if="!editing" 
             :message 
-            :done="modelMessageDone" 
-            @editMessage="editMessage" />
+            :done="modelMessageNotGenerating" 
+            @editMessage="handleEditBtnClick" />
     </div>
 </template>

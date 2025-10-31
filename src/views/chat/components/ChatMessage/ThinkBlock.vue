@@ -7,6 +7,7 @@ const config = useConfigStore();
 
 const props = defineProps<{
 	message: ModelChatMessage,
+	messageState: MessageGenerationState,
 }>();
 
 const opened = ref(config.chat.thinking.infoOpenByDefault);
@@ -25,7 +26,9 @@ const thinkStats = computed<{ ended: boolean, time: string } | null>(() => {
 	return { time: ((ended - started) / 1000).toFixed(2), ended: props.message.thinkStats.ended !== -1 };
 });
 
-const thinkingOngoing = computed(() => (thinkStats.value && !thinkStats.value.ended));
+const thinkingOngoing = computed(() => {
+	return props.messageState.generating && (thinkStats.value && !thinkStats.value.ended);
+});
 </script>
 
 <template>
@@ -34,7 +37,7 @@ const thinkingOngoing = computed(() => (thinkStats.value && !thinkStats.value.en
 			class="flex flex-row items-center justify-between cursor-pointer" 
 			:class="{ '!pb-0': opened }"
 			@click="opened = !opened">
-			<div class="flex flex-row items-center gap-2" :class="{ 'animate-blink': (thinkStats && !thinkStats.ended) }">
+			<div class="flex flex-row items-center gap-2" :class="{ 'animate-blink': thinkingOngoing }">
 				<BiBrain />
 				<span class="text-lg font-semibold select-none">{{ thinkingOngoing ? 'Thinking...' : 'Thoughts' }}</span>
 			</div>
