@@ -4,27 +4,9 @@ import { ref } from 'vue';
 import Mustache from 'mustache';
 import { tryCatch } from '@/utils/core/tryCatch';
 
-const webSearchResponseFormatting = 
-`{
-  "query": "{{query}}",
-  "results": [
-    {{#results}}
-    {
-      "title": "{{title}}",
-      "content": "{{content}}"
-      "url": "{{{url}}}",
-      {{#publishedDate}},
-      "publishedDate": "{{publishedDate}}"
-      {{/publishedDate}}
-    }{{^last}},{{/last}}
-    {{/results}}
-  ]
-}
-`;
-
 const defaultTools: AppTools = {
     'web_search': {
-        description: 'Search the internet for a query',
+        description: 'Search the internet for a query.',
         isInternal: true,
         userConfirmation: false,
         userHint: 'Web search is intended to be used with a SearXNG instance. For a guide, see: https://github.com/ImDarkTom/LlamaPen-Search',
@@ -42,8 +24,28 @@ const defaultTools: AppTools = {
             },
         ],
         required: ['query'],
-        url: 'https://localhost/search?q={{query}}&categories=general&language=all&time_range=&safesearch=0&format=json',
-        responseFormatting: webSearchResponseFormatting
+        url: 'https://localhost/search?q={{query}}',
+    },
+    'open_url': {
+        description: 'Read the contents of a web page URL.',
+        isInternal: true,
+        userConfirmation: false,
+        userHint: 'Opening urls is intended with https://github.com/ImDarkTom/LlamaPen-Search',
+        requestOptions: {
+            method: 'GET',
+            accept: 'application/json',
+            contentType: 'application/json',
+            userAgent: 'LlamaPen/1.0 (user tool call)',
+        },
+        params: [
+            {
+                name: 'url',
+                type: 'string',
+                description: 'The URL to open.'
+            },
+        ],
+        required: ['url'],
+        url: 'https://localhost/open?url={{url}}',
     }
 };
 
