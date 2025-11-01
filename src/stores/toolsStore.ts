@@ -24,7 +24,7 @@ const defaultTools: AppTools = {
             },
         ],
         required: ['query'],
-        url: 'https://localhost/search?q={{query}}',
+        url: 'http://localhost:8000/search?q={{query}}',
     },
     'open_url': {
         description: 'Read the contents of a web page URL.',
@@ -33,7 +33,7 @@ const defaultTools: AppTools = {
         userHint: 'Opening urls is intended with https://github.com/ImDarkTom/LlamaPen-Search',
         requestOptions: {
             method: 'GET',
-            accept: 'application/json',
+            accept: '*/*',
             contentType: 'application/json',
             userAgent: 'LlamaPen/1.0 (user tool call)',
         },
@@ -45,7 +45,7 @@ const defaultTools: AppTools = {
             },
         ],
         required: ['url'],
-        url: 'https://localhost/open?url={{url}}',
+        url: 'http://localhost:8000/open?url={{url}}',
     }
 };
 
