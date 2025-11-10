@@ -108,19 +108,6 @@ const useMessagesStore = defineStore('messages', () => {
 	// Utils
 	// -----
 
-	function getSelectedModel(modelOverride?: string) {
-		// TODO: Validate that the selected model is valid by comparing to
-		// a list of available models.
-		if (modelOverride) {
-			return modelOverride;
-		}
-
-		const configStore = useConfigStore();
-		const selectedModel = configStore.selectedModel;
-
-		return selectedModel;
-	}
-
 	async function addModelMessageToChat(model: string, chatId: number): Promise<number> {
 		const ollamaMessageId = await db.messages.add({
 			chatId,
@@ -261,7 +248,7 @@ const useMessagesStore = defineStore('messages', () => {
 		}
 		const chatId = openedChatId.value;
 
-		const selectedModel = getSelectedModel(options?.modelOverride);
+		const selectedModel = options?.modelOverride ?? useConfigStore().selectedModel;
 
 		// 2. Add a blank model message to the chat to put the response in or get the overridden one.
 		const ollamaMessageId = options?.messageIdOverride ?? await addModelMessageToChat(selectedModel, chatId);
