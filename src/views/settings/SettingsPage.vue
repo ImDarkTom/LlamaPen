@@ -259,6 +259,14 @@ async function checkOllamaVersion() {
                 v-model="config.chat.hideTPSInfoText"
                 label="Hide tokens/sec in message footer"
                 tooltip="Hide the <num>tok/s text in the message footer/controls for model messages. (Default: Disabled)" />
+            <NumberInputSetting
+                v-model="config.chat.tokenSaveInterval"
+                :default="5"
+                :min="1"
+                :max="100"
+                label="Save message every x tokens"
+                tooltip="Save the message into local DB every x tokens. Lower values lead to worse performance.
+                    Higher values may cause the end of the message to not save if an error occurs. (Default: 5)" />
             <PrimaryButton
                 text="Clear all chats"
                 type="button"

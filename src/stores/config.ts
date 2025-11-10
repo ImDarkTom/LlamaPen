@@ -47,7 +47,6 @@ interface Config {
             min_p: number;
         },
         tokenSaveInterval: number, // How many tokens to save before updating the message in the database.
-        // TODO: Add the above to UI ^
         thinking: {
             enabled: false;
             infoOpenByDefault: boolean;
