@@ -48,7 +48,7 @@ function resetToDefault() {
     location.reload();
 }
 
-const itemActions: MenuEntry[] = [
+const itemActions: MenuEntry<string>[] = [
     {
         text: 'Toggle tool',
         onClick: toggleTool,

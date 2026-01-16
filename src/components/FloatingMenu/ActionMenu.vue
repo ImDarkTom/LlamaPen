@@ -1,20 +1,49 @@
-<script setup lang="ts">
+<script setup lang="ts" generic="T = void">
 import { ref } from 'vue';
 import FloatingMenu from './FloatingMenu.vue';
 import type { IconType } from 'vue-icons-plus';
 
-export type MenuEntry = {
-    text: string | ((...args: any) => string);
-    onClick: (...args: any) => void;
-    icon?: IconType | ((...args: any) => IconType);
+export type TextResolver<T> = T extends void 
+    ? string | (() => string)
+    : string | ((args: T) => string);
+
+export type IconResolver<T> = T extends void
+    ? IconType | { type: 'factory'; func: () => IconType }
+    : IconType | { type: 'factory'; func: (args: T) => IconType };
+
+export type OnClickHandler<T> = T extends void
+    ? () => void
+    : (args: T) => void;
+
+export type MenuEntry<T = void> = {
+    text: TextResolver<T>;
+    onClick: OnClickHandler<T>;
+    icon?: IconResolver<T>;
     category?: 'general' | 'danger',
     condition?: boolean,
 }
 
-defineProps<{
-    actions: MenuEntry[];
-    passArgs?: unknown;
+const props = defineProps<{
+    actions: MenuEntry<T>[];
+    passArgs?: T;
 }>();
+
+const getText = (text: MenuEntry<T>['text']): string => {
+    if (typeof text === 'string') {
+        return text;
+    }
+
+    return (text as (args: T) => string)(props.passArgs!);
+};
+
+const getIcon = (icon: MenuEntry<T>['icon']): IconType | undefined => {
+    if (!icon) return undefined;
+    if (typeof icon === 'object' && 'func' in icon) {
+        return (icon.func as (args: T) => IconType)(props.passArgs!);
+    }
+
+    return icon as IconType;
+};
 
 const isOpened = ref(false);
 </script>
@@ -37,10 +66,13 @@ const isOpened = ref(false);
                             'hover:text-text': !entry.category || entry.category === 'general',
                             'hover:text-danger': entry.category === 'danger',
                         }"
-                        @click="entry.onClick(passArgs); isOpened = false;">
-                        <component v-if="entry.icon" :is="typeof entry.icon === 'function' ? entry.icon(passArgs) : entry.icon" class="inline mr-2" />
+                        @click="entry.onClick(passArgs!); isOpened = false;">
+                        <component 
+                            v-if="entry.icon !== undefined" 
+                            :is="getIcon(entry.icon)" 
+                            class="inline mr-2" />
                         <span>
-                            {{ typeof entry.text === 'string' ? entry.text : entry.text(passArgs) }}
+                            {{ getText(entry.text) }}
                         </span>
                     </li>
                 </template>
