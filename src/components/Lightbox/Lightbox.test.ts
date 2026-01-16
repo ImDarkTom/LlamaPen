@@ -1,7 +1,6 @@
 import { mount, type VueWrapper } from "@vue/test-utils";
-import { beforeEach, describe, expect, it, vi } from "vitest";
+import { afterEach, beforeEach, describe, expect, it, vi } from "vitest";
 import Lightbox from "./Lightbox.vue";
-import { afterEach } from "node:test";
 import { emitter } from "@/lib/mitt";
 import { nextTick } from "vue";
 
