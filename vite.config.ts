@@ -111,4 +111,20 @@ export default defineConfig({
             "@": path.resolve(__dirname, "src"),
         }
     },
+    build: {
+        rollupOptions: {
+            output: {
+                manualChunks: {
+                    'vue-vendor': ['vue', 'vue-router', 'pinia', 'pinia-plugin-persistedstate'],
+                    'markdown': ['marked', 'marked-katex-extension', 'katex', 'dompurify'],
+                    'highlightjs': ['highlight.js'],
+                    'icons': ['vue-icons-plus'],
+                    'db': ['dexie'],
+                    'cloud': ['@supabase/supabase-js'],
+                    'utils': ['mitt', 'mustache', 'path', 'readable-stream']
+                },
+            },
+        },
+        chunkSizeWarningLimit: 1000
+    }
 });

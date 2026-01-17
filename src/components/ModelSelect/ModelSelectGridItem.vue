@@ -62,7 +62,10 @@ const favoriteModel = () => {
 const selectActions: MenuEntry[] = [
 	{
 		text: () => isFavorited() ? 'Unfavorite' : 'Favorite',
-		icon: () => isFavorited() ? BiSolidHeart : BiHeart,
+		icon: {
+			type: 'factory',
+			func: () => isFavorited() ? BiSolidHeart : BiHeart
+		},
 		onClick: favoriteModel
 	},
 	{
