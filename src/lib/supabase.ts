@@ -9,9 +9,9 @@ class SupabaseClient {
 		}
 
 		const supabaseUrl = import.meta.env.VITE_SUPABASE_URL;
-		const supabaseKey = import.meta.env.VITE_SUPABASE_PUBLIC_KEY;
+		const supabasePublicKey = import.meta.env.VITE_SUPABASE_PUBLIC_KEY;
 
-		this.client = createClient(supabaseUrl, supabaseKey);
+		this.client = createClient(supabaseUrl, supabasePublicKey);
 	}
 
 	get supabase() {

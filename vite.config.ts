@@ -4,10 +4,14 @@ import path from "node:path";
 import tailwindcss from "@tailwindcss/vite";
 import svgLoader from 'vite-svg-loader';
 import { VitePWA } from 'vite-plugin-pwa';
-import { execSync } from "node:child_process";
+import { execFileSync } from "node:child_process";
 import removeAttribute from '@castlenine/vite-remove-attribute';
 
-const commitHash = execSync('git rev-parse HEAD').toString().trim();
+const commitHash = execFileSync(
+    'git',
+    ['rev-parse', 'HEAD'],
+    { encoding: 'utf-8' }
+).trim();
 
 // https://vite.dev/config/
 export default defineConfig({
