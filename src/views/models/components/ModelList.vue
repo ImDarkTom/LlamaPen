@@ -34,7 +34,7 @@ const refreshModelList = () => emit('refreshModelList');
 const isHidden = (modelName: string) => config.chat.hiddenModels.includes(modelName);
 const isLoadedInMemory = (modelName: string) => models.value.some(item => item.modelData.model === modelName && item.loadedInMemory);
 
-const modelActions: MenuEntry[] = [
+const modelActions: MenuEntry<{ modelData: ModelListItem, displayName: string }>[] = [
     {
         text: 'Open in Ollama Library',
         icon: BiLinkExternal,
@@ -44,18 +44,24 @@ const modelActions: MenuEntry[] = [
     {
         text: ({ modelData }) => isHidden(modelData.model) ? 'Unhide model' : 'Hide model',
         onClick: ({ modelData }) => setModelHidden(modelData.model, isHidden(modelData.model)),
-        icon: ({ modelData }) => isHidden(modelData.model) ? BiShow : BiHide,
+        icon: {
+            type: 'factory',
+            func: ({ modelData }) => isHidden(modelData.model) ? BiShow : BiHide
+        },
     },
     {
         text: ({ modelData }) => isLoadedInMemory(modelData.model) ? 'Unload from memory' : 'Load into memory',
         onClick: ({ modelData }) => toggleModelLoaded(modelData.model),
-        icon: ({ modelData }) => (isLoadedInMemory(modelData.model) ? MemoryUnloadIcon : Fa6Memory) as any,
+        icon: {
+            type: 'factory',
+            func: ({ modelData }) => (isLoadedInMemory(modelData.model) ? MemoryUnloadIcon : Fa6Memory) as any
+        },
         condition: !config.cloud.enabled
     },
     {
         text: 'Rename',
         icon: BiPencil,
-        onClick: ({ modelData, displayName}) => renameModel(modelData, displayName),
+        onClick: ({ modelData, displayName }) => renameModel(modelData, displayName),
     },
     {
         text: 'Duplicate model',

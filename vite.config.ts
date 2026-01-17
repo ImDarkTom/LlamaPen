@@ -1,5 +1,4 @@
-/// <reference types="vitest" />
-import { defineConfig } from "vite";
+import { defineConfig } from 'vite';
 import vue from "@vitejs/plugin-vue";
 import path from "node:path";
 import tailwindcss from "@tailwindcss/vite";
@@ -112,11 +111,20 @@ export default defineConfig({
             "@": path.resolve(__dirname, "src"),
         }
     },
-    test: {
-        environment: 'jsdom',
-        setupFiles: './tests/setup.ts',
-        coverage: {
-            exclude: [ 'dev-dist/', 'tailwind.config.js', 'eslint.config.mjs', 'vite.config.ts', 'dist/' ]
-        }
+    build: {
+        rollupOptions: {
+            output: {
+                manualChunks: {
+                    'vue-vendor': ['vue', 'vue-router', 'pinia', 'pinia-plugin-persistedstate'],
+                    'markdown': ['marked', 'marked-katex-extension', 'katex', 'dompurify'],
+                    'highlightjs': ['highlight.js'],
+                    'icons': ['vue-icons-plus'],
+                    'db': ['dexie'],
+                    'cloud': ['@supabase/supabase-js'],
+                    'utils': ['mitt', 'mustache', 'path', 'readable-stream']
+                },
+            },
+        },
+        chunkSizeWarningLimit: 1000
     }
 });

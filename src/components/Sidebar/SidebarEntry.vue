@@ -80,7 +80,7 @@ function promptDeleteChat(e?: MouseEvent) {
     }
 }
 
-const actions: MenuEntry[] = [
+const actions: MenuEntry<MouseEvent>[] = [
     {
         text: 'Pin',
         icon: BiPin,
