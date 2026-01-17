@@ -100,7 +100,7 @@ function onInputKeyDown(e: KeyboardEvent) {
 
 <template>
     <Transition name="open-search">
-        <div v-if="isShowingSearchMenu" class="absolute box-border flex items-top pt-16 justify-center top-0 left-0 w-full h-svh bg-black/50 z-[99]" @click.self="isShowingSearchMenu = false">
+        <div v-if="isShowingSearchMenu" class="absolute box-border flex items-top pt-16 justify-center top-0 left-0 w-full h-svh bg-black/50 z-99" @click.self="isShowingSearchMenu = false">
             <div class="flex flex-col gap-2 w-[calc(100dvw-1rem)] max-w-xl h-min max-h-2/3 p-2 bg-surface rounded-xl border-border border-2 shadow-md shadow-background-dark">
                 <div class="flex flex-row gap-2">
                     <input

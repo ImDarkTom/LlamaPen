@@ -52,7 +52,7 @@ function handleClick() {
         :is="buttonIcon"
         class="bg-primary text-background size-10 shrink-0 box-border p-1.5 pointer-coarse:p-2 rounded-lg cursor-pointer"
         :class="{ 
-            'opacity-40 !cursor-default': !canGenerate && !isChatGenerating, 
+            'opacity-40 cursor-default!': !canGenerate && !isChatGenerating, 
             'p-2': config.ui.messageInput.sendButtonAltIcon
         }"
         @click="handleClick" />

@@ -61,7 +61,7 @@ onUnmounted(() => {
         <Teleport to="body" v-if="isVisible">
             <div 
                 ref="menuRef"
-                class="absolute z-[45]"
+                class="absolute z-45"
                 :style="menuPosition">
                 <div
                     class="bg-surface-light ring-border ring-1 max-w-prose w-max p-2 rounded-lg shadow-md"

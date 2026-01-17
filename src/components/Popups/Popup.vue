@@ -25,11 +25,11 @@ const emit = defineEmits<{
 </script>
 
 <template>
-    <div class="absolute top-0 left-0 w-full h-svh bg-black/50 z-[99]
-        motion-opacity-in-[75%] motion-duration-[0.1s]" :class="{ 'hidden': !props.showing }"
+    <div class="absolute top-0 left-0 w-full h-svh bg-black/50 z-99
+        motion-opacity-in-[75%] motion-duration-100" :class="{ 'hidden': !props.showing }"
         aria-labelledby="popupTitle" aria-describedby="popupText">
-        <div class="flex flex-col w-[calc(100%)-1rem] sm:w-xl lg:w-2xl h-auto sm:h-auto md:h-[60%] rounded-xl p-6 box-border bg-surface absolute top-[50%] left-[50%] -translate-[50%] shadow-lg shadow-background-dark border-[1px] border-border z-100
-            motion-scale-in-[0.75] motion-opacity-in-[75%] motion-duration-[0.1s]">
+        <div class="flex flex-col w-[calc(100%)-1rem] sm:w-xl lg:w-2xl h-auto sm:h-auto md:h-[60%] rounded-xl p-6 box-border bg-surface absolute top-[50%] left-[50%] -translate-[50%] shadow-lg shadow-background-dark border border-border z-100
+            motion-scale-in-75 motion-opacity-in-[75%] motion-duration-100">
             <h2 id="popupTitle" class="text-3xl font-semibold flex flex-row items-center gap-2">
                 <slot name="title">Popup</slot>
             </h2>

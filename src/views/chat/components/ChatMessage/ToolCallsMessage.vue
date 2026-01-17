@@ -31,6 +31,6 @@ const showing = ref<boolean>(false);
                 </template>
             </span>
         </div>
-        <pre v-if="showing" class="max-w-full whitespace-pre-wrap break-words bg-background-light p-1 rounded-lg mt-2">{{ message.content }}</pre>
+        <pre v-if="showing" class="max-w-full whitespace-pre-wrap wrap-break-word bg-background-light p-1 rounded-lg mt-2">{{ message.content }}</pre>
     </div>
 </template>

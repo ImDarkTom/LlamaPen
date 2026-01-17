@@ -9,7 +9,7 @@ const config = useConfigStore();
 </script>
 
 <template>
-    <div class="p-2 flex flex-row gap-2 min-h-[100svh] w-full md:bg-background-dark">
+    <div class="p-2 flex flex-row gap-2 min-h-svh w-full md:bg-background-dark">
         <aside class="w-52 shrink-0 bg-background-light h-full hidden md:flex flex-col rounded-lg p-2 ring-border ring-1 gap-2">
             <UtilSidebarItem to="/chat" text="Back to Chat" :icon="BiArrowBack" />
             <UtilSidebarItem to="/settings" text="Settings" :icon="BiCog" />

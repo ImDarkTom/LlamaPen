@@ -137,7 +137,7 @@ watch(
                 <div
                     v-if="isOpened"
                     ref="menuRef"
-                    class="absolute z-[45]"
+                    class="absolute z-45"
                     :data-dropdown-id="myDropdownId"
                     :class="[
                         {

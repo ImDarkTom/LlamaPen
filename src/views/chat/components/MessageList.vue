@@ -112,7 +112,7 @@ function handleScroll(_e: Event) {
         class="w-dvw sm:w-dvw md:w-auto flex justify-center overflow-y-auto overflow-x-hidden flex-1" ref="messageListRef"
         @scroll="handleScroll">
         <div 
-            class="flex flex-col grow max-w-[48rem]" 
+            class="flex flex-col grow max-w-3xl" 
             :class="{ 'mt-14 md:mt-0': messagesStore.openedChatId !== null }">
             <ChatMessage 
                 v-for="message of openedChatMessages"

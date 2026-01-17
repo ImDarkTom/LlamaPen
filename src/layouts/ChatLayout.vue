@@ -6,7 +6,7 @@ const config = useConfigStore();
 </script>
 
 <template>
-    <div class="flex w-full min-h-[100svh]">
+    <div class="flex w-full min-h-svh">
         <Sidebar />
 
         <Transition

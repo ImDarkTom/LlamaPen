@@ -49,7 +49,7 @@ function handleEscape(e: KeyboardEvent) {
             <br>
 
             <pre
-                class="my-2"><code class="hljs language-bash !my-2">set OLLAMA_ORIGINS="{{ originUrl }}" & ollama serve</code></pre>
+                class="my-2"><code class="hljs language-bash my-2!">set OLLAMA_ORIGINS="{{ originUrl }}" & ollama serve</code></pre>
             <br>
 
             <p>This will temporarily allow connections to Ollama from this URL until Ollama is closed.</p>
@@ -59,7 +59,7 @@ function handleEscape(e: KeyboardEvent) {
                 another command to <b>persistently</b> add this app's URL to Ollama's trusted origins: </p>
             <br>
 
-            <pre class="my-2"><code class="hljs language-bash !my-2">setx OLLAMA_ORIGINS "{{ originUrl }}"</code></pre>
+            <pre class="my-2"><code class="hljs language-bash my-2!">setx OLLAMA_ORIGINS "{{ originUrl }}"</code></pre>
             <br>
 
             <p>After that, just open Ollama normally and you should be able to connect after refreshing this page.</p>
@@ -71,13 +71,13 @@ function handleEscape(e: KeyboardEvent) {
             <p>On linux or MacOS, you can run a similar command:</p>
             <br>
 
-            <pre class="my-2"><code class="hljs language-bash !my-2">export OLLAMA_ORIGINS="{{ originUrl }}" && ollama serve</code></pre>
+            <pre class="my-2"><code class="hljs language-bash my-2!">export OLLAMA_ORIGINS="{{ originUrl }}" && ollama serve</code></pre>
             <br>
 
             <p>And similarly to persistently add to trusted origins you can do:</p>
             <br>
 
-            <pre class="my-2"><code class="hljs language-bash !my-2">echo 'export OLLAMA_ORIGINS="{{ originUrl }}"' >> ~/.bashrc && source ~/.bashrc</code></pre>
+            <pre class="my-2"><code class="hljs language-bash my-2!">echo 'export OLLAMA_ORIGINS="{{ originUrl }}"' >> ~/.bashrc && source ~/.bashrc</code></pre>
             <br>
 
             <p>(This is assuming you are using <b>Bash</b>, other shells may have different ways of setting global variables)</p>

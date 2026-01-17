@@ -49,9 +49,9 @@ const renderer = {
         const codeHtml = highlighted.replace(/\n$/, '');
 
         return `
-            <div class="bg-[#0d1117] rounded-t-lg px-4 py-2 select-none text-xs flex flex-row justify-between border-b-[1px] border-text-muted items-center">
+            <div class="bg-[#0d1117] rounded-t-lg px-4 py-2 select-none text-xs flex flex-row justify-between border-b border-text-muted items-center">
                 <span>${languagePretty}</span>
-                <button data-code="${encodeURIComponent(token.text)}" class="copy-code-button hover:text-text border-[1px] p-1 rounded-sm cursor-pointer">
+                <button data-code="${encodeURIComponent(token.text)}" class="copy-code-button hover:text-text border p-1 rounded-sm cursor-pointer">
                     Copy
                 </button>
             </div>

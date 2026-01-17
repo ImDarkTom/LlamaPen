@@ -110,8 +110,8 @@ function renderText(text: string) {
     <div class="group/message m-2 mb-0 flex flex-col" ref="messageTextContainer">
         <div class="box-border p-4 flex flex-col" :class="{
             'ml-auto rounded-2xl bg-background-light max-w-[70%] shadow-md shadow-background-dark/50': isUserMessage && !editing,
-            'w-full max-w-[calc(100dvw-1rem)] box-border !p-2 !pb-1 !m-0': isModelMessage || editing,
-            'bg-surface !m-0 rounded-xl': props.message.type === 'tool'
+            'w-full max-w-[calc(100dvw-1rem)] box-border p-2! pb-1! m-0!': isModelMessage || editing,
+            'bg-surface m-0! rounded-xl': props.message.type === 'tool'
         }">
             <ModelMessageHeader v-if="message.type === 'model'" :message :modelMessageDone="modelMessageNotGenerating" />
             <img 
@@ -154,7 +154,7 @@ function renderText(text: string) {
                     <div v-else-if="message.status === 'inProgress'">
                         <!-- if state is marked as 'inProgress', but we don't have an associated messageState, generation got interrupted -->
                         <div>
-                            <div class="w-full h-[1px] bg-text-muted/50 my-2"></div>
+                            <div class="w-full h-px bg-text-muted/50 my-2"></div>
                             <span class="text-text-muted/75 italic mr-2">Generation interrupted.</span>
                             <button 
                                 class="bg-background-light p-2 ring-1 ring-border rounded-md cursor-pointer outline-0 hover:outline-2 outline-highlight transition-all duration-dynamic"

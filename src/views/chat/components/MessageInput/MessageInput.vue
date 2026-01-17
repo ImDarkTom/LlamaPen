@@ -180,11 +180,11 @@ function onInput(e: Event) {
     <div class="w-full flex justify-center">
         <div
             class="w-[calc(100%-1rem)] lg:w-3xl mx-4 mb-2 p-2 shadow-sm
-                box-border flex flex-col items-center max-h-[48rem] relative bg-background-light rounded-xl">
+                box-border flex flex-col items-center max-h-192 relative bg-background-light rounded-xl">
             <ScrollToBottomButton />
             <div
                 ref="messageInputRef"
-                class="text-text    w-full box-border p-2 pb-8 text-base border-none outline-none resize-none max-h-48 overflow-y-auto break-words empty:before:content-[attr(data-placeholder)] empty:before:text-text-muted/60"
+                class="text-text    w-full box-border p-2 pb-8 text-base border-none outline-none resize-none max-h-48 overflow-y-auto wrap-break-word empty:before:content-[attr(data-placeholder)] empty:before:text-text-muted/60"
                 contenteditable="true"
                 :data-placeholder="'Enter a message...'"
                 @input="onInput"
@@ -202,7 +202,7 @@ function onInput(e: Event) {
                 </div>
             </div>
             <div class="relative flex flex-row gap-2 justify-between w-full">
-                <div class="flex flex-row gap-2 overflow-x-auto p-[1px]">
+                <div class="flex flex-row gap-2 overflow-x-auto p-px">
                     <FileUpload :onChange="uploadFile" />
                     <ModelSelect />
                     <ThinkingButton v-model="config.chat.thinking.enabled" />

@@ -134,7 +134,7 @@ const icon = computed(() => {
         role="listitem" >
         <div 
             class="group w-full h-10 flex flex-row gap-2 p-2 pointer-coarse:p-3 relative rounded-lg hover:text-text hover:bg-background transition-quick"
-            :class="{ '!bg-background-light ring-1 ring-inset ring-border is-opened': isChatOpened }">
+            :class="{ 'bg-background-light! ring-1 ring-inset ring-border is-opened': isChatOpened }">
             <div 
                 class="box-content aspect-square"
                 @mouseenter="isHoveringOverIcon = true"

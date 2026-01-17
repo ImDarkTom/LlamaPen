@@ -180,7 +180,7 @@ const periodEnd = computed(() => {
 					</span>
 				</div>
 				<div class="w-full flex justify-center">
-					<button class="group w-fit flex flex-row text-surface-light hover:text-surface font-semibold bg-gradient-to-br from-text to-primary hover:from-secondary hover:scale-105 hover:shadow-primary/50 shadow-transparent shadow-lg shadow- p-1 transition-all duration-dynamic rounded-lg cursor-pointer" @click="subscriptionButtonClick">
+					<button class="group w-fit flex flex-row text-surface-light hover:text-surface font-semibold bg-linear-to-br from-text to-primary hover:from-secondary hover:scale-105 hover:shadow-primary/50 shadow-transparent shadow-lg shadow- p-1 transition-all duration-dynamic rounded-lg cursor-pointer" @click="subscriptionButtonClick">
 						<div class="p-3 flex flex-row gap-2 items-center">
 							{{ subButtonText }}
 						</div>

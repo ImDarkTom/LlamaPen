@@ -152,10 +152,10 @@ const selectActions: MenuEntry[] = [
 				</div>
 			</div>
 			<span class="text-sm text-text-muted">{{ model.modelData.details.parameter_size }}</span>
-			<div class="absolute hidden items-center justify-center right-0 top-0 h-full w-16 bg-gradient-to-r from-transparent to-surface-light group-hover:flex"
+			<div class="absolute hidden items-center justify-center right-0 top-0 h-full w-16 bg-linear-to-r from-transparent to-surface-light group-hover:flex"
 				:class="{ 
-					'!flex': selected,
-					'!to-border': isCurrentModel,
+					'flex!': selected,
+					'to-border!': isCurrentModel,
 				}">
 				<ActionMenu :actions="selectActions">
 					<div

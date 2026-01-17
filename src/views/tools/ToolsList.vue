@@ -99,7 +99,7 @@ function renameItem(toolName: string) {
 </script>
 
 <template>
-    <div class="h-4/12 md:h-full w-full md:w-1/3 bg-background-light rounded-lg flex flex-col gap-2 p-2 relative overflow-y-auto md:border-r-1 border-border md:rounded-r-none">
+    <div class="h-4/12 md:h-full w-full md:w-1/3 bg-background-light rounded-lg flex flex-col gap-2 p-2 relative overflow-y-auto md:border-r border-border md:rounded-r-none">
         <div class="flex flex-row gap-2 justify-between *:text-primary *:hover:text-text">
             <button class="bg-surface p-2 rounded-md cursor-pointer grow shrink" @click="newTool">
                 <BiPlus class="inline mr-1" />

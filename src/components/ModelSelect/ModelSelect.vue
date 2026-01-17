@@ -206,7 +206,7 @@ const menuWidth = computed(() => config.ui.modelList.useGridView ? 'sm:w-xl': 's
                         aria-controls="model-list" >
                     <button
                         @click="filterMenuOpen = !filterMenuOpen"
-                        :class="{ '!bg-border-muted': filterMenuOpen }"
+                        :class="{ 'bg-border-muted!': filterMenuOpen }"
                         class="p-3 hover:text-primary cursor-pointer transition-colors duration-dynamic">
                         <BiFilterAlt />
                     </button>
@@ -218,7 +218,7 @@ const menuWidth = computed(() => config.ui.modelList.useGridView ? 'sm:w-xl': 's
                 </RouterLink>
                 <button
                     @click="config.ui.modelList.useGridView = !config.ui.modelList.useGridView"
-                    :class="{ '!bg-border': config.ui.modelList.useGridView }"
+                    :class="{ 'bg-border!': config.ui.modelList.useGridView }"
                     class="relative p-3 text-background bg-primary hover:bg-highlight cursor-pointer transition-colors duration-dynamic rounded-lg">
                     <BiExpand />
                 </button>

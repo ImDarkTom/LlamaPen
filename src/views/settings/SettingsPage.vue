@@ -157,7 +157,7 @@ async function checkOllamaVersion() {
                     v-model="config.ollama.modelCapabilities.autoload"
                     label="Autoload model capabilities"
                     tooltip="Load model capabilities on connect. By default only loads if 30 models or less. (Default: Enabled)" />
-                <div v-if="config.ollama.modelCapabilities.autoload" class="border-l-[1px] border-text pl-3 ml-3">
+                <div v-if="config.ollama.modelCapabilities.autoload" class="border-l border-text pl-3 ml-3">
                     <ToggleSetting 
                         v-model="config.ollama.modelCapabilities.alwaysAutoload" 
                         label="Always autoload model capabilities"
@@ -218,7 +218,7 @@ async function checkOllamaVersion() {
                 v-model="config.ui.modelIcons.background" 
                 label="Model icons background"
                 tooltip="Add a background to model icons throughout the app. (Default: Disabled)" />
-            <div v-if="config.ui.modelIcons.background" class="border-l-[1px] border-text pl-3 ml-3">
+            <div v-if="config.ui.modelIcons.background" class="border-l border-text pl-3 ml-3">
                 <ToggleSetting 
                     v-model="config.ui.modelIcons.backgroundDark" 
                     label="Dark icon background"
