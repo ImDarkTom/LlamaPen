@@ -35,7 +35,7 @@
     "@tailwindcss/typography": "^0.5.19",
     "@tailwindcss/vite": "^4.1.18",
     "@types/mustache": "^4.2.6",
-    "@types/node": "^22.19.7",
+    "@types/node": "^24",
     "@types/readable-stream": "^4.0.23",
     "@vitejs/plugin-vue": "^6.0.3",
     "@vitest/coverage-v8": "4.0.17",
