@@ -30,7 +30,7 @@ Contributing/running locally is also made as straightforward as possible. To get
 Make sure you have installed:
 
 - [Git](https://git-scm.com/downloads)
-- [Bun](https://bun.sh/) (1.2+)
+- [Bun](https://bun.sh/) (1.3+)
 
 ### 1. Download
 
