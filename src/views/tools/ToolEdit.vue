@@ -43,13 +43,17 @@ function updateEnums(param: AppToolSchema[number], newValue: string) {
 }
 
 function deleteParam(paramName: string) {
+    if (!selectedTool.value) return;
+
     if (paramName === '' || confirm(`Are you sure you want to delete the '${paramName}' parameter?`)) {
-        toolsStore.tools[props.tool].params = selectedTool.value?.params.filter(param => param.name !== paramName) || [];
+        selectedTool.value.params = selectedTool.value?.params.filter(param => param.name !== paramName) || [];
     }
 }
 
 function addParameter() {
-    toolsStore.tools[props.tool].params.push({
+    if (!selectedTool.value) return;
+    
+    selectedTool.value.params.push({
         name: '',
         type: 'string',
         description: '',

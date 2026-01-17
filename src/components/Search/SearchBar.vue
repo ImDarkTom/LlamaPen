@@ -64,7 +64,10 @@ function onInputKeyDown(e: KeyboardEvent) {
 
     switch (e.key) {
         case "Enter":
-            const selectedChatId = filteredChats.value[selectedIndex.value].id;
+            const selectedChat = filteredChats.value[selectedIndex.value];
+            if (!selectedChat) break;
+
+            const selectedChatId = selectedChat.id;
             openChat(selectedChatId);
             // For some reason the view doesn't update when we just use router.push, so this is a workaround.
             emitter.emit('openChat', selectedChatId.toString());
@@ -92,6 +95,8 @@ function onInputKeyDown(e: KeyboardEvent) {
     if (scrollDown) {
         nextTick(() => {
             const selectedItem = queryItemsRef.value[selectedIndex.value];
+            if (selectedItem === undefined) return;
+
             selectedItem.scrollIntoView({ block: 'center', behavior: 'smooth' });
         });
     }

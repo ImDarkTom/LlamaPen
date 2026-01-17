@@ -60,8 +60,15 @@ onMounted(async () => {
             true
         );
     } else {
-        config.selectedModel = modelIds.value[0];
-        setModel(modelsList.value[0].modelData, true);
+        if (modelIds.value.length > 0) {
+            if (
+                modelIds.value[0] !== undefined &&
+                modelsList.value[0] !== undefined
+            ) {
+                config.selectedModel = modelIds.value[0];
+                setModel(modelsList.value[0].modelData, true);
+            }
+        }
     }
 
     document.addEventListener('keydown', handleKeyboardShortcuts)
@@ -101,7 +108,12 @@ function searchKeyDown(e: KeyboardEvent) {
     let scrollDown = false;
     switch (e.key) {
         case "Enter":
-            setModel(sortedItems.value[focusedItemIndex.value].modelData);
+            const selectedItem = sortedItems.value[focusedItemIndex.value];
+            
+            if (selectedItem !== undefined) {
+                setModel(selectedItem.modelData);
+            }
+
             break;
 
         case "Escape":

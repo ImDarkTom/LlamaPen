@@ -30,7 +30,11 @@ const searchedTools = computed(() => {
 function onKeyDown(e: KeyboardEvent) {
     if (e.key === 'Enter') {
         if (searchedTools.value.length === 1) {
-            toggleSelection(searchedTools.value[0][0]);
+            const searchedTool = searchedTools.value[0];
+            if (!searchedTool) return;
+
+            const searchedToolName = searchedTool[0];
+            toggleSelection(searchedToolName);
         }
     }
 }

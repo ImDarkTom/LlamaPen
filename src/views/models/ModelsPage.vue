@@ -24,10 +24,10 @@ const modelFromParams = computed<string | null>(() => {
     if (typeof modelParam === 'string') {
         return modelParam;
     } else if (Array.isArray(modelParam) && modelParam.length > 0) {
-        return modelParam[0];
-    } else {
-        return null;
+        return modelParam[0] ?? null;
     }
+    
+    return null;
 });
 
 // Helpers 

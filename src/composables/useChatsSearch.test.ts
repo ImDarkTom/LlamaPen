@@ -42,7 +42,7 @@ describe('useChatSearch composable', () => {
     it('defaults to sorting by last interaction', () => {
         const { filteredChats } = useChatSearch();
 
-        expect(filteredChats.value[0].id).toBe(2)
+        expect(filteredChats.value[0]!.id).toBe(2)
     });
 
     it('filters to only pinned', () => {
@@ -51,7 +51,7 @@ describe('useChatSearch composable', () => {
         userFilter.value = 'pinned';
 
         expect(filteredChats.value.length).toBe(1);
-        expect(filteredChats.value[0].title).toBe('Chat Two');
+        expect(filteredChats.value[0]!.title).toBe('Chat Two');
     });
 
     it('searches chats case-insensitively', () => {
@@ -60,7 +60,7 @@ describe('useChatSearch composable', () => {
         searchQuery.value = 'cHaT tWo';
 
         expect(filteredChats.value.length).toBe(1);
-        expect(filteredChats.value[0].title).toBe('Chat Two');
+        expect(filteredChats.value[0]!.title).toBe('Chat Two');
     });
 
     it('sorts by created + reversed or non-reversed', () => {
@@ -69,10 +69,10 @@ describe('useChatSearch composable', () => {
         sortType.value = 'created';
         reverseSort.value = true;
 
-        expect(filteredChats.value[0].title).toBe('Chat One');
+        expect(filteredChats.value[0]!.title).toBe('Chat One');
 
         reverseSort.value = false;
-        expect(filteredChats.value[2].title).toBe('Chat One');
+        expect(filteredChats.value[2]!.title).toBe('Chat One');
     });
 
     it('sorts by latest activity + unpinned', () => {
@@ -82,6 +82,6 @@ describe('useChatSearch composable', () => {
         userFilter.value = 'unpinned';
 
         expect(filteredChats.value.length).toBe(2);
-        expect(filteredChats.value[0].title).toBe('Chat Three');
+        expect(filteredChats.value[0]!.title).toBe('Chat Three');
     });
 })

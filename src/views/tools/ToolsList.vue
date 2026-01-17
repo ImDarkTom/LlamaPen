@@ -90,7 +90,12 @@ function renameItem(toolName: string) {
         .toLowerCase()
         .replace(/ /g, '_');
 
-    toolsStore.tools[newToolName] = toolsStore.tools[toolName];
+    const allTools = toolsStore.tools;
+    const oldTool = allTools[toolName];
+
+    if (!oldTool) return;
+
+    allTools[newToolName] = oldTool;
     delete toolsStore.tools[toolName];
 
     router.push(`/tool/${newToolName}`);

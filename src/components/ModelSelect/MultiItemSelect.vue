@@ -53,7 +53,9 @@ function handleSelectItem(item: ListItem) {
 function navigateItems(direction: 'up' | 'down') {
     const delta = direction === 'down' ? 1 : -1;
     activeIndex.value = (activeIndex.value + delta + props.items.length) % props.items.length;
-    itemRefs.value[activeIndex.value].focus();
+
+    const activeItem = itemRefs.value[activeIndex.value];
+    activeItem?.focus();
 }
 
 function handleKeydown(e: KeyboardEvent) {
@@ -79,7 +81,10 @@ function handleItemKeydown(e: KeyboardEvent) {
 
     if (e.key === "Enter" || e.key === " ") {
         e.preventDefault();
-        handleSelectItem(props.items[activeIndex.value]);
+        const selectedItem = props.items[activeIndex.value];
+        if (!selectedItem) return;
+
+        handleSelectItem(selectedItem);
     }
     if (e.key === "Escape") {
         e.preventDefault();

@@ -23,7 +23,7 @@ const { openedChatMessages } = storeToRefs(messagesStore);
 
 const uiStore = useUiStore();
 
-function openChat(newId: string | string[], oldId?: string | string[]) {
+function openChat(newId: string | string[] | undefined, oldId?: string | string[] | undefined) {
     if (newId !== oldId) {
         messagesStore.openChat(parseNumOrNull(newId));
     }

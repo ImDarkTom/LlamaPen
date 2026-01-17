@@ -6,16 +6,19 @@ import DOMPurify from 'dompurify';
 import "katex/dist/katex.min.css";
 import "highlight.js/styles/github-dark.min.css";
 
-function escape(html: string, encode = false) {
-    const escapeReplacements: Record<string, string> = {
+function escape(html: string) {
+    const escapeReplacements = {
         '&': '&amp;',
         '<': '&lt;',
         '>': '&gt;',
         '"': '&quot;',
         "'": '&#39;',
-    };
-    if (encode) return html.replace(/[&<>"']/g, (ch) => escapeReplacements[ch]);
-    return html;
+    } as const;
+
+    return html.replace(/[&<>"']/g, (ch) => 
+        // Type is guaranteed as we are only regex matching the 5 chars
+        escapeReplacements[ch as keyof typeof escapeReplacements]
+    );
 }
 
 const renderer: RendererObject = {
@@ -42,7 +45,7 @@ const renderer: RendererObject = {
         
         const highlighted = language
             ? hljs.highlight(token.text, { language }).value
-            : escape(token.text, true);
+            : escape(token.text);
         
         const classValue = language ? `hljs language-${language}` : 'hljs'; // add language to class if valid
 

@@ -14,7 +14,13 @@ const opened = ref(config.chat.thinking.infoOpenByDefault);
 
 const thinkBlockText = computed<string | null>(() => {
 	const rule = /^<think>([\s\S]*?)(?=<\/think>|$)/i;
-	return rule.exec(props.message.content)?.[1].trim() || props.message.thinking || null;
+	const thinkTagContent = rule.exec(props.message.content);
+
+	if (thinkTagContent) {
+		return thinkTagContent[1]?.trim() || null;
+	} else {
+		return props.message.thinking || null;
+	}
 });
 
 const thinkStats = computed<{ ended: boolean, time: string } | null>(() => {

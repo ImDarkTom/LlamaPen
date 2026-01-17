@@ -174,12 +174,17 @@ const useMessagesStore = defineStore('messages', () => {
 					
 			if (toolResponses && toolResponses.length > 0) {
 				await Promise.all(
-					toolResponses.map((response, index) =>
-						db.messages.update(messageIds[index], {
+					toolResponses.map((response, index) => {
+						const messageId = messageIds[index];
+						if (messageId === undefined) {
+							throw new Error(`No message ID found at index ${index}`)
+						}
+
+						return db.messages.update(messageId, {
 							content: response.content,
 							completed: new Date(),
 						} as Partial<ToolChatMessage>)
-					)
+					})
 				);
 						
 				logger.info('Messages Store', 'Getting response after tools processed');
