@@ -1,5 +1,5 @@
 import hljs from 'highlight.js';
-import { Marked, type RendererObject } from 'marked';
+import { Marked, type RendererObject, type Tokens } from 'marked';
 import markedKatex from 'marked-katex-extension';
 import DOMPurify from 'dompurify';
 
@@ -18,8 +18,8 @@ function escape(html: string, encode = false) {
     return html;
 }
 
-const renderer = {
-    link(token: any) {
+const renderer: RendererObject = {
+    link(token: Tokens.Link) {
         const href = token.href;
         const title = token.title;
         const text = token.text || href;
@@ -35,7 +35,7 @@ const renderer = {
 
         return `<a href="${href}" ${titleAttr} ${targetAttrs}>${text}${externalIndicator}</a>`;
     },
-    code(token: { lang: string, text: string, raw: string, type: string }) {
+    code(token: Tokens.Code) {
         const lang = token.lang || '';
         const language = hljs.getLanguage(lang) ? lang : '';
         const languagePretty = hljs.getLanguage(lang)?.name || language;
@@ -57,7 +57,7 @@ const renderer = {
             </div>
                 <pre><code class="${classValue} rounded-t-none! pt-1!">${codeHtml}\n</code></pre>`;
     }
-} as RendererObject;
+};
 
 const fullMarked = new Marked();
 
