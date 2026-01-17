@@ -13,6 +13,7 @@ import useUserStore from '@/stores/user';
 import ollamaApi from '@/utils/ollama';
 import ollamaRequest from '@/utils/ollamaRequest';
 import { computed, ref } from 'vue';
+import type { IconType } from 'vue-icons-plus';
 import { BiCopy, BiDotsVerticalRounded, BiDownload, BiHide, BiLinkExternal, BiPencil, BiShow, BiTrash } from 'vue-icons-plus/bi';
 import { Fa6Memory } from 'vue-icons-plus/fa6';
 
@@ -54,7 +55,7 @@ const modelActions: MenuEntry<{ modelData: ModelListItem, displayName: string }>
         onClick: ({ modelData }) => toggleModelLoaded(modelData.model),
         icon: {
             type: 'factory',
-            func: ({ modelData }) => (isLoadedInMemory(modelData.model) ? MemoryUnloadIcon : Fa6Memory) as any
+            func: ({ modelData }) => (isLoadedInMemory(modelData.model) ? MemoryUnloadIcon : Fa6Memory) as IconType
         },
         condition: !config.cloud.enabled
     },

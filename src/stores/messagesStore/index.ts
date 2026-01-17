@@ -353,22 +353,45 @@ const useMessagesStore = defineStore('messages', () => {
 					syncMessageToDb();
 				}
 			}
-		} catch (errorObject: CustomErrorResponse | any) {
+		} catch (error: unknown) {
+			// CustomErrorResponse | any
 			delete messageGenerationStates.value[ollamaMessageId];
 
 			if (thinkStarted !== -1) {
 				await db.messages.update(ollamaMessageId, { thinkStats: { started: thinkStarted, ended: Date.now() } } as Partial<ChatMessage>);
 			}
 
-			if (typeof errorObject === 'string' && errorObject === "user-cancelled") return;
+			if (typeof error === 'string' && error === "user-cancelled") return;
 
-			logger.info('Messages Store', 'Caught error when getting Ollama response', errorObject);
-			if (errorObject.type === 'error') {
-				setMessageError(errorObject.error.message || 'An error occurred during message generation.');
+			logger.info('Messages Store', 'Caught error when getting Ollama response', error);
+
+			if (
+				typeof error === 'object' &&
+				error !== null &&
+				'type' in error &&
+				error.type === 'error' &&
+				'error' in error &&
+				typeof error.error === 'object' &&
+				error.error !== null &&
+				'message' in error.error
+			) {
+				setMessageError(String(error.error.message) || 'An error occurred during message generation.');
 				emitter.emit('stopChatGeneration');
 			} else {
-				logger.warn('Messages Store', 'Unknown error when getting Ollama response', errorObject);
-				alert(`Unknown error when generating message: ${errorObject.message || errorObject}`);
+				logger.warn('Messages Store', 'Unknown error when getting Ollama response', error);
+
+				let message: string;
+				if (typeof error === 'string') {
+					message = error;
+				} else if (error instanceof Error) {
+					message = error.message;
+				} else if (typeof error === 'object' && error !== null && 'message' in error) {
+					message = String(error.message);
+				} else {
+					message = String(error);
+				}
+
+				alert(`Unknown error when generating message: ${message}`);
 			}
 		}
 

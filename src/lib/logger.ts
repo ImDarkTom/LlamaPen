@@ -5,7 +5,7 @@ class Logger {
 		this.shouldLog = import.meta.env.MODE === 'development';
 	}
 
-	info(origin: string, ...data: any) {
+	info(origin: string, ...data: unknown[]) {
 		if (!this.shouldLog) return;
 
 		const currentTime = new Date().toLocaleString();
@@ -17,7 +17,7 @@ class Logger {
 		);
 	}
 
-	warn(origin: string, ...data: any) {
+	warn(origin: string, ...data: unknown[]) {
 		const currentTime = new Date().toLocaleString();
 
 		console.warn(

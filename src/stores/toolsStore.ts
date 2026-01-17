@@ -99,12 +99,16 @@ const useToolsStore = defineStore('tools', () => {
             if (!response.ok) {
                 return `HTTP error ${response.status}: ${response.statusText || 'Unknown Error'}`;
             }
-        } catch (error: any) {
-            if ('name' in error && error.name === 'AbortError') {
-                return 'Tool request timeout.';
+        } catch (error) {
+            if (error instanceof Error) {
+                if (error.name === 'AbortError') {
+                    return 'Tool request timeout.';
+                }
+
+                return `Network error: ${error.message || 'Unknown error occured'}`
             }
 
-            return `Network error: ${error.message || 'Unknown error occured'}`
+            return `Network error: ${error || 'Unknown error occured'}`
         } finally {
             clearTimeout(timeout);
         }

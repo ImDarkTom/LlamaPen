@@ -5,16 +5,16 @@ import Unknown from '@/icons/unknown.svg';
 const config = useConfigStore();
 
 const allIcons = import.meta.glob('@/icons/*.svg', { eager: true });
-const availableIcons: Record<string, any> = {
+const availableIcons: Record<string, Object> = {
 	'unknown': Unknown,
 	'unknown-color': Unknown
 };
 
-for (const path in allIcons) {
-	const match = path.match(/\/([\w-]+)\.svg$/);
-	if (match) {
-		const slug = match[1];
-		availableIcons[slug] = (allIcons[path] as any).default;
+for (const [componentPath, moduleImport] of Object.entries(allIcons)) {
+	// Get filename
+	const iconSlug = componentPath.split('/').pop()?.replace('.svg', '');
+	if (iconSlug) {
+		availableIcons[iconSlug] = (moduleImport as { default: Object }).default;
 	}
 }
 
@@ -63,7 +63,6 @@ function getSlug(): string {
 
 function getIconComponent() {
 	const slug = getSlug();
-
 	const slugFormated = config.ui.modelIcons.monochrome || props.forceMonochrome ? slug : `${slug}-color`;
 
 	return availableIcons[slugFormated];

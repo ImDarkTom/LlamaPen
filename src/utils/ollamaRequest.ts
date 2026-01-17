@@ -4,7 +4,7 @@ import { tryCatch } from "./core/tryCatch";
 export default async function ollamaRequest(
     route: string,
     method: 'GET' | 'POST' | 'DELETE' = 'GET',
-    body?: Record<string, any> | Array<any> | null | undefined,
+    body?: Record<string, unknown> | null | undefined,
     options?: { signal?: AbortSignal },
 ) {
     return await tryCatch(
