@@ -4,7 +4,6 @@ import { defineStore } from 'pinia';
 import { ref } from 'vue';
 import logger from '@/lib/logger';
 import { emitter } from '@/lib/mitt';
-import ollamaApi, { type ChatIteratorChunk } from '@/utils/ollama';
 import setPageTitle from '@/utils/core/setPageTitle';
 import { useConfigStore } from '../config';
 import useChatsStore from '../chatsStore';
@@ -14,6 +13,8 @@ import { initLiveSync } from './initLiveSync';
 import { createNewChat } from './utils/createNewChat';
 import { addAttachmentsToDB } from './utils/addAttachmentsToDB';
 import { getMessagesInOllamaFormat } from './utils/getMessagesInOllamaFormat';
+import { useProviderManager } from '@/composables/useProviderManager';
+import type { ChatIteratorChunk } from '@/providers/base/ProviderInterface';
 
 /**
  * Handles messages, opened chat messages, and opened chat ID. Seperate from chatsStore.
@@ -293,8 +294,10 @@ const useMessagesStore = defineStore('messages', () => {
 
 		let hasAbortTrigger = false;
 		let messageSaveCounter = 0;
+		const chatIterator = useProviderManager().chat(chatMessageList, abortController.signal, { modelOverride: selectedModel });
+
 		try {
-			for await (const chunk of ollamaApi.chat(chatMessageList, abortController.signal, { modelOverride: selectedModel })) {
+			for await (const chunk of chatIterator) {
 				// First, check if the chunk is an error or done indicator.
 				if (chunk.type === 'error') {
 					throw chunk;
@@ -418,7 +421,7 @@ const useMessagesStore = defineStore('messages', () => {
 		logger.info('Messages Store', 'Generating chat title for opened chat', chatId);
 
 		const chatMessages = openedChatMessages.value;
-		const newChatTitle = await ollamaApi.generateChatTitle(chatMessages);
+		const newChatTitle = await useProviderManager().generateChatTitle(chatMessages);
 
 		useChatsStore().renameChat(chatId, newChatTitle);
 		chatsGeneratingTitles.value = chatsGeneratingTitles.value.filter(id => id !== chatId);

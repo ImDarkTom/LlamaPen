@@ -10,12 +10,12 @@ import { useModelList, type ModelInfoListItem } from '@/composables/useModelList
 import router from '@/lib/router';
 import { useConfigStore } from '@/stores/config';
 import useUserStore from '@/stores/user';
-import ollamaApi from '@/utils/ollama';
 import ollamaRequest from '@/utils/ollamaRequest';
 import { computed, ref } from 'vue';
 import type { IconType } from 'vue-icons-plus';
 import { BiCopy, BiDotsVerticalRounded, BiDownload, BiHide, BiLinkExternal, BiPencil, BiShow, BiTrash } from 'vue-icons-plus/bi';
 import { Fa6Memory } from 'vue-icons-plus/fa6';
+import { useProviderManager } from '@/composables/useProviderManager';
 
 const config = useConfigStore();
 const { setModelHidden } = useModelList();
@@ -81,10 +81,10 @@ const modelActions: MenuEntry<{ modelData: ModelListItem, displayName: string }>
 
 async function toggleModelLoaded(modelName: string) {
     if (isLoadedInMemory(modelName)) {
-        await ollamaApi.unloadModel(modelName);
+        await useProviderManager().unloadModel(modelName);
         refreshModelList();
     } else {
-        const success = await ollamaApi.loadModelIntoMemory(modelName);
+        const success = await useProviderManager().loadModelIntoMemory(modelName);
 
         if (!success) {
             alert(`Failed to load model "${modelName}".`);

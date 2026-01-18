@@ -1,6 +1,6 @@
 import { useConfigStore } from "@/stores/config";
-import ollamaApi from "@/utils/ollama";
 import { computed, reactive, toRefs } from "vue";
+import { useProviderManager } from "./useProviderManager";
 
 export type ModelInfoListItem = {
     modelData: ModelListItem;
@@ -41,11 +41,11 @@ async function load(force: boolean = false) {
             if (config.cloud.enabled) {
                 loadedModelIds = [];
             } else {
-                loadedModelIds = await ollamaApi.getLoadedModelIds();
+                loadedModelIds = await useProviderManager().getLoadedModelIds();
             }
 
             // Get the base model list
-            state.models = (await ollamaApi.getModels(force))
+            state.models = (await useProviderManager().getModels())
                 .map((model) => {
                     const modelId = model.model;
 
@@ -72,7 +72,7 @@ async function load(force: boolean = false) {
                 )
             ) {
                 for (const model of state.models) {
-                    const capabilities = await ollamaApi.getModelCapabilities(model.modelData.model);
+                    const capabilities = await useProviderManager().getModelCapabilities(model.modelData.model);
                     model.fetchedCapabilities = capabilities;
                 }
             }
@@ -91,7 +91,7 @@ async function load(force: boolean = false) {
 }
 
 async function refreshModelStates() {
-    const loadedModelIds = await ollamaApi.getLoadedModelIds();
+    const loadedModelIds = await useProviderManager().getLoadedModelIds();
     const hiddenModels = useConfigStore().chat.hiddenModels;
 
     state.models.forEach((item) => {

@@ -1,10 +1,9 @@
 import { useConfigStore } from '@/stores/config';
-import { authedFetch } from './core/authedFetch';
-import { tryCatch } from './core/tryCatch';
+import { authedFetch } from '../../utils/core/authedFetch';
+import { tryCatch } from '../../utils/core/tryCatch';
 import { Readable } from 'readable-stream';
 import type { ReadableOf } from '@/types/util';
-import logger from '../lib/logger';
-import ollamaRequest from './ollamaRequest';
+import logger from '../../lib/logger';
 import db from '@/lib/db';
 import useToolsStore from '@/stores/toolsStore';
 import { useModelList } from '@/composables/useModelList';
@@ -29,8 +28,6 @@ export type ChatIteratorChunk = {
 export type ChatIteratorError = Extract<ChatIteratorChunk, { type: 'error' }>;
 
 class OllamaAPI {
-	private modelList: ModelList = [];
-
 	async generateChatTitle(messages: ChatMessage[]): Promise<string> {
 		if (useConfigStore().developer.mockRequests) {
 			return 'Mock Chat Title';
@@ -311,99 +308,6 @@ class OllamaAPI {
 
 	chat(messages: OllamaMessage[], abortSignal: AbortSignal, additionalOptions?: { modelOverride?: string }): ReadableOf<ChatIteratorChunk> {
 		return Readable.from(this.chatIterator(messages, abortSignal, additionalOptions)) as ReadableOf<ChatIteratorChunk>;
-	}
-
-	async getModels(force?: boolean) {
-		if (this.modelList.length !== 0 && !force) return this.modelList;
-
-		const response = await fetch(useConfigStore().requestUrl('/api/tags'));
-		const responseJson: { models: ModelList } = await response.json();
-
-		this.modelList = responseJson.models;
-
-		return this.modelList;
-	}
-
-	/**
-	 * Loads a model into memory.
-	 * @param modelName The name of the model to load into memory.
-	 * @returns If the model was successfully loaded into memory.
-	 */
-	async loadModelIntoMemory(modelName: string): Promise<boolean> {
-		const { data: response, error } = await ollamaRequest('/api/generate', 'POST', {
-			model: modelName,
-		});
-
-		if (error) {
-			logger.warn('OllamaAPI', 'Error loading model into memory:', error);
-			return false;
-		}
-
-		if (response.status !== 200) {
-			return false;
-		}
-
-		return true;
-	}
-
-	async getLoadedModels() {
-		const { data: response, error } = await ollamaRequest('/api/ps', 'GET');
-
-		if (error) {
-			logger.warn('OllamaAPI', 'Error getting loaded models:', error);
-			return null;
-		}
-
-		if (response.status !== 200) {
-			return null;
-		}
-
-		const responseJson = await response.json() as OllamaProcessesResponse;
-		return responseJson.models;
-	}
-
-	async getLoadedModelIds() {
-		const loadedModels = await this.getLoadedModels();
-		if (!loadedModels) return [];
-
-		return loadedModels.map(model => model.model);
-	}
-
-	async unloadModel(modelName: string): Promise<boolean> {
-		const { data: response, error } = await ollamaRequest('/api/generate', 'POST', {
-			model: modelName,
-			keep_alive: 0
-		});
-
-		if (error) {
-			logger.warn('OllamaAPI', 'Error unloading model:', error);
-			return false;
-		}
-
-		if (response.status !== 200) {
-			return false;
-		}
-
-		return true;
-	}
-
-	async getModelCapabilities(model: string): Promise<OllamaCapability[]> {
-		const { data: response, error } = await ollamaRequest('/api/show', 'POST', {
-			model,
-		});
-
-		if (error) {
-			logger.warn('OllamaAPI', `Error getting model capabilities for ${model}: ${error}`);
-			return [];
-		}
-
-		if (response.status !== 200) {
-			return [];
-		}
-
-		const responseJson = await response.json() as OllamaModelInfoResponse;
-
-		return responseJson.capabilities as OllamaCapability[];
 	}
 }
 
