@@ -24,6 +24,8 @@ dist-ssr
 *.sw?
 
 .env
+.env.local
+
 # Dev
 icons_all/
 

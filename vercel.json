@@ -14,5 +14,6 @@
             "destination": "/"
         }
     ],
-    "trailingSlash": false
+    "trailingSlash": false,
+    "bunVersion": "1.3"
 }
