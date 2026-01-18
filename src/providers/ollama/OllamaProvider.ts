@@ -1,15 +1,15 @@
 import type { ReadableOf } from "@/types/util";
 import type { ChatIteratorChunk, LLMProvider } from "../base/ProviderInterface";
-import ollamaApi from "@/providers/ollama/ollama";
 import ollamaRequest from "@/utils/ollamaRequest";
 import logger from "@/lib/logger";
 import { useConfigStore } from "@/stores/config";
+import { chat, generateChatTitle } from "./helpers";
 
 export class OllamaProvider implements LLMProvider {
     name = "Ollama";
 
     chat(messages: OllamaMessage[], abortSignal: AbortSignal, additionalOptions?: { modelOverride?: string; }): ReadableOf<ChatIteratorChunk> {
-        return ollamaApi.chat(messages, abortSignal, additionalOptions);
+        return chat(messages, abortSignal, additionalOptions);
     }
     
     async getModels(): Promise<ModelList> {
@@ -62,7 +62,7 @@ export class OllamaProvider implements LLMProvider {
 
 
     generateChatTitle(messages: ChatMessage[]): Promise<string> {
-        return ollamaApi.generateChatTitle(messages);
+        return generateChatTitle(messages);
     }
 
     async loadModelIntoMemory(modelId: string): Promise<boolean> {
