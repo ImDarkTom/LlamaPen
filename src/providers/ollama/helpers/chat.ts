@@ -6,7 +6,7 @@ import { authedFetch } from "@/utils/core/authedFetch";
 import { tryCatch } from "@/utils/core/tryCatch";
 import type { OllamaChatRequest } from "../types";
 import { appToolsToOllama } from "../converters/appToolsToOllama";
-import type { ChatIteratorChunk } from "@/providers/base/types";
+import type { ChatIteratorChunk, ChatOptions } from "@/providers/base/types";
 
 /**
  * 
@@ -18,17 +18,15 @@ import type { ChatIteratorChunk } from "@/providers/base/types";
 async function* chatIterator(
     messages: OllamaMessage[],
     abortSignal: AbortSignal,
-    additionalOptions?: {
-        modelOverride?: string,
-    }
+    options: ChatOptions
 ): AsyncGenerator<ChatIteratorChunk, ChatIteratorChunk | undefined, unknown> {
     const { selectedModelCapabilities } = useModelList();
     const config = useConfigStore();
 
     const reqBody: OllamaChatRequest = {
-        model: additionalOptions?.modelOverride ?? config.selectedModel,
+        model: options.model,
         messages,
-        think: config.chat.thinking.enabled,
+        think: options.reasoningEnabled || false,
         stream: true,
         options: config.chat.messageOptionsEnabled ? config.chat.messageOptions : undefined,
     };
@@ -119,6 +117,6 @@ async function* chatIterator(
     }
 }
 
-export function chat(messages: OllamaMessage[], abortSignal: AbortSignal, additionalOptions?: { modelOverride?: string }): ReadableOf<ChatIteratorChunk> {
-    return Readable.from(chatIterator(messages, abortSignal, additionalOptions)) as ReadableOf<ChatIteratorChunk>;
+export function chat(messages: OllamaMessage[], abortSignal: AbortSignal, options: ChatOptions): ReadableOf<ChatIteratorChunk> {
+    return Readable.from(chatIterator(messages, abortSignal, options)) as ReadableOf<ChatIteratorChunk>;
 }

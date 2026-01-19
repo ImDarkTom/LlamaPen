@@ -12,3 +12,8 @@ export type ChatIteratorChunk = {
 	type: 'message',
 	data: OllamaChatResponseChunk;
 };
+
+export type ChatOptions = {
+	model: string;
+	reasoningEnabled?: boolean;
+}

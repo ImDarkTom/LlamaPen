@@ -1,5 +1,5 @@
 import type { ReadableOf } from "@/types/util";
-import type { ChatIteratorChunk } from "./types";
+import type { ChatIteratorChunk, ChatOptions } from "./types";
 
 // TODO: have this contain all standardized types for use throughout the app (or maybe in a separate types.ts file in providers/base/)
 
@@ -16,17 +16,15 @@ export interface LLMProvider {
      * 
      * This needs major overhauling, currently we need to:
      * - Standardize ChatIteratorChunk across providers
-     * - Not use `modelOverride` as a workaround to get regeneration with a non-selected model working
-     * - Replace additionalOptions with a standardized options object (using an interface e.g. ChatOptions)
      * 
      * @param messages Chat messages.
      * @param abortSignal AbortSignal to stop streaming.
-     * @param additionalOptions Model override.
+     * @param options Client-side generation options.
      */
     chat(
         messages: ChatMessage[], 
         abortSignal: AbortSignal, 
-        additionalOptions?: { modelOverride?: string }
+        options: ChatOptions,
     ): Promise<ReadableOf<ChatIteratorChunk>>;
 
     /**

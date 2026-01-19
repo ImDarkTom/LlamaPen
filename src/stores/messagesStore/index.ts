@@ -217,7 +217,8 @@ const useMessagesStore = defineStore('messages', () => {
 	 */
 	async function getOllamaResponse(options?: GetResponseOptions) {
 		logger.info('Messages Store', 'Get ollama response with options', options);
-		const messageSaveInterval = useConfigStore().chat.tokenSaveInterval;
+		const config = useConfigStore();
+		const messageSaveInterval = config.chat.tokenSaveInterval;
 
 		// Helpers
 		const setMessageStatus = async (newStatus: ModelMessageStatus) => {
@@ -253,7 +254,7 @@ const useMessagesStore = defineStore('messages', () => {
 		}
 		const chatId = openedChatId.value;
 
-		const selectedModel = options?.modelOverride ?? useConfigStore().selectedModel;
+		const selectedModel = options?.modelOverride ?? config.selectedModel;
 
 		// 2. Add a blank model message to the chat to put the response in or get the overridden one.
 		const ollamaMessageId = options?.messageIdOverride ?? await addModelMessageToChat(selectedModel, chatId);
@@ -291,7 +292,10 @@ const useMessagesStore = defineStore('messages', () => {
 
 		let hasAbortTrigger = false;
 		let messageSaveCounter = 0;
-		const chatIterator = await useProviderManager().chat(openedChatMessages.value, abortController.signal, { modelOverride: selectedModel });
+		const chatIterator = await useProviderManager().chat(openedChatMessages.value, abortController.signal, {
+			model: selectedModel,
+			reasoningEnabled: config.chat.thinking.enabled,
+		});
 
 		try {
 			for await (const chunk of chatIterator) {
