@@ -1,4 +1,5 @@
 import type { ReadableOf } from "@/types/util";
+import type { ChatIteratorChunk } from "./types";
 
 // TODO: have this contain all standardized types for use throughout the app (or maybe in a separate types.ts file in providers/base/)
 
@@ -6,21 +7,6 @@ import type { ReadableOf } from "@/types/util";
  * Other todos:
  * - OpenRouter provider (using sdk for type safety, also make sure to chunk with the provider so js doesn't get loaded unless openrouter provider is explicitly chosen)
  */
-
-export type ChatIteratorChunk = {
-	type: 'error',
-	error: {
-		type: string;
-		message: string;
-	};
-} | {
-	type: 'done',
-	reason: 'completed' | 'cancelled' | 'error',
-	stats?: ModelChatMessage['stats']
-} | {
-	type: 'message',
-	data: OllamaChatResponseChunk;
-};
 
 export interface LLMProvider {
     readonly name: string; // Name of the provider
@@ -42,26 +28,26 @@ export interface LLMProvider {
         messages: OllamaMessage[], 
         abortSignal: AbortSignal, 
         additionalOptions?: { modelOverride?: string }
-    ): ReadableOf<ChatIteratorChunk>
+    ): ReadableOf<ChatIteratorChunk>;
 
     /**
      * Get a list of available models from the provider.
      * TODO: standardize ModelList across providers. We could also maybe have another method to get all models (e.g. ones not available/selected for use)
      */
-    getModels(): Promise<ModelList>
+    getModels(): Promise<ModelList>;
 
     /**
      * Get the IDs of models currently loaded into memory.
      * TODO: add a flag for provider to indicate if memory management is supported.
      */
-    getLoadedModelIds(): Promise<string[]>
+    getLoadedModelIds(): Promise<string[]>;
 
     /**
      * Get the model 'capabilities', e.g. image inputs, thinking/reasoning, etc.
      * TODO: standardize capabilities across providers (don't use OllamaCapability).
      * @param modelId Model to get capabilities for.
      */
-    getModelCapabilities(modelId: string): Promise<OllamaCapability[]>
+    getModelCapabilities(modelId: string): Promise<OllamaCapability[]>;
 
     /**
      * Generates a chat title based on the provided chat messages. Uses JSON-structure outputs from model.

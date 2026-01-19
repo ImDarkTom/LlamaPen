@@ -20,15 +20,6 @@ type OllamaMessage = {
     content: string;
 }
 
-type ChatOld = {
-    id: string;
-    label: string;
-    messages: AppMessage[];
-    created: number; // Date in ms
-    lastMessage: number; // Date in ms
-    pinned?: boolean;
-}
-
 interface AppMessage extends OllamaMessage {
     id: string;
 }

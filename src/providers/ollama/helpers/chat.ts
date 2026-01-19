@@ -4,43 +4,9 @@ import { useModelList } from "@/composables/useModelList";
 import { useConfigStore } from "@/stores/config";
 import { authedFetch } from "@/utils/core/authedFetch";
 import { tryCatch } from "@/utils/core/tryCatch";
-import useToolsStore from "@/stores/toolsStore";
-import type { ChatIteratorChunk } from "@/providers/base/ProviderInterface";
-
-function appToolsToOllama(): unknown[] {
-    const toggledToolsNames = useToolsStore().toggled;
-    const toggledTools = Object.entries(useToolsStore().tools).filter(data => toggledToolsNames.includes(data[0]));
-
-    const toolsList: unknown[] = [];
-
-    for (const tool of toggledTools) {
-        const toolInList = {
-            type: 'function',
-            function: {
-                name: tool[0],
-                description: tool[1].description,
-                parameters: {
-                    type: 'object',
-                    properties: {} as OllamaToolParamSchema,
-                    required: tool[1].required,
-                }
-            }
-        };
-        
-
-        for (const param of tool[1].params) {
-            toolInList.function.parameters.properties[param.name] = {
-                type: param.type,
-                description: param.description,
-                ...(param.enum ?? { enum: param.enum })
-            };
-        }
-
-        toolsList.push(toolInList);
-    }
-
-    return toolsList;
-}
+import type { OllamaChatRequest } from "../types";
+import { appToolsToOllama } from "../converters/appToolsToOllama";
+import type { ChatIteratorChunk } from "@/providers/base/types";
 
 /**
  * 

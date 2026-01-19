@@ -1,9 +1,10 @@
 import type { ReadableOf } from "@/types/util";
-import type { ChatIteratorChunk, LLMProvider } from "../base/ProviderInterface";
+import type { LLMProvider } from "../base/ProviderInterface";
 import ollamaRequest from "@/utils/ollamaRequest";
 import logger from "@/lib/logger";
 import { useConfigStore } from "@/stores/config";
 import { chat, generateChatTitle } from "./helpers";
+import type { ChatIteratorChunk } from "../base/types";
 
 export class OllamaProvider implements LLMProvider {
     name = "Ollama";
