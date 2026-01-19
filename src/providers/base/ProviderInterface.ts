@@ -32,6 +32,7 @@ export interface LLMProvider {
      * - Use non-Ollama messages
      * - Standardize ChatIteratorChunk across providers
      * - Not use `modelOverride` as a workaround to get regeneration with a non-selected model working
+     * - Replace additionalOptions with a standardized options object (using an interface e.g. ChatOptions)
      * 
      * @param messages Chat messages.
      * @param abortSignal AbortSignal to stop streaming.
