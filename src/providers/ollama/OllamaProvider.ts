@@ -5,13 +5,13 @@ import logger from "@/lib/logger";
 import { useConfigStore } from "@/stores/config";
 import { chat, generateChatTitle } from "./helpers";
 import type { ChatIteratorChunk } from "../base/types";
-import { appMessageToOllama } from "./converters/appMessageToOllama";
+import { appMesagesToOllama } from "./converters/appMessagesToOllama";
 
 export class OllamaProvider implements LLMProvider {
     name = "Ollama";
 
-    chat(messages: ChatMessage[], abortSignal: AbortSignal, additionalOptions?: { modelOverride?: string; }): ReadableOf<ChatIteratorChunk> {
-		const ollamaFormatMessages = messages.map(msg => appMessageToOllama(msg));
+    async chat(messages: ChatMessage[], abortSignal: AbortSignal, additionalOptions?: { modelOverride?: string; }): Promise<ReadableOf<ChatIteratorChunk>> {
+		const ollamaFormatMessages = await appMesagesToOllama(messages);
         return chat(ollamaFormatMessages, abortSignal, additionalOptions);
     }
     

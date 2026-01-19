@@ -2,7 +2,9 @@ import logger from "@/lib/logger";
 import { getMessageAttachments } from "@/utils/core/getMessageAttachments";
 
 async function getMessageAttachmentBase64(messageId: number): Promise<string[]> {
-	const attachments = await getMessageAttachments(messageId);
+    const attachments = await getMessageAttachments(messageId);
+
+    if (attachments.length === 0) return [];
 
     return Promise.all(attachments.map(attachment => {
         return new Promise<string>((resolve, reject) => {
@@ -15,8 +17,8 @@ async function getMessageAttachmentBase64(messageId: number): Promise<string[]> 
     }));
 }
 
-export async function getMessagesInOllamaFormat(openedChatMessages: ChatMessage[]): Promise<OllamaMessage[]> {
-    const sortedMessages = openedChatMessages.sort((a, b) => a.created.getTime() - b.created.getTime());
+export async function appMesagesToOllama(chatMessages: ChatMessage[]): Promise<OllamaMessage[]> {
+    const sortedMessages = chatMessages.sort((a, b) => a.created.getTime() - b.created.getTime());
 
     const formattedMessages = sortedMessages.map(async (message) => {
         if (message.type === 'tool') {
@@ -27,7 +29,17 @@ export async function getMessagesInOllamaFormat(openedChatMessages: ChatMessage[
             }
         }
 
-        const role: OllamaMessageRole = message.type === 'model' ? 'assistant' : 'user';
+        // TODO: handle system messages properly
+        const role: OllamaMessageRole = (() => {
+            switch (message.type) {
+                case 'user':
+                    return 'user';
+                case 'model':
+                    return 'assistant';
+                default:
+                    return 'user';
+            }
+        })();
 
         const builtMessage: OllamaMessage = {
             role: role,
@@ -46,7 +58,7 @@ export async function getMessagesInOllamaFormat(openedChatMessages: ChatMessage[
         return builtMessage;
     });
 
-    logger.info('Messages Store', 'Formatted messages into Ollama format', formattedMessages.length);
+    logger.info('Coverter:appMessageToOllama', 'Formatted messages into Ollama format', formattedMessages.length);
 
     return Promise.all(formattedMessages);
 }

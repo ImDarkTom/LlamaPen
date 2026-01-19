@@ -12,9 +12,8 @@ import useToolsStore from '../toolsStore';
 import { initLiveSync } from './initLiveSync';
 import { createNewChat } from './utils/createNewChat';
 import { addAttachmentsToDB } from './utils/addAttachmentsToDB';
-import { getMessagesInOllamaFormat } from './utils/getMessagesInOllamaFormat';
 import { useProviderManager } from '@/composables/useProviderManager';
-import type { ChatIteratorChunk } from '@/providers/base/ProviderInterface';
+import type { ChatIteratorChunk } from '@/providers/base/types';
 
 /**
  * Handles messages, opened chat messages, and opened chat ID. Seperate from chatsStore.
@@ -271,8 +270,6 @@ const useMessagesStore = defineStore('messages', () => {
 		emitter.on('stopChatGeneration', cancelHandler);
 		logger.info('Messages Store', 'Added stop chat generation emit listener');
 
-		const chatMessageList = await getMessagesInOllamaFormat(openedChatMessages.value);
-
 		let generatedContent = "";
 		let generatedThoughts = "";
 		let thinkStarted = -1;
@@ -294,7 +291,7 @@ const useMessagesStore = defineStore('messages', () => {
 
 		let hasAbortTrigger = false;
 		let messageSaveCounter = 0;
-		const chatIterator = useProviderManager().chat(chatMessageList, abortController.signal, { modelOverride: selectedModel });
+		const chatIterator = await useProviderManager().chat(openedChatMessages.value, abortController.signal, { modelOverride: selectedModel });
 
 		try {
 			for await (const chunk of chatIterator) {

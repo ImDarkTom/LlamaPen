@@ -15,7 +15,6 @@ export interface LLMProvider {
      * Generates a chat response as a stream of chunks.
      * 
      * This needs major overhauling, currently we need to:
-     * - Use non-Ollama messages
      * - Standardize ChatIteratorChunk across providers
      * - Not use `modelOverride` as a workaround to get regeneration with a non-selected model working
      * - Replace additionalOptions with a standardized options object (using an interface e.g. ChatOptions)
@@ -28,7 +27,7 @@ export interface LLMProvider {
         messages: ChatMessage[], 
         abortSignal: AbortSignal, 
         additionalOptions?: { modelOverride?: string }
-    ): ReadableOf<ChatIteratorChunk>;
+    ): Promise<ReadableOf<ChatIteratorChunk>>;
 
     /**
      * Get a list of available models from the provider.
