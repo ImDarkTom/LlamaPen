@@ -49,7 +49,7 @@ type OllamaChatResponseChunk = {
     model: string;
     created_at: string;
     message: {
-        role: MessageRole;
+        role: OllamaMessageRole;
         content: string;
         thinking?: string;
         tool_calls?: OllamaToolCall[];

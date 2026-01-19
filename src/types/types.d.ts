@@ -1,5 +1,5 @@
 // https://github.com/ollama/ollama/blob/f9d2d8913554d78b1cae47c5eaa9cbbd0ea79273/docs/api.md#L502
-type MessageRole = 'system' | 'user' | 'assistant' | 'tool';
+type OllamaMessageRole = 'system' | 'user' | 'assistant' | 'tool';
 
 type OllamaToolCall = {
     function: {
@@ -9,7 +9,7 @@ type OllamaToolCall = {
 };
 
 type OllamaMessage = {
-    role: MessageRole;
+    role: OllamaMessageRole;
     content: string;
     thinking?: string; // Thinking models' thinking text.
     images?: string[];

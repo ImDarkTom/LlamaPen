@@ -25,7 +25,7 @@ export interface LLMProvider {
      * @param additionalOptions Model override.
      */
     chat(
-        messages: OllamaMessage[], 
+        messages: ChatMessage[], 
         abortSignal: AbortSignal, 
         additionalOptions?: { modelOverride?: string }
     ): ReadableOf<ChatIteratorChunk>;

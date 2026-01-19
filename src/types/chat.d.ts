@@ -14,7 +14,7 @@ type UserAttachment = {
 	content: Blob;
 }
 
-type ChatMessage = ModelChatMessage | UserChatMessage | ToolChatMessage;
+type ChatMessage = UserChatMessage | ModelChatMessage | ToolChatMessage;
 
 type BaseChatMessage = {
 	id: number;
@@ -23,6 +23,16 @@ type BaseChatMessage = {
 	created: Date;
 	errorText?: string;
 };
+
+interface UserChatMessage extends BaseChatMessage {
+	type: 'user';
+}
+
+interface ToolChatMessage extends BaseChatMessage {
+	type: 'tool',
+	toolName: string;
+	completed?: Date;
+}
 
 interface ModelChatMessage extends BaseChatMessage {
 	type: 'model';
@@ -52,13 +62,3 @@ interface ModelChatMessage extends BaseChatMessage {
 type ModelMessageStatus = 'inProgress' | 'finished' | 'cancelled' | 'error';
 
 type MessageGenerationState = { generating: true, status: 'waiting' | 'generating' } | { generating: false, status: null };
-
-interface UserChatMessage extends BaseChatMessage {
-	type: 'user';
-}
-
-interface ToolChatMessage extends BaseChatMessage {
-	type: 'tool',
-	toolName: string;
-	completed?: Date;
-}

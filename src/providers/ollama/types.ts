@@ -21,7 +21,7 @@ export type OllamaChatRequest = {
 }
 
 export type OllamaMessage = {
-    role: MessageRole;
+    role: OllamaMessageRole;
     content: string;
     thinking?: string; // Thinking models' thinking text.
     images?: string[];

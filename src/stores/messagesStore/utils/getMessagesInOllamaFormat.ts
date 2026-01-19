@@ -27,7 +27,7 @@ export async function getMessagesInOllamaFormat(openedChatMessages: ChatMessage[
             }
         }
 
-        const role: MessageRole = message.type === 'model' ? 'assistant' : 'user';
+        const role: OllamaMessageRole = message.type === 'model' ? 'assistant' : 'user';
 
         const builtMessage: OllamaMessage = {
             role: role,
