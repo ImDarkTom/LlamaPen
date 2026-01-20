@@ -21,6 +21,7 @@
     "mitt": "^3.0.1",
     "mustache": "^4.2.0",
     "normalize.css": "^8.0.1",
+    "ollama": "^0.6.3",
     "path": "^0.12.7",
     "pinia": "^3.0.4",
     "pinia-plugin-persistedstate": "^4.7.1",

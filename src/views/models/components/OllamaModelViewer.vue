@@ -9,6 +9,8 @@ import InfoSection from './InfoSection.vue';
 import CapabilitiesSkeleton from './CapabilitiesSkeleton.vue';
 import ViewerContainer from './ViewerContainer.vue';
 import { useConfigStore } from '@/stores/config';
+import type { ModelViewInfo } from './types';
+import type { ShowResponse, ModelDetails } from 'ollama/browser';
 
 const config = useConfigStore();
 
@@ -35,7 +37,7 @@ const capabilityIcons: Record<string, IconType> = {
 function getModelValue<T>(
     fallback: T,
     loadingValue: T,
-    extractor: (model: OllamaModelInfoResponse) => T
+    extractor: (model: ShowResponse) => T
 ): T {
     if (props.selectedModel.state === 'unselected'  || props.selectedModel.state === 'error') return fallback;
     if (props.selectedModel.state === 'loading') return loadingValue;
@@ -43,7 +45,7 @@ function getModelValue<T>(
 }
 
 const modelName = computed<string>(() =>
-    getModelValue(props.modelFromParams || '', 'Loading...', m => m.model_info['general.basename'] || props.modelFromParams || '')
+    getModelValue(props.modelFromParams || '', 'Loading...', m => m.model_info.get('general.basename') || props.modelFromParams || '')
 );
 
 const modelCapabilites = computed(() =>
@@ -63,11 +65,25 @@ const modelTemplate = computed(() =>
 );
 
 const modelDetails = computed(() =>
-    getModelValue<Record<string, unknown>>({}, {}, m => m.details)
+    getModelValue<ModelDetails>({
+        families: [],
+        family: '',
+        format: '',
+        parameter_size: '',
+        parent_model: '',
+        quantization_level: '',
+    }, {
+        families: ['Loading...'],
+        family: 'Loading...',
+        format: 'Loading...',
+        parameter_size: 'Loading...',
+        parent_model: 'Loading...',
+        quantization_level: 'Loading...',
+    }, m => m.details)
 );
 
 const modelInfo = computed(() =>
-    getModelValue<Record<string, unknown>>({}, {}, m => m.model_info)
+    getModelValue<Record<string, any>>({}, {}, m => m.model_info)
 );
 </script>
 
@@ -98,7 +114,7 @@ const modelInfo = computed(() =>
             <InfoSection title="License" :content="sanitizeSection(modelLicense)" />
             <InfoSection title="Modelfile" :content="sanitizeSection(modelModelfile)" />
             <InfoSection title="Template" :content="sanitizeSection(modelTemplate)" />
-            <InfoSection title="Details" :kv-list="modelDetails" />
+            <InfoSection title="Details" :kv-list="(modelDetails as Record<string, any>)" />
             <InfoSection title="Model Info" :kv-list="modelInfo" />
         </div>
     </ViewerContainer>

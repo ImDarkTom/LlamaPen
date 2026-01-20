@@ -10,8 +10,8 @@ type OllamaToolParamSchema = Record<string, {
 
 type ModelListItem = {
     name: string;
+    modified_at: Date;
     model: string;
-    modified_at: string;
     size: number;
     digest: string;
     details: {

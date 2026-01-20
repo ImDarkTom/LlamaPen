@@ -1,5 +1,6 @@
 import type { ReadableOf } from "@/types/util";
 import type { ChatIteratorChunk, ChatOptions } from "./types";
+import type { ShowResponse } from "ollama/browser";
 
 // TODO: have this contain all standardized types for use throughout the app (or maybe in a separate types.ts file in providers/base/)
 
@@ -8,8 +9,11 @@ import type { ChatIteratorChunk, ChatOptions } from "./types";
  * - OpenRouter provider (using sdk for type safety, also make sure to chunk with the provider so js doesn't get loaded unless openrouter provider is explicitly chosen)
  */
 
-export interface LLMProvider {
-    readonly name: string; // Name of the provider
+export interface BaseLLMProvider {
+    /**
+     * Pretty name of the provider.
+     */
+    readonly name: string;
 
     /**
      * Generates a chat response as a stream of chunks.
@@ -34,17 +38,12 @@ export interface LLMProvider {
     getModels(): Promise<ModelList>;
 
     /**
-     * Get the IDs of models currently loaded into memory.
-     * TODO: add a flag for provider to indicate if memory management is supported.
-     */
-    getLoadedModelIds(): Promise<string[]>;
-
-    /**
      * Get the model 'capabilities', e.g. image inputs, thinking/reasoning, etc.
      * TODO: standardize capabilities across providers (don't use OllamaCapability).
      * @param modelId Model to get capabilities for.
      */
     getModelCapabilities(modelId: string): Promise<OllamaCapability[]>;
+
 
     /**
      * Generates a chat title based on the provided chat messages. Uses JSON-structure outputs from model.
@@ -52,6 +51,16 @@ export interface LLMProvider {
      * @param messages Chat messages to generate a title for
      */
     generateChatTitle(messages: ChatMessage[]): Promise<string>;
+}
+
+export type WithMemoryManagement = {
+    supportsMemoryManagement: true;
+
+    /**
+     * Get the IDs of models currently loaded into memory.
+     * TODO: add a flag for provider to indicate if memory management is supported.
+     */
+    getLoadedModelIds(): Promise<string[]>;
 
     /**
      * Loads a model into memory.
@@ -68,5 +77,18 @@ export interface LLMProvider {
      * @returns If the model was successfully unloaded from memory.
      */
     unloadModel(modelId: string): Promise<boolean>;
-}
 
+    /**
+     * TODO: Move off Ollama types
+     * @param modelId The model to get details for.
+     */
+    getModelDetails(modelId: string): Promise<{ data: ShowResponse, error: null } | { data: null, error: string }>;
+};
+
+export type WithoutMemoryManagement = {
+    supportsMemoryManagement: false;
+};
+
+export type MemoryMangement = WithMemoryManagement | WithoutMemoryManagement;
+
+export type LLMProvider = BaseLLMProvider & MemoryMangement; 

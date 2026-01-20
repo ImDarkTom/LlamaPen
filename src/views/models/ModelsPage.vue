@@ -3,14 +3,14 @@ import router from '@/lib/router';
 import { useConfigStore } from '@/stores/config';
 import setPageTitle from '@/utils/core/setPageTitle';
 import { computed, onMounted, ref, watch } from 'vue';
-import ollamaRequest from '@/utils/ollamaRequest';
-import ModelViewer from './components/ModelViewer.vue';
 import ModelList from './components/ModelList.vue';
-import { tryCatch } from '@/utils/core/tryCatch';
 import ViewerContainer from './components/ViewerContainer.vue';
 import { useModelList } from '@/composables/useModelList';
 import DownloadManager from './components/DownloadManager.vue';
 import logger from '@/lib/logger';
+import { useProviderManager } from '@/composables/useProviderManager';
+import OllamaModelViewer from './components/OllamaModelViewer.vue';
+import type { ModelViewInfo } from './components/types';
 
 const config = useConfigStore();
 
@@ -61,32 +61,17 @@ watch(router.currentRoute, () => {
 
 async function setModelViewInfo(modelId: string) {
     selectedModel.value = { state: 'loading' };
-    const { data: response, error: requestError } = await ollamaRequest('/api/show', 'POST', {
-        model: modelId,
-    });
 
-    if (requestError) {
-        selectedModel.value = { state: 'error', message: requestError.message }
-        return;
-    }
+    const { data: response, error: infoError } = await useProviderManager().getModelDetails(modelId);
 
-    if (response.status === 404) {
-        selectedModel.value = { state: 'error', message: 'Model not found.' };
-        return;
-    } else if (!response.ok) {
-        selectedModel.value = { state: 'error', message: await response.text() };
-        return;
-    }
-
-    const { data: modelInfo, error: jsonParseError } = await tryCatch<OllamaModelInfoResponse>(response.json());
-    if (jsonParseError) {
-        selectedModel.value = { state: 'error', message: jsonParseError.message };
+    if (infoError || !response) {
+        selectedModel.value = { state: 'error', message: infoError }
         return;
     }
 
     selectedModel.value = {
         state: 'data',
-        model: modelInfo,
+        model: response,
         isLoaded: modelsList.value.some(item => item.modelData.model === modelId && item.loadedInMemory)
     };
 }
@@ -107,6 +92,6 @@ async function setModelViewInfo(modelId: string) {
                 'Select a model to view its details, or download a new model.' }}
         </ViewerContainer>
         <DownloadManager v-else-if="modelFromParams === 'downloads'" @refresh-model-list="refreshModelList" />
-        <ModelViewer v-else :modelFromParams :selectedModel />
+        <OllamaModelViewer v-else :modelFromParams :selectedModel />
     </div>
 </template>

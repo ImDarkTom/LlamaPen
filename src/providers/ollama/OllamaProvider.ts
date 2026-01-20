@@ -1,14 +1,17 @@
 import type { ReadableOf } from "@/types/util";
-import type { LLMProvider } from "../base/ProviderInterface";
-import ollamaRequest from "@/utils/ollamaRequest";
-import logger from "@/lib/logger";
-import { useConfigStore } from "@/stores/config";
+import type { BaseLLMProvider, WithMemoryManagement } from "../base/ProviderInterface";
 import { chat, generateChatTitle } from "./helpers";
 import type { ChatIteratorChunk, ChatOptions } from "../base/types";
 import { appMesagesToOllama } from "./converters/appMessagesToOllama";
+import { ollamaWrapper } from "./OllamaWrapper";
+import type { ShowResponse } from "ollama";
 
-export class OllamaProvider implements LLMProvider {
+/**
+ * Interfaces with the Ollama wrapper before packaging responses into the common app standard.
+ */
+export class OllamaProvider implements BaseLLMProvider, WithMemoryManagement {
     name = "Ollama";
+	supportsMemoryManagement = true as const;
 
     async chat(messages: ChatMessage[], abortSignal: AbortSignal, options: ChatOptions): Promise<ReadableOf<ChatIteratorChunk>> {
 		const ollamaFormatMessages = await appMesagesToOllama(messages);
@@ -16,90 +19,46 @@ export class OllamaProvider implements LLMProvider {
     }
     
     async getModels(): Promise<ModelList> {
-		const response = await fetch(useConfigStore().requestUrl('/api/tags'));
-		const responseJson: { models: ModelList } = await response.json();
-
-        // TODO: handle errors
-		return responseJson.models;
+		const list = await ollamaWrapper.list();
+		return list;
 	}
     
     async getLoadedModelIds(): Promise<string[]> {
-		const { data: response, error } = await ollamaRequest('/api/ps', 'GET');
-
-		if (error) {
-			logger.warn('OllamaProvider:getLoadedModelIds', 'Error getting loaded models:', error);
-			return [];
-		}
-
-		if (response.status !== 200) {
-			return [];
-		}
-
-		const responseJson = await response.json() as OllamaProcessesResponse;
-
-		const loadedModels = responseJson.models;
+		const loadedModels = await ollamaWrapper.ps();
 		if (!loadedModels) return [];
 
 		return loadedModels.map(model => model.model);
 	}
 
-
     async getModelCapabilities(modelId: string): Promise<OllamaCapability[]> {
-		const { data: response, error } = await ollamaRequest('/api/show', 'POST', {
-			model: modelId,
-		});
-
-		if (error) {
-			logger.warn('OllamaProvider:getModelCapabilities', `Error getting model capabilities for ${modelId}: ${error}`);
+		const { data: modelInfo, error } = await ollamaWrapper.show({ model: modelId });
+		if (error || !modelInfo) {
 			return [];
 		}
 
-		if (response.status !== 200) {
-			return [];
-		}
-
-		const responseJson = await response.json() as OllamaModelInfoResponse;
-
-		return responseJson.capabilities as OllamaCapability[];
+		return modelInfo.capabilities as OllamaCapability[];
 	}
-
 
     generateChatTitle(messages: ChatMessage[]): Promise<string> {
         return generateChatTitle(messages);
     }
 
     async loadModelIntoMemory(modelId: string): Promise<boolean> {
-		const { data: response, error } = await ollamaRequest('/api/generate', 'POST', {
-			model: modelId,
-		});
-
-		if (error) {
-			logger.warn('OllamaProvider:loadModelIntoMemory', 'Error loading model into memory:', error);
-			return false;
-		}
-
-		if (response.status !== 200) {
-			return false;
-		}
-
-		return true;
+		const success = await ollamaWrapper.loadIntoMemory(modelId);
+		return success;
 	}
 
     async unloadModel(modelId: string): Promise<boolean> {
-		const { data: response, error } = await ollamaRequest('/api/generate', 'POST', {
-			model: modelId,
-			keep_alive: 0
-		});
+		const success = await ollamaWrapper.unloadFromMemory(modelId);
+		return success;
+	}
 
+	async getModelDetails(modelId: string): Promise<{ data: ShowResponse, error: null } | { data: null, error: string }> {
+		const { data: modelInfo, error } = await ollamaWrapper.show({ model: modelId });
 		if (error) {
-			logger.warn('OllamaAPI', 'Error unloading model:', error);
-			return false;
+			return { data: null, error: error.message };
 		}
 
-		if (response.status !== 200) {
-			return false;
-		}
-
-		return true;
+		return { data: modelInfo, error: null };
 	}
 }
