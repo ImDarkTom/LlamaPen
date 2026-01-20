@@ -19,3 +19,18 @@ export type ChatOptions = {
 	model: string;
 	reasoningEnabled?: boolean;
 }
+
+
+
+export type ModelCapabilities = {
+	supportsReasoning: boolean;
+	supportsVision: boolean;
+	supportsFunctionCalling: boolean;
+}
+
+// Shared app model
+export type Model = {
+	name: string; // Pretty name
+	id: string; // Internal identifier
+	capabilities: ModelCapabilities
+}

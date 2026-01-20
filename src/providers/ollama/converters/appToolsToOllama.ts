@@ -7,14 +7,14 @@ export function appToolsToOllama(): Tool[] {
 
     const toolsList: Tool[] = [];
     for (const tool of toggledTools) {
-        const toolInList = {
+        const toolInList: Tool & { function: { parameters: { properties: NonNullable<NonNullable<Tool['function']['parameters']>['properties']> } } } = {
             type: 'function',
             function: {
                 name: tool[0],
                 description: tool[1].description,
                 parameters: {
                     type: 'object',
-                    properties: {} as OllamaToolParamSchema,
+                    properties: {},
                     required: tool[1].required,
                 }
             }

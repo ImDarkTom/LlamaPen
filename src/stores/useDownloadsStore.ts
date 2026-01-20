@@ -1,5 +1,6 @@
 import logger from '@/lib/logger';
 import { ollamaWrapper } from '@/providers/ollama/OllamaWrapper';
+import type { ProgressResponse } from 'ollama';
 import { defineStore } from 'pinia';
 import { ref } from 'vue';
 
@@ -15,7 +16,7 @@ import { ref } from 'vue';
 
 const useDownloadsStore = defineStore('downloads', () => {
     const abortControllerMap: Map<string, AbortController> = new Map();
-    const progressChunks = ref<Record<string, OllamaPullResponseChunk>>({});
+    const progressChunks = ref<Record<string, ProgressResponse>>({});
     
     async function downloadModel(modelId: string): Promise<{ success: boolean, reason?: string }> {
         const abortController = new AbortController();
