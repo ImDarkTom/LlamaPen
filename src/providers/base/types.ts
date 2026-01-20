@@ -1,3 +1,5 @@
+import type { ChatResponse } from "ollama";
+
 export type ChatIteratorChunk = {
 	type: 'error',
 	error: {
@@ -10,7 +12,7 @@ export type ChatIteratorChunk = {
 	stats?: ModelChatMessage['stats']
 } | {
 	type: 'message',
-	data: OllamaChatResponseChunk;
+	data: ChatResponse;
 };
 
 export type ChatOptions = {

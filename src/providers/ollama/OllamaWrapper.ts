@@ -1,5 +1,7 @@
 import logger from "@/lib/logger";
 import { tryCatch } from "@/utils/core/tryCatch";
+import type { ChatRequest } from "ollama";
+import type { CopyRequest, DeleteRequest } from "ollama";
 import { Ollama, type PullRequest, type ShowRequest } from "ollama/browser";
 
 /**
@@ -11,6 +13,17 @@ class OllamaWrapper {
 	};
 
     ollama = new Ollama(this.baseConfig);
+
+    async version() {
+        const { data, error } = await tryCatch(this.ollama.version());
+                
+        if (error) {
+            logger.warn('OllamaWrapper:version', 'Error getting Ollama version:', error);
+            return null;
+        }
+
+        return data.version;
+    }
 
     async list() {
         const { data, error } = await tryCatch(this.ollama.list());
@@ -99,6 +112,71 @@ class OllamaWrapper {
         }
 
         return response;
+    }
+
+    async copy(request: CopyRequest) {
+        const { error } = await tryCatch(this.ollama.copy(request));
+
+        if (error) {
+            logger.warn('OllamaWrapper:copy', 'Error copying model:', error);
+            return false;
+        }
+
+        return true;
+    }
+
+    async delete(request: DeleteRequest) {
+        const { error } = await tryCatch(this.ollama.delete(request));
+
+        if (error) {
+            logger.warn('OllamaWrapper:delete', 'Error deleting model:', error);
+            return false;
+        }
+
+        return true;
+    }
+
+    
+    async chat(request: ChatRequest, abortSignal?: AbortSignal) {
+        // If we give an abort controller, we need to create a new Ollama instance with a
+        // fetch that uses that signal that way we can cancel the request if triggered.
+        let ollamaInstance: Ollama;
+        if (abortSignal) {
+            ollamaInstance = new Ollama({
+                ...this.baseConfig,
+                fetch: (url, init) => {
+                    return fetch(url, {
+                        ...init,
+                        signal: abortSignal,
+                    });
+                }
+            });
+        } else {
+            ollamaInstance = this.ollama;
+        }
+
+        return ollamaInstance.chat({ ...request, stream: false });
+    }
+
+    async streamedChat(request: ChatRequest, abortSignal?: AbortSignal) {
+        // If we give an abort controller, we need to create a new Ollama instance with a
+        // fetch that uses that signal that way we can cancel the request if triggered.
+        let ollamaInstance: Ollama;
+        if (abortSignal) {
+            ollamaInstance = new Ollama({
+                ...this.baseConfig,
+                fetch: (url, init) => {
+                    return fetch(url, {
+                        ...init,
+                        signal: abortSignal,
+                    });
+                }
+            });
+        } else {
+            ollamaInstance = this.ollama;
+        }
+
+        return ollamaInstance.chat({ ...request, stream: true });
     }
 }
 

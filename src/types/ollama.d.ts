@@ -47,7 +47,7 @@ type CustomErrorResponse = {
 
 type OllamaChatResponseChunk = {
     model: string;
-    created_at: string;
+    created_at: Date;
     message: {
         role: OllamaMessageRole;
         content: string;

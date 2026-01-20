@@ -10,12 +10,12 @@ import { useModelList, type ModelInfoListItem } from '@/composables/useModelList
 import router from '@/lib/router';
 import { useConfigStore } from '@/stores/config';
 import useUserStore from '@/stores/user';
-import ollamaRequest from '@/utils/ollamaRequest';
 import { computed, ref } from 'vue';
 import type { IconType } from 'vue-icons-plus';
 import { BiCopy, BiDotsVerticalRounded, BiDownload, BiHide, BiLinkExternal, BiPencil, BiShow, BiTrash } from 'vue-icons-plus/bi';
 import { Fa6Memory } from 'vue-icons-plus/fa6';
 import { useProviderManager } from '@/composables/useProviderManager';
+import { ollamaWrapper } from '@/providers/ollama/OllamaWrapper';
 
 const config = useConfigStore();
 const { setModelHidden } = useModelList();
@@ -108,13 +108,18 @@ async function renameModel(modelData: ModelListItem, displayName: string) {
 async function copyModel(model: string) {
     const destination = prompt('Enter name for the new model copy:', `${model}-copy`);
 
-    const { error } = await ollamaRequest('/api/copy', 'POST', {
+    if (!destination || destination.trim() === '') {
+        alert('Invalid new model name.');
+        return;
+    }
+
+    const success = ollamaWrapper.copy({
         source: model,
         destination,
     });
 
-    if (error) {
-        alert(`Error copying model: ${error.message}`);
+    if (!success) {
+        alert('Failed to copy model.');
         return;
     }
 
@@ -126,12 +131,12 @@ async function deleteModel(model: string) {
         return;
     }
 
-    const { error } = await ollamaRequest('/api/delete', 'DELETE', {
+    const success = await ollamaWrapper.delete({
         model,
     });
 
-    if (error) {
-        alert(`Error deleting model: ${error.message}`);
+    if (!success) {
+        alert('Failed to delete model.');
         return;
     }
 

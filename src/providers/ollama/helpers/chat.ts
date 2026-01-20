@@ -2,11 +2,10 @@ import type { ReadableOf } from "@/types/util";
 import { Readable } from "readable-stream";
 import { useModelList } from "@/composables/useModelList";
 import { useConfigStore } from "@/stores/config";
-import { authedFetch } from "@/utils/core/authedFetch";
-import { tryCatch } from "@/utils/core/tryCatch";
-import type { OllamaChatRequest } from "../types";
 import { appToolsToOllama } from "../converters/appToolsToOllama";
 import type { ChatIteratorChunk, ChatOptions } from "@/providers/base/types";
+import { ollamaWrapper } from "../OllamaWrapper";
+import type { ChatRequest } from "ollama";
 
 /**
  * 
@@ -23,7 +22,7 @@ async function* chatIterator(
     const { selectedModelCapabilities } = useModelList();
     const config = useConfigStore();
 
-    const reqBody: OllamaChatRequest = {
+    const chatOptions: ChatRequest = {
         model: options.model,
         messages,
         think: options.reasoningEnabled || false,
@@ -32,88 +31,63 @@ async function* chatIterator(
     };
 
     if (selectedModelCapabilities.value.includes('tools')) {
-        reqBody.tools = appToolsToOllama();
+        chatOptions['tools'] = appToolsToOllama();
     }
 
-    const response = await authedFetch(config.requestUrl('/api/chat'), {
-        method: 'POST',
-        headers: {
-            'Content-Type': 'application/json',
-        },
-        body: JSON.stringify(reqBody),
-        signal: abortSignal,
-    });
+    const response = await ollamaWrapper.streamedChat(chatOptions, abortSignal);
 
-    if (!response.body) {
-        throw { type: 'error', error: { type: 'app:no-response-body', message: 'Error: No response body.' } };
-    }
+    // TODO: handle these before starting streaming (or maybe higher up in call stack?)
+    // if (!response.ok) {
+    //     const { data, error: parseError } = await tryCatch<CustomErrorResponse>(await response.json());
 
-    if (!response.ok) {
-        const { data, error: parseError } = await tryCatch<CustomErrorResponse>(await response.json());
+    //     if (parseError || !data.error) {
+    //         throw { type: 'error', error: { type: 'app:parse-fail', message: parseError?.message || `Failed to parse response error: ${parseError}` } };
+    //     }
 
-        if (parseError || !data.error) {
-            throw { type: 'error', error: { type: 'app:parse-fail', message: parseError?.message || `Failed to parse response error: ${parseError}` } };
-        }
+    //     if (response.status === 401 && data.error.type === 'auth:not-authed') {
+    //         throw { type: 'error', error: { type: 'app:not-authed', message: 'You need to be signed in to send messages.' } };
+    //     } else if (response.status === 404 && !config.cloud.enabled) {
+    //         throw { type: 'error', error: { type: 'app:model-not-found', message: data.error as unknown as string } };
+    //     }
 
-        if (response.status === 401 && data.error.type === 'auth:not-authed') {
-            throw { type: 'error', error: { type: 'app:not-authed', message: 'You need to be signed in to send messages.' } };
-        } else if (response.status === 404 && !config.cloud.enabled) {
-            throw { type: 'error', error: { type: 'app:model-not-found', message: data.error as unknown as string } };
-        }
+    //     throw data;
+    // }
 
-        throw data;
-    }
-
-    const decoder = new TextDecoder();
-    const reader = response.body.getReader();
-
-    while (true) {
-        if (abortSignal.aborted) {
-            return { type: 'done', reason: 'cancelled' };
-        }
-
-        const { done, value } = await reader.read();
-        if (done) {
-            return { type: 'done', reason: 'completed' };
-        }
-        
-        const chunkText = decoder.decode(value).trim().split('\n');
-        
-        for (const chunk of chunkText) {
-            const { data, error } = await tryCatch<OllamaChatResponseChunk | CustomErrorResponse>(JSON.parse(chunk));
-
-            if (error) {
-                console.error('Error parsing message chunk', error);
-                yield { type: 'error', error: { type: 'chunk-parse-error', message: 'Error parsing message chunk: ' + error.message } };
-                continue;
+    try {
+        for await (const chunk of response) {
+            if (abortSignal.aborted) {
+                return { type: 'done', reason: 'cancelled' };
             }
 
-            if ('error' in data) {
-                yield data;
-                continue;
-            }
+            // // From llamapen cloud
+            // if ('error' in data) {
+            //     yield data;
+            //     continue;
+            // }
 
-            if (data.done) {
+            if (chunk.done) {
                 // Process final chunk
-                yield { type: 'message', data };
+                yield { type: 'message', data: chunk };
 
                 yield { 
                     type: 'done', 
                     reason: 'completed', 
                     stats: {
-                        evalCount: data.eval_count,
-                        evalDuration: data.eval_duration,
-                        loadDuration: data.load_duration,
-                        promptEvalCount: data.prompt_eval_count,
-                        promptEvalDuration: data.prompt_eval_duration,
-                        totalDuration: data.total_duration
+                        evalCount: chunk.eval_count,
+                        evalDuration: chunk.eval_duration,
+                        loadDuration: chunk.load_duration,
+                        promptEvalCount: chunk.prompt_eval_count,
+                        promptEvalDuration: chunk.prompt_eval_duration,
+                        totalDuration: chunk.total_duration
                     }
                 };
                 continue;
             }
 
-            yield { type: 'message', data };
+            yield { type: 'message', data: chunk };
         }
+    } catch (e) {
+        throw e;
     }
 }
 

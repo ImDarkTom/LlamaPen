@@ -1,11 +1,11 @@
 import useToolsStore from "@/stores/toolsStore";
+import type { Tool } from "ollama";
 
-export function appToolsToOllama(): unknown[] {
+export function appToolsToOllama(): Tool[] {
     const toggledToolsNames = useToolsStore().toggled;
     const toggledTools = Object.entries(useToolsStore().tools).filter(data => toggledToolsNames.includes(data[0]));
 
-    const toolsList: unknown[] = [];
-
+    const toolsList: Tool[] = [];
     for (const tool of toggledTools) {
         const toolInList = {
             type: 'function',

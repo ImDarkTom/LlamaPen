@@ -61,12 +61,12 @@ export function useProviderManager() {
         return prov.getLoadedModelIds(...args);
     };
 
-    type GetModelDetailsMethod = ProviderWithFeatureMethod<{ supportsMemoryManagement: true }, 'getModelDetails'>;
+    type GetModelDetailsMethod = ProviderWithFeatureMethod<{ supportsOllamaModelDetails: true }, 'getModelDetails'>;
 
     const getModelDetails = (...args: GetModelDetailsMethod['params']): GetModelDetailsMethod['returnType'] => {
         const prov = currentProvider.value;
-        if (!prov.supportsMemoryManagement) {
-            throw new Error(`Provider ${prov.name} does not support memory management`);
+        if (!prov.supportsOllamaModelDetails) {
+            throw new Error(`Provider ${prov.name} does not support Ollama model details`);
         }
         return prov.getModelDetails(...args);
     };
@@ -84,6 +84,8 @@ export function useProviderManager() {
         loadModelIntoMemory,
         unloadModel,
         getLoadedModelIds,
+
+        // Ollama model details
         getModelDetails,
     }
 }

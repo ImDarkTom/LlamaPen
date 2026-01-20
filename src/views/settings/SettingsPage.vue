@@ -15,11 +15,11 @@ import CategoryLabel from './components/CategoryLabel.vue';
 import NumberInputSetting from './components/NumberInputSetting.vue';
 import PageHeader from '@/components/Page/PageHeader.vue';
 import SelectionSetting from './components/SelectionSetting.vue';
-import ollamaRequest from '@/utils/ollamaRequest';
 import { useModelList } from '@/composables/useModelList';
 import OptionText from './components/OptionText.vue';
 import { BiInfoCircle, BiRefresh, BiRocket, BiTrash } from 'vue-icons-plus/bi';
 import { useRegisterSW } from 'virtual:pwa-register/vue';
+import { ollamaWrapper } from '@/providers/ollama/OllamaWrapper';
 
 const config = useConfigStore();
 const router = useRouter();
@@ -111,16 +111,14 @@ watch(
 );
 
 async function checkOllamaVersion() {
-    const { data: response, error } = await ollamaRequest('/api/version', 'GET');
+    const version = await ollamaWrapper.version();
 
-    if (error) {
-        alert(`❌ Error fetching Ollama version, ${error}`);
+    if (version === null) {
+        alert(`❌ Error fetching Ollama version.`);
         return;
     }
-    
-    const body = await response.json();
 
-    alert(`✅ Ollama Version: ${body.version || 'Unknown'}`);
+    alert(`✅ Ollama Version: ${version}`);
 }
 </script>
 

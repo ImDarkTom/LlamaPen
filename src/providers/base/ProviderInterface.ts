@@ -77,6 +77,15 @@ export type WithMemoryManagement = {
      * @returns If the model was successfully unloaded from memory.
      */
     unloadModel(modelId: string): Promise<boolean>;
+};
+
+export type WithoutMemoryManagement = {
+    supportsMemoryManagement: false;
+};
+
+
+export type WithOllamaModelDetails = {
+    supportsOllamaModelDetails: true;
 
     /**
      * TODO: Move off Ollama types
@@ -85,10 +94,12 @@ export type WithMemoryManagement = {
     getModelDetails(modelId: string): Promise<{ data: ShowResponse, error: null } | { data: null, error: string }>;
 };
 
-export type WithoutMemoryManagement = {
-    supportsMemoryManagement: false;
+export type WithoutOllamaModelDetails = {
+    supportsOllamaModelDetails: false;
 };
 
-export type MemoryMangement = WithMemoryManagement | WithoutMemoryManagement;
 
-export type LLMProvider = BaseLLMProvider & MemoryMangement; 
+export type MemoryMangement = WithMemoryManagement | WithoutMemoryManagement;
+export type OllamaModelDetails = WithOllamaModelDetails | WithoutOllamaModelDetails;
+
+export type LLMProvider = BaseLLMProvider & MemoryMangement & OllamaModelDetails;

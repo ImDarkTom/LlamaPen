@@ -1,5 +1,5 @@
 import type { ReadableOf } from "@/types/util";
-import type { BaseLLMProvider, WithMemoryManagement } from "../base/ProviderInterface";
+import type { BaseLLMProvider, WithMemoryManagement, WithOllamaModelDetails } from "../base/ProviderInterface";
 import { chat, generateChatTitle } from "./helpers";
 import type { ChatIteratorChunk, ChatOptions } from "../base/types";
 import { appMesagesToOllama } from "./converters/appMessagesToOllama";
@@ -9,9 +9,10 @@ import type { ShowResponse } from "ollama";
 /**
  * Interfaces with the Ollama wrapper before packaging responses into the common app standard.
  */
-export class OllamaProvider implements BaseLLMProvider, WithMemoryManagement {
+export class OllamaProvider implements BaseLLMProvider, WithMemoryManagement, WithOllamaModelDetails {
     name = "Ollama";
 	supportsMemoryManagement = true as const;
+	supportsOllamaModelDetails = true as const;
 
     async chat(messages: ChatMessage[], abortSignal: AbortSignal, options: ChatOptions): Promise<ReadableOf<ChatIteratorChunk>> {
 		const ollamaFormatMessages = await appMesagesToOllama(messages);
@@ -21,13 +22,6 @@ export class OllamaProvider implements BaseLLMProvider, WithMemoryManagement {
     async getModels(): Promise<ModelList> {
 		const list = await ollamaWrapper.list();
 		return list;
-	}
-    
-    async getLoadedModelIds(): Promise<string[]> {
-		const loadedModels = await ollamaWrapper.ps();
-		if (!loadedModels) return [];
-
-		return loadedModels.map(model => model.model);
 	}
 
     async getModelCapabilities(modelId: string): Promise<OllamaCapability[]> {
@@ -43,6 +37,14 @@ export class OllamaProvider implements BaseLLMProvider, WithMemoryManagement {
         return generateChatTitle(messages);
     }
 
+	
+	async getLoadedModelIds(): Promise<string[]> {
+		const loadedModels = await ollamaWrapper.ps();
+		if (!loadedModels) return [];
+
+		return loadedModels.map(model => model.model);
+	}
+
     async loadModelIntoMemory(modelId: string): Promise<boolean> {
 		const success = await ollamaWrapper.loadIntoMemory(modelId);
 		return success;
@@ -52,6 +54,7 @@ export class OllamaProvider implements BaseLLMProvider, WithMemoryManagement {
 		const success = await ollamaWrapper.unloadFromMemory(modelId);
 		return success;
 	}
+
 
 	async getModelDetails(modelId: string): Promise<{ data: ShowResponse, error: null } | { data: null, error: string }> {
 		const { data: modelInfo, error } = await ollamaWrapper.show({ model: modelId });
