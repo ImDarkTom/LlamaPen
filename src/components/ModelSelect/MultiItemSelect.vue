@@ -1,5 +1,5 @@
 <script setup lang="ts">
-import { nextTick, ref } from 'vue';
+import { computed, nextTick, ref } from 'vue';
 import type { IconType } from 'vue-icons-plus';
 import { BiCheck, BiChevronDown } from 'vue-icons-plus/bi';
 import FloatingMenu from '../FloatingMenu/FloatingMenu.vue';
@@ -10,8 +10,32 @@ type ListItem = {
     icon?: IconType;
 }
 
+const modelValue = defineModel<string[]>({ default: () => [] });
+const recordValue = defineModel<Record<string, boolean>>('record');
+
+const selectedValue = computed({
+    get: () => {
+        if (recordValue.value) {
+            return Object.entries(recordValue.value)
+                .filter(([_, isSelected]) => isSelected)
+                .map(([key]) => key);
+        }
+        return modelValue.value;
+    },
+    set: (newValues: string[]) => {
+        if (recordValue.value) {
+            const newRecord: Record<string, boolean> = {};
+            props.items.forEach(item => {
+                newRecord[item.value] = newValues.includes(item.value);
+            });
+            recordValue.value = newRecord;
+        } else {
+            modelValue.value = newValues;
+        }
+    }
+})
+
 const props = defineProps<{
-    modelValue: string[];
     items: ListItem[];
     buttonClass?: string;
     menuClass?: string;
@@ -24,11 +48,6 @@ const activeIndex = ref(0);
 const hoveringOverIndex = ref(-1);
 const itemRefs = ref<HTMLLIElement[]>([]);
 
-const emit = defineEmits<{
-    (e: 'update:modelValue', value: string[]): void;
-}>();
-
-
 function toggleMenu() {
     isMenuOpen.value = !isMenuOpen.value;
     if (isMenuOpen.value) {
@@ -39,7 +58,7 @@ function toggleMenu() {
 }
 
 function handleSelectItem(item: ListItem) {
-    const newValue = [...props.modelValue];
+    const newValue = [...selectedValue.value];
     const index = newValue.indexOf(item.value);
     if (index === -1) {
         newValue.push(item.value);
@@ -47,7 +66,7 @@ function handleSelectItem(item: ListItem) {
         newValue.splice(index, 1);
     }
 
-    emit('update:modelValue', newValue);
+    selectedValue.value = newValue;
 }
 
 function navigateItems(direction: 'up' | 'down') {
@@ -110,8 +129,8 @@ function handleItemKeydown(e: KeyboardEvent) {
                 @keydown.space.prevent="toggleMenu"
                 @keydown="handleKeydown"
             >
-                <template v-if="modelValue.length > 0">
-                    <span v-for="item in items.filter(i => modelValue.includes(i.value))" :key="item.value" class="not-last:mr-1 inline-flex">
+                <template v-if="selectedValue.length > 0">
+                    <span v-for="item in items.filter(i => selectedValue.includes(i.value))" :key="item.value" class="not-last:mr-1 inline-flex">
                         <component v-if="item.icon" :is="item.icon" class="mr-1 size-5" />
                         <span v-else>{{ item.label }}</span>
                     </span>
@@ -138,8 +157,8 @@ function handleItemKeydown(e: KeyboardEvent) {
                     @mouseenter="hoveringOverIndex = index; activeIndex = index"
                     @mouseleave="hoveringOverIndex = -1"
                     class="flex items-center select-none"
-                    :class="[itemClass, modelValue.includes(item.value) ? selectedItemClass : '']" >
-                    <BiCheck v-if="modelValue.includes(item.value)" />
+                    :class="[itemClass, selectedValue.includes(item.value) ? selectedItemClass : '']" >
+                    <BiCheck v-if="selectedValue.includes(item.value)" />
                     <component v-if="item.icon" :is="item.icon" class="mr-2" />
                     {{ item.label }}
                 </li>

@@ -20,8 +20,7 @@ export type ChatOptions = {
 	reasoningEnabled?: boolean;
 }
 
-
-
+// previously was: 'completion' | 'tools' | 'thinking' | 'vision' | 'insert' | 'embedding' | 'search'
 export type ModelCapabilities = {
 	supportsReasoning: boolean;
 	supportsVision: boolean;

@@ -2,10 +2,10 @@ import { useModelList, type ModelInfoListItem } from "@/composables/useModelList
 import { defineStore } from "pinia";
 import { computed, ref } from "vue";
 import { useConfigStore } from "./config";
-import type { Model } from "@/providers/base/types";
+import type { Model, ModelCapabilities } from "@/providers/base/types";
 
 export const useModelSelect = defineStore('modelSelect', () => {
-    // const { getModelCapabilities } = useModelList();
+    const { getModelCapabilities } = useModelList();
     const config = useConfigStore();
     // const userStore = useUserStore();
 
@@ -15,9 +15,12 @@ export const useModelSelect = defineStore('modelSelect', () => {
 
     const filterMenuOpen = ref(false);
     const orderBy = ref<'default' | 'alphabetically' | 'size'>('default');
-    // TODO(next): this up next, so we can finnally remove all custom ollama typings
-    const filterCapabilities = ref<OllamaCapability[]>([]);
     const direction = ref<'asc' | 'des'>('asc');
+    const filterCapabilities = ref<ModelCapabilities>({
+        supportsFunctionCalling: false,
+        supportsReasoning: false,
+        supportsVision: false,
+    });
 
     const queriedModelList = computed<ModelInfoListItem[]>(() => {
         return useModelList().models.value
@@ -33,20 +36,20 @@ export const useModelSelect = defineStore('modelSelect', () => {
     });
 
     function userSort(items: ModelInfoListItem[]) {
-        // TODO(critical): make filtering capabilities work 
-        // if (filterCapabilities.value.length > 0) {
-            
-        //     items = items.filter((item) => {
-        //         const capabilities = getModelCapabilities(item);
-        //         return capabilities && filterCapabilities.value.every((cap) => capabilities.[cap]);
-        //     });
-        // }
-
         const favoriteModels = config.models.favoriteModels ?? [];
         const favorites: ModelInfoListItem[] = [];
         const nonFavorites: ModelInfoListItem[] = [];
 
-        items.forEach(item => {
+        const filter = filterCapabilities.value;
+        const filteredItems = items.filter(model => {
+            const capabilities = getModelCapabilities(model);
+
+            return (Object.keys(filter) as Array<keyof ModelCapabilities>).every(key => {
+                return !filter[key] || capabilities[key];
+            });
+        });
+
+        filteredItems.forEach(item => {
             if (favoriteModels.includes(item.modelData.id)) {
                 favorites.push(item);
             } else {
@@ -115,6 +118,17 @@ export const useModelSelect = defineStore('modelSelect', () => {
 
     const sortedItems = computed(() => sortItems(queriedModelList.value.filter((item) => !item.hidden)));
 
+    function resetFilters() {
+        filterCapabilities.value = {
+            supportsFunctionCalling: false,
+            supportsReasoning: false,
+            supportsVision: false,
+        };
+
+        orderBy.value = 'default';
+        direction.value = 'asc';
+    }
+
     return {
         isMenuOpened,
         searchQuery,
@@ -127,6 +141,7 @@ export const useModelSelect = defineStore('modelSelect', () => {
         sortedItems,
         sortItems,
         setModel,
-        resetState
+        resetState,
+        resetFilters,
     }
 });
