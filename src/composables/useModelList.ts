@@ -1,13 +1,14 @@
 import { useConfigStore } from "@/stores/config";
 import { computed, reactive, toRefs } from "vue";
 import { useProviderManager } from "./useProviderManager";
+import type { Model, ModelCapabilities } from "@/providers/base/types";
 
 export type ModelInfoListItem = {
-    modelData: ModelListItem;
+    modelData: Model;
     displayName: string;
     loadedInMemory: boolean;
     hidden: boolean;
-    fetchedCapabilities?: OllamaCapability[];
+    fetchedCapabilities?: ModelCapabilities;
 }
 
 const state = reactive<{
@@ -47,19 +48,20 @@ async function load(force: boolean = false) {
             // Get the base model list
             state.models = (await useProviderManager().getModels())
                 .map((model) => {
-                    const modelId = model.model;
+                    const modelId = model.id;
 
                     const displayName = 
-                        config.chat.modelRenames[model.model] ||
+                        config.chat.modelRenames[modelId] ||
                         model.name ||
                         modelId;
 
                     const isHidden = config.chat.hiddenModels.includes(modelId);
 
+                    // TODO: rename modelData to info
                     return {
                         modelData: model,
                         displayName,
-                        loadedInMemory: loadedModelIds.includes(model.model),
+                        loadedInMemory: loadedModelIds.includes(modelId),
                         hidden: isHidden,
                     }
                 });
@@ -72,7 +74,7 @@ async function load(force: boolean = false) {
                 )
             ) {
                 for (const model of state.models) {
-                    const capabilities = await useProviderManager().getModelCapabilities(model.modelData.model);
+                    const capabilities = await useProviderManager().getModelCapabilities(model.modelData.id);
                     model.fetchedCapabilities = capabilities;
                 }
             }
@@ -95,13 +97,13 @@ async function refreshModelStates() {
     const hiddenModels = useConfigStore().chat.hiddenModels;
 
     state.models.forEach((item) => {
-        item.loadedInMemory = loadedModelIds.includes(item.modelData.model);
-        item.hidden = hiddenModels.includes(item.modelData.model);
+        item.loadedInMemory = loadedModelIds.includes(item.modelData.id);
+        item.hidden = hiddenModels.includes(item.modelData.id);
     });
 }
 
 export function useModelList() {
-    const modelIds = computed(() => state.models.map((item) => item.modelData.model));
+    const modelIds = computed(() => state.models.map((item) => item.modelData.id));
 
     function setModelHidden(modelId: string | null, setHidden: boolean) {
         if (!modelId) return;
@@ -117,12 +119,15 @@ export function useModelList() {
     }
 
     function getModelCapabilities(model: ModelInfoListItem) {
-        return model.modelData.capabilities ||
-            model.fetchedCapabilities || [];
+        return model.fetchedCapabilities || model.modelData.capabilities;
     }
     
-    const selectedModelCapabilities = computed(() => {
-        if (!selectedModelInfo.value.exists) return [];
+    const selectedModelCapabilities = computed<ModelCapabilities>(() => {
+        if (!selectedModelInfo.value.exists) return {
+            supportsFunctionCalling: false,
+            supportsReasoning: false,
+            supportsVision: false
+        };
 
         return getModelCapabilities(selectedModelInfo.value.data);
     })
@@ -132,7 +137,7 @@ export function useModelList() {
         { exists: false, data: null }
     >(() => {
         const selected = state.models
-            .find(modelItem => modelItem.modelData.model === useConfigStore().selectedModel);
+            .find(modelItem => modelItem.modelData.id === useConfigStore().selectedModel);
 
         if (selected) {
             return { exists: true, data: selected };
@@ -144,7 +149,7 @@ export function useModelList() {
     function getModelInfo(modelId: string): 
         { exists: true, data: ModelInfoListItem } | { exists: false, data: null } {
         const selected = state.models
-            .find(modelItem => modelItem.modelData.model === modelId);
+            .find(modelItem => modelItem.modelData.id === modelId);
 
         if (selected) {
             return { exists: true, data: selected };
@@ -159,7 +164,7 @@ export function useModelList() {
         config.chat.modelRenames[modelId] = newName;
 
         // Update in state
-        const target = state.models.find(modelItem => modelItem.modelData.model === modelId);
+        const target = state.models.find(modelItem => modelItem.modelData.id === modelId);
         if (target) target.displayName = newName;
     }
 

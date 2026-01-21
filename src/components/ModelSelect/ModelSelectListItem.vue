@@ -8,6 +8,7 @@ import { useConfigStore } from '@/stores/config';
 import { useModelList, type ModelInfoListItem } from '@/composables/useModelList';
 import ActionMenu, { type MenuEntry } from '../FloatingMenu/ActionMenu.vue';
 import { useModelSelect } from '@/stores/useModelSelect';
+import type { Model } from '@/providers/base/types';
 
 const userStore = useUserStore();
 const config = useConfigStore();
@@ -25,18 +26,20 @@ const { setModel: setModelInfo } = useModelSelect();
 
 const actionMenuButton = ref<HTMLElement | null>(null);
 
-function setModel(e: MouseEvent, model: ModelListItem) {
+function setModel(e: MouseEvent, model: Model) {
 	if (actionMenuButton.value && actionMenuButton.value.contains(e.target as Node)) return;
 
 	if (config.cloud.enabled && !userStore.isSignedIn) {
 		// Show toast to sign in
 		router.push('/account');
 		return;
-	} else if (model.llamapenMetadata?.premium && !userStore.isPremium) {
-		// Show toast to check out premium
-		router.push('/account#plan');
-		return;
 	}
+	// TODO(llamapen-cloud): fix this
+	// } else if (model.llamapenMetadata?.premium && !userStore.isPremium) {
+	// 	// Show toast to check out premium
+	// 	router.push('/account#plan');
+	// 	return;
+	// }
 
 	setModelInfo(model);
 }
@@ -46,12 +49,12 @@ defineExpose({
 	listItemRef
 });
 
-const isFavorited = () => config.models.favoriteModels.includes(props.model.modelData.model);
+const isFavorited = () => config.models.favoriteModels.includes(props.model.modelData.id);
 
 const modelCapabilities = computed(() => getModelCapabilities(props.model));
 
 const favoriteModel = () => {
-	const modelId = props.model.modelData.model;
+	const modelId = props.model.modelData.id;
 	if (isFavorited()) {
 		config.models.favoriteModels = config.models.favoriteModels.filter(m => m !== modelId);
 	} else {
@@ -76,7 +79,7 @@ const selectActions: MenuEntry[] = [
 	{
 		text: 'Manage Model',
 		icon: BiDotsHorizontalRounded,
-		onClick: () => router.push(`/models/${props.model.modelData.model}`)
+		onClick: () => router.push(`/models/${props.model.modelData.id}`)
 	}
 ];
 </script>
@@ -86,16 +89,17 @@ const selectActions: MenuEntry[] = [
 		:class="{
 			'bg-surface-light': selected && !isCurrentModel,
 			'bg-surface-light ring-highlight!': isCurrentModel,
-			'opacity-50': (!userStore.isPremium && model.modelData.llamapenMetadata?.premium) || (config.cloud.enabled && !userStore.isSignedIn),
+			// TODO(llamapen-cloud): fix this
+			// 'opacity-50': (!userStore.isPremium && model.modelData.llamapenMetadata?.premium) || (config.cloud.enabled && !userStore.isSignedIn),
 		}" @click="setModel($event, model.modelData)" ref="listItemRef" :aria-selected="selected">
 
-		<ModelIcon :name="model.modelData.model" class="size-10 p-1" />
+		<ModelIcon :name="model.modelData.id" class="size-10 p-1" />
 
 		<div class="flex flex-col">
 			<div class="flex flex-row items-center">
 				<span 
 					class="text-md font-semibold text-ellipsis whitespace-nowrap overflow-hidden text-text"
-					:title="model.modelData.model"
+					:title="model.modelData.id"
 				>
 					{{ model.displayName}}
 				</span>
@@ -106,7 +110,8 @@ const selectActions: MenuEntry[] = [
 						title="Favorited model">
 						<BiHeart class="text-red-400 size-4" />
 					</div>
-					<div 
+					<!-- TODO(llamapen-cloud): re-implement this -->
+					<!-- <div 
 						v-if="model.modelData.llamapenMetadata?.premium"
 						class="bg-yellow-400/25 rounded-sm ring-1 ring-yellow-400 p-0.5"
 						title="Premium model - requires LlamaPen Cloud Premium">
@@ -118,40 +123,43 @@ const selectActions: MenuEntry[] = [
 						title="Proprietary model - closed-source model that is not open-source.">
 						<BiSolidBox class="text-orange-400 size-4" />
 
-					</div>
+					</div> -->
 					<!-- Capability tags -->
 					<div 
-						v-if="modelCapabilities.includes('vision')"
+						v-if="modelCapabilities.supportsVision"
 						class="bg-green-400/25 rounded-sm ring-1 ring-green-400 p-0.5"
 						title="Vision - can process images">
 						<BiShow class="text-green-400 size-4" />
 					</div>
 					<div 
-						v-if="modelCapabilities.includes('thinking')"
+						v-if="modelCapabilities.supportsReasoning"
 						class="bg-violet-400/25 rounded-sm ring-1 ring-violet-400 p-0.5 flex flex-row"
-						:title="model.modelData.llamapenMetadata?.tags?.includes('alwaysReasons') 
+						title="Thinking - toggleable enhanced reasoning capabilities">
+							<!-- TODO(llamapen-cloud): fix this -->
+							<!-- :title="model.modelData.llamapenMetadata?.tags?.includes('alwaysReasons') 
 							? 'Locked reasoning - always uses reasoning capabilities' 
-							: 'Thinking - toggleable enhanced reasoning capabilities'">
+							: 'Thinking - toggleable enhanced reasoning capabilities'" -->
 						<BiBrain class="text-violet-400 size-4" />
-						<BiLock
+						<!-- <BiLock
 							v-if="model.modelData.llamapenMetadata?.tags?.includes('alwaysReasons')"
-							class="text-violet-400 size-4" />
+							class="text-violet-400 size-4" /> -->
 					</div>
 					<div 
-						v-if="modelCapabilities.includes('tools')"
+						v-if="modelCapabilities.supportsFunctionCalling"
 						class="bg-blue-400/25 rounded-sm ring-1 ring-blue-400 p-0.5"
 						title="Tools - can use external tools">
 						<BiWrench class="text-blue-400 size-4" />
 					</div>
-					<div 
+					<!-- <div 
 						v-if="modelCapabilities.includes('search')"
 						class="bg-violet-400/25 rounded-sm ring-1 ring-pink-400 p-0.5"
 						title="Web search - can access and search the web">
 						<BiGlobe class="text-pink-400 size-4" />
-					</div>
+					</div> -->
 				</div>
 			</div>
-			<span class="text-sm text-text-muted">{{ model.modelData.details.parameter_size }}</span>
+			<!-- TODO(critical): customisable sub-text per provider -->
+			<!-- <span class="text-sm text-text-muted">{{ model.modelData.details.parameter_size }}</span> -->
 			<div class="absolute hidden items-center justify-center right-0 top-0 h-full w-16 bg-linear-to-r from-transparent to-surface-light group-hover:flex"
 				:class="{ 
 					'flex!': selected,

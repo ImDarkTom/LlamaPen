@@ -12,7 +12,7 @@ const { loading, selectedModelCapabilities } = useModelList();
 
 const searchQuery = ref<string>('');
 
-const selectedModelCanCallTools = computed(() => selectedModelCapabilities.value.includes('tools'));
+const selectedModelCanCallTools = computed(() => selectedModelCapabilities.value.supportsFunctionCalling);
 
 function toggleSelection(item: string) {
     const index = toolsStore.toggled.indexOf(item);

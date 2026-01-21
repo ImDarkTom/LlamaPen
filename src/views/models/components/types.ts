@@ -5,8 +5,3 @@ export type ModelViewInfo =
  | { state: 'loading' }
  | { state: 'error'; message: string }
  | { state: 'unselected' };
-
-export type ModelSidebarListItem = {
-    model: ModelListItem,
-    loadedInMemory: boolean,
-};

@@ -99,10 +99,10 @@ const warningText = computed(() => {
                     <div class="w-full min-h-0.5 bg-border"></div>
                     <MessageModelSelectorItem
                         v-for="model in allModels" 
-                        :key="model.modelData.digest"
-                        :modelId="model.modelData.model"
+                        :key="model.modelData.id"
+                        :modelId="model.modelData.id"
                         :modelName="model.displayName"
-                        :modelIsAvailable="(model.modelData.llamapenMetadata?.premium && userStore.isPremium) ?? true"
+                        :modelIsAvailable="true /* (model.modelData.llamapenMetadata?.premium && userStore.isPremium) ?? true */"
                         :regenerate-message="regenerateMessage" />
                 </div>
             </template>

@@ -16,7 +16,7 @@ defineProps<{
 }>();
 
 const selectedModelHasVision = computed(() => {
-    return selectedModelCapabilities.value.includes('vision')
+    return selectedModelCapabilities.value.supportsVision
 });
 
 const cloudNotAllowed = computed(() => {

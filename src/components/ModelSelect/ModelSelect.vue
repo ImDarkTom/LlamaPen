@@ -165,7 +165,7 @@ function renameModel(model: ModelInfoListItem) {
         newName = displayName;
     }
 
-    modelList.renameModel(model.modelData.model, newName);
+    modelList.renameModel(model.modelData.id, newName);
 }
 
 
@@ -188,7 +188,7 @@ const menuWidth = computed(() => config.ui.modelList.useGridView ? 'sm:w-xl': 's
             </span>
 
             <span v-else-if="connectedToOllama && selectedModelInfo.exists" class="flex flex-row gap-2 items-center">
-                <ModelIcon :name="selectedModelInfo.data.modelData.model" class="size-6" />
+                <ModelIcon :name="selectedModelInfo.data.modelData.id" class="size-6" />
                 {{ modelName }}
             </span>
 
@@ -275,10 +275,10 @@ const menuWidth = computed(() => config.ui.modelList.useGridView ? 'sm:w-xl': 's
                         role="list" >
                         <ModelSelectItem 
                             v-for="(model, index) in sortedItems" 
-                            :key="model.modelData.model" 
+                            :key="model.modelData.id" 
                             :index
                             :model 
-                            :isCurrentModel="model.modelData.model === selectedModelInfo.data?.modelData.model" 
+                            :isCurrentModel="model.modelData.id === selectedModelInfo.data?.modelData.id" 
                             :selected="index === focusedItemIndex"
                             :renameModel="() => renameModel(model)"
                             @mouseover="setFocused(index)"
@@ -287,10 +287,10 @@ const menuWidth = computed(() => config.ui.modelList.useGridView ? 'sm:w-xl': 's
                     <div v-else class="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-5 gap-2 m-2">
                         <ModelSelectGridItem
                             v-for="(model, index) in sortedItems" 
-                            :key="model.modelData.model" 
+                            :key="model.modelData.id" 
                             :index
                             :model 
-                            :isCurrentModel="model.modelData.model === selectedModelInfo.data?.modelData.model" 
+                            :isCurrentModel="model.modelData.id === selectedModelInfo.data?.modelData.id" 
                             :selected="index === focusedItemIndex"
                             :renameModel="() => renameModel(model)"
                             @mouseover="setFocused(index)"

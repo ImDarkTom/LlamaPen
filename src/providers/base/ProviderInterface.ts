@@ -1,5 +1,5 @@
 import type { ReadableOf } from "@/types/util";
-import type { ChatIteratorChunk, ChatOptions } from "./types";
+import type { ChatIteratorChunk, ChatOptions, Model, ModelCapabilities } from "./types";
 import type { ShowResponse } from "ollama/browser";
 
 // TODO: have this contain all standardized types for use throughout the app (or maybe in a separate types.ts file in providers/base/)
@@ -33,16 +33,15 @@ export interface BaseLLMProvider {
 
     /**
      * Get a list of available models from the provider.
-     * TODO: standardize ModelList across providers. We could also maybe have another method to get all models (e.g. ones not available/selected for use)
+     * TODO: We could also maybe have another method to get all models (e.g. ones not available/selected for use)
      */
-    getModels(): Promise<ModelList>;
+    getModels(): Promise<Model[]>;
 
     /**
      * Get the model 'capabilities', e.g. image inputs, thinking/reasoning, etc.
-     * TODO: standardize capabilities across providers (don't use OllamaCapability).
      * @param modelId Model to get capabilities for.
      */
-    getModelCapabilities(modelId: string): Promise<OllamaCapability[]>;
+    getModelCapabilities(modelId: string): Promise<ModelCapabilities>;
 
 
     /**
@@ -58,13 +57,11 @@ export type WithMemoryManagement = {
 
     /**
      * Get the IDs of models currently loaded into memory.
-     * TODO: add a flag for provider to indicate if memory management is supported.
      */
     getLoadedModelIds(): Promise<string[]>;
 
     /**
      * Loads a model into memory.
-     * TODO: add a flag for provider to indicate if memory management is supported.
      * @param modelName The name of the model to load into memory.
      * @returns If the model was successfully loaded into memory.
      */
@@ -72,7 +69,6 @@ export type WithMemoryManagement = {
 
     /**
      * Unloads a model from memory.
-     * TODO: add a flag for provider to indicate if this is supported.
      * @param modelName The name of the model to unload from memory.
      * @returns If the model was successfully unloaded from memory.
      */

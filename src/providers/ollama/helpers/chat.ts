@@ -30,7 +30,7 @@ async function* chatIterator(
         options: config.chat.messageOptionsEnabled ? config.chat.messageOptions : undefined,
     };
 
-    if (selectedModelCapabilities.value.includes('tools')) {
+    if (selectedModelCapabilities.value.supportsFunctionCalling) {
         chatOptions['tools'] = appToolsToOllama();
     }
 

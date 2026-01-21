@@ -2,12 +2,12 @@ import { useModelList, type ModelInfoListItem } from "@/composables/useModelList
 import { defineStore } from "pinia";
 import { computed, ref } from "vue";
 import { useConfigStore } from "./config";
-import useUserStore from "./user";
+import type { Model } from "@/providers/base/types";
 
 export const useModelSelect = defineStore('modelSelect', () => {
-    const { getModelCapabilities } = useModelList();
+    // const { getModelCapabilities } = useModelList();
     const config = useConfigStore();
-    const userStore = useUserStore();
+    // const userStore = useUserStore();
 
     const searchQuery = ref('');
     const isMenuOpened = ref(false);
@@ -15,6 +15,7 @@ export const useModelSelect = defineStore('modelSelect', () => {
 
     const filterMenuOpen = ref(false);
     const orderBy = ref<'default' | 'alphabetically' | 'size'>('default');
+    // TODO(next): this up next, so we can finnally remove all custom ollama typings
     const filterCapabilities = ref<OllamaCapability[]>([]);
     const direction = ref<'asc' | 'des'>('asc');
 
@@ -26,25 +27,27 @@ export const useModelSelect = defineStore('modelSelect', () => {
                 return (
                     model.modelData.name.toLowerCase().includes(query) ||
                     model.displayName.toLowerCase().includes(query) ||
-                    model.modelData.model.toLowerCase().includes(query)
+                    model.modelData.id.toLowerCase().includes(query)
                 );
             });
     });
 
     function userSort(items: ModelInfoListItem[]) {
-        if (filterCapabilities.value.length > 0) {
-            items = items.filter((item) => {
-                const capabilities = getModelCapabilities(item);
-                return filterCapabilities.value.every((cap) => capabilities.includes(cap));
-            });
-        }
+        // TODO(critical): make filtering capabilities work 
+        // if (filterCapabilities.value.length > 0) {
+            
+        //     items = items.filter((item) => {
+        //         const capabilities = getModelCapabilities(item);
+        //         return capabilities && filterCapabilities.value.every((cap) => capabilities.[cap]);
+        //     });
+        // }
 
         const favoriteModels = config.models.favoriteModels ?? [];
         const favorites: ModelInfoListItem[] = [];
         const nonFavorites: ModelInfoListItem[] = [];
 
         items.forEach(item => {
-            if (favoriteModels.includes(item.modelData.model)) {
+            if (favoriteModels.includes(item.modelData.id)) {
                 favorites.push(item);
             } else {
                 nonFavorites.push(item);
@@ -56,14 +59,15 @@ export const useModelSelect = defineStore('modelSelect', () => {
                 break;
             case 'alphabetically':
                 nonFavorites.sort((a, b) => {
-                    const item1 = a.modelData.model.split('/')[1] ?? a.modelData.model;
-                    const item2 = b.modelData.model.split('/')[1] ?? b.modelData.model;
+                    const item1 = a.modelData.id.split('/')[1] ?? a.modelData.id;
+                    const item2 = b.modelData.id.split('/')[1] ?? b.modelData.id;
                     return item1.localeCompare(item2, undefined, { sensitivity: 'base' });
                 });
                 break;
-            case 'size':
-                nonFavorites.sort((a, b) => a.modelData.size - b.modelData.size);
-                break;
+            // TODO(ollama): some way to allow custom sorting/filtering based on provider (size sort)
+            // case 'size':
+            //     nonFavorites.sort((a, b) => a.modelData.size - b.modelData.size);
+            //     break;
         }
 
         if (direction.value === 'des') {
@@ -77,23 +81,24 @@ export const useModelSelect = defineStore('modelSelect', () => {
     function sortItems(items: ModelInfoListItem[]) {
         items = userSort(items) || items;
 
-        if (config.cloud.enabled) {
-            if (!userStore.isPremium) {
-                items.sort((a, b) => {
-                    return (a.modelData.llamapenMetadata?.premium ? 1 : 0) - (b.modelData.llamapenMetadata?.premium ? 1 : 0)
-                });
-            }
+        // TODO(llamapen-cloud): sorting item based on provider-specific properties
+        // if (config.cloud.enabled) {
+        //     if (!userStore.isPremium) {
+        //         items.sort((a, b) => {
+        //             return (a.modelData.llamapenMetadata?.premium ? 1 : 0) - (b.modelData.llamapenMetadata?.premium ? 1 : 0)
+        //         });
+        //     }
 
-            if (userStore.userInfo.options.showProprietaryModels === false) {
-                items = items.filter(item => !item.modelData.llamapenMetadata?.tags?.includes('closedSource'));
-            }
-        }
+        //     if (userStore.userInfo.options.showProprietaryModels === false) {
+        //         items = items.filter(item => !item.modelData.llamapenMetadata?.tags?.includes('closedSource'));
+        //     }
+        // }
 
         return items;
     }
 
-    async function setModel(newModel: ModelListItem, skipUiUpdate: boolean = false) {
-        const newModelId = newModel.model;
+    async function setModel(newModel: Model, skipUiUpdate: boolean = false) {
+        const newModelId = newModel.id;
         config.selectedModel = newModelId;
 
         if (!skipUiUpdate) {

@@ -9,18 +9,19 @@ import Tooltip from '@/components/Tooltip/Tooltip.vue';
 import { useModelList, type ModelInfoListItem } from '@/composables/useModelList';
 import router from '@/lib/router';
 import { useConfigStore } from '@/stores/config';
-import useUserStore from '@/stores/user';
+// import useUserStore from '@/stores/user';
 import { computed, ref } from 'vue';
 import type { IconType } from 'vue-icons-plus';
 import { BiCopy, BiDotsVerticalRounded, BiDownload, BiHide, BiLinkExternal, BiPencil, BiShow, BiTrash } from 'vue-icons-plus/bi';
 import { Fa6Memory } from 'vue-icons-plus/fa6';
 import { useProviderManager } from '@/composables/useProviderManager';
 import { ollamaWrapper } from '@/providers/ollama/OllamaWrapper';
+import type { Model } from '@/providers/base/types';
 
 const config = useConfigStore();
 const { setModelHidden } = useModelList();
 const { connectedToOllama, loading, models, modelIds } = useModelList();
-const user = useUserStore();
+// const user = useUserStore();
 
 const props = defineProps<{
     modelsList: ModelInfoListItem[],
@@ -33,29 +34,29 @@ const emit = defineEmits<{
 const refreshModelList = () => emit('refreshModelList');
 
 const isHidden = (modelName: string) => config.chat.hiddenModels.includes(modelName);
-const isLoadedInMemory = (modelName: string) => models.value.some(item => item.modelData.model === modelName && item.loadedInMemory);
+const isLoadedInMemory = (modelName: string) => models.value.some(item => item.modelData.id === modelName && item.loadedInMemory);
 
-const modelActions: MenuEntry<{ modelData: ModelListItem, displayName: string }>[] = [
+const modelActions: MenuEntry<{ modelData: Model, displayName: string }>[] = [
     {
         text: 'Open in Ollama Library',
         icon: BiLinkExternal,
-        onClick: ({ modelData }) => window.open(`https://ollama.com/library/${modelData.model}`, '_blank'),
+        onClick: ({ modelData }) => window.open(`https://ollama.com/library/${modelData.id}`, '_blank'),
         condition: !config.cloud.enabled
     },
     {
-        text: ({ modelData }) => isHidden(modelData.model) ? 'Unhide model' : 'Hide model',
-        onClick: ({ modelData }) => setModelHidden(modelData.model, isHidden(modelData.model)),
+        text: ({ modelData }) => isHidden(modelData.id) ? 'Unhide model' : 'Hide model',
+        onClick: ({ modelData }) => setModelHidden(modelData.id, isHidden(modelData.id)),
         icon: {
             type: 'factory',
-            func: ({ modelData }) => isHidden(modelData.model) ? BiShow : BiHide
+            func: ({ modelData }) => isHidden(modelData.id) ? BiShow : BiHide
         },
     },
     {
-        text: ({ modelData }) => isLoadedInMemory(modelData.model) ? 'Unload from memory' : 'Load into memory',
-        onClick: ({ modelData }) => toggleModelLoaded(modelData.model),
+        text: ({ modelData }) => isLoadedInMemory(modelData.id) ? 'Unload from memory' : 'Load into memory',
+        onClick: ({ modelData }) => toggleModelLoaded(modelData.id),
         icon: {
             type: 'factory',
-            func: ({ modelData }) => (isLoadedInMemory(modelData.model) ? MemoryUnloadIcon : Fa6Memory) as IconType
+            func: ({ modelData }) => (isLoadedInMemory(modelData.id) ? MemoryUnloadIcon : Fa6Memory) as IconType
         },
         condition: !config.cloud.enabled
     },
@@ -67,13 +68,13 @@ const modelActions: MenuEntry<{ modelData: ModelListItem, displayName: string }>
     {
         text: 'Duplicate model',
         icon: BiCopy,
-        onClick: ({ modelData }) => copyModel(modelData.model),
+        onClick: ({ modelData }) => copyModel(modelData.id),
         condition: !config.cloud.enabled
     },
     {
         text: 'Delete model',
         icon: BiTrash,
-        onClick: ({ modelData }) => deleteModel(modelData.model),
+        onClick: ({ modelData }) => deleteModel(modelData.id),
         condition: !config.cloud.enabled,
         category: 'danger'
     }
@@ -95,13 +96,13 @@ async function toggleModelLoaded(modelName: string) {
     }
 }
 
-async function renameModel(modelData: ModelListItem, displayName: string) {
+async function renameModel(modelData: Model, displayName: string) {
     let newName = prompt(`Enter a new name for '${displayName}' (app cosmetic only): '`, displayName);
     if (newName === '' || !newName) {
         newName = displayName;
     }
 
-    config.chat.modelRenames[modelData.model] = newName;
+    config.chat.modelRenames[modelData.id] = newName;
     refreshModelList();
 }
 
@@ -153,17 +154,18 @@ const hideAll = () => {
     refreshModelList();
 };
 
-const showProprietaryModels = ref(user.userInfo.options.showProprietaryModels);
+// const showProprietaryModels = ref(user.userInfo.options.showProprietaryModels);
 
 const searchQuery = ref('');
 
 const queriedModels = computed(() => props.modelsList.filter((m) => {
-    if (!showProprietaryModels.value && m.modelData.llamapenMetadata?.tags?.includes('closedSource')) {
-        return false;
-    }
+    // TODO(llamapen-cloud): fix this 
+    // if (!showProprietaryModels.value && m.modelData.llamapenMetadata?.tags?.includes('closedSource')) {
+    //     return false;
+    // }
 
     return m.displayName.includes(searchQuery.value) ||
-        m.modelData.model.includes(searchQuery.value)
+        m.modelData.id.includes(searchQuery.value)
 }));
 
 const batchActions: MenuEntry[] = [
@@ -230,11 +232,11 @@ const batchActions: MenuEntry[] = [
                 <RouterLink
                     v-for="{ modelData, loadedInMemory, hidden, displayName } in queriedModels" 
                     exactActiveClass="*:bg-surface-light *:ring-1 *:ring-highlight *:ring-inset *:text-text"
-                    :to="`/models/${modelData.model}`" >
+                    :to="`/models/${modelData.id}`" >
                     <div 
                         class="flex flex-row items-center gap-2 p-2 rounded-md hover:bg-surface transition-colors duration-dynamic"
                         :class="{ 'opacity-75': hidden }">
-                        <ModelIcon :name="modelData.model ?? 'Unknown'" class="size-6" />
+                        <ModelIcon :name="modelData.id ?? 'Unknown'" class="size-6" />
                         {{ displayName }}
 
                         <div class="grow"></div>

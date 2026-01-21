@@ -1,7 +1,7 @@
 import type { ReadableOf } from "@/types/util";
 import type { BaseLLMProvider, WithMemoryManagement, WithOllamaModelDetails } from "../base/ProviderInterface";
 import { chat, generateChatTitle } from "./helpers";
-import type { ChatIteratorChunk, ChatOptions } from "../base/types";
+import type { ChatIteratorChunk, ChatOptions, Model, ModelCapabilities } from "../base/types";
 import { appMesagesToOllama } from "./converters/appMessagesToOllama";
 import { ollamaWrapper } from "./OllamaWrapper";
 import type { ShowResponse } from "ollama";
@@ -19,18 +19,42 @@ export class OllamaProvider implements BaseLLMProvider, WithMemoryManagement, Wi
         return chat(ollamaFormatMessages, abortSignal, options);
     }
     
-    async getModels(): Promise<ModelList> {
+    async getModels(): Promise<Model[]> {
 		const list = await ollamaWrapper.list();
-		return list;
+
+		return list.map((m) => {
+			// TODO: real capabilities
+			return {
+				name: m.name,
+				id: m.model,
+				capabilities: {
+					supportsFunctionCalling: false,
+					supportsReasoning: false,
+					supportsVision: false,
+				}
+			}
+		});
 	}
 
-    async getModelCapabilities(modelId: string): Promise<OllamaCapability[]> {
+    async getModelCapabilities(modelId: string): Promise<ModelCapabilities> {
+		// 'completion' | 'tools' | 'thinking' | 'vision' | 'insert' | 'embedding' | 'search'
+
 		const { data: modelInfo, error } = await ollamaWrapper.show({ model: modelId });
 		if (error || !modelInfo) {
-			return [];
+			return {
+				supportsFunctionCalling: false,
+				supportsReasoning: false,
+				supportsVision: false,
+			};
 		}
 
-		return modelInfo.capabilities as OllamaCapability[];
+		const capabilities = modelInfo.capabilities;
+
+		return {
+			supportsReasoning: capabilities.includes('thinking'),
+			supportsVision: capabilities.includes('vision'),
+			supportsFunctionCalling: capabilities.includes('tools'),
+		}
 	}
 
     generateChatTitle(messages: ChatMessage[]): Promise<string> {

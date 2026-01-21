@@ -11,7 +11,7 @@ const config = useConfigStore();
 defineProps(['modelValue']);
 const emits = defineEmits(['update:modelValue']);
 
-const selectedModelCanThink = computed(() => selectedModelCapabilities.value.includes('thinking'));
+const selectedModelCanThink = computed(() => selectedModelCapabilities.value.supportsReasoning);
 
 watch(selectedModelCanThink, () => {
     if (!selectedModelCanThink.value) {
@@ -20,10 +20,13 @@ watch(selectedModelCanThink, () => {
 });
 
 const selectedAlwaysReasons = computed(() => {
-    return !!(
-        selectedModelInfo.value.exists &&
-        selectedModelInfo.value.data.modelData.llamapenMetadata?.tags?.includes('alwaysReasons')
-    );
+    return false;
+
+    // TODO(llamapen-cloud): fix this
+    // return !!(
+    //     selectedModelInfo.value.exists &&
+    //     selectedModelInfo.value.data.modelData.llamapenMetadata?.tags?.includes('alwaysReasons')
+    // );
 });
 
 watch(selectedAlwaysReasons, () => {

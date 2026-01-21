@@ -72,7 +72,7 @@ async function setModelViewInfo(modelId: string) {
     selectedModel.value = {
         state: 'data',
         model: response,
-        isLoaded: modelsList.value.some(item => item.modelData.model === modelId && item.loadedInMemory)
+        isLoaded: modelsList.value.some(item => item.modelData.id === modelId && item.loadedInMemory)
     };
 }
 
