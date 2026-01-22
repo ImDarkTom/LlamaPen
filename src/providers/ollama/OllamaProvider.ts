@@ -5,18 +5,25 @@ import { appMesagesToOllama } from "./converters/appMessagesToOllama";
 import { ollamaWrapper } from "./OllamaWrapper";
 import type { ShowResponse } from "ollama";
 import { reactive, type Reactive } from "vue";
-import type { ConnectionState } from "../base/ProviderInterface";
+import type { ConnectionState, OllamaLLMProvider } from "../base/ProviderInterface";
+import logger from "@/lib/logger";
+import { BaseProvider } from "../base/BaseProvider";
 
 /**
  * Interfaces with the Ollama wrapper before packaging responses into the common app standard.
  */
-export class OllamaProvider implements OllamaProvider {
-	constructor() {
-		this.refreshConnection();
-	}
-
+export class OllamaProvider extends BaseProvider implements OllamaLLMProvider {
     name = "Ollama";
 	hasOllamaFeatures = true as const;
+
+	protected onLoad(): void {
+		super.onLoad();
+		logger.info('OllamaProvider:onInit', 'Initialising Ollama provider...')
+
+	}
+
+	onInit(): void | Promise<void> {
+	}
 
 	connectionState: Reactive<ConnectionState> = reactive({
 		status: 'disconnected',

@@ -22,8 +22,6 @@ export interface BaseLLMProvider {
      */
     readonly name: string;
 
-    // onInit(): void | Promise<void>;
-
     readonly connectionState: Reactive<ConnectionState>;
 
     refreshConnection(): Promise<void>
@@ -66,7 +64,7 @@ export interface BaseLLMProvider {
     generateChatTitle(messages: ChatMessage[]): Promise<string>;
 }
 
-export interface OllamaProvider extends BaseLLMProvider {
+export interface OllamaLLMProvider extends BaseLLMProvider {
     /**
      * @param modelId The model to get details for.
      */
@@ -92,8 +90,8 @@ export interface OllamaProvider extends BaseLLMProvider {
     unloadModel(modelId: string): Promise<boolean>;
 }
 
-export type LLMProvider = BaseLLMProvider | OllamaProvider;
+export type LLMProvider = BaseLLMProvider | OllamaLLMProvider;
 
-export function isOllamaProvider(provider: LLMProvider): provider is OllamaProvider {
+export function isOllamaProvider(provider: LLMProvider): provider is OllamaLLMProvider {
     return 'getLoadedModelIds' in provider;
 }
