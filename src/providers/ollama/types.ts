@@ -1,24 +1,12 @@
-export type OllamaChatRequest = {
-    model: string; // The model name
-    messages: OllamaMessage[]; // List of messages
-    think?: boolean; // For thinking models only
-    tools?: unknown[]; // TODO: add types for this / For tool call models only
-    format?: unknown; // TODO: get from api
-    stream?: boolean; // Stream or not
-    keep_alive?: string; // How long to keep model loaded in memory, default '5m'.
-    options?: {
-        num_ctx?: number;
-        repeat_last_n?: number;
-        repeat_penalty?: number;
-        temperature?: number;
-        seed?: number;
-        stop?: string;
-        num_predict?: number;
-        top_k?: number;
-        top_p?: number;
-        min_p?: number;
-    };
-}
+// https://github.com/ollama/ollama/blob/f9d2d8913554d78b1cae47c5eaa9cbbd0ea79273/docs/api.md#L502
+export type OllamaMessageRole = 'system' | 'user' | 'assistant' | 'tool';
+
+type OllamaToolCall = {
+    function: {
+        name: string;
+        arguments: Record<string, string | number | boolean>,
+    }
+};
 
 export type OllamaMessage = {
     role: OllamaMessageRole;

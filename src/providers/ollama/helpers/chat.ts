@@ -6,6 +6,7 @@ import { appToolsToOllama } from "../converters/appToolsToOllama";
 import type { ChatIteratorChunk, ChatOptions } from "@/providers/base/types";
 import { ollamaWrapper } from "../OllamaWrapper";
 import type { ChatRequest } from "ollama";
+import * as Ollama from 'ollama/browser';
 
 /**
  * 
@@ -15,7 +16,7 @@ import type { ChatRequest } from "ollama";
  * @returns Yields chunks normally. Throws if control flow error.
  */
 async function* chatIterator(
-    messages: OllamaMessage[],
+    messages: Ollama.Message[],
     abortSignal: AbortSignal,
     options: ChatOptions
 ): AsyncGenerator<ChatIteratorChunk, ChatIteratorChunk | undefined, unknown> {
@@ -91,6 +92,6 @@ async function* chatIterator(
     }
 }
 
-export function chat(messages: OllamaMessage[], abortSignal: AbortSignal, options: ChatOptions): ReadableOf<ChatIteratorChunk> {
+export function chat(messages: Ollama.Message[], abortSignal: AbortSignal, options: ChatOptions): ReadableOf<ChatIteratorChunk> {
     return Readable.from(chatIterator(messages, abortSignal, options)) as ReadableOf<ChatIteratorChunk>;
 }

@@ -1,5 +1,7 @@
 import logger from "@/lib/logger";
 import { getMessageAttachments } from "@/utils/core/getMessageAttachments";
+import type { OllamaMessage, OllamaMessageRole } from "../types";
+import * as Ollama from "ollama";
 
 async function getMessageAttachmentBase64(messageId: number): Promise<string[]> {
     const attachments = await getMessageAttachments(messageId);
@@ -41,7 +43,7 @@ export async function appMesagesToOllama(chatMessages: ChatMessage[]): Promise<O
             }
         })();
 
-        const builtMessage: OllamaMessage = {
+        const builtMessage: Ollama.Message = {
             role: role,
             content: message.content,
         };
