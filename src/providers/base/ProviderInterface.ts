@@ -1,6 +1,7 @@
 import type { ReadableOf } from "@/types/util";
 import type { ChatIteratorChunk, ChatOptions, Model, ModelCapabilities } from "./types";
 import type { ShowResponse } from "ollama/browser";
+import type { Reactive } from "vue";
 
 // TODO: have this contain all standardized types for use throughout the app (or maybe in a separate types.ts file in providers/base/)
 
@@ -9,17 +10,19 @@ import type { ShowResponse } from "ollama/browser";
  * - OpenRouter provider (using sdk for type safety, also make sure to chunk with the provider so js doesn't get loaded unless openrouter provider is explicitly chosen)
  */
 
+export type ConnectionState = {
+    status: 'connected' | 'disconnected' | 'checking' | 'error';
+    error?: string;
+    lastChecked?: Date;
+}
+
 export interface BaseLLMProvider {
     /**
      * Pretty name of the provider.
      */
     readonly name: string;
 
-    readonly connectionState: {
-        status: 'connected' | 'disconnected' | 'checking' | 'error';
-        error?: string;
-        lastChecked?: Date;
-    }
+    readonly connectionState: Reactive<ConnectionState>;
 
     refreshConnection(): Promise<void>
 
@@ -60,9 +63,7 @@ export interface BaseLLMProvider {
     generateChatTitle(messages: ChatMessage[]): Promise<string>;
 }
 
-export type WithOllamaFeatures = {
-    hasOllamaFeatures: true;
-
+export interface OllamaProvider extends BaseLLMProvider {
     /**
      * @param modelId The model to get details for.
      */
@@ -86,13 +87,10 @@ export type WithOllamaFeatures = {
      * @returns If the model was successfully unloaded from memory.
      */
     unloadModel(modelId: string): Promise<boolean>;
-};
+}
 
-export type WithoutOllamaFeatures = {
-    hasOllamaFeatures: false;
-};
+export type LLMProvider = BaseLLMProvider | OllamaProvider;
 
-
-export type OllamaModelDetails = WithOllamaFeatures | WithoutOllamaFeatures;
-
-export type LLMProvider = BaseLLMProvider & OllamaModelDetails;
+export function isOllamaProvider(provider: LLMProvider): provider is OllamaProvider {
+    return 'getLoadedModelIds' in provider;
+}

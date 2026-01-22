@@ -16,18 +16,22 @@ import { storeToRefs } from 'pinia';
 import { useModelSelect } from '@/stores/useModelSelect';
 import { emitter } from '@/lib/mitt';
 import ModelSelectGridItem from './ModelSelectGridItem.vue';
+import { useProviderManager } from '@/composables/useProviderManager';
 
 const config = useConfigStore();
 
 // State
 const { 
-    models: modelsList, 
+    rawModels: modelsList, 
     modelIds, 
     load: loadModels, 
     selectedModelInfo, 
-    loading: modelsLoading,
-    connectedToOllama
 } = useModelList();
+
+const {
+    isConnected,
+    isLoading,
+} = useProviderManager();
 
 const {
     isMenuOpened: isOpened,
@@ -182,17 +186,17 @@ const menuWidth = computed(() => config.ui.modelList.useGridView ? 'sm:w-xl': 's
 <template>
     <FloatingMenu v-model:is-opened="isOpened" @toggled="onToggled" preffered-position="top" :menu-width="menuWidth" >
         <template #button>
-            <span v-if="modelsLoading" class="flex flex-row gap-2 items-center text-text-muted/75">
+            <span v-if="isLoading" class="flex flex-row gap-2 items-center text-text-muted/75">
                 <BiLoaderAlt class="animate-spin size-6 inline" />
                 Loading models...
             </span>
 
-            <span v-else-if="connectedToOllama && selectedModelInfo.exists" class="flex flex-row gap-2 items-center">
+            <span v-else-if="isConnected && selectedModelInfo.exists" class="flex flex-row gap-2 items-center">
                 <ModelIcon :name="selectedModelInfo.data.modelData.id" class="size-6" />
                 {{ modelName }}
             </span>
 
-            <span v-else-if="connectedToOllama">
+            <span v-else-if="isConnected">
                 No model selected
             </span>
 
@@ -207,11 +211,11 @@ const menuWidth = computed(() => config.ui.modelList.useGridView ? 'sm:w-xl': 's
                 <div class="flex flex-row w-full rounded-lg border-2 overflow-hidden border-border focus-within:border-highlight hover:bg-surface-light">
                     <input 
                         class="w-full h-6 box-content p-3 outline-0"
-                        :class="{ 'cursor-not-allowed': !connectedToOllama }" 
+                        :class="{ 'cursor-not-allowed': !isConnected }" 
                         ref="searchBarRef" 
                         type="search"
                         placeholder="Search a model..."
-                        :disabled="!connectedToOllama"
+                        :disabled="!isConnected"
                         v-model="searchQuery" 
                         @keydown="searchKeyDown" 
                         aria-label="Search for a model..."
@@ -239,10 +243,10 @@ const menuWidth = computed(() => config.ui.modelList.useGridView ? 'sm:w-xl': 's
             <FilterMenu />
 
             <div :class="{ 'h-62!': filterMenuOpen }" class="h-80 overflow-y-auto [scrollbar-width:thin] ">
-                <div v-if="modelsLoading" class="h-24 flex justify-center items-center">
+                <div v-if="isLoading" class="h-24 flex justify-center items-center">
                     <BiLoaderAlt class="animate-spin size-6" />
                 </div>
-                <div v-else-if="!connectedToOllama" class="h-24 flex flex-col px-3 py-2 justify-center items-center font-bold gap-2">
+                <div v-else-if="!isConnected" class="h-24 flex flex-col px-3 py-2 justify-center items-center font-bold gap-2">
                     <span>
                         <VscDebugDisconnect class="inline" />
                         Not connected to Ollama.

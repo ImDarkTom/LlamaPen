@@ -1,15 +1,16 @@
 import type { ReadableOf } from "@/types/util";
-import type { BaseLLMProvider, WithOllamaFeatures } from "../base/ProviderInterface";
 import { chat, generateChatTitle } from "./helpers";
 import type { ChatIteratorChunk, ChatOptions, Model, ModelCapabilities } from "../base/types";
 import { appMesagesToOllama } from "./converters/appMessagesToOllama";
 import { ollamaWrapper } from "./OllamaWrapper";
 import type { ShowResponse } from "ollama";
+import { reactive, type Reactive } from "vue";
+import type { ConnectionState } from "../base/ProviderInterface";
 
 /**
  * Interfaces with the Ollama wrapper before packaging responses into the common app standard.
  */
-export class OllamaProvider implements BaseLLMProvider, WithOllamaFeatures {
+export class OllamaProvider implements OllamaProvider {
 	constructor() {
 		this.refreshConnection();
 	}
@@ -17,33 +18,26 @@ export class OllamaProvider implements BaseLLMProvider, WithOllamaFeatures {
     name = "Ollama";
 	hasOllamaFeatures = true as const;
 
-	connectionState: { status: "connected" | "disconnected" | "checking" | "error"; error?: string; lastChecked?: Date; } = {
-		status: 'disconnected'
-	};
+	connectionState: Reactive<ConnectionState> = reactive({
+		status: 'disconnected',
+		error: undefined,
+		lastChecked: undefined
+	});
 
 	async refreshConnection(): Promise<void> {
-		this.connectionState = {
-			status: 'checking',
-			lastChecked: new Date(),
-		};
+		this.connectionState.status = 'checking';
 
 		const { error } = await ollamaWrapper.version();
 
 		if (error) {
-			this.connectionState = {
-				status: 'error',
-				error: error.message,
-				lastChecked: new Date()
-			};
+			this.connectionState.status = 'error';
+			this.connectionState.error = error.message;
 		} else {
-			this.connectionState = {
-				status: 'connected',
-				lastChecked: new Date(),
-			};
+			this.connectionState.status = 'connected';
+			this.connectionState.error = undefined;
+			this.connectionState.lastChecked = new Date();
 		}
 	}
-
-
 
     async chat(messages: ChatMessage[], abortSignal: AbortSignal, options: ChatOptions): Promise<ReadableOf<ChatIteratorChunk>> {
 		const ollamaFormatMessages = await appMesagesToOllama(messages);

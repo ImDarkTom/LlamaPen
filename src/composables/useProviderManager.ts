@@ -1,26 +1,22 @@
-import type { LLMProvider } from "@/providers/base/ProviderInterface";
+import { isOllamaProvider, type LLMProvider } from "@/providers/base/ProviderInterface";
 import { providerFactory } from "@/providers/ProviderFactory";
 import { computed } from "vue";
-
-type ProviderWithFeatureMethod<
-    TFeature extends Partial<LLMProvider>,
-    TMethod extends keyof Extract<LLMProvider, TFeature>
-> = Extract<LLMProvider, TFeature>[TMethod] extends (...args: infer P) => infer R
-    ? { params: P, returnType: R }
-    : never;
 
 export function useProviderManager() {
     const currentProvider = computed(() => providerFactory.getCurrentProvider());
 
-    const capabilities = {
-        hasOllamaFeatures: computed(() => currentProvider.value.hasOllamaFeatures),
-    };
 
-    const connectionState = computed(() => currentProvider.value.connectionState);
+    const isOllama = computed(() => isOllamaProvider(currentProvider.value));
+
+
+    const connectionState = currentProvider.value.connectionState;
+    const isConnected = computed(() => connectionState.status === 'connected');
+    const isLoading = computed(() => connectionState.status === 'checking');
+    const isDisconnected = computed(() => connectionState.status === 'error' || connectionState.status === 'disconnected');
+
 
     // Always available (from BaseLLMProvider)
-    const refreshConnection = ((...args: Parameters<LLMProvider['refreshConnection']>) =>
-        currentProvider.value.refreshConnection(...args)) as LLMProvider['refreshConnection'];
+    const refreshConnection = () => currentProvider.value.refreshConnection();
 
     const chat = ((...args: Parameters<LLMProvider['chat']>) =>
         currentProvider.value.chat(...args)) as LLMProvider['chat'];
@@ -36,60 +32,54 @@ export function useProviderManager() {
 
     
     // Ollama-specific
-    type LoadModelIntoMemoryMethod = ProviderWithFeatureMethod<{ hasOllamaFeatures: true }, 'loadModelIntoMemory'>;
-    const loadModelIntoMemory = (...args: LoadModelIntoMemoryMethod['params']): LoadModelIntoMemoryMethod['returnType'] => {
-        const prov = currentProvider.value;
-        if (!prov.hasOllamaFeatures) {
-            throw new Error(`Provider ${prov.name} does not support memory management`);
+    const loadModelIntoMemory = (modelId: string) => {
+        if (!isOllamaProvider(currentProvider.value)) {
+            throw new Error(`Provider ${currentProvider.value.name} does not support memory management`);
         }
-        return prov.loadModelIntoMemory(...args);
+        return currentProvider.value.loadModelIntoMemory(modelId);
     };
 
-    type UnloadModelIntoMemoryMethod = ProviderWithFeatureMethod<{ hasOllamaFeatures: true }, 'unloadModel'>;
-    const unloadModel = (...args: UnloadModelIntoMemoryMethod['params']): UnloadModelIntoMemoryMethod['returnType'] => {
-        const prov = currentProvider.value;
-        if (!prov.hasOllamaFeatures) {
-            throw new Error(`Provider ${prov.name} does not support memory management`);
+    const unloadModel = (modelId: string) => {
+        if (!isOllamaProvider(currentProvider.value)) {
+            throw new Error(`Provider ${currentProvider.value.name} does not support memory management`);
         }
-        return prov.unloadModel(...args);
+        return currentProvider.value.unloadModel(modelId);
     };
 
-    type GetLoadedModelIdsMethod = ProviderWithFeatureMethod<{ hasOllamaFeatures: true }, 'getLoadedModelIds'>;
-    const getLoadedModelIds = (...args: GetLoadedModelIdsMethod['params']): GetLoadedModelIdsMethod['returnType'] => {
-        const prov = currentProvider.value;
-        if (!prov.hasOllamaFeatures) {
-            throw new Error(`Provider ${prov.name} does not support memory management`);
+    const getLoadedModelIds = () => {
+        if (!isOllamaProvider(currentProvider.value)) {
+            throw new Error(`Provider ${currentProvider.value.name} does not support memory management`);
         }
-        return prov.getLoadedModelIds(...args);
+        return currentProvider.value.getLoadedModelIds();
     };
 
-    type GetModelDetailsMethod = ProviderWithFeatureMethod<{ hasOllamaFeatures: true }, 'getModelDetails'>;
-    const getModelDetails = (...args: GetModelDetailsMethod['params']): GetModelDetailsMethod['returnType'] => {
-        const prov = currentProvider.value;
-        if (!prov.hasOllamaFeatures) {
-            throw new Error(`Provider ${prov.name} does not support Ollama model details`);
+    const getModelDetails = (modelId: string) => {
+        if (!isOllamaProvider(currentProvider.value)) {
+            throw new Error(`Provider ${currentProvider.value.name} does not support model details`);
         }
-        return prov.getModelDetails(...args);
+        return currentProvider.value.getModelDetails(modelId);
     };
 
     return {
         currentProvider,
-        capabilities,
+        isOllama,
+
         connectionState,
+        isConnected,
+        isLoading,
+        isDisconnected,
 
+        // Base
         refreshConnection,
-
         chat,
         getModels,
         getModelCapabilities,
         generateChatTitle,
 
-        // Memory management methods
+        // Ollama-specific
         loadModelIntoMemory,
         unloadModel,
         getLoadedModelIds,
-
-        // Ollama model details
         getModelDetails,
     }
 }

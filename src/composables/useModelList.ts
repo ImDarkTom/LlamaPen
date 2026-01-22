@@ -1,7 +1,8 @@
 import { useConfigStore } from "@/stores/config";
-import { computed, reactive, toRefs } from "vue";
+import { computed } from "vue";
 import { useProviderManager } from "./useProviderManager";
 import type { Model, ModelCapabilities } from "@/providers/base/types";
+import { ref } from "vue";
 
 export type ModelInfoListItem = {
     modelData: Model;
@@ -11,49 +12,32 @@ export type ModelInfoListItem = {
     fetchedCapabilities?: ModelCapabilities;
 }
 
-const state = reactive<{
-    models: ModelInfoListItem[],
-    loading: boolean,
-    error: string | null,
-    initialised: boolean,
-    connectedToOllama: boolean,
-}>({
-    models: [],
-    loading: false,
-    error: null,
-    initialised: false,
-    connectedToOllama: false
-});
+const rawModels = ref<ModelInfoListItem[]>([]);
+// const fetchedCapabilities = ref<Map<string, ModelCapabilities>>(new Map());
+const loadedModelIds = ref<string[]>([]);
+const initialised = ref(false);
 
 let loadPromise: Promise<void> | null = null;
 
 async function load(force: boolean = false) {
-    if (state.initialised && !force) return;
+    if (initialised.value && !force) return;
     if (loadPromise) return loadPromise;
 
     const config = useConfigStore();
     const providerManager = useProviderManager();
 
-    if (providerManager.connectionState.value.status === 'error') {
-        state.connectedToOllama = false;
-        state.error = providerManager.connectionState.value.error || 'An error occured.';
+    if (providerManager.connectionState.status === 'error') {
         return;
     }
 
-    state.loading = true;
-    state.error = null;
     loadPromise = (async () => {
         try {
-            // Get loaded models so we can tag which are loaded when we get the full list
-            let loadedModelIds: string[]; 
-            if (providerManager.capabilities.hasOllamaFeatures) {
-                loadedModelIds = await providerManager.getLoadedModelIds();
-            } else {
-                loadedModelIds = [];
+            if (providerManager.isOllama.value) {
+                loadedModelIds.value = await providerManager.getLoadedModelIds();
             }
 
             // Get the base model list
-            state.models = (await providerManager.getModels())
+            rawModels.value = (await providerManager.getModels())
                 .map((model) => {
                     const modelId = model.id;
 
@@ -68,7 +52,7 @@ async function load(force: boolean = false) {
                     return {
                         modelData: model,
                         displayName,
-                        loadedInMemory: loadedModelIds.includes(modelId),
+                        loadedInMemory: loadedModelIds.value.includes(modelId),
                         hidden: isHidden,
                     }
                 });
@@ -76,22 +60,18 @@ async function load(force: boolean = false) {
             if (
                 !config.cloud.enabled && 
                 (
-                    config.ollama.modelCapabilities.autoload && state.models.length < 31
+                    config.ollama.modelCapabilities.autoload && rawModels.value.length < 31
                     || config.ollama.modelCapabilities.alwaysAutoload
                 )
             ) {
-                for (const model of state.models) {
-                    const capabilities = await useProviderManager().getModelCapabilities(model.modelData.id);
+                for (const model of rawModels.value) {
+                    // TODO: move to fetchedCapabilities list so we can remove ModelListItem type
+                    const capabilities = await providerManager.getModelCapabilities(model.modelData.id);
                     model.fetchedCapabilities = capabilities;
                 }
             }
-
-            state.connectedToOllama = true;
-        } catch (err) {
-            state.error = (err as Error).message;
         } finally {
-            state.initialised = true;
-            state.loading = false;
+            initialised.value = true;
             loadPromise = null;
         }
     })();
@@ -103,14 +83,14 @@ async function refreshModelStates() {
     const loadedModelIds = await useProviderManager().getLoadedModelIds();
     const hiddenModels = useConfigStore().chat.hiddenModels;
 
-    state.models.forEach((item) => {
+    rawModels.value.forEach((item) => {
         item.loadedInMemory = loadedModelIds.includes(item.modelData.id);
         item.hidden = hiddenModels.includes(item.modelData.id);
     });
 }
 
 export function useModelList() {
-    const modelIds = computed(() => state.models.map((item) => item.modelData.id));
+    const modelIds = computed(() => rawModels.value.map((item) => item.modelData.id));
 
     function setModelHidden(modelId: string | null, setHidden: boolean) {
         if (!modelId) return;
@@ -143,7 +123,7 @@ export function useModelList() {
         { exists: true, data: ModelInfoListItem } | 
         { exists: false, data: null }
     >(() => {
-        const selected = state.models
+        const selected = rawModels.value
             .find(modelItem => modelItem.modelData.id === useConfigStore().selectedModel);
 
         if (selected) {
@@ -155,7 +135,7 @@ export function useModelList() {
 
     function getModelInfo(modelId: string): 
         { exists: true, data: ModelInfoListItem } | { exists: false, data: null } {
-        const selected = state.models
+        const selected = rawModels.value
             .find(modelItem => modelItem.modelData.id === modelId);
 
         if (selected) {
@@ -171,12 +151,12 @@ export function useModelList() {
         config.chat.modelRenames[modelId] = newName;
 
         // Update in state
-        const target = state.models.find(modelItem => modelItem.modelData.id === modelId);
+        const target = rawModels.value.find(modelItem => modelItem.modelData.id === modelId);
         if (target) target.displayName = newName;
     }
 
     return {
-        ...toRefs(state),
+        rawModels,
         load,
         modelIds,
         setModelHidden,

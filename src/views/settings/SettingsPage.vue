@@ -15,18 +15,18 @@ import CategoryLabel from './components/CategoryLabel.vue';
 import NumberInputSetting from './components/NumberInputSetting.vue';
 import PageHeader from '@/components/Page/PageHeader.vue';
 import SelectionSetting from './components/SelectionSetting.vue';
-import { useModelList } from '@/composables/useModelList';
 import OptionText from './components/OptionText.vue';
 import { BiInfoCircle, BiRefresh, BiRocket, BiTrash } from 'vue-icons-plus/bi';
 import { useRegisterSW } from 'virtual:pwa-register/vue';
 import { ollamaWrapper } from '@/providers/ollama/OllamaWrapper';
+import { useProviderManager } from '@/composables/useProviderManager';
 
 const config = useConfigStore();
 const router = useRouter();
 
 const chatsStore = useChatsStore();
 const messagesStore = useMessagesStore();
-const { connectedToOllama, loading: ollamaLoading } = useModelList();
+const { isConnected, isLoading } = useProviderManager();
 
 const { 
     offlineReady,
@@ -146,7 +146,7 @@ async function checkOllamaVersion() {
                     :default="ollamaDefault"
                     :check="ollamaUrlCheck"
                     :tooltip="`The URL to connect to Ollama on. (Default: ${ollamaDefault})`" />
-                <span class="text-sm" v-if="!connectedToOllama && !ollamaLoading">
+                <span class="text-sm" v-if="!isConnected && !isLoading">
                     Can't connect? Checkout the
                     <RouterLink to="/guide" class="text-text underline">setup guide</RouterLink>.
                 </span>

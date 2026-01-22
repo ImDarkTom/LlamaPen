@@ -10,6 +10,7 @@ import MessageModelSelectorItem from './MessageModelSelectorItem.vue';
 import { BiError, BiRefresh } from 'vue-icons-plus/bi';
 import useUserStore from '@/stores/user';
 import FloatingMenu from '@/components/FloatingMenu/FloatingMenu.vue';
+import { useProviderManager } from '@/composables/useProviderManager';
 
 const props = defineProps<{
     modelMessageDone: boolean;
@@ -18,7 +19,8 @@ const props = defineProps<{
 
 const messagesStore = useMessagesStore();
 const userStore = useUserStore();
-const { models, getModelInfo, modelIds, loading } = useModelList();
+const { rawModels, getModelInfo, modelIds } = useModelList();
+const { isLoading } = useProviderManager();
 
 const isOpened = ref<boolean>(false);
 const usedCloudForMessage = computed<boolean>(() => /\//g.test(props.message.model));
@@ -36,7 +38,7 @@ const messageModelInfo = computed<{
 });
 
 const allModels = computed<ModelInfoListItem[]>(() => {
-    return models.value.filter(model => {
+    return rawModels.value.filter(model => {
         // Get all models apart from the one the message used
         return props.message.type === 'model' && props.message.model !== model.modelData.name
     });
@@ -61,7 +63,7 @@ const warningText = computed(() => {
 <template>
     <div class="relative flex flex-row items-center gap-1">
         <Tooltip
-            v-if="!messageModelInfo.exists && !loading"
+            v-if="!messageModelInfo.exists && !isLoading"
             :text=warningText
             size="small">
             <BsCloudSlash v-if="usedCloudForMessage" class="text-warning size-5 ml-1 translate-y-0.5" />

@@ -4,8 +4,10 @@ import { emitter } from '../../../lib/mitt';
 import { useModelList } from '@/composables/useModelList';
 import OllamaIcon from '@/components/Icon/OllamaIcon.vue';
 import { BiChevronDown } from 'vue-icons-plus/bi';
+import { useProviderManager } from '@/composables/useProviderManager';
 
-const { connectedToOllama, load, error, loading } = useModelList();
+const { load } = useModelList();
+const { isConnected, isLoading, connectionState } = useProviderManager();
 
 // UI State
 const statusMessageText = ref("Waiting for Ollama...");
@@ -14,16 +16,16 @@ const moreInfoText = ref('Attempting to connect to Ollama...');
 onMounted(async () => {
     await load();
 
-    if (connectedToOllama.value) {
+    if (isConnected.value) {
         statusMessageText.value = "Connected";
         moreInfoText.value = "Connected to Ollama!";
-    } else if (error) {
-        if (error.value === "NetworkError when attempting to fetch resource.") {
+    } else if (connectionState.error) {
+        if (connectionState.error === "NetworkError when attempting to fetch resource.") {
             statusMessageText.value = "Disconnected";
             moreInfoText.value = "Network error, is Ollama running?";
         } else {
             statusMessageText.value = "Unknown Error";
-            moreInfoText.value = error.value || 'Unknown Error';
+            moreInfoText.value = connectionState.error || 'Unknown Error';
         }
 
         emitter.emit('openNotConnectedPopup');
@@ -40,16 +42,16 @@ function toggle() {
     <div 
         class="overflow-hidden overflow-ellipsis p-1 rounded-md ring-1 cursor-pointer transition-colors duration-dynamic"
         :class="{ 
-            'text-warning bg-warning/25 hover:bg-warning/35 ring-warning/50': loading,
-            'text-success bg-success/25 hover:bg-success/35 ring-success/50': connectedToOllama && !loading, 
-            'text-danger bg-danger/25 hover:bg-danger/35 ring-danger/50': !connectedToOllama && !loading
+            'text-warning bg-warning/25 hover:bg-warning/35 ring-warning/50': isLoading,
+            'text-success bg-success/25 hover:bg-success/35 ring-success/50': isConnected && !isLoading, 
+            'text-danger bg-danger/25 hover:bg-danger/35 ring-danger/50': !isConnected && !isLoading
         }"
         @click="toggle">
         <div class="flex flex-row gap-2">
             <OllamaIcon class="inline size-6" />
             <span 
                 class="font-medium" 
-                :class="{ 'animate-pulse': loading }"
+                :class="{ 'animate-pulse': isLoading }"
                 :title="statusMessageText"
                 >{{ statusMessageText }}</span>
             <BiChevronDown class="inline ml-auto transition-transform duration-dynamic" :class="{ 'rotate-180': expanded }" />

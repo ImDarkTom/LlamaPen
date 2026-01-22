@@ -15,7 +15,7 @@ import type { ModelViewInfo } from './components/types';
 const config = useConfigStore();
 
 // State
-const { models: modelsList, load: loadModels } = useModelList();
+const { rawModels, load: loadModels } = useModelList();
 const selectedModel = ref<ModelViewInfo>({ state: 'unselected' });
 
 const modelFromParams = computed<string | null>(() => {
@@ -72,7 +72,7 @@ async function setModelViewInfo(modelId: string) {
     selectedModel.value = {
         state: 'data',
         model: response,
-        isLoaded: modelsList.value.some(item => item.modelData.id === modelId && item.loadedInMemory)
+        isLoaded: rawModels.value.some(item => item.modelData.id === modelId && item.loadedInMemory)
     };
 }
 
@@ -81,7 +81,7 @@ async function setModelViewInfo(modelId: string) {
 <template>
     <div class="w-full h-full flex flex-col md:flex-row box-border overflow-y-auto gap-2 md:gap-0">
         <ModelList
-            :modelsList 
+            :modelsList="rawModels"
             @refresh-model-list="refreshModelList" />
 
         <ViewerContainer 

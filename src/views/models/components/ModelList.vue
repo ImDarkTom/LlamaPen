@@ -20,7 +20,8 @@ import type { Model } from '@/providers/base/types';
 
 const config = useConfigStore();
 const { setModelHidden } = useModelList();
-const { connectedToOllama, loading, models, modelIds } = useModelList();
+const { rawModels, modelIds } = useModelList();
+const { isConnected, isLoading } = useProviderManager();
 // const user = useUserStore();
 
 const props = defineProps<{
@@ -34,7 +35,7 @@ const emit = defineEmits<{
 const refreshModelList = () => emit('refreshModelList');
 
 const isHidden = (modelName: string) => config.chat.hiddenModels.includes(modelName);
-const isLoadedInMemory = (modelName: string) => models.value.some(item => item.modelData.id === modelName && item.loadedInMemory);
+const isLoadedInMemory = (modelName: string) => rawModels.value.some(item => item.modelData.id === modelName && item.loadedInMemory);
 
 const modelActions: MenuEntry<{ modelData: Model, displayName: string }>[] = [
     {
@@ -198,7 +199,7 @@ const batchActions: MenuEntry[] = [
                             <button
                             class="w-full text-text-muted enabled:hover:text-text bg-surface enabled:hover:bg-surface-light py-6 rounded-lg enabled:cursor-pointer select-none flex flex-row justify-center items-center gap-2 disabled:opacity-75"
                             :class="{ 'bg-surface-light ring-2 ring-border ring-inset': isActive }"
-                            :disabled="!connectedToOllama">
+                            :disabled="!isConnected">
                             <BiDownload />
                             Download Manager
                         </button>
@@ -209,12 +210,12 @@ const batchActions: MenuEntry[] = [
                 
                 <div 
                     class="flex flex-row gap-2"
-                    :class="{ 'pointer-events-none': !connectedToOllama }">
+                    :class="{ 'pointer-events-none': !isConnected }">
                     <input 
                         type="text" 
                         v-model="searchQuery" 
                         placeholder="Search..."
-                        :disabled="!connectedToOllama"
+                        :disabled="!isConnected"
                         class="bg-background p-2 rounded-md outline-none focus:ring-1 ring-highlight ring-inset w-full">
                     <ActionMenu :actions="batchActions">
                         <button class="btn-ghost">
@@ -223,7 +224,7 @@ const batchActions: MenuEntry[] = [
                     </ActionMenu>
                 </div>
 
-                <div v-if="!connectedToOllama && !loading">
+                <div v-if="!isConnected && !isLoading">
                     Not connected to Ollama
                 </div>
                 <div v-else-if="modelsList.length === 0">

@@ -23,7 +23,7 @@ export const useModelSelect = defineStore('modelSelect', () => {
     });
 
     const queriedModelList = computed<ModelInfoListItem[]>(() => {
-        return useModelList().models.value
+        return useModelList().rawModels.value
             .filter((model) => {
                 const query = (searchQuery.value || "").toLowerCase();
 
