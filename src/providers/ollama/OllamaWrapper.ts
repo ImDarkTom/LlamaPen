@@ -15,14 +15,13 @@ class OllamaWrapper {
     ollama = new Ollama(this.baseConfig);
 
     async version() {
-        const { data, error } = await tryCatch(this.ollama.version());
+        const response = await tryCatch(this.ollama.version());
                 
-        if (error) {
-            logger.warn('OllamaWrapper:version', 'Error getting Ollama version:', error);
-            return null;
+        if (response.error) {
+            logger.warn('OllamaWrapper:version', 'Error getting Ollama version:', response.error);
         }
 
-        return data.version;
+        return response;
     }
 
     async list() {

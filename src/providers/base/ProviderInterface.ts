@@ -15,6 +15,14 @@ export interface BaseLLMProvider {
      */
     readonly name: string;
 
+    readonly connectionState: {
+        status: 'connected' | 'disconnected' | 'checking' | 'error';
+        error?: string;
+        lastChecked?: Date;
+    }
+
+    refreshConnection(): Promise<void>
+
     /**
      * Generates a chat response as a stream of chunks.
      * 
@@ -52,8 +60,13 @@ export interface BaseLLMProvider {
     generateChatTitle(messages: ChatMessage[]): Promise<string>;
 }
 
-export type WithMemoryManagement = {
-    supportsMemoryManagement: true;
+export type WithOllamaFeatures = {
+    hasOllamaFeatures: true;
+
+    /**
+     * @param modelId The model to get details for.
+     */
+    getModelDetails(modelId: string): Promise<{ data: ShowResponse, error: null } | { data: null, error: string }>;
 
     /**
      * Get the IDs of models currently loaded into memory.
@@ -75,27 +88,11 @@ export type WithMemoryManagement = {
     unloadModel(modelId: string): Promise<boolean>;
 };
 
-export type WithoutMemoryManagement = {
-    supportsMemoryManagement: false;
+export type WithoutOllamaFeatures = {
+    hasOllamaFeatures: false;
 };
 
 
-export type WithOllamaModelDetails = {
-    supportsOllamaModelDetails: true;
+export type OllamaModelDetails = WithOllamaFeatures | WithoutOllamaFeatures;
 
-    /**
-     * TODO: Move off Ollama types
-     * @param modelId The model to get details for.
-     */
-    getModelDetails(modelId: string): Promise<{ data: ShowResponse, error: null } | { data: null, error: string }>;
-};
-
-export type WithoutOllamaModelDetails = {
-    supportsOllamaModelDetails: false;
-};
-
-
-export type MemoryMangement = WithMemoryManagement | WithoutMemoryManagement;
-export type OllamaModelDetails = WithOllamaModelDetails | WithoutOllamaModelDetails;
-
-export type LLMProvider = BaseLLMProvider & MemoryMangement & OllamaModelDetails;
+export type LLMProvider = BaseLLMProvider & OllamaModelDetails;

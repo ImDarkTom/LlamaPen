@@ -13,10 +13,15 @@ export function useProviderManager() {
     const currentProvider = computed(() => providerFactory.getCurrentProvider());
 
     const capabilities = {
-        supportsMemoryManagement: computed(() => currentProvider.value.supportsMemoryManagement),
+        hasOllamaFeatures: computed(() => currentProvider.value.hasOllamaFeatures),
     };
 
+    const connectionState = computed(() => currentProvider.value.connectionState);
+
     // Always available (from BaseLLMProvider)
+    const refreshConnection = ((...args: Parameters<LLMProvider['refreshConnection']>) =>
+        currentProvider.value.refreshConnection(...args)) as LLMProvider['refreshConnection'];
+
     const chat = ((...args: Parameters<LLMProvider['chat']>) =>
         currentProvider.value.chat(...args)) as LLMProvider['chat'];
 
@@ -30,42 +35,38 @@ export function useProviderManager() {
             currentProvider.value.generateChatTitle(...args)) as LLMProvider['generateChatTitle'];
 
     
-    // Memory management methods (if supported)
-    type LoadModelIntoMemoryMethod = ProviderWithFeatureMethod<{ supportsMemoryManagement: true }, 'loadModelIntoMemory'>;
-
+    // Ollama-specific
+    type LoadModelIntoMemoryMethod = ProviderWithFeatureMethod<{ hasOllamaFeatures: true }, 'loadModelIntoMemory'>;
     const loadModelIntoMemory = (...args: LoadModelIntoMemoryMethod['params']): LoadModelIntoMemoryMethod['returnType'] => {
         const prov = currentProvider.value;
-        if (!prov.supportsMemoryManagement) {
+        if (!prov.hasOllamaFeatures) {
             throw new Error(`Provider ${prov.name} does not support memory management`);
         }
         return prov.loadModelIntoMemory(...args);
     };
 
-    type UnloadModelIntoMemoryMethod = ProviderWithFeatureMethod<{ supportsMemoryManagement: true }, 'unloadModel'>;
-
+    type UnloadModelIntoMemoryMethod = ProviderWithFeatureMethod<{ hasOllamaFeatures: true }, 'unloadModel'>;
     const unloadModel = (...args: UnloadModelIntoMemoryMethod['params']): UnloadModelIntoMemoryMethod['returnType'] => {
         const prov = currentProvider.value;
-        if (!prov.supportsMemoryManagement) {
+        if (!prov.hasOllamaFeatures) {
             throw new Error(`Provider ${prov.name} does not support memory management`);
         }
         return prov.unloadModel(...args);
     };
 
-    type GetLoadedModelIdsMethod = ProviderWithFeatureMethod<{ supportsMemoryManagement: true }, 'getLoadedModelIds'>;
-
+    type GetLoadedModelIdsMethod = ProviderWithFeatureMethod<{ hasOllamaFeatures: true }, 'getLoadedModelIds'>;
     const getLoadedModelIds = (...args: GetLoadedModelIdsMethod['params']): GetLoadedModelIdsMethod['returnType'] => {
         const prov = currentProvider.value;
-        if (!prov.supportsMemoryManagement) {
+        if (!prov.hasOllamaFeatures) {
             throw new Error(`Provider ${prov.name} does not support memory management`);
         }
         return prov.getLoadedModelIds(...args);
     };
 
-    type GetModelDetailsMethod = ProviderWithFeatureMethod<{ supportsOllamaModelDetails: true }, 'getModelDetails'>;
-
+    type GetModelDetailsMethod = ProviderWithFeatureMethod<{ hasOllamaFeatures: true }, 'getModelDetails'>;
     const getModelDetails = (...args: GetModelDetailsMethod['params']): GetModelDetailsMethod['returnType'] => {
         const prov = currentProvider.value;
-        if (!prov.supportsOllamaModelDetails) {
+        if (!prov.hasOllamaFeatures) {
             throw new Error(`Provider ${prov.name} does not support Ollama model details`);
         }
         return prov.getModelDetails(...args);
@@ -74,6 +75,9 @@ export function useProviderManager() {
     return {
         currentProvider,
         capabilities,
+        connectionState,
+
+        refreshConnection,
 
         chat,
         getModels,

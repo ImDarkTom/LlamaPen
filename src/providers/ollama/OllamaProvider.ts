@@ -1,5 +1,5 @@
 import type { ReadableOf } from "@/types/util";
-import type { BaseLLMProvider, WithMemoryManagement, WithOllamaModelDetails } from "../base/ProviderInterface";
+import type { BaseLLMProvider, WithOllamaFeatures } from "../base/ProviderInterface";
 import { chat, generateChatTitle } from "./helpers";
 import type { ChatIteratorChunk, ChatOptions, Model, ModelCapabilities } from "../base/types";
 import { appMesagesToOllama } from "./converters/appMessagesToOllama";
@@ -9,10 +9,41 @@ import type { ShowResponse } from "ollama";
 /**
  * Interfaces with the Ollama wrapper before packaging responses into the common app standard.
  */
-export class OllamaProvider implements BaseLLMProvider, WithMemoryManagement, WithOllamaModelDetails {
+export class OllamaProvider implements BaseLLMProvider, WithOllamaFeatures {
+	constructor() {
+		this.refreshConnection();
+	}
+
     name = "Ollama";
-	supportsMemoryManagement = true as const;
-	supportsOllamaModelDetails = true as const;
+	hasOllamaFeatures = true as const;
+
+	connectionState: { status: "connected" | "disconnected" | "checking" | "error"; error?: string; lastChecked?: Date; } = {
+		status: 'disconnected'
+	};
+
+	async refreshConnection(): Promise<void> {
+		this.connectionState = {
+			status: 'checking',
+			lastChecked: new Date(),
+		};
+
+		const { error } = await ollamaWrapper.version();
+
+		if (error) {
+			this.connectionState = {
+				status: 'error',
+				error: error.message,
+				lastChecked: new Date()
+			};
+		} else {
+			this.connectionState = {
+				status: 'connected',
+				lastChecked: new Date(),
+			};
+		}
+	}
+
+
 
     async chat(messages: ChatMessage[], abortSignal: AbortSignal, options: ChatOptions): Promise<ReadableOf<ChatIteratorChunk>> {
 		const ollamaFormatMessages = await appMesagesToOllama(messages);

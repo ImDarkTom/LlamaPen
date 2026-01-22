@@ -32,6 +32,13 @@ async function load(force: boolean = false) {
     if (loadPromise) return loadPromise;
 
     const config = useConfigStore();
+    const providerManager = useProviderManager();
+
+    if (providerManager.connectionState.value.status === 'error') {
+        state.connectedToOllama = false;
+        state.error = providerManager.connectionState.value.error || 'An error occured.';
+        return;
+    }
 
     state.loading = true;
     state.error = null;
@@ -39,14 +46,14 @@ async function load(force: boolean = false) {
         try {
             // Get loaded models so we can tag which are loaded when we get the full list
             let loadedModelIds: string[]; 
-            if (config.cloud.enabled) {
-                loadedModelIds = [];
+            if (providerManager.capabilities.hasOllamaFeatures) {
+                loadedModelIds = await providerManager.getLoadedModelIds();
             } else {
-                loadedModelIds = await useProviderManager().getLoadedModelIds();
+                loadedModelIds = [];
             }
 
             // Get the base model list
-            state.models = (await useProviderManager().getModels())
+            state.models = (await providerManager.getModels())
                 .map((model) => {
                     const modelId = model.id;
 

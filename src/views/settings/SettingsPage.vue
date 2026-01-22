@@ -113,8 +113,8 @@ watch(
 async function checkOllamaVersion() {
     const version = await ollamaWrapper.version();
 
-    if (version === null) {
-        alert(`❌ Error fetching Ollama version.`);
+    if (version.error) {
+        alert(`❌ Error fetching Ollama version, ${version.error.message}`);
         return;
     }
 
