@@ -4,6 +4,14 @@ import { defineStore } from 'pinia';
 import { computed, ref, type UnwrapRef } from 'vue';
 import { useConfigStore } from './config';
 
+export type LPCCustomErrorResponse = {
+    type: 'error';
+    error: {
+        type: string;
+        message: string;
+    }
+}
+
 const IN_PRODUCTION = import.meta.env.VITE_PRODUCTION === 'true';
 
 const doneFirstLoad = ref(false);
@@ -54,7 +62,7 @@ async function fetchUserInfo() {
     const userInfoResRaw = await authedFetch(useConfigStore().requestUrl('/user/userInfo'));
     if (!userInfoResRaw) return;
 
-    const userInfoResponse = await userInfoResRaw.json() as CloudUserInfo | CustomErrorResponse;
+    const userInfoResponse = await userInfoResRaw.json() as CloudUserInfo | LPCCustomErrorResponse;
 
     if ('error' in userInfoResponse) {
         isLoading.value = false;

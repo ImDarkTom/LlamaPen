@@ -363,7 +363,6 @@ const useMessagesStore = defineStore('messages', () => {
 				}
 			}
 		} catch (error: unknown) {
-			// CustomErrorResponse | any
 			delete messageGenerationStates.value[ollamaMessageId];
 
 			if (thinkStarted !== -1) {
