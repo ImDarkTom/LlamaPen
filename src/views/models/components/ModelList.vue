@@ -6,7 +6,7 @@ import MemoryUnloadIcon from '@/components/Icon/MemoryUnloadIcon.vue';
 import ModelIcon from '@/components/Icon/ModelIcon.vue';
 import TextDivider from '@/components/TextDivider/TextDivider.vue';
 import Tooltip from '@/components/Tooltip/Tooltip.vue';
-import { useModelList, type ModelInfoListItem } from '@/composables/useModelList';
+import { useModelList, type ModelInfo } from '@/composables/useModelList';
 import router from '@/lib/router';
 import { useConfigStore } from '@/stores/config';
 // import useUserStore from '@/stores/user';
@@ -25,7 +25,7 @@ const { isConnected, isLoading } = useProviderManager();
 // const user = useUserStore();
 
 const props = defineProps<{
-    modelsList: ModelInfoListItem[],
+    modelsList: ModelInfo[],
 }>();
 
 const emit = defineEmits<{
@@ -35,7 +35,7 @@ const emit = defineEmits<{
 const refreshModelList = () => emit('refreshModelList');
 
 const isHidden = (modelName: string) => config.chat.hiddenModels.includes(modelName);
-const isLoadedInMemory = (modelName: string) => rawModels.value.some(item => item.modelData.id === modelName && item.loadedInMemory);
+const isLoadedInMemory = (modelName: string) => rawModels.value.some(item => item.info.id === modelName && item.loadedInMemory);
 
 const modelActions: MenuEntry<{ modelData: Model, displayName: string }>[] = [
     {
@@ -166,7 +166,7 @@ const queriedModels = computed(() => props.modelsList.filter((m) => {
     // }
 
     return m.displayName.includes(searchQuery.value) ||
-        m.modelData.id.includes(searchQuery.value)
+        m.info.id.includes(searchQuery.value)
 }));
 
 const batchActions: MenuEntry[] = [
@@ -231,13 +231,13 @@ const batchActions: MenuEntry[] = [
                     No models found
                 </div>
                 <RouterLink
-                    v-for="{ modelData, loadedInMemory, hidden, displayName } in queriedModels" 
+                    v-for="{ info, loadedInMemory, hidden, displayName } in queriedModels" 
                     exactActiveClass="*:bg-surface-light *:ring-1 *:ring-highlight *:ring-inset *:text-text"
-                    :to="`/models/${modelData.id}`" >
+                    :to="`/models/${info.id}`" >
                     <div 
                         class="flex flex-row items-center gap-2 p-2 rounded-md hover:bg-surface transition-colors duration-dynamic"
                         :class="{ 'opacity-75': hidden }">
-                        <ModelIcon :name="modelData.id ?? 'Unknown'" class="size-6" />
+                        <ModelIcon :name="info.id ?? 'Unknown'" class="size-6" />
                         {{ displayName }}
 
                         <div class="grow"></div>
@@ -249,7 +249,7 @@ const batchActions: MenuEntry[] = [
                             class="flex items-center justify-center">
                             <MemoryLoadIcon class="h-full" />
                         </Tooltip>
-                        <ActionMenu :passArgs="{ modelData, displayName }" :actions="modelActions" anchored="left">
+                        <ActionMenu :passArgs="{ modelData: info, displayName }" :actions="modelActions" anchored="left">
                             <button @click.prevent class="hover:bg-surface-light group-[.active]:bg-surface-light group-[.active]:text-text p-1.5 rounded-sm cursor-pointer">
                                 <BiDotsVerticalRounded />
                             </button>

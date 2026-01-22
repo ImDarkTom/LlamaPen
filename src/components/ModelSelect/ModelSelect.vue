@@ -7,7 +7,7 @@ import logger from '@/lib/logger';
 import ModelIcon from '../Icon/ModelIcon.vue';
 import { TbListDetails } from 'vue-icons-plus/tb';
 import isOnMobile from '@/utils/core/isOnMobile';
-import { useModelList, type ModelInfoListItem } from '@/composables/useModelList';
+import { useModelList, type ModelInfo } from '@/composables/useModelList';
 import PrimaryButton from '../Buttons/PrimaryButton.vue';
 import { BiExpand, BiFilterAlt, BiLoaderAlt, BiRefresh } from 'vue-icons-plus/bi';
 import FloatingMenu from '../FloatingMenu/FloatingMenu.vue';
@@ -60,7 +60,7 @@ onMounted(async () => {
     await loadModels();
     if (selectedModelInfo.value.exists) {
         setModel(
-            selectedModelInfo.value.data.modelData, 
+            selectedModelInfo.value.data.info, 
             true
         );
     } else {
@@ -70,7 +70,7 @@ onMounted(async () => {
                 modelsList.value[0] !== undefined
             ) {
                 config.selectedModel = modelIds.value[0];
-                setModel(modelsList.value[0].modelData, true);
+                setModel(modelsList.value[0].info, true);
             }
         }
     }
@@ -115,7 +115,7 @@ function searchKeyDown(e: KeyboardEvent) {
             const selectedItem = sortedItems.value[focusedItemIndex.value];
             
             if (selectedItem !== undefined) {
-                setModel(selectedItem.modelData);
+                setModel(selectedItem.info);
             }
 
             break;
@@ -161,7 +161,7 @@ function setFocused(index: number) {
     focusedItemIndex.value = index;
 }
 
-function renameModel(model: ModelInfoListItem) {
+function renameModel(model: ModelInfo) {
     const displayName = model.displayName;
     
     let newName = prompt(`Enter a new name for '${displayName}' (app cosmetic only): '`, displayName);
@@ -169,7 +169,7 @@ function renameModel(model: ModelInfoListItem) {
         newName = displayName;
     }
 
-    modelList.renameModel(model.modelData.id, newName);
+    modelList.renameModel(model.info.id, newName);
 }
 
 
@@ -192,7 +192,7 @@ const menuWidth = computed(() => config.ui.modelList.useGridView ? 'sm:w-xl': 's
             </span>
 
             <span v-else-if="isConnected && selectedModelInfo.exists" class="flex flex-row gap-2 items-center">
-                <ModelIcon :name="selectedModelInfo.data.modelData.id" class="size-6" />
+                <ModelIcon :name="selectedModelInfo.data.info.id" class="size-6" />
                 {{ modelName }}
             </span>
 
@@ -279,10 +279,10 @@ const menuWidth = computed(() => config.ui.modelList.useGridView ? 'sm:w-xl': 's
                         role="list" >
                         <ModelSelectItem 
                             v-for="(model, index) in sortedItems" 
-                            :key="model.modelData.id" 
+                            :key="model.info.id" 
                             :index
                             :model 
-                            :isCurrentModel="model.modelData.id === selectedModelInfo.data?.modelData.id" 
+                            :isCurrentModel="model.info.id === selectedModelInfo.data?.info.id" 
                             :selected="index === focusedItemIndex"
                             :renameModel="() => renameModel(model)"
                             @mouseover="setFocused(index)"
@@ -291,10 +291,10 @@ const menuWidth = computed(() => config.ui.modelList.useGridView ? 'sm:w-xl': 's
                     <div v-else class="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-5 gap-2 m-2">
                         <ModelSelectGridItem
                             v-for="(model, index) in sortedItems" 
-                            :key="model.modelData.id" 
+                            :key="model.info.id" 
                             :index
                             :model 
-                            :isCurrentModel="model.modelData.id === selectedModelInfo.data?.modelData.id" 
+                            :isCurrentModel="model.info.id === selectedModelInfo.data?.info.id" 
                             :selected="index === focusedItemIndex"
                             :renameModel="() => renameModel(model)"
                             @mouseover="setFocused(index)"

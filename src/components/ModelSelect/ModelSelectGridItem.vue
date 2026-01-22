@@ -5,7 +5,7 @@ import ModelIcon from '../Icon/ModelIcon.vue';
 import { computed, ref } from 'vue';
 import { BiBrain, BiDotsHorizontalRounded, BiDotsVerticalRounded, BiGlobe, BiHeart, BiLock, BiPencil, BiShow, BiSolidBox, BiSolidHeart, BiStar, BiWrench } from 'vue-icons-plus/bi';
 import { useConfigStore } from '@/stores/config';
-import { useModelList, type ModelInfoListItem } from '@/composables/useModelList';
+import { useModelList, type ModelInfo } from '@/composables/useModelList';
 import ActionMenu, { type MenuEntry } from '../FloatingMenu/ActionMenu.vue';
 import { useModelSelect } from '@/stores/useModelSelect';
 import type { Model } from '@/providers/base/types';
@@ -15,7 +15,7 @@ const config = useConfigStore();
 const { getModelCapabilities } = useModelList();
 
 const props = defineProps<{
-	model: ModelInfoListItem,
+	model: ModelInfo,
 	index: number,
 	isCurrentModel: boolean,
 	selected: boolean,
@@ -47,12 +47,12 @@ defineExpose({
 	listItemRef
 });
 
-const isFavorited = () => config.models.favoriteModels.includes(props.model.modelData.id);
+const isFavorited = () => config.models.favoriteModels.includes(props.model.info.id);
 
 const modelCapabilities = computed(() => getModelCapabilities(props.model));
 
 const favoriteModel = () => {
-	const modelId = props.model.modelData.id;
+	const modelId = props.model.info.id;
 	if (isFavorited()) {
 		config.models.favoriteModels = config.models.favoriteModels.filter(m => m !== modelId);
 	} else {
@@ -77,7 +77,7 @@ const selectActions: MenuEntry[] = [
 	{
 		text: 'Manage Model',
 		icon: BiDotsHorizontalRounded,
-		onClick: () => router.push(`/models/${props.model.modelData.id}`)
+		onClick: () => router.push(`/models/${props.model.info.id}`)
 	}
 ];
 </script>
@@ -88,13 +88,13 @@ const selectActions: MenuEntry[] = [
 			'bg-surface-light': selected && !isCurrentModel,
 			'bg-surface-light ring-highlight!': isCurrentModel,
 			// 'opacity-50': (!userStore.isPremium && model.modelData.llamapenMetadata?.premium) || (config.cloud.enabled && !userStore.isSignedIn),
-		}" @click="setModel($event, model.modelData)" ref="listItemRef" :aria-selected="selected">
+		}" @click="setModel($event, model.info)" ref="listItemRef" :aria-selected="selected">
 
 		<div class="flex flex-col items-center">
-            <ModelIcon :name="model.modelData.id" class="size-10 p-1" />
+            <ModelIcon :name="model.info.id" class="size-10 p-1" />
 			<span
 				class="text-md font-semibold text-sm text-center overflow-hidden text-text"
-				:title="model.modelData.id"
+				:title="model.info.id"
 			>
 				{{ model.displayName}}
 			</span>

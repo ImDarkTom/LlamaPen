@@ -1,12 +1,10 @@
 <script setup lang="ts">
 import { onMounted, ref } from 'vue';
 import { emitter } from '../../../lib/mitt';
-import { useModelList } from '@/composables/useModelList';
 import OllamaIcon from '@/components/Icon/OllamaIcon.vue';
 import { BiChevronDown } from 'vue-icons-plus/bi';
 import { useProviderManager } from '@/composables/useProviderManager';
 
-const { load } = useModelList();
 const { isConnected, isLoading, connectionState } = useProviderManager();
 
 // UI State
@@ -14,8 +12,6 @@ const statusMessageText = ref("Waiting for Ollama...");
 const moreInfoText = ref('Attempting to connect to Ollama...');
 
 onMounted(async () => {
-    await load();
-
     if (isConnected.value) {
         statusMessageText.value = "Connected";
         moreInfoText.value = "Connected to Ollama!";

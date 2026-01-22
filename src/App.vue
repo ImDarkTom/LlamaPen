@@ -2,13 +2,16 @@
 import { onBeforeMount } from 'vue';
 import { useConfigStore } from './stores/config';
 import PopupLoader from './components/Popups/PopupLoader.vue';
+import { useModelList } from './composables/useModelList';
 
 const config = useConfigStore();
+const { load: loadFromProvider } = useModelList();
 
 onBeforeMount(() => {
     config.loadTheme();
     config.loadTransitionSpeed();
     config.loadScrollbarSetting();
+    loadFromProvider();
 });
 </script>
 

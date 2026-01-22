@@ -1,6 +1,6 @@
 <script setup lang="ts">
 import Tooltip from '@/components/Tooltip/Tooltip.vue';
-import { useModelList, type ModelInfoListItem } from '@/composables/useModelList';
+import { useModelList, type ModelInfo } from '@/composables/useModelList';
 import logger from '@/lib/logger';
 import useMessagesStore from '@/stores/messagesStore';
 import { computed } from '@vue/reactivity';
@@ -26,7 +26,7 @@ const isOpened = ref<boolean>(false);
 const usedCloudForMessage = computed<boolean>(() => /\//g.test(props.message.model));
 const messageModelInfo = computed<{
     exists: true;
-    data: ModelInfoListItem;
+    data: ModelInfo;
 } | {
     exists: false;
     data: null;
@@ -37,10 +37,10 @@ const messageModelInfo = computed<{
     return { exists: false, data: null }
 });
 
-const allModels = computed<ModelInfoListItem[]>(() => {
+const allModels = computed<ModelInfo[]>(() => {
     return rawModels.value.filter(model => {
         // Get all models apart from the one the message used
-        return props.message.type === 'model' && props.message.model !== model.modelData.name
+        return props.message.type === 'model' && props.message.model !== model.info.name
     });
 });
 
@@ -101,8 +101,8 @@ const warningText = computed(() => {
                     <div class="w-full min-h-0.5 bg-border"></div>
                     <MessageModelSelectorItem
                         v-for="model in allModels" 
-                        :key="model.modelData.id"
-                        :modelId="model.modelData.id"
+                        :key="model.info.id"
+                        :modelId="model.info.id"
                         :modelName="model.displayName"
                         :modelIsAvailable="true /* (model.modelData.llamapenMetadata?.premium && userStore.isPremium) ?? true */"
                         :regenerate-message="regenerateMessage" />

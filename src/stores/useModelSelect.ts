@@ -1,4 +1,4 @@
-import { useModelList, type ModelInfoListItem } from "@/composables/useModelList";
+import { useModelList, type ModelInfo } from "@/composables/useModelList";
 import { defineStore } from "pinia";
 import { computed, ref } from "vue";
 import { useConfigStore } from "./config";
@@ -22,23 +22,23 @@ export const useModelSelect = defineStore('modelSelect', () => {
         supportsVision: false,
     });
 
-    const queriedModelList = computed<ModelInfoListItem[]>(() => {
+    const queriedModelList = computed<ModelInfo[]>(() => {
         return useModelList().rawModels.value
             .filter((model) => {
                 const query = (searchQuery.value || "").toLowerCase();
 
                 return (
-                    model.modelData.name.toLowerCase().includes(query) ||
+                    model.info.name.toLowerCase().includes(query) ||
                     model.displayName.toLowerCase().includes(query) ||
-                    model.modelData.id.toLowerCase().includes(query)
+                    model.info.id.toLowerCase().includes(query)
                 );
             });
     });
 
-    function userSort(items: ModelInfoListItem[]) {
+    function userSort(items: ModelInfo[]) {
         const favoriteModels = config.models.favoriteModels ?? [];
-        const favorites: ModelInfoListItem[] = [];
-        const nonFavorites: ModelInfoListItem[] = [];
+        const favorites: ModelInfo[] = [];
+        const nonFavorites: ModelInfo[] = [];
 
         const filter = filterCapabilities.value;
         const filteredItems = items.filter(model => {
@@ -50,7 +50,7 @@ export const useModelSelect = defineStore('modelSelect', () => {
         });
 
         filteredItems.forEach(item => {
-            if (favoriteModels.includes(item.modelData.id)) {
+            if (favoriteModels.includes(item.info.id)) {
                 favorites.push(item);
             } else {
                 nonFavorites.push(item);
@@ -62,8 +62,8 @@ export const useModelSelect = defineStore('modelSelect', () => {
                 break;
             case 'alphabetically':
                 nonFavorites.sort((a, b) => {
-                    const item1 = a.modelData.id.split('/')[1] ?? a.modelData.id;
-                    const item2 = b.modelData.id.split('/')[1] ?? b.modelData.id;
+                    const item1 = a.info.id.split('/')[1] ?? a.info.id;
+                    const item2 = b.info.id.split('/')[1] ?? b.info.id;
                     return item1.localeCompare(item2, undefined, { sensitivity: 'base' });
                 });
                 break;
@@ -81,7 +81,7 @@ export const useModelSelect = defineStore('modelSelect', () => {
         return [...favorites, ...nonFavorites];
     }
 
-    function sortItems(items: ModelInfoListItem[]) {
+    function sortItems(items: ModelInfo[]) {
         items = userSort(items) || items;
 
         // TODO(llamapen-cloud): sorting item based on provider-specific properties

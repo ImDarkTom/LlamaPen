@@ -1,12 +1,10 @@
 <script lang="ts" setup>
 import { useModelList } from '@/composables/useModelList';
 import { useConfigStore } from '@/stores/config';
-import { computed } from 'vue';
 import { BiCloud, BiLinkExternal } from 'vue-icons-plus/bi';
 import { RouterLink } from 'vue-router';
 
 const { rawModels } = useModelList();
-const loadedModelsAmount = computed(() => rawModels.value.filter(model => model.loadedInMemory).length);
 const config = useConfigStore();
 
 const commitHashFull = __COMMIT_HASH__;
@@ -43,7 +41,7 @@ function getGreetingMessage() {
             </RouterLink>
             <RouterLink to="/models" v-else>
                 <span class="bg-background-light/80 hover:bg-surface p-2 rounded-full box-content hover:text-text cursor-pointer transition-colors duration-dynamic">
-                    {{ rawModels.length }} Models Available | {{ loadedModelsAmount }} Loaded
+                    {{ rawModels.length }} Models Available
                 </span>
             </RouterLink>
             &middot;

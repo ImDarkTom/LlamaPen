@@ -22,9 +22,12 @@ export interface BaseLLMProvider {
      */
     readonly name: string;
 
+    // onInit(): void | Promise<void>;
+
     readonly connectionState: Reactive<ConnectionState>;
 
     refreshConnection(): Promise<void>
+    
 
     /**
      * Generates a chat response as a stream of chunks.
