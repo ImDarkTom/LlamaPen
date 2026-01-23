@@ -6,7 +6,7 @@ import MemoryUnloadIcon from '@/components/Icon/MemoryUnloadIcon.vue';
 import ModelIcon from '@/components/Icon/ModelIcon.vue';
 import TextDivider from '@/components/TextDivider/TextDivider.vue';
 import Tooltip from '@/components/Tooltip/Tooltip.vue';
-import { useModelList, type ModelInfo } from '@/composables/useModelList';
+import { type ModelInfo } from '@/composables/useModelList';
 import router from '@/lib/router';
 import { useConfigStore } from '@/stores/config';
 // import useUserStore from '@/stores/user';
@@ -17,12 +17,12 @@ import { Fa6Memory } from 'vue-icons-plus/fa6';
 import { useProviderManager } from '@/composables/useProviderManager';
 import { ollamaWrapper } from '@/providers/ollama/OllamaWrapper';
 import type { Model } from '@/providers/base/types';
+import useUIStore from '@/stores/uiStore';
 
 const config = useConfigStore();
-const { setModelHidden } = useModelList();
-const { modelIds } = useModelList();
+const { setModelHidden } = useUIStore();
 const { rawModels } = useProviderManager();
-const { isConnected, isLoading } = useProviderManager();
+const { isConnected, isLoading, allModelIds } = useProviderManager();
 // const user = useUserStore();
 
 const props = defineProps<{
@@ -152,7 +152,7 @@ const showAll = () => {
     refreshModelList();
 };
 const hideAll = () => {
-    config.chat.hiddenModels = modelIds.value;
+    config.chat.hiddenModels = allModelIds.value;
     refreshModelList();
 };
 

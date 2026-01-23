@@ -7,13 +7,13 @@ import { emitter } from '@/lib/mitt';
 import setPageTitle from '@/utils/core/setPageTitle';
 import { useConfigStore } from '../config';
 import useChatsStore from '../chatsStore';
-import { useUiStore } from '../uiStore';
 import useToolsStore from '../toolsStore';
 import { initLiveSync } from './initLiveSync';
 import { createNewChat } from './utils/createNewChat';
 import { addAttachmentsToDB } from './utils/addAttachmentsToDB';
 import { useProviderManager } from '@/composables/useProviderManager';
 import type { ChatIteratorChunk } from '@/providers/base/types';
+import useUIStore from '../uiStore';
 
 /**
  * Handles messages, opened chat messages, and opened chat ID. Seperate from chatsStore.
@@ -101,7 +101,7 @@ const useMessagesStore = defineStore('messages', () => {
 		logger.info('Messages Store', 'Opening chat with id', id);
 
 		openedChatId.value = id || null;
-		useUiStore().chat.isScrollingDown = true;
+		useUIStore().chatIsScrollingDown = true;
 	}
 
 	// -----

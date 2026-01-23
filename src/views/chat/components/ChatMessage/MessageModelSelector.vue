@@ -1,6 +1,6 @@
 <script setup lang="ts">
 import Tooltip from '@/components/Tooltip/Tooltip.vue';
-import { useModelList, type ModelInfo } from '@/composables/useModelList';
+import { type ModelInfo } from '@/composables/useModelList';
 import logger from '@/lib/logger';
 import useMessagesStore from '@/stores/messagesStore';
 import { computed } from '@vue/reactivity';
@@ -19,24 +19,12 @@ const props = defineProps<{
 
 const messagesStore = useMessagesStore();
 // const userStore = useUserStore();
-const { rawModels } = useProviderManager();
-const { getModelInfo, modelIds } = useModelList();
+const { rawModels, getModelInfo } = useProviderManager();
 const { isLoading } = useProviderManager();
 
 const isOpened = ref<boolean>(false);
 const usedCloudForMessage = computed<boolean>(() => /\//g.test(props.message.model));
-const messageModelInfo = computed<{
-    exists: true;
-    data: ModelInfo;
-} | {
-    exists: false;
-    data: null;
-}>(() => {
-    if (modelIds.value.includes(props.message.model)) {
-        return getModelInfo(props.message.model);
-    }
-    return { exists: false, data: null }
-});
+const messageModelInfo = computed(() => getModelInfo(props.message.model));
 
 const allModels = computed<ModelInfo[]>(() => {
     return rawModels.value.filter(model => {

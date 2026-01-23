@@ -1,4 +1,4 @@
-import { useModelList, type ModelInfo } from "@/composables/useModelList";
+import { type ModelInfo } from "@/composables/useModelList";
 import { defineStore } from "pinia";
 import { computed, ref } from "vue";
 import { useConfigStore } from "./config";
@@ -6,7 +6,7 @@ import type { Model, ModelCapabilities } from "@/providers/base/types";
 import { useProviderManager } from "@/composables/useProviderManager";
 
 export const useModelSelect = defineStore('modelSelect', () => {
-    const { getModelCapabilities } = useModelList();
+    const { getModelCapabilities } = useProviderManager();
     const config = useConfigStore();
     // const userStore = useUserStore();
 
@@ -43,7 +43,8 @@ export const useModelSelect = defineStore('modelSelect', () => {
 
         const filter = filterCapabilities.value;
         const filteredItems = items.filter(model => {
-            const capabilities = getModelCapabilities(model);
+            // TODO: fix filtering
+            const capabilities = getModelCapabilities(model.info.id);
 
             return (Object.keys(filter) as Array<keyof ModelCapabilities>).every(key => {
                 return !filter[key] || capabilities[key];

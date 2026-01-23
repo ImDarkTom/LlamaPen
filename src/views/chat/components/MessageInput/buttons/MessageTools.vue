@@ -2,15 +2,13 @@
 import { BiDotsHorizontalRounded, BiWrench } from 'vue-icons-plus/bi';
 import useToolsStore from '@/stores/toolsStore';
 import { computed, ref } from 'vue';
-import { useModelList } from '@/composables/useModelList';
 import { useConfigStore } from '@/stores/config';
 import FloatingMenu from '@/components/FloatingMenu/FloatingMenu.vue';
 import { useProviderManager } from '@/composables/useProviderManager';
 
 const toolsStore = useToolsStore();
 const config = useConfigStore();
-const { selectedModelCapabilities } = useModelList();
-const { isLoading } = useProviderManager();
+const { isLoading, selectedModelCapabilities } = useProviderManager();
 
 const searchQuery = ref<string>('');
 

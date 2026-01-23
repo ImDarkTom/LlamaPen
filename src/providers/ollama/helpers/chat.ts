@@ -1,12 +1,12 @@
 import type { ReadableOf } from "@/types/util";
 import { Readable } from "readable-stream";
-import { useModelList } from "@/composables/useModelList";
 import { useConfigStore } from "@/stores/config";
 import { appToolsToOllama } from "../converters/appToolsToOllama";
 import type { ChatIteratorChunk, ChatOptions } from "@/providers/base/types";
 import { ollamaWrapper } from "../OllamaWrapper";
 import type { ChatRequest } from "ollama";
 import * as Ollama from 'ollama/browser';
+import { useProviderManager } from "@/composables/useProviderManager";
 
 /**
  * 
@@ -20,7 +20,7 @@ async function* chatIterator(
     abortSignal: AbortSignal,
     options: ChatOptions
 ): AsyncGenerator<ChatIteratorChunk, ChatIteratorChunk | undefined, unknown> {
-    const { selectedModelCapabilities } = useModelList();
+    const { selectedModelCapabilities } = useProviderManager();
     const config = useConfigStore();
 
     const chatOptions: ChatRequest = {

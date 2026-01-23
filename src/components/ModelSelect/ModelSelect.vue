@@ -7,7 +7,7 @@ import logger from '@/lib/logger';
 import ModelIcon from '../Icon/ModelIcon.vue';
 import { TbListDetails } from 'vue-icons-plus/tb';
 import isOnMobile from '@/utils/core/isOnMobile';
-import { useModelList, type ModelInfo } from '@/composables/useModelList';
+import { type ModelInfo } from '@/composables/useModelList';
 import PrimaryButton from '../Buttons/PrimaryButton.vue';
 import { BiExpand, BiFilterAlt, BiLoaderAlt, BiRefresh } from 'vue-icons-plus/bi';
 import FloatingMenu from '../FloatingMenu/FloatingMenu.vue';
@@ -17,20 +17,18 @@ import { useModelSelect } from '@/stores/useModelSelect';
 import { emitter } from '@/lib/mitt';
 import ModelSelectGridItem from './ModelSelectGridItem.vue';
 import { useProviderManager } from '@/composables/useProviderManager';
+import useUIStore from '@/stores/uiStore';
 
 const config = useConfigStore();
 
 // State
-const { 
-    modelIds, 
-    selectedModelInfo, 
-} = useModelList();
-
 const {
     isConnected,
     isLoading,
     rawModels,
-    loadModels
+    loadModels,
+    selectedModelInfo,
+    allModelIds,
 } = useProviderManager();
 
 const {
@@ -47,7 +45,7 @@ const {
     resetState
 } = useModelSelect();
 
-const modelList = useModelList();
+const { renameModel } = useUIStore();
 
 // Refs
 const searchBarRef = ref<HTMLInputElement | null>(null);
@@ -64,12 +62,12 @@ onMounted(async () => {
             true
         );
     } else {
-        if (modelIds.value.length > 0) {
+        if (allModelIds.value.length > 0) {
             if (
-                modelIds.value[0] !== undefined &&
+                allModelIds.value[0] !== undefined &&
                 rawModels.value[0] !== undefined
             ) {
-                config.selectedModel = modelIds.value[0];
+                config.selectedModel = allModelIds.value[0];
                 setModel(rawModels.value[0].info, true);
             }
         }
@@ -161,7 +159,7 @@ function setFocused(index: number) {
     focusedItemIndex.value = index;
 }
 
-function renameModel(model: ModelInfo) {
+function promptRenameModel(model: ModelInfo) {
     const displayName = model.displayName;
     
     let newName = prompt(`Enter a new name for '${displayName}' (app cosmetic only): '`, displayName);
@@ -169,7 +167,7 @@ function renameModel(model: ModelInfo) {
         newName = displayName;
     }
 
-    modelList.renameModel(model.info.id, newName);
+    renameModel(model.info.id, newName);
 }
 
 
@@ -284,7 +282,7 @@ const menuWidth = computed(() => config.ui.modelList.useGridView ? 'sm:w-xl': 's
                             :model 
                             :isCurrentModel="model.info.id === selectedModelInfo.data?.info.id" 
                             :selected="index === focusedItemIndex"
-                            :renameModel="() => renameModel(model)"
+                            :renameModel="() => promptRenameModel(model)"
                             @mouseover="setFocused(index)"
                             ref="listItemsRef" />
                     </ul>
@@ -296,7 +294,7 @@ const menuWidth = computed(() => config.ui.modelList.useGridView ? 'sm:w-xl': 's
                             :model 
                             :isCurrentModel="model.info.id === selectedModelInfo.data?.info.id" 
                             :selected="index === focusedItemIndex"
-                            :renameModel="() => renameModel(model)"
+                            :renameModel="() => promptRenameModel(model)"
                             @mouseover="setFocused(index)"
                             ref="listItemsRef" />
                     </div>

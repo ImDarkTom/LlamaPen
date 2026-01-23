@@ -1,13 +1,11 @@
 <script setup lang="ts">
-import { useModelList } from '@/composables/useModelList';
 import { computed, watch } from 'vue';
 import { BiBrain } from 'vue-icons-plus/bi';
 import MessageInputButton from './MessageInputButton.vue';
 import { useConfigStore } from '@/stores/config';
 import { useProviderManager } from '@/composables/useProviderManager';
 
-const { selectedModelCapabilities } = useModelList();
-const { isLoading } = useProviderManager();
+const { isLoading, selectedModelCapabilities } = useProviderManager();
 const config = useConfigStore();
 
 defineProps(['modelValue']);

@@ -1,15 +1,14 @@
 <script setup lang="ts">
-import { useModelList } from '@/composables/useModelList';
 import { useConfigStore } from '@/stores/config';
 import useUserStore from '@/stores/user';
 import { computed } from 'vue';
 import MessageInputButton from './MessageInputButton.vue';
 import { BiImageAdd } from 'vue-icons-plus/bi';
+import { useProviderManager } from '@/composables/useProviderManager';
 
 const userStore = useUserStore();
 const config = useConfigStore();
-
-const { selectedModelCapabilities } = useModelList();
+const { selectedModelCapabilities } = useProviderManager();
 
 defineProps<{
     onChange: (event: Event) => void

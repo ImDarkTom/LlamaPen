@@ -1,6 +1,9 @@
 import { isOllamaProvider, type LLMProvider } from "@/providers/base/ProviderInterface";
+import type { ModelCapabilities } from "@/providers/base/types";
 import { providerFactory } from "@/providers/ProviderFactory";
 import { computed } from "vue";
+import type { ModelInfo } from "./useModelList";
+import { useConfigStore } from "@/stores/config";
 
 export function useProviderManager() {
     const currentProvider = computed(() => providerFactory.getCurrentProvider());
@@ -65,6 +68,46 @@ export function useProviderManager() {
         return currentProvider.value.getModelDetails(modelId);
     };
 
+
+    // Selected model
+    const selectedModelInfo = computed<
+            { exists: true, data: ModelInfo } | 
+            { exists: false, data: null }
+        >(() => {
+            const selected = rawModels.value
+                .find(modelItem => modelItem.info.id === useConfigStore().selectedModel);
+    
+            if (selected) {
+                return { exists: true, data: selected };
+            } else {
+                return { exists: false, data: null };
+            }
+        });
+
+    const selectedModelCapabilities = computed<ModelCapabilities>(() => {
+        if (!selectedModelInfo.value.exists) return {
+            supportsFunctionCalling: false,
+            supportsReasoning: false,
+            supportsVision: false
+        };
+
+        return getModelCapabilities(selectedModelInfo.value.data.info.id);
+    });
+
+    function getModelInfo(modelId: string): 
+        { exists: true, data: ModelInfo } | { exists: false, data: null } {
+        const selected = rawModels.value
+            .find(modelItem => modelItem.info.id === modelId);
+
+        if (selected) {
+            return { exists: true, data: selected };
+        } else {
+            return { exists: false, data: null };
+        }
+    }
+
+    const allModelIds = computed(() => rawModels.value.map((item) => item.info.id));
+
     return {
         currentProvider,
         isOllama,
@@ -91,5 +134,13 @@ export function useProviderManager() {
         unloadModel,
         getLoadedModelIds,
         getModelDetails,
+
+        // Get model info
+        getModelInfo,
+        allModelIds,
+
+        // Selected Mode
+        selectedModelInfo,
+        selectedModelCapabilities
     }
 }
