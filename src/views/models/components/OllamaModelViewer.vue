@@ -37,15 +37,21 @@ const capabilityIcons: Record<string, IconType> = {
 function getModelValue<T>(
     fallback: T,
     loadingValue: T,
-    extractor: (model: ShowResponse) => T
+    extractor: (model: ShowResponse & { model_info: Record<string, any> }) => T
 ): T {
+
     if (props.selectedModel.state === 'unselected'  || props.selectedModel.state === 'error') return fallback;
     if (props.selectedModel.state === 'loading') return loadingValue;
-    return extractor(props.selectedModel.model);
+    
+    if (props.selectedModel.type === 'ollama') {
+        return extractor(props.selectedModel.model);
+    }
+    
+    return fallback;
 }
 
 const modelName = computed<string>(() =>
-    getModelValue(props.modelFromParams || '', 'Loading...', m => m.model_info.get('general.basename') || props.modelFromParams || '')
+    getModelValue(props.modelFromParams || '', 'Loading...', m => m.model_info['general.basename'] || props.modelFromParams || '')
 );
 
 const modelCapabilites = computed(() =>

@@ -10,11 +10,13 @@ import logger from '@/lib/logger';
 import { useProviderManager } from '@/composables/useProviderManager';
 import OllamaModelViewer from './components/OllamaModelViewer.vue';
 import type { ModelViewInfo } from './components/types';
+import { isOllamaProvider } from '@/providers/base/ProviderInterface';
+import GenericModelViewer from './components/GenericModelViewer.vue';
 
 const config = useConfigStore();
 
 // State
-const { rawModels, loadModels } = useProviderManager();
+const { rawModels, loadModels, currentProvider } = useProviderManager();
 const selectedModel = ref<ModelViewInfo>({ state: 'unselected' });
 
 const modelFromParams = computed<string | null>(() => {
@@ -29,6 +31,8 @@ const modelFromParams = computed<string | null>(() => {
     return null;
 });
 
+const isOllama = computed(() => isOllamaProvider(currentProvider.value));
+
 // Helpers 
 const refreshModelList = async () => await loadModels(true);
 
@@ -40,7 +44,7 @@ onMounted(async () => {
     if (!modelFromParams.value) {
         selectedModel.value = { state: 'unselected' };
     } else if(modelFromParams.value === 'downloads') {
-        return
+        return;
     } else {
         setModelViewInfo(modelFromParams.value);
     }
@@ -61,18 +65,35 @@ watch(router.currentRoute, () => {
 async function setModelViewInfo(modelId: string) {
     selectedModel.value = { state: 'loading' };
 
-    const { data: response, error: infoError } = await useProviderManager().getModelDetails(modelId);
+    if (isOllama.value) {
+        const { data: response, error: infoError } = await useProviderManager().getModelDetails(modelId);
 
-    if (infoError || !response) {
-        selectedModel.value = { state: 'error', message: infoError }
-        return;
+        if (infoError || !response) {
+            selectedModel.value = { state: 'error', message: infoError }
+            return;
+        }
+
+        selectedModel.value = {
+            state: 'data',
+            model: response,
+            isLoaded: rawModels.value.some(item => item.info.id === modelId && item.loadedInMemory),
+            type: 'ollama'
+        };
+    } else {
+        const foundModel = rawModels.value.find(item => item.info.id === modelId);
+
+        if (!foundModel) {
+            selectedModel.value = { state: 'error', message: 'Model not found.' };
+            return;
+        }
+
+        selectedModel.value = {
+            state: 'data',
+            model: foundModel,
+            isLoaded: foundModel.loadedInMemory,
+            type: 'generic',
+        }
     }
-
-    selectedModel.value = {
-        state: 'data',
-        model: response,
-        isLoaded: rawModels.value.some(item => item.info.id === modelId && item.loadedInMemory)
-    };
 }
 
 </script>
@@ -90,7 +111,17 @@ async function setModelViewInfo(modelId: string) {
                 'Model management is only available without API mode.' :
                 'Select a model to view its details, or download a new model.' }}
         </ViewerContainer>
-        <DownloadManager v-else-if="modelFromParams === 'downloads'" @refresh-model-list="refreshModelList" />
-        <OllamaModelViewer v-else :modelFromParams :selectedModel />
+        
+        <DownloadManager 
+            v-else-if="modelFromParams === 'downloads' && isOllama" 
+            @refresh-model-list="refreshModelList" />
+        <OllamaModelViewer 
+            v-else-if="isOllama"
+            :modelFromParams 
+            :selectedModel />
+        <GenericModelViewer
+            v-else
+            :modelFromParams
+            :selectedModel />
     </div>
 </template>

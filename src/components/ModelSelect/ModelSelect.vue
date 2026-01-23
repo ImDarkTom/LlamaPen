@@ -29,7 +29,7 @@ const {
 const {
     isConnected,
     isLoading,
-    rawModels: modelsList,
+    rawModels,
     loadModels
 } = useProviderManager();
 
@@ -67,10 +67,10 @@ onMounted(async () => {
         if (modelIds.value.length > 0) {
             if (
                 modelIds.value[0] !== undefined &&
-                modelsList.value[0] !== undefined
+                rawModels.value[0] !== undefined
             ) {
                 config.selectedModel = modelIds.value[0];
-                setModel(modelsList.value[0].info, true);
+                setModel(rawModels.value[0].info, true);
             }
         }
     }
