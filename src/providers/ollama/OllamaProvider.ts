@@ -4,25 +4,38 @@ import type { ChatIteratorChunk, ChatOptions, Model, ModelCapabilities } from ".
 import { appMesagesToOllama } from "./converters/appMessagesToOllama";
 import { ollamaWrapper } from "./OllamaWrapper";
 import type { ShowResponse } from "ollama";
-import { reactive, type Reactive } from "vue";
+import { reactive, ref, type Reactive, type Ref } from "vue";
 import type { ConnectionState, OllamaLLMProvider } from "../base/ProviderInterface";
-import logger from "@/lib/logger";
 import { BaseProvider } from "../base/BaseProvider";
+import { useConfigStore } from "@/stores/config";
+import type { ModelInfo } from "@/composables/useModelList";
 
 /**
  * Interfaces with the Ollama wrapper before packaging responses into the common app standard.
  */
 export class OllamaProvider extends BaseProvider implements OllamaLLMProvider {
-    name = "Ollama";
+	name = "Ollama";
 	hasOllamaFeatures = true as const;
-
+	rawModels: Ref<ModelInfo[], ModelInfo[]> = ref<ModelInfo[]>([]);;
+	
 	protected onLoad(): void {
 		super.onLoad();
-		logger.info('OllamaProvider:onInit', 'Initialising Ollama provider...')
-
 	}
 
-	onInit(): void | Promise<void> {
+	protected async onModelsLoaded(): Promise<void> {
+		const config = useConfigStore();
+		const shouldAutoloadCapabilities = !config.cloud.enabled && 
+			(
+				config.ollama.modelCapabilities.autoload && this.rawModels.value.length < 31
+				|| config.ollama.modelCapabilities.alwaysAutoload
+			);
+
+		if (shouldAutoloadCapabilities) {
+			for (const model of this.rawModels.value) {
+				const capabilities = await this.fetchModelCapabilities(model.info.id);
+				this.fetchedCapabilities.value.set(model.info.id, capabilities);
+			}
+		}
 	}
 
 	connectionState: Reactive<ConnectionState> = reactive({
@@ -55,7 +68,6 @@ export class OllamaProvider extends BaseProvider implements OllamaLLMProvider {
 		const list = await ollamaWrapper.list();
 
 		return list.map((m) => {
-			// TODO: real capabilities
 			return {
 				name: m.name,
 				id: m.model,
@@ -68,7 +80,19 @@ export class OllamaProvider extends BaseProvider implements OllamaLLMProvider {
 		});
 	}
 
-    async getModelCapabilities(modelId: string): Promise<ModelCapabilities> {
+	getAllModels(): ModelInfo[] {
+		return this.rawModels.value;
+	}
+
+	getModelCapabilities(modelId: string): ModelCapabilities {
+		return this.fetchedCapabilities.value.get(modelId) ?? {
+			supportsFunctionCalling: false,
+			supportsReasoning: false,
+			supportsVision: false,
+		};
+	}
+
+    private async fetchModelCapabilities(modelId: string): Promise<ModelCapabilities> {
 		// 'completion' | 'tools' | 'thinking' | 'vision' | 'insert' | 'embedding' | 'search'
 
 		const { data: modelInfo, error } = await ollamaWrapper.show({ model: modelId });

@@ -22,15 +22,15 @@ const config = useConfigStore();
 
 // State
 const { 
-    rawModels: modelsList, 
     modelIds, 
-    load: loadModels, 
     selectedModelInfo, 
 } = useModelList();
 
 const {
     isConnected,
     isLoading,
+    rawModels: modelsList,
+    loadModels
 } = useProviderManager();
 
 const {
@@ -57,7 +57,7 @@ const listItemsRef = ref<Array<ComponentPublicInstance<{ listItemRef: HTMLLIElem
 onMounted(async () => {
     logger.info('Model Select Component', 'Selected model is', config.selectedModel);
 
-    await loadModels();
+    await loadModels(false);
     if (selectedModelInfo.value.exists) {
         setModel(
             selectedModelInfo.value.data.info, 

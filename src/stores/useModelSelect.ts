@@ -3,6 +3,7 @@ import { defineStore } from "pinia";
 import { computed, ref } from "vue";
 import { useConfigStore } from "./config";
 import type { Model, ModelCapabilities } from "@/providers/base/types";
+import { useProviderManager } from "@/composables/useProviderManager";
 
 export const useModelSelect = defineStore('modelSelect', () => {
     const { getModelCapabilities } = useModelList();
@@ -23,7 +24,7 @@ export const useModelSelect = defineStore('modelSelect', () => {
     });
 
     const queriedModelList = computed<ModelInfo[]>(() => {
-        return useModelList().rawModels.value
+        return useProviderManager().rawModels.value
             .filter((model) => {
                 const query = (searchQuery.value || "").toLowerCase();
 

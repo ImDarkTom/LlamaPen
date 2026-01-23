@@ -8,7 +8,7 @@ import { ref } from 'vue';
 import { BsCloudSlash } from 'vue-icons-plus/bs';
 import MessageModelSelectorItem from './MessageModelSelectorItem.vue';
 import { BiError, BiRefresh } from 'vue-icons-plus/bi';
-import useUserStore from '@/stores/user';
+// import useUserStore from '@/stores/user';
 import FloatingMenu from '@/components/FloatingMenu/FloatingMenu.vue';
 import { useProviderManager } from '@/composables/useProviderManager';
 
@@ -18,8 +18,9 @@ const props = defineProps<{
 }>();
 
 const messagesStore = useMessagesStore();
-const userStore = useUserStore();
-const { rawModels, getModelInfo, modelIds } = useModelList();
+// const userStore = useUserStore();
+const { rawModels } = useProviderManager();
+const { getModelInfo, modelIds } = useModelList();
 const { isLoading } = useProviderManager();
 
 const isOpened = ref<boolean>(false);

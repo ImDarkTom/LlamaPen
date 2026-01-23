@@ -1,15 +1,17 @@
-import { ref } from "vue";
+import { ref, type Ref } from "vue";
 import type { BaseLLMProvider } from "./ProviderInterface";
 import type { Model, ModelCapabilities } from "./types";
 import type { ModelInfo } from "@/composables/useModelList";
 import { useConfigStore } from "@/stores/config";
 import { OllamaProvider } from "../ollama/OllamaProvider";
+import logger from "@/lib/logger";
 
 export abstract class BaseProvider implements BaseLLMProvider {
     abstract readonly name: string;
     abstract readonly connectionState: BaseLLMProvider['connectionState'];
 
-    protected rawModels = ref<ModelInfo[]>([]);
+    abstract rawModels: Ref<ModelInfo[]>;
+    protected fetchedCapabilities = ref<Map<string, ModelCapabilities>>(new Map());
     protected loading = ref(false);
     protected initialised = ref(false);
     private loadPromise: Promise<void | null> | null = null;
@@ -19,7 +21,7 @@ export abstract class BaseProvider implements BaseLLMProvider {
     }
 
     protected onLoad() {
-        console.log(`Loading provider: ${this.name}`);
+        logger.info('BaseProvider:onLoad', `Loading provider: ${this.name}`);
     }
 
     async loadModels(force: boolean = false): Promise<void | null> {
@@ -70,7 +72,7 @@ export abstract class BaseProvider implements BaseLLMProvider {
     }
 
     /**
-     * Hook for provider-specific logic after models are loaded
+     * Hook for provider-specific logic after models are loaded with no errors.
      */
     protected async onModelsLoaded(): Promise<void> {
         // Override in subclasses if needed
@@ -80,6 +82,7 @@ export abstract class BaseProvider implements BaseLLMProvider {
     abstract refreshConnection(): Promise<void>;
     abstract chat(...args: any): Promise<any>;
     abstract getModels(): Promise<Model[]>;
-    abstract getModelCapabilities(modelId: string): Promise<ModelCapabilities>;
+    abstract getAllModels(): ModelInfo[];
+    abstract getModelCapabilities(modelId: string): ModelCapabilities;
     abstract generateChatTitle(messages: ChatMessage[]): Promise<string>;
 }

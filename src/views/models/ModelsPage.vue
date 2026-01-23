@@ -5,7 +5,6 @@ import setPageTitle from '@/utils/core/setPageTitle';
 import { computed, onMounted, ref, watch } from 'vue';
 import ModelList from './components/ModelList.vue';
 import ViewerContainer from './components/ViewerContainer.vue';
-import { useModelList } from '@/composables/useModelList';
 import DownloadManager from './components/DownloadManager.vue';
 import logger from '@/lib/logger';
 import { useProviderManager } from '@/composables/useProviderManager';
@@ -15,7 +14,7 @@ import type { ModelViewInfo } from './components/types';
 const config = useConfigStore();
 
 // State
-const { rawModels, load: loadModels } = useModelList();
+const { rawModels, loadModels } = useProviderManager();
 const selectedModel = ref<ModelViewInfo>({ state: 'unselected' });
 
 const modelFromParams = computed<string | null>(() => {

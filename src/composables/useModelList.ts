@@ -9,72 +9,10 @@ export type ModelInfo = {
     displayName: string;
     loadedInMemory: boolean;
     hidden: boolean;
-    fetchedCapabilities?: ModelCapabilities;
 }
 
-const rawModels = ref<ModelInfo[]>([]);
-const loadedModelIds = ref<string[]>([]);
-const initialised = ref(false);
-
-let loadPromise: Promise<void> | null = null;
-
-async function load(force: boolean = false) {
-    if (initialised.value && !force) return;
-    if (loadPromise) return loadPromise;
-
-    const config = useConfigStore();
-    const providerManager = useProviderManager();
-
-    if (providerManager.connectionState.status === 'error') {
-        return;
-    }
-
-    loadPromise = (async () => {
-        try {
-            if (providerManager.isOllama.value) {
-                loadedModelIds.value = await providerManager.getLoadedModelIds();
-            }
-
-            // Get the base model list
-            rawModels.value = (await providerManager.getModels())
-                .map((model) => {
-                    const modelId = model.id;
-
-                    const displayName = 
-                        config.chat.modelRenames[modelId] ||
-                        model.name ||
-                        modelId;
-
-                    const isHidden = config.chat.hiddenModels.includes(modelId);
-
-                    return {
-                        info: model,
-                        displayName,
-                        loadedInMemory: loadedModelIds.value.includes(modelId),
-                        hidden: isHidden,
-                    }
-                });
-
-            if (
-                !config.cloud.enabled && 
-                (
-                    config.ollama.modelCapabilities.autoload && rawModels.value.length < 31
-                    || config.ollama.modelCapabilities.alwaysAutoload
-                )
-            ) {
-                for (const model of rawModels.value) {
-                    const capabilities = await providerManager.getModelCapabilities(model.info.id);
-                    model.fetchedCapabilities = capabilities;
-                }
-            }
-        } finally {
-            initialised.value = true;
-            loadPromise = null;
-        }
-    })();
-
-    return loadPromise;
-}
+const rawModels = useProviderManager().rawModels;
+const fetchedCapabilities = ref<Map<string, ModelCapabilities>>(new Map());
 
 async function refreshModelStates() {
     const loadedModelIds = await useProviderManager().getLoadedModelIds();
@@ -103,7 +41,7 @@ export function useModelList() {
     }
 
     function getModelCapabilities(model: ModelInfo) {
-        return model.fetchedCapabilities || model.info.capabilities;
+        return fetchedCapabilities.value.get(model.info.id) || model.info.capabilities;
     }
     
     const selectedModelCapabilities = computed<ModelCapabilities>(() => {
@@ -153,8 +91,6 @@ export function useModelList() {
     }
 
     return {
-        rawModels,
-        load,
         modelIds,
         setModelHidden,
         selectedModelInfo,

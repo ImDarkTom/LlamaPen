@@ -1,10 +1,10 @@
 <script lang="ts" setup>
-import { useModelList } from '@/composables/useModelList';
+import { useProviderManager } from '@/composables/useProviderManager';
 import { useConfigStore } from '@/stores/config';
 import { BiCloud, BiLinkExternal } from 'vue-icons-plus/bi';
 import { RouterLink } from 'vue-router';
 
-const { rawModels } = useModelList();
+const { rawModels } = useProviderManager();
 const config = useConfigStore();
 
 const commitHashFull = __COMMIT_HASH__;

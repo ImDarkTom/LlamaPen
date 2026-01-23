@@ -5,14 +5,15 @@ import ModelIcon from '../Icon/ModelIcon.vue';
 import { computed, ref } from 'vue';
 import { BiBrain, BiDotsHorizontalRounded, BiDotsVerticalRounded, BiGlobe, BiHeart, BiLock, BiPencil, BiShow, BiSolidBox, BiSolidHeart, BiStar, BiWrench } from 'vue-icons-plus/bi';
 import { useConfigStore } from '@/stores/config';
-import { useModelList, type ModelInfo } from '@/composables/useModelList';
+import { type ModelInfo } from '@/composables/useModelList';
 import ActionMenu, { type MenuEntry } from '../FloatingMenu/ActionMenu.vue';
 import { useModelSelect } from '@/stores/useModelSelect';
 import type { Model } from '@/providers/base/types';
+import { useProviderManager } from '@/composables/useProviderManager';
 
 const userStore = useUserStore();
 const config = useConfigStore();
-const { getModelCapabilities } = useModelList();
+const { getModelCapabilities } = useProviderManager();
 
 const props = defineProps<{
 	model: ModelInfo,
@@ -51,7 +52,7 @@ defineExpose({
 
 const isFavorited = () => config.models.favoriteModels.includes(props.model.info.id);
 
-const modelCapabilities = computed(() => getModelCapabilities(props.model));
+const modelCapabilities = computed(() => getModelCapabilities(props.model.info.id));
 
 const favoriteModel = () => {
 	const modelId = props.model.info.id;

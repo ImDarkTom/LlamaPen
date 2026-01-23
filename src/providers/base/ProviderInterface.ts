@@ -1,7 +1,9 @@
 import type { ReadableOf } from "@/types/util";
 import type { ChatIteratorChunk, ChatOptions, Model, ModelCapabilities } from "./types";
 import type { ShowResponse } from "ollama/browser";
-import type { Reactive } from "vue";
+import type { Reactive, Ref } from "vue";
+import type { ModelInfo } from "@/composables/useModelList";
+import type { OllamaProvider } from "../ollama/OllamaProvider";
 
 // TODO: have this contain all standardized types for use throughout the app (or maybe in a separate types.ts file in providers/base/)
 
@@ -21,10 +23,11 @@ export interface BaseLLMProvider {
      * Pretty name of the provider.
      */
     readonly name: string;
-
     readonly connectionState: Reactive<ConnectionState>;
+    rawModels: Ref<ModelInfo[]>;
 
     refreshConnection(): Promise<void>
+    loadModels(force: boolean): Promise<void | null>;
     
 
     /**
@@ -49,11 +52,14 @@ export interface BaseLLMProvider {
      */
     getModels(): Promise<Model[]>;
 
+
+    getAllModels(): ModelInfo[];
+
     /**
      * Get the model 'capabilities', e.g. image inputs, thinking/reasoning, etc.
      * @param modelId Model to get capabilities for.
      */
-    getModelCapabilities(modelId: string): Promise<ModelCapabilities>;
+    getModelCapabilities(modelId: string): ModelCapabilities;
 
 
     /**
@@ -91,6 +97,8 @@ export interface OllamaLLMProvider extends BaseLLMProvider {
 }
 
 export type LLMProvider = BaseLLMProvider | OllamaLLMProvider;
+
+export type LLMProviderTypes = OllamaProvider;
 
 export function isOllamaProvider(provider: LLMProvider): provider is OllamaLLMProvider {
     return 'getLoadedModelIds' in provider;

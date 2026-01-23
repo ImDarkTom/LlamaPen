@@ -8,6 +8,7 @@ export function useProviderManager() {
 
     const isOllama = computed(() => isOllamaProvider(currentProvider.value));
 
+    const rawModels = currentProvider.value.rawModels;
 
     const connectionState = currentProvider.value.connectionState;
     const isConnected = computed(() => connectionState.status === 'connected');
@@ -17,12 +18,16 @@ export function useProviderManager() {
 
     // Always available (from BaseLLMProvider)
     const refreshConnection = () => currentProvider.value.refreshConnection();
+    const loadModels = (force: boolean) => currentProvider.value.loadModels(force);
 
     const chat = ((...args: Parameters<LLMProvider['chat']>) =>
         currentProvider.value.chat(...args)) as LLMProvider['chat'];
 
     const getModels = ((...args: Parameters<LLMProvider['getModels']>) =>
         currentProvider.value.getModels(...args)) as LLMProvider['getModels'];
+
+    const getAllModels = ((...args: Parameters<LLMProvider['getAllModels']>) =>
+        currentProvider.value.getAllModels(...args)) as LLMProvider['getAllModels'];
 
     const getModelCapabilities = ((...args: Parameters<LLMProvider['getModelCapabilities']>) =>
             currentProvider.value.getModelCapabilities(...args)) as LLMProvider['getModelCapabilities'];
@@ -64,6 +69,10 @@ export function useProviderManager() {
         currentProvider,
         isOllama,
 
+        rawModels,
+
+        loadModels,
+
         connectionState,
         isConnected,
         isLoading,
@@ -73,6 +82,7 @@ export function useProviderManager() {
         refreshConnection,
         chat,
         getModels,
+        getAllModels,
         getModelCapabilities,
         generateChatTitle,
 

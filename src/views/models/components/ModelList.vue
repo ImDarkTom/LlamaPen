@@ -20,7 +20,8 @@ import type { Model } from '@/providers/base/types';
 
 const config = useConfigStore();
 const { setModelHidden } = useModelList();
-const { rawModels, modelIds } = useModelList();
+const { modelIds } = useModelList();
+const { rawModels } = useProviderManager();
 const { isConnected, isLoading } = useProviderManager();
 // const user = useUserStore();
 
