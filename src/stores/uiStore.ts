@@ -3,15 +3,15 @@ import { ref } from "vue";
 import { useConfigStore } from "./config";
 import { useProviderManager } from "@/composables/useProviderManager";
 
-const rawModels = useProviderManager().rawModels;
+const { rawModels } = useProviderManager();
 
 async function refreshModelStates() {
     const loadedModelIds = await useProviderManager().getLoadedModelIds();
     const hiddenModels = useConfigStore().chat.hiddenModels;
 
-    rawModels.value.forEach((item) => {
-        item.loadedInMemory = loadedModelIds.includes(item.info.id);
-        item.hidden = hiddenModels.includes(item.info.id);
+    rawModels.value.forEach((model) => {
+        model.loadedInMemory = loadedModelIds.includes(model.info.id);
+        model.hidden = hiddenModels.includes(model.info.id);
     });
 }
 
