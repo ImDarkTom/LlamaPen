@@ -42,7 +42,6 @@ export const useModelSelect = defineStore('modelSelect', () => {
 
         const filter = filterCapabilities.value;
         const filteredItems = items.filter(model => {
-            // TODO: fix filtering
             const capabilities = getModelCapabilities(model.info.id);
 
             return (Object.keys(filter) as Array<keyof ModelCapabilities>).every(key => {
