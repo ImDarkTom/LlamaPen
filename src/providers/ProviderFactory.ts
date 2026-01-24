@@ -1,4 +1,5 @@
 import type { LLMProvider } from "./base/ProviderInterface";
+import { LPCloudProvider } from "./lpcloud/LPCloudProvider";
 import { OllamaProvider } from "./ollama/OllamaProvider";
 
 class ProviderFactory {
@@ -14,7 +15,7 @@ class ProviderFactory {
 
     getCurrentProvider(): LLMProvider {
         // For now, always return OllamaProvider
-        const provider = this.providers.get('ollama');
+        const provider = this.providers.get('lpcloud');
         if (!provider) {
             throw new Error("No provider registered under 'ollama'");
         }
@@ -24,3 +25,4 @@ class ProviderFactory {
 
 export const providerFactory = new ProviderFactory();
 providerFactory.register('ollama', new OllamaProvider());
+providerFactory.register('lpcloud', new LPCloudProvider());

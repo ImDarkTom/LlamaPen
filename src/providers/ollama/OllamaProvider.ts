@@ -18,11 +18,17 @@ export class OllamaProvider extends BaseProvider implements OllamaLLMProvider {
 	hasOllamaFeatures = true as const;
 	rawModels: Ref<ModelInfo[], ModelInfo[]> = ref<ModelInfo[]>([]);;
 	
-	protected onLoad(): void {
-		super.onLoad();
-	}
 
 	protected async onModelsLoaded(): Promise<void> {
+		let loadedModelIds = await this.getLoadedModelIds();
+
+		this.rawModels.value = this.rawModels.value.map(m => {
+			return {
+				...m,
+				loadedInMemory: loadedModelIds.includes(m.info.id),
+			};
+		});
+
 		const config = useConfigStore();
 		const shouldAutoloadCapabilities = !config.cloud.enabled && 
 			(

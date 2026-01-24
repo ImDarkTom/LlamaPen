@@ -2,8 +2,6 @@ import { ref, type Ref } from "vue";
 import type { BaseLLMProvider } from "./ProviderInterface";
 import type { Model, ModelCapabilities } from "./types";
 import { useConfigStore } from "@/stores/config";
-import { OllamaProvider } from "../ollama/OllamaProvider";
-import logger from "@/lib/logger";
 import type { ModelInfo } from "@/composables/useProviderManager";
 
 export abstract class BaseProvider implements BaseLLMProvider {
@@ -15,14 +13,6 @@ export abstract class BaseProvider implements BaseLLMProvider {
     protected loading = ref(false);
     protected initialised = ref(false);
     private loadPromise: Promise<void | null> | null = null;
-
-    constructor() {
-        this.onLoad()
-    }
-
-    protected onLoad() {
-        logger.info('BaseProvider:onLoad', `Loading provider: ${this.name}`);
-    }
 
     async loadModels(force: boolean = false): Promise<void | null> {
         if (this.initialised.value && !force) return;
@@ -36,11 +26,6 @@ export abstract class BaseProvider implements BaseLLMProvider {
 
         this.loadPromise = (async () => {
             try {
-                let loadedModelIds: string[] = [];
-                if (this instanceof OllamaProvider) {
-                    loadedModelIds = await this.getLoadedModelIds();
-                }
-
                 this.rawModels.value = (await this.getModels())
                     .map((model) => {
                         const modelId = model.id;
@@ -55,7 +40,7 @@ export abstract class BaseProvider implements BaseLLMProvider {
                         return {
                             info: model,
                             displayName,
-                            loadedInMemory: loadedModelIds.includes(modelId),
+                            loadedInMemory: false,
                             hidden: isHidden,
                         }
                     });
