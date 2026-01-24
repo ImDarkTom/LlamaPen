@@ -1,10 +1,10 @@
 import { ref, type Ref } from "vue";
 import type { BaseLLMProvider } from "./ProviderInterface";
 import type { Model, ModelCapabilities } from "./types";
-import type { ModelInfo } from "@/composables/useModelList";
 import { useConfigStore } from "@/stores/config";
 import { OllamaProvider } from "../ollama/OllamaProvider";
 import logger from "@/lib/logger";
+import type { ModelInfo } from "@/composables/useProviderManager";
 
 export abstract class BaseProvider implements BaseLLMProvider {
     abstract readonly name: string;

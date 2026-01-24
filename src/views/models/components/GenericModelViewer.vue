@@ -7,8 +7,7 @@ import Unknown from '@/icons/unknown.svg';
 import CapabilitiesSkeleton from './CapabilitiesSkeleton.vue';
 import ViewerContainer from './ViewerContainer.vue';
 import type { ModelViewInfo } from './types';
-import type { ModelInfo } from '@/composables/useModelList';
-import { useProviderManager } from '@/composables/useProviderManager';
+import { useProviderManager, type ModelInfo } from '@/composables/useProviderManager';
 import type { ModelCapabilities } from '@/providers/base/types';
 
 const { getModelCapabilities } = useProviderManager();

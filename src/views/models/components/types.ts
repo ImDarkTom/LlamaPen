@@ -1,4 +1,4 @@
-import type { ModelInfo } from "@/composables/useModelList";
+import type { ModelInfo } from "@/composables/useProviderManager";
 import type { ShowResponse } from "ollama";
 
 export type ModelViewInfo =

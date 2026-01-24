@@ -1,9 +1,8 @@
-import { type ModelInfo } from "@/composables/useModelList";
 import { defineStore } from "pinia";
 import { computed, ref } from "vue";
 import { useConfigStore } from "./config";
 import type { Model, ModelCapabilities } from "@/providers/base/types";
-import { useProviderManager } from "@/composables/useProviderManager";
+import { useProviderManager, type ModelInfo } from "@/composables/useProviderManager";
 
 export const useModelSelect = defineStore('modelSelect', () => {
     const { getModelCapabilities } = useProviderManager();

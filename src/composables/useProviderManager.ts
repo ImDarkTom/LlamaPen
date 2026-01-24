@@ -2,8 +2,15 @@ import { isOllamaProvider, type LLMProvider } from "@/providers/base/ProviderInt
 import type { ModelCapabilities } from "@/providers/base/types";
 import { providerFactory } from "@/providers/ProviderFactory";
 import { computed } from "vue";
-import type { ModelInfo } from "./useModelList";
+import type { Model } from "@/providers/base/types";
 import { useConfigStore } from "@/stores/config";
+
+export type ModelInfo = {
+    info: Model;
+    displayName: string;
+    loadedInMemory: boolean;
+    hidden: boolean;
+}
 
 export function useProviderManager() {
     const currentProvider = computed(() => providerFactory.getCurrentProvider());

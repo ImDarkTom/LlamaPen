@@ -5,11 +5,10 @@ import ModelIcon from '../Icon/ModelIcon.vue';
 import { computed, ref } from 'vue';
 import { BiBrain, BiDotsHorizontalRounded, BiDotsVerticalRounded, BiGlobe, BiHeart, BiLock, BiPencil, BiShow, BiSolidBox, BiSolidHeart, BiStar, BiWrench } from 'vue-icons-plus/bi';
 import { useConfigStore } from '@/stores/config';
-import { type ModelInfo } from '@/composables/useModelList';
 import ActionMenu, { type MenuEntry } from '../FloatingMenu/ActionMenu.vue';
 import { useModelSelect } from '@/stores/useModelSelect';
 import type { Model } from '@/providers/base/types';
-import { useProviderManager } from '@/composables/useProviderManager';
+import { useProviderManager, type ModelInfo } from '@/composables/useProviderManager';
 
 const userStore = useUserStore();
 const config = useConfigStore();

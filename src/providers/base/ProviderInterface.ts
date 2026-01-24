@@ -2,8 +2,8 @@ import type { ReadableOf } from "@/types/util";
 import type { ChatIteratorChunk, ChatOptions, Model, ModelCapabilities } from "./types";
 import type { ShowResponse } from "ollama/browser";
 import type { Reactive, Ref } from "vue";
-import type { ModelInfo } from "@/composables/useModelList";
 import type { OllamaProvider } from "../ollama/OllamaProvider";
+import type { ModelInfo } from "@/composables/useProviderManager";
 
 // TODO: have this contain all standardized types for use throughout the app (or maybe in a separate types.ts file in providers/base/)
 

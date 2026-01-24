@@ -1,6 +1,5 @@
 <script setup lang="ts">
 import Tooltip from '@/components/Tooltip/Tooltip.vue';
-import { type ModelInfo } from '@/composables/useModelList';
 import logger from '@/lib/logger';
 import useMessagesStore from '@/stores/messagesStore';
 import { computed } from '@vue/reactivity';
@@ -10,7 +9,7 @@ import MessageModelSelectorItem from './MessageModelSelectorItem.vue';
 import { BiError, BiRefresh } from 'vue-icons-plus/bi';
 // import useUserStore from '@/stores/user';
 import FloatingMenu from '@/components/FloatingMenu/FloatingMenu.vue';
-import { useProviderManager } from '@/composables/useProviderManager';
+import { useProviderManager, type ModelInfo } from '@/composables/useProviderManager';
 
 const props = defineProps<{
     modelMessageDone: boolean;
