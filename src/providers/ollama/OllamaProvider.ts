@@ -8,7 +8,7 @@ import { reactive, ref, type Reactive, type Ref } from "vue";
 import type { ConnectionState, OllamaLLMProvider } from "../base/ProviderInterface";
 import { BaseProvider } from "../base/BaseProvider";
 import { useConfigStore } from "@/stores/config";
-import type { ModelInfo } from "@/composables/useModelList";
+import type { ModelInfo } from "@/composables/useProviderManager";
 
 /**
  * Interfaces with the Ollama wrapper before packaging responses into the common app standard.
