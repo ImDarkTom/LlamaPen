@@ -15,11 +15,11 @@ export type ModelInfo = {
 export function useProviderManager() {
     const currentProvider = computed(() => providerFactory.getCurrentProvider());
 
-
     const isOllama = computed(() => isOllamaProvider(currentProvider.value));
 
     const rawModels = currentProvider.value.rawModels;
 
+    // Connection
     const connectionState = currentProvider.value.connectionState;
     const isConnected = computed(() => connectionState.status === 'connected');
     const isLoading = computed(() => connectionState.status === 'checking');

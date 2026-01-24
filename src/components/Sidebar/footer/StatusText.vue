@@ -1,37 +1,45 @@
 <script setup lang="ts">
-import { onMounted, ref } from 'vue';
+import { ref, watch } from 'vue';
 import { emitter } from '../../../lib/mitt';
 import OllamaIcon from '@/components/Icon/OllamaIcon.vue';
-import { BiChevronDown } from 'vue-icons-plus/bi';
+import { BiChevronUp } from 'vue-icons-plus/bi';
 import { useProviderManager } from '@/composables/useProviderManager';
+import logger from '@/lib/logger';
 
 const { isConnected, isLoading, connectionState } = useProviderManager();
 
-// UI State
 const statusMessageText = ref("Waiting for Ollama...");
 const moreInfoText = ref('Attempting to connect to Ollama...');
-
-onMounted(async () => {
-    if (isConnected.value) {
-        statusMessageText.value = "Connected";
-        moreInfoText.value = "Connected to Ollama!";
-    } else if (connectionState.error) {
-        if (connectionState.error === "NetworkError when attempting to fetch resource.") {
-            statusMessageText.value = "Disconnected";
-            moreInfoText.value = "Network error, is Ollama running?";
-        } else {
-            statusMessageText.value = "Unknown Error";
-            moreInfoText.value = connectionState.error || 'Unknown Error';
-        }
-
-        emitter.emit('openNotConnectedPopup');
-    }
-});
-
 const expanded = ref(false);
-function toggle() {
-    expanded.value = !expanded.value;
-}
+
+watch(connectionState, (newState) => {
+    logger.info('StausText Component', 'New provider connection status:', newState.status)
+    switch (newState.status) {
+        case 'checking':
+            statusMessageText.value = 'Checking connection...';
+            moreInfoText.value = 'Checking connection to Ollama...';
+            break;
+        case 'connected':
+            statusMessageText.value = "Connected";
+            moreInfoText.value = "Connected to Ollama!";
+            break;
+        case 'error':
+            if (newState.error === "NetworkError when attempting to fetch resource.") {
+                statusMessageText.value = "Disconnected";
+                moreInfoText.value = "Network error, is Ollama running?";
+            } else {
+                statusMessageText.value = "Unknown Error";
+                moreInfoText.value = newState.error || 'Unknown Error';
+            }
+
+            emitter.emit('openNotConnectedPopup');
+            break;
+        case 'disconnected':
+        default:
+            statusMessageText.value = 'Waiting for Ollama...';
+            moreInfoText.value = 'Attempting to connect to Ollama...';
+    }
+}, { immediate: true });
 </script>
 
 <template>
@@ -42,7 +50,7 @@ function toggle() {
             'text-success bg-success/25 hover:bg-success/35 ring-success/50': isConnected && !isLoading, 
             'text-danger bg-danger/25 hover:bg-danger/35 ring-danger/50': !isConnected && !isLoading
         }"
-        @click="toggle">
+        @click="expanded = !expanded">
         <div class="flex flex-row gap-2">
             <OllamaIcon class="inline size-6" />
             <span 
@@ -50,7 +58,7 @@ function toggle() {
                 :class="{ 'animate-pulse': isLoading }"
                 :title="statusMessageText"
                 >{{ statusMessageText }}</span>
-            <BiChevronDown class="inline ml-auto transition-transform duration-dynamic" :class="{ 'rotate-180': expanded }" />
+            <BiChevronUp class="inline ml-auto transition-transform duration-dynamic" :class="{ 'rotate-180': expanded }" />
         </div>
         <div v-if="expanded" class="mt-1">
             {{ moreInfoText }}
