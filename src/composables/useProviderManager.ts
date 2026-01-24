@@ -5,6 +5,7 @@ import { computed } from "vue";
 import type { Model } from "@/providers/base/types";
 import { useConfigStore } from "@/stores/config";
 
+// Types
 export type ModelInfo = {
     info: Model;
     displayName: string;
@@ -12,21 +13,31 @@ export type ModelInfo = {
     hidden: boolean;
 }
 
-export function useProviderManager() {
-    const currentProvider = computed(() => providerFactory.getCurrentProvider());
+type ModelInfoResult = 
+    | { exists: true, data: ModelInfo } 
+    | { exists: false, data: null };
 
+
+
+// Composable
+export function useProviderManager() {
+    // ----------------
+    // Current provider
+    // ----------------
+    const currentProvider = computed(() => providerFactory.getCurrentProvider());
+    const rawModels = currentProvider.value.rawModels;
     const isOllama = computed(() => isOllamaProvider(currentProvider.value));
 
-    const rawModels = currentProvider.value.rawModels;
-
-    // Connection
+    // Connection state
     const connectionState = currentProvider.value.connectionState;
     const isConnected = computed(() => connectionState.status === 'connected');
     const isLoading = computed(() => connectionState.status === 'checking');
-    const isDisconnected = computed(() => connectionState.status === 'error' || connectionState.status === 'disconnected');
+    const isDisconnected = computed(() => 
+        connectionState.status === 'error' || connectionState.status === 'disconnected'
+    );
 
 
-    // Always available (from BaseLLMProvider)
+    // Base methods (from BaseLLMProvider)
     const refreshConnection = () => currentProvider.value.refreshConnection();
     const loadModels = (force: boolean) => currentProvider.value.loadModels(force);
 
@@ -75,12 +86,24 @@ export function useProviderManager() {
         return currentProvider.value.getModelDetails(modelId);
     };
 
+    // Model Info utils
+    function getModelInfo(modelId: string): 
+        { exists: true, data: ModelInfo } | { exists: false, data: null } {
+        const selected = rawModels.value
+            .find(modelItem => modelItem.info.id === modelId);
+
+        if (selected) {
+            return { exists: true, data: selected };
+        } else {
+            return { exists: false, data: null };
+        }
+    }
+
+    const allModelIds = computed(() => rawModels.value.map((item) => item.info.id));
+
 
     // Selected model
-    const selectedModelInfo = computed<
-            { exists: true, data: ModelInfo } | 
-            { exists: false, data: null }
-        >(() => {
+    const selectedModelInfo = computed<ModelInfoResult>(() => {
             const selected = rawModels.value
                 .find(modelItem => modelItem.info.id === useConfigStore().selectedModel);
     
@@ -101,35 +124,19 @@ export function useProviderManager() {
         return getModelCapabilities(selectedModelInfo.value.data.info.id);
     });
 
-    function getModelInfo(modelId: string): 
-        { exists: true, data: ModelInfo } | { exists: false, data: null } {
-        const selected = rawModels.value
-            .find(modelItem => modelItem.info.id === modelId);
-
-        if (selected) {
-            return { exists: true, data: selected };
-        } else {
-            return { exists: false, data: null };
-        }
-    }
-
-    const allModelIds = computed(() => rawModels.value.map((item) => item.info.id));
-
     return {
         currentProvider,
         isOllama,
-
         rawModels,
-
-        loadModels,
 
         connectionState,
         isConnected,
         isLoading,
         isDisconnected,
+        refreshConnection,
 
         // Base
-        refreshConnection,
+        loadModels,
         chat,
         getModels,
         getAllModels,
@@ -145,8 +152,6 @@ export function useProviderManager() {
         // Get model info
         getModelInfo,
         allModelIds,
-
-        // Selected Mode
         selectedModelInfo,
         selectedModelCapabilities
     }
