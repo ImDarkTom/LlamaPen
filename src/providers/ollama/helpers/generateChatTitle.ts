@@ -7,10 +7,6 @@ import { ollamaWrapper } from "../OllamaWrapper";
 const chatTitleExamples = `\nExamples of titles:\n📉 Stock Market Trends\n🍪 Perfect Chocolate Chip Recipe\nEvolution of Music Streaming\nRemote Work Productivity Tips\nArtificial Intelligence in Healthcare\n🎮 Video Game Development Insights`;
 
 export async function generateChatTitle(messages: ChatMessage[]): Promise<string> {
-    if (useConfigStore().developer.mockRequests) {
-        return 'Mock Chat Title';
-    }
-
     const messagesFormatted = await Promise.all(
         messages.map(async (message) => {
             if (message.type === 'tool') {

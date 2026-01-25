@@ -61,7 +61,6 @@ interface Config {
         favoriteCloudModels: string[];
     },
     developer: {
-        mockRequests: boolean,
         infoLogs: boolean,
     }
 };
@@ -137,7 +136,6 @@ export const useConfigStore = defineStore('config', {
             favoriteCloudModels: [],
         },
         developer: {
-            mockRequests: false,
             infoLogs: false,
         }
     }),

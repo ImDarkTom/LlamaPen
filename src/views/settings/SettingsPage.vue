@@ -287,7 +287,6 @@ async function checkOllamaVersion() {
 
         <OptionCategory label="Developer" v-if="!inProduction">
             <span class="text-danger">Do not change these settings unless you know what you're doing.</span>
-            <ToggleSetting v-model="config.developer.mockRequests" label="Mock requests" />
             <ToggleSetting v-model="config.developer.infoLogs" label="Show info logs" />
         </OptionCategory>
     </div>
