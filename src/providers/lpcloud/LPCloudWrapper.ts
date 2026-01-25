@@ -45,7 +45,7 @@ class LPCloudWrapper {
     }
 
     async checkConnection() {
-        const { error } = await this.sendRequest('/api/version');
+        const { error } = await this.sendRequest('/api/v2/health');
                 
         if (error) {
             logger.warn('LPCloudWrapper:checkConnection', 'Error sending version request:', error);

@@ -7,25 +7,27 @@ import { BaseProvider } from "../base/BaseProvider";
 import type { ModelInfo } from "@/composables/useProviderManager";
 import { appMesagesToOllama } from "../ollama/converters/appMessagesToOllama";
 import { chat } from "./helpers/chat";
-import { generateChatTitle } from "./helpers/generateChatTitle";
+import * as helpers from "./helpers/generateChatTitle";
 
 
 export class LPCloudProvider extends BaseProvider {
     name = "LlamaPen Cloud";
     rawModels: Ref<ModelInfo[]> = ref<ModelInfo[]>([]);;
 
-    protected async onModelsLoaded(): Promise<void> {
-        for (const model of this.rawModels.value) {
-            const capabilities = await this.fetchModelCapabilities(model.info.id);
-            this.fetchedCapabilities.value.set(model.info.id, capabilities);
-        }
-    }
-
     connectionState: Reactive<ConnectionState> = reactive({
         status: 'disconnected',
         error: undefined,
         lastChecked: undefined
     });
+
+    protected onModelsLoaded(): void {
+        for (const model of this.rawModels.value) {
+            this.fetchedCapabilities.value.set(
+                model.info.id, 
+                model.info.capabilities
+            );
+        }
+    }
 
     async refreshConnection(): Promise<void> {
         this.connectionState.status = 'checking';
@@ -75,20 +77,7 @@ export class LPCloudProvider extends BaseProvider {
         };
     }
 
-    private async fetchModelCapabilities(modelId: string): Promise<ModelCapabilities> {
-        const foundModel = this.rawModels.value.find((m) => m.info.id === modelId);
-        if (!foundModel) {
-            return {
-                supportsFunctionCalling: false,
-                supportsReasoning: false,
-                supportsVision: false,
-            }
-        }
-
-        return foundModel.info.capabilities;
-    }
-
     generateChatTitle(messages: ChatMessage[]): Promise<string> {
-        return generateChatTitle(messages);
+        return helpers.generateChatTitle(messages);
     }
 }
