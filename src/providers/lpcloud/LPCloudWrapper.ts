@@ -70,6 +70,21 @@ class LPCloudWrapper {
 
         return parsed.models;
     }
+    
+    async generateTitle(messages: ChatMessage[]) {
+        const response = await this.sendRequest('/api/v2/generate-title', {
+            body: JSON.stringify({
+                model: '',
+                messages,
+            }),
+        });
+                
+        if (response.error) {
+            logger.warn('LPCloudWrapper:generateTitle', 'Error generating title:', response.error);
+        }
+
+        return response;
+    }
 
     private async createOllamaInstance(abortSignal?: AbortSignal) {
         const headers = new Headers();
@@ -94,11 +109,6 @@ class LPCloudWrapper {
                 });
             }
         });
-    }
-    
-    async chat(request: ChatRequest, abortSignal?: AbortSignal) {
-        const ollamaInstance = await this.createOllamaInstance(abortSignal);
-        return ollamaInstance.chat({ ...request, stream: false });
     }
 
     async streamedChat(request: ChatRequest, abortSignal?: AbortSignal) {
