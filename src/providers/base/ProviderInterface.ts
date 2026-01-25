@@ -27,9 +27,15 @@ export interface BaseLLMProvider {
     
     rawModels: Ref<ModelInfo[]>;
 
-    /** Set the connection state to loading and re-send a network request to the provider's URL */
+    /** 
+     * Set the connection state to loading and re-send a network request to the provider's URL
+     */
     refreshConnection(): Promise<void>
 
+    /**
+     * Loads models from the provider and initialises capabilities.
+     * @param force When false, if models were already loaded before, ignore the reqest. True overrides this and re-sends a request, aka refreshes.
+     */
     loadModels(force: boolean): Promise<void | null>;
     
 
@@ -50,13 +56,10 @@ export interface BaseLLMProvider {
     ): Promise<ReadableOf<ChatIteratorChunk>>;
 
     /**
-     * Get a list of available models from the provider.
+     * Get a list of available models from the provider. This is used when loading capabilites in some providers to set `rawModels`.
      * TODO: We could also maybe have another method to get all models (e.g. ones not available/selected for use)
      */
     getModels(): Promise<Model[]>;
-
-
-    getAllModels(): ModelInfo[];
 
     /**
      * Get the model 'capabilities', e.g. image inputs, thinking/reasoning, etc.

@@ -65,10 +65,6 @@ export class LPCloudProvider extends BaseProvider {
         });
     }
 
-    getAllModels(): ModelInfo[] {
-        return this.rawModels.value;
-    }
-
     getModelCapabilities(modelId: string): ModelCapabilities {
         return this.fetchedCapabilities.value.get(modelId) ?? {
             supportsFunctionCalling: false,

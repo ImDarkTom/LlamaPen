@@ -11,7 +11,7 @@ export abstract class BaseProvider implements BaseLLMProvider {
 
     abstract rawModels: Ref<ModelInfo[]>;
     protected fetchedCapabilities = ref<Map<string, ModelCapabilities>>(new Map());
-    protected loading = ref(false);
+    
     protected initialised = ref(false);
     private loadPromise: Promise<void> | null = null;
 
@@ -41,8 +41,6 @@ export abstract class BaseProvider implements BaseLLMProvider {
             return;
         }
 
-        this.loading.value = true;
-
         this.loadPromise = (async () => {
             try {
                 this.rawModels.value = (await this.getModels()).map(this.transformModel);
@@ -54,7 +52,6 @@ export abstract class BaseProvider implements BaseLLMProvider {
                 }
             }  finally {
                 this.initialised.value = true;
-                this.loading.value = false;
                 this.loadPromise = null;
             }
         })();
@@ -70,11 +67,9 @@ export abstract class BaseProvider implements BaseLLMProvider {
         // Override in subclasses if needed
     }
 
-
     abstract refreshConnection(): Promise<void>;
     abstract chat(...args: any): Promise<any>;
     abstract getModels(): Promise<Model[]>;
-    abstract getAllModels(): ModelInfo[];
     abstract getModelCapabilities(modelId: string): ModelCapabilities;
     abstract generateChatTitle(messages: ChatMessage[]): Promise<string>;
 }

@@ -47,9 +47,6 @@ export function useProviderManager() {
     const getModels = ((...args: Parameters<LLMProvider['getModels']>) =>
         currentProvider.value.getModels(...args)) as LLMProvider['getModels'];
 
-    const getAllModels = ((...args: Parameters<LLMProvider['getAllModels']>) =>
-        currentProvider.value.getAllModels(...args)) as LLMProvider['getAllModels'];
-
     const getModelCapabilities = ((...args: Parameters<LLMProvider['getModelCapabilities']>) =>
             currentProvider.value.getModelCapabilities(...args)) as LLMProvider['getModelCapabilities'];
 
@@ -139,7 +136,6 @@ export function useProviderManager() {
         loadModels,
         chat,
         getModels,
-        getAllModels,
         getModelCapabilities,
         generateChatTitle,
 

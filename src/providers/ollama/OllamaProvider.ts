@@ -86,10 +86,6 @@ export class OllamaProvider extends BaseProvider implements OllamaLLMProvider {
 		});
 	}
 
-	getAllModels(): ModelInfo[] {
-		return this.rawModels.value;
-	}
-
 	getModelCapabilities(modelId: string): ModelCapabilities {
 		return this.fetchedCapabilities.value.get(modelId) ?? {
 			supportsFunctionCalling: false,
