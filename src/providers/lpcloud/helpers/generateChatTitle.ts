@@ -4,8 +4,23 @@ import { useConfigStore } from "@/stores/config";
 import { tryCatch } from "@/utils/core/tryCatch";
 import { lpCloudWrapper } from "../LPCloudWrapper";
 
+const systemPrompt = 'You are a title generator. Your ONLY task is to output a short concise title (3-6 words) for the chat conversation. Rules:\n' +
+    '- Output ONLY the title text, nothing else\n' +
+    '- No explanations, no preamble, no punctuation at the end\n' +
+    '- Do not use quotes around the title\n' +
+    '- Do not include phrases like "Title:" or "Here\'s a title:"\n' +
+    '- Use the same language as the conversation\n' +
+    '- Maximum 8 words\n' +
+    'Examples of titles:\n' +
+    'Stock Market Trends\n' +
+    'Perfect Chocolate Chip Recipe\n' +
+    'Evolution of Music Streaming\n' +
+    'Remote Work Productivity Tips\n' +
+    'Artificial Intelligence in Healthcare\n' +
+    'React Hook Best Practices';
+
 export async function generateChatTitle(messages: ChatMessage[]): Promise<string> {
-    const messagesFormatted: ChatMessage[] = await Promise.all(
+    const messagesFormatted = await Promise.all(
         messages.map(async (message) => {
             if (message.type === 'tool') {
                 return {
@@ -14,12 +29,14 @@ export async function generateChatTitle(messages: ChatMessage[]): Promise<string
                 }
             }
 
-            let content = message.content;
-
             const hasAttachments = (await db.attachments
                 .where('messageId')
                 .equals(message.id)
                 .count()) > 0;
+
+            
+            let content = message.content;
+            
             if (hasAttachments) {
                 content += '\n<Attachment(s)>';
             }
@@ -29,7 +46,7 @@ export async function generateChatTitle(messages: ChatMessage[]): Promise<string
             }
 
             return {
-                role: message.type,
+                role: message.type === 'user' ? 'user' : 'assistant',
                 content,
             };
         })
@@ -37,24 +54,25 @@ export async function generateChatTitle(messages: ChatMessage[]): Promise<string
 
     messagesFormatted.unshift({
         role: 'system',
-        content: 'You are a title generator. Your ONLY task is to output a short concise title (3-6 words) for the chat conversation. Rules:\n' +
-            '- Output ONLY the title text, nothing else\n' +
-            '- No explanations, no preamble, no punctuation at the end\n' +
-            '- Do not use quotes around the title\n' +
-            '- Do not include phrases like "Title:" or "Here\'s a title:"\n' +
-            '- Use the same language as the conversation\n' +
-            '- Maximum 8 words\n' +
-            'Examples of titles:\n' +
-            'Stock Market Trends\n' +
-            'Perfect Chocolate Chip Recipe\n' +
-            'Evolution of Music Streaming\n' +
-            'Remote Work Productivity Tips\n' +
-            'Artificial Intelligence in Healthcare\n' +
-            'React Hook Best Practices',
+        content: systemPrompt
     });
 
     try {
-        const response = await lpCloudWrapper.generateTitle(messagesFormatted);
+        const response = await lpCloudWrapper.chat({
+            model: useConfigStore().selectedModel,
+            messages: messagesFormatted,
+            think: false,
+            stream: false,
+            format: {
+                type: 'object',
+                properties: {
+                    title: {
+                        type: 'string'
+                    }
+                },
+                required: ['title']
+            },
+        });
 
         const { data: generatedTitle, error } = await tryCatch<string>(JSON.parse(response.message.content).title);
         if (error) {
