@@ -1,10 +1,11 @@
+import { Ollama, type ChatRequest } from "ollama";
+import * as OllamaTypes from "ollama/browser";
+
 import logger from "@/lib/logger";
 import supabase from "@/lib/supabase";
 import { useConfigStore } from "@/stores/config";
 import { getSessionToken } from "@/stores/user";
 import { tryCatch } from "@/utils/core/tryCatch";
-import { Ollama, type ChatRequest } from "ollama";
-import * as OllamaTypes from "ollama/browser";
 
 namespace LPCloudTypes {
     export type ListResponse = { 
@@ -71,7 +72,27 @@ class LPCloudWrapper {
         return parsed.models;
     }
 
-    private async createOllamaInstance(abortSignal?: AbortSignal) {
+    async generateTitle(messages: { role: string, content: string }[]): Promise<string> {
+        const FALLBACK_TITLE = 'New Chat';
+
+        const { data, error } = await this.sendRequest('/api/v2/generate-title', {
+            body: JSON.stringify({ messages }),
+            headers: {
+                'Content-Type': 'application/json',
+            },
+            method: 'POST',
+        });
+                
+        if (error) {
+            logger.warn('LPCloudWrapper:generateTitle', 'Error generating chat title:', error);
+            return FALLBACK_TITLE;
+        }
+
+        const title = await data.text()
+        return title;
+    }
+
+    async streamedChat(request: ChatRequest, abortSignal?: AbortSignal) {
         const headers = new Headers();
         const token = await getSessionToken();
     
@@ -81,7 +102,7 @@ class LPCloudWrapper {
 
         // If we give an abort controller, we need to create a new Ollama instance with a
         // fetch that uses that signal that way we can cancel the request if triggered.
-        return new Ollama({
+        const ollamaInstance = new Ollama({
             host: useConfigStore().cloud.apiUrl,
             fetch: (url, init) => {
                 return fetch(url, {
@@ -94,15 +115,7 @@ class LPCloudWrapper {
                 });
             }
         });
-    }
 
-    async chat(request: ChatRequest, abortSignal?: AbortSignal) {
-        const ollamaInstance = await this.createOllamaInstance(abortSignal);
-        return ollamaInstance.chat({ ...request, stream: false });
-    }
-
-    async streamedChat(request: ChatRequest, abortSignal?: AbortSignal) {
-        const ollamaInstance = await this.createOllamaInstance(abortSignal);
         return ollamaInstance.chat({ ...request, stream: true });
     }
 }
