@@ -2,7 +2,7 @@ import type { ReadableOf } from "@/types/util";
 import type { ChatIteratorChunk, ChatOptions, Model, ModelCapabilities } from "../base/types";
 import { lpCloudWrapper } from "./LPCloudWrapper";
 import { reactive, ref, type Reactive, type Ref } from "vue";
-import type { ConnectionState } from "../base/ProviderInterface";
+import type { ConnectionState, LPCloudLLMProvider } from "../base/ProviderInterface";
 import { BaseProvider } from "../base/BaseProvider";
 import type { ModelInfo } from "@/composables/useProviderManager";
 import { appMesagesToOllama } from "../ollama/converters/appMessagesToOllama";
@@ -10,9 +10,11 @@ import { chat } from "./helpers/chat";
 import * as helpers from "./helpers/generateChatTitle";
 
 
-export class LPCloudProvider extends BaseProvider {
+export class LPCloudProvider extends BaseProvider implements LPCloudLLMProvider {
     name = "LlamaPen Cloud";
-    rawModels: Ref<ModelInfo[]> = ref<ModelInfo[]>([]);;
+    rawModels: Ref<ModelInfo[]> = ref<ModelInfo[]>([]);
+
+    isSignedIn: boolean = false; // TODO: actually implement this
 
     connectionState: Reactive<ConnectionState> = reactive({
         status: 'disconnected',

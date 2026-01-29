@@ -21,7 +21,7 @@ import useUIStore from '@/stores/uiStore';
 const config = useConfigStore();
 const { setModelHidden } = useUIStore();
 const { rawModels } = useProviderManager();
-const { isConnected, isLoading, allModelIds } = useProviderManager();
+const { isConnected, isLoading, allModelIds, isOllama } = useProviderManager();
 // const user = useUserStore();
 
 const props = defineProps<{
@@ -42,7 +42,7 @@ const modelActions: MenuEntry<{ modelData: Model, displayName: string }>[] = [
         text: 'Open in Ollama Library',
         icon: BiLinkExternal,
         onClick: ({ modelData }) => window.open(`https://ollama.com/library/${modelData.id}`, '_blank'),
-        condition: !config.cloud.enabled
+        condition: isOllama.value
     },
     {
         text: ({ modelData }) => isHidden(modelData.id) ? 'Unhide model' : 'Hide model',
@@ -59,7 +59,7 @@ const modelActions: MenuEntry<{ modelData: Model, displayName: string }>[] = [
             type: 'factory',
             func: ({ modelData }) => (isLoadedInMemory(modelData.id) ? MemoryUnloadIcon : Fa6Memory) as IconType
         },
-        condition: !config.cloud.enabled
+        condition: isOllama.value
     },
     {
         text: 'Rename',
@@ -70,13 +70,13 @@ const modelActions: MenuEntry<{ modelData: Model, displayName: string }>[] = [
         text: 'Duplicate model',
         icon: BiCopy,
         onClick: ({ modelData }) => copyModel(modelData.id),
-        condition: !config.cloud.enabled
+        condition: isOllama.value
     },
     {
         text: 'Delete model',
         icon: BiTrash,
         onClick: ({ modelData }) => deleteModel(modelData.id),
-        condition: !config.cloud.enabled,
+        condition: isOllama.value,
         category: 'danger'
     }
 ];

@@ -1,5 +1,5 @@
 <script setup lang="ts">
-import { computed, onBeforeUnmount, onMounted, ref, watch } from 'vue';
+import { computed, onBeforeUnmount, onMounted, ref } from 'vue';
 import { useConfigStore } from '@/stores/config';
 import ToggleSetting from '@/views/settings/components/ToggleSetting.vue';
 import OptionCategory from './components/OptionCategory.vue';
@@ -7,16 +7,14 @@ import { useRouter } from 'vue-router';
 import PrimaryButton from '../../components/Buttons/PrimaryButton.vue';
 import useChatsStore from '@/stores/chatsStore';
 import useMessagesStore from '@/stores/messagesStore';
-import supabase from '@/lib/supabase';
 import TextInputSetting from './components/TextInputSetting.vue';
-import logger from '@/lib/logger';
 import setPageTitle from '@/utils/core/setPageTitle';
 import CategoryLabel from './components/CategoryLabel.vue';
 import NumberInputSetting from './components/NumberInputSetting.vue';
 import PageHeader from '@/components/Page/PageHeader.vue';
 import SelectionSetting from './components/SelectionSetting.vue';
 import OptionText from './components/OptionText.vue';
-import { BiInfoCircle, BiRefresh, BiRocket, BiTrash } from 'vue-icons-plus/bi';
+import { BiInfoCircle, BiRefresh, BiTrash } from 'vue-icons-plus/bi';
 import { useRegisterSW } from 'virtual:pwa-register/vue';
 import { ollamaWrapper } from '@/providers/ollama/OllamaWrapper';
 import { useProviderManager } from '@/composables/useProviderManager';
@@ -26,7 +24,15 @@ const router = useRouter();
 
 const chatsStore = useChatsStore();
 const messagesStore = useMessagesStore();
-const { isConnected, isLoading } = useProviderManager();
+
+const { 
+    isConnected, 
+    isLoading, 
+    allProviders, 
+    currentProviderId, 
+    setActiveProvider, 
+    isOllama,
+} = useProviderManager();
 
 const { 
     offlineReady,
@@ -95,21 +101,6 @@ onBeforeUnmount(() => {
 const inProduction = import.meta.env.VITE_PRODUCTION === 'true';
 const ollamaDefault = import.meta.env.VITE_DEFAULT_OLLAMA ?? 'http://localhost:11434';
 
-watch(
-    () => config.cloud.enabled,
-    async (newValue) => {
-        if (newValue === false && config.cloud.signoutBeforeDisable) {
-            // TODO: Fix/make this work
-            if (!supabase) return;
-
-            logger.info('Settings Page', 'Signing out before disabling Cloud');
-            await supabase.auth.signOut();
-        }
-
-        location.reload();
-    }
-);
-
 async function checkOllamaVersion() {
     const version = await ollamaWrapper.version();
 
@@ -120,6 +111,27 @@ async function checkOllamaVersion() {
 
     alert(`✅ Ollama Version: ${version}`);
 }
+
+const selectedProvider = computed({
+    get() {
+        return currentProviderId.value;
+    },
+
+    set(newValue: string) {
+        setActiveProvider(newValue);
+
+        if (newValue === 'lpcloud') {
+            config.cloud.enabled = true;
+        } else {
+            config.cloud.enabled = false;
+        }
+     
+        // todo(qol, p=l): refresh connection status and load models instead of refreshing page
+        // refreshAndLoadModels
+        location.reload();
+    }
+});
+
 </script>
 
 <template>
@@ -127,49 +139,49 @@ async function checkOllamaVersion() {
     *:mx-auto *:md:w-4/5 *:lg:w-3/5 *:max-w-3xl">
         <PageHeader text="Settings" />
 
-        <OptionCategory label="Account" v-if="inProduction">
-            <ToggleSetting 
-                v-model="config.cloud.enabled" 
-                label="Enable Llamapen Cloud" />
-            <span v-if="!config.cloud.enabled" class="text-text-muted/80 text-sm">
-                <BiRocket class="size-4 inline align-middle" />
-                Run more powerful models with LlamaPen's cloud service.
-            </span>
+        <OptionCategory label="Providers">
+            <SelectionSetting 
+                v-model="selectedProvider" 
+                label="Provider" 
+                :items="[...allProviders.keys()]" 
+                :itemNames="[...allProviders.values()].map(p => p.name)"
+                tooltip="The LLM provider to use. (Default: Ollama)"
+            />
         </OptionCategory>
 
-        <OptionCategory label="Ollama">
-            <div v-if="config.cloud.enabled">Ollama not available while LlamaPen Cloud is enabled.</div>
-            <template v-else>
-                <TextInputSetting 
-                    label="Ollama URL" 
-                    v-model="config.ollamaUrl" 
-                    :default="ollamaDefault"
-                    :check="ollamaUrlCheck"
-                    :tooltip="`The URL to connect to Ollama on. (Default: ${ollamaDefault})`" />
-                <span class="text-sm" v-if="!isConnected && !isLoading">
-                    Can't connect? Checkout the
-                    <RouterLink to="/guide" class="text-text underline">setup guide</RouterLink>.
-                </span>
+        <!-- <BiRocket class="size-4 inline align-middle" />
+        Run more powerful models with LlamaPen's cloud service. -->
 
-                <ToggleSetting
-                    v-model="config.ollama.modelCapabilities.autoload"
-                    label="Autoload model capabilities"
-                    tooltip="Load model capabilities on connect. By default only loads if 30 models or less. (Default: Enabled)" />
-                <div v-if="config.ollama.modelCapabilities.autoload" class="border-l border-text pl-3 ml-3">
-                    <ToggleSetting 
-                        v-model="config.ollama.modelCapabilities.alwaysAutoload" 
-                        label="Always autoload model capabilities"
-                        tooltip="Loads model capabilities regardless of no. of models. (Default: Disabled)" />
-                </div>
+        <OptionCategory v-if="isOllama" label="Ollama">
+            <TextInputSetting 
+                label="Ollama URL" 
+                v-model="config.ollamaUrl" 
+                :default="ollamaDefault"
+                :check="ollamaUrlCheck"
+                :tooltip="`The URL to connect to Ollama on. (Default: ${ollamaDefault})`" />
+            <span class="text-sm" v-if="!isConnected && !isLoading">
+                Can't connect? Checkout the
+                <RouterLink to="/guide" class="text-text underline">setup guide</RouterLink>.
+            </span>
 
-                <div class="flex items-center justify-center">
-                    <PrimaryButton
-                        text="Check Ollama version"
-                        type="button"
-                        @click="checkOllamaVersion"
-                        :icon="BiInfoCircle" />
-                </div>
-            </template>
+            <ToggleSetting
+                v-model="config.ollama.modelCapabilities.autoload"
+                label="Autoload model capabilities"
+                tooltip="Load model capabilities on connect. By default only loads if 30 models or less. (Default: Enabled)" />
+            <div v-if="config.ollama.modelCapabilities.autoload" class="border-l border-text pl-3 ml-3">
+                <ToggleSetting 
+                    v-model="config.ollama.modelCapabilities.alwaysAutoload" 
+                    label="Always autoload model capabilities"
+                    tooltip="Loads model capabilities regardless of no. of models. (Default: Disabled)" />
+            </div>
+
+            <div class="flex items-center justify-center">
+                <PrimaryButton
+                    text="Check Ollama version"
+                    type="button"
+                    @click="checkOllamaVersion"
+                    :icon="BiInfoCircle" />
+            </div>
         </OptionCategory>
 
         <OptionCategory label="Appearance">

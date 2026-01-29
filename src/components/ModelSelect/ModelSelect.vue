@@ -26,6 +26,7 @@ const {
     isLoading,
     rawModels,
     loadModels,
+    refreshAndLoadModels,
     selectedModelInfo,
     allModelIds,
 } = useProviderManager();
@@ -253,7 +254,7 @@ const menuWidth = computed(() => config.ui.modelList.useGridView ? 'sm:w-xl': 's
                         color="primary"
                         text="Retry"
                         :icon="BiRefresh"
-                        @click="loadModels(true)"
+                        @click="refreshAndLoadModels "
                     />
                 </div>
                 <div v-else-if="queriedModelList.length === 0 && searchQuery !== ''"

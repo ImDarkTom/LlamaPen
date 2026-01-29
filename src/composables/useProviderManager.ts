@@ -1,4 +1,4 @@
-import { isOllamaProvider, type LLMProvider } from "@/providers/base/ProviderInterface";
+import { isLPCloudProvider, isOllamaProvider, type LLMProvider } from "@/providers/base/ProviderInterface";
 import type { ModelCapabilities } from "@/providers/base/types";
 import { providerFactory } from "@/providers/ProviderFactory";
 import { computed } from "vue";
@@ -21,12 +21,19 @@ type ModelInfoResult =
 
 // Composable
 export function useProviderManager() {
+    // All providers
+    const allProviders = computed(() => providerFactory.getProviders());
+    const setActiveProvider = (providerKey: string) => providerFactory.setSelectedProvider(providerKey);
+
     // ----------------
     // Current provider
     // ----------------
-    const currentProvider = computed(() => providerFactory.getCurrentProvider());
+    const currentProvider = computed(() => providerFactory.getSelectedProvider());
+    const currentProviderId = computed(() => providerFactory.getSelectedProviderId())
     const rawModels = currentProvider.value.rawModels;
+
     const isOllama = computed(() => isOllamaProvider(currentProvider.value));
+    const isLPCloud = computed(() => isLPCloudProvider(currentProvider.value));
 
     // Connection state
     const connectionState = currentProvider.value.connectionState;
@@ -40,6 +47,11 @@ export function useProviderManager() {
     // Base methods (from BaseLLMProvider)
     const refreshConnection = () => currentProvider.value.refreshConnection();
     const loadModels = (force: boolean) => currentProvider.value.loadModels(force);
+
+    const refreshAndLoadModels = () => {
+        currentProvider.value.refreshConnection();
+        currentProvider.value.loadModels(true);
+    }
 
     const chat = ((...args: Parameters<LLMProvider['chat']>) =>
         currentProvider.value.chat(...args)) as LLMProvider['chat'];
@@ -122,15 +134,23 @@ export function useProviderManager() {
     });
 
     return {
+        allProviders,
+        setActiveProvider,
+
         currentProvider,
-        isOllama,
+        currentProviderId,
         rawModels,
+
+        isOllama,
+        isLPCloud,
 
         connectionState,
         isConnected,
         isLoading,
         isDisconnected,
         refreshConnection,
+
+        refreshAndLoadModels,
 
         // Base
         loadModels,

@@ -4,6 +4,7 @@ import type { ShowResponse } from "ollama/browser";
 import type { Reactive, Ref } from "vue";
 import type { OllamaProvider } from "../ollama/OllamaProvider";
 import type { ModelInfo } from "@/composables/useProviderManager";
+import type { LPCloudProvider } from "../lpcloud/LPCloudProvider";
 
 // TODO: have this contain all standardized types for use throughout the app (or maybe in a separate types.ts file in providers/base/)
 
@@ -102,10 +103,18 @@ export interface OllamaLLMProvider extends BaseLLMProvider {
     unloadModel(modelId: string): Promise<boolean>;
 }
 
+export interface LPCloudLLMProvider extends BaseLLMProvider {
+    isSignedIn: boolean;
+}
+
 export type LLMProvider = BaseLLMProvider | OllamaLLMProvider;
 
 export type LLMProviderTypes = OllamaProvider;
 
 export function isOllamaProvider(provider: LLMProvider): provider is OllamaLLMProvider {
     return 'getLoadedModelIds' in provider;
+}
+
+export function isLPCloudProvider(provider: LLMProvider): provider is LPCloudProvider {
+    return 'isSignedIn' in provider;
 }
