@@ -58,6 +58,7 @@ export class LPCloudProvider extends BaseProvider implements LPCloudLLMProvider 
             return {
                 name: m.name,
                 id: m.model,
+                subtitle: m.llamapenMetadata.creator,
                 capabilities: {
                     supportsFunctionCalling: m.capabilities.includes('tools'),
                     supportsReasoning: m.capabilities.includes('thinking'),

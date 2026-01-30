@@ -158,8 +158,7 @@ const selectActions: MenuEntry[] = [
 					</div> -->
 				</div>
 			</div>
-			<!-- TODO(critical): customisable sub-text per provider -->
-			<!-- <span class="text-sm text-text-muted">{{ model.modelData.details.parameter_size }}</span> -->
+			<span class="text-sm text-text-muted">{{ model.info.subtitle }}</span>
 			<div class="absolute hidden items-center justify-center right-0 top-0 h-full w-16 bg-linear-to-r from-transparent to-surface-light group-hover:flex"
 				:class="{ 
 					'flex!': selected,

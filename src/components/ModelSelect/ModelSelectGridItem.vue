@@ -98,7 +98,7 @@ const selectActions: MenuEntry[] = [
 			>
 				{{ model.displayName}}
 			</span>
-			<!-- <span class="text-xs text-text-muted">{{ model.modelData.details.parameter_size }}</span> -->
+			<span class="text-xs text-text-muted">{{ model.info.subtitle }}</span>
             <div class="flex flex-row flex-wrap justify-center gap-2 shrink-0 min-w-fit">
 				<div 
 					v-if="isFavorited()"

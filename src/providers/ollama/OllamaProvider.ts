@@ -25,6 +25,7 @@ export class OllamaProvider extends BaseProvider implements OllamaLLMProvider {
 		this.rawModels.value = this.rawModels.value.map(m => {
 			return {
 				...m,
+				subtitle: m.info.id,
 				loadedInMemory: loadedModelIds.includes(m.info.id),
 			};
 		});
@@ -77,6 +78,7 @@ export class OllamaProvider extends BaseProvider implements OllamaLLMProvider {
 			return {
 				name: m.name,
 				id: m.model,
+				subtitle: m.details.parameter_size,
 				capabilities: {
 					supportsFunctionCalling: false,
 					supportsReasoning: false,

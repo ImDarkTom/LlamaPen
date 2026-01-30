@@ -58,5 +58,6 @@ export type ModelCapabilities = {
 export type Model = {
 	name: string; // Pretty name
 	id: string; // Internal identifier
+	subtitle: string;
 	capabilities: ModelCapabilities;
 }
