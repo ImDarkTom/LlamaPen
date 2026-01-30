@@ -6,13 +6,6 @@ import type { OllamaProvider } from "../ollama/OllamaProvider";
 import type { ModelInfo } from "@/composables/useProviderManager";
 import type { LPCloudProvider } from "../lpcloud/LPCloudProvider";
 
-// TODO: have this contain all standardized types for use throughout the app (or maybe in a separate types.ts file in providers/base/)
-
-/**
- * Other todos:
- * - OpenRouter provider (using sdk for type safety, also make sure to chunk with the provider so js doesn't get loaded unless openrouter provider is explicitly chosen)
- */
-
 export type ConnectionState = {
     status: 'connected' | 'disconnected' | 'checking' | 'error';
     error?: string;

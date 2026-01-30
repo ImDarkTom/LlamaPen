@@ -1,13 +1,14 @@
 import { defineStore } from "pinia";
 import { computed, ref } from "vue";
 import { useConfigStore } from "./config";
-import type { Model, ModelCapabilities } from "@/providers/base/types";
+import type { Model, ModelCapabilities, ProviderMetadata } from "@/providers/base/types";
 import { useProviderManager, type ModelInfo } from "@/composables/useProviderManager";
+import useUserStore from "./user";
 
 export const useModelSelect = defineStore('modelSelect', () => {
-    const { getModelCapabilities } = useProviderManager();
+    const { getModelCapabilities, currentProviderId } = useProviderManager();
     const config = useConfigStore();
-    // const userStore = useUserStore();
+    const userStore = useUserStore();
 
     const searchQuery = ref('');
     const isMenuOpened = ref(false);
@@ -67,10 +68,12 @@ export const useModelSelect = defineStore('modelSelect', () => {
                     return item1.localeCompare(item2, undefined, { sensitivity: 'base' });
                 });
                 break;
-            // TODO(ollama): some way to allow custom sorting/filtering based on provider (size sort)
-            // case 'size':
-            //     nonFavorites.sort((a, b) => a.modelData.size - b.modelData.size);
-            //     break;
+            case 'size':
+                nonFavorites.sort((a, b) => {
+                    if (a.info.providerMetadata?.provider !== 'ollama' || b.info.providerMetadata?.provider !== 'ollama') return 0;
+                    return a.info.providerMetadata.data.size - b.info.providerMetadata.data.size
+                });
+                break;
         }
 
         if (direction.value === 'des') {
@@ -84,18 +87,17 @@ export const useModelSelect = defineStore('modelSelect', () => {
     function sortItems(items: ModelInfo[]) {
         items = userSort(items) || items;
 
-        // TODO(llamapen-cloud): sorting item based on provider-specific properties
-        // if (config.cloud.enabled) {
-        //     if (!userStore.isPremium) {
-        //         items.sort((a, b) => {
-        //             return (a.modelData.llamapenMetadata?.premium ? 1 : 0) - (b.modelData.llamapenMetadata?.premium ? 1 : 0)
-        //         });
-        //     }
+        if (currentProviderId.value === 'lpcloud') {
+            if (!userStore.isPremium) {
+                items.sort((a, b) => {
+                    return ((a.info.providerMetadata as (ProviderMetadata & { provider: 'lpcloud' })).data.premium ? 1 : 0) - ((b.info.providerMetadata as (ProviderMetadata & { provider: 'lpcloud' })).data.premium ? 1 : 0)
+                });
+            }
 
-        //     if (userStore.userInfo.options.showProprietaryModels === false) {
-        //         items = items.filter(item => !item.modelData.llamapenMetadata?.tags?.includes('closedSource'));
-        //     }
-        // }
+            if (userStore.userInfo.options.showProprietaryModels === false) {
+                items = items.filter(item => !((item.info.providerMetadata as (ProviderMetadata & { provider: 'lpcloud' })).data.tags?.includes('closedSource')));
+            }
+        }
 
         return items;
     }
