@@ -83,6 +83,16 @@ export class OllamaProvider extends BaseProvider implements OllamaLLMProvider {
 					supportsFunctionCalling: false,
 					supportsReasoning: false,
 					supportsVision: false,
+				},
+				providerMetadata: {
+					provider: 'ollama',
+					data: {
+						size: m.size,
+						parameterSize: m.details.parameter_size,
+						family: m.details.family,
+						modifiedAt: m.modified_at,
+						quantization: m.details.quantization_level,
+					}
 				}
 			}
 		});

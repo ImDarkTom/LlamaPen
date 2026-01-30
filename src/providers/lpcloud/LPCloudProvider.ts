@@ -63,6 +63,14 @@ export class LPCloudProvider extends BaseProvider implements LPCloudLLMProvider 
                     supportsFunctionCalling: m.capabilities.includes('tools'),
                     supportsReasoning: m.capabilities.includes('thinking'),
                     supportsVision: m.capabilities.includes('vision'),
+                },
+                providerMetadata: {
+                    provider: 'lpcloud',
+                    data: {
+                        premium: m.llamapenMetadata.premium ?? false,
+                        providerName: m.llamapenMetadata.creator,
+                        tags: m.llamapenMetadata.tags ?? [],
+                    }
                 }
             }
         });

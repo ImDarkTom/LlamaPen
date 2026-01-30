@@ -8,7 +8,7 @@ import TextDivider from '@/components/TextDivider/TextDivider.vue';
 import Tooltip from '@/components/Tooltip/Tooltip.vue';
 import router from '@/lib/router';
 import { useConfigStore } from '@/stores/config';
-// import useUserStore from '@/stores/user';
+import useUserStore from '@/stores/user';
 import { computed, ref } from 'vue';
 import type { IconType } from 'vue-icons-plus';
 import { BiCopy, BiDotsVerticalRounded, BiDownload, BiHide, BiLinkExternal, BiPencil, BiShow, BiTrash } from 'vue-icons-plus/bi';
@@ -22,7 +22,7 @@ const config = useConfigStore();
 const { setModelHidden } = useUIStore();
 const { rawModels } = useProviderManager();
 const { isConnected, isLoading, allModelIds, isOllama } = useProviderManager();
-// const user = useUserStore();
+const userStore = useUserStore();
 
 const props = defineProps<{
     modelsList: ModelInfo[],
@@ -155,15 +155,15 @@ const hideAll = () => {
     refreshModelList();
 };
 
-// const showProprietaryModels = ref(user.userInfo.options.showProprietaryModels);
+// todo: fix
+const showProprietaryModels = ref(userStore.userInfo.options.showProprietaryModels);
 
 const searchQuery = ref('');
 
 const queriedModels = computed(() => props.modelsList.filter((m) => {
-    // TODO(llamapen-cloud): fix this 
-    // if (!showProprietaryModels.value && m.modelData.llamapenMetadata?.tags?.includes('closedSource')) {
-    //     return false;
-    // }
+    if (!showProprietaryModels.value && m.info.providerMetadata?.provider === 'lpcloud' && m.info.providerMetadata.data.tags?.includes('closedSource')) {
+        return false;
+    }
 
     return m.displayName.includes(searchQuery.value) ||
         m.info.id.includes(searchQuery.value)

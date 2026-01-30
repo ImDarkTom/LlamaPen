@@ -60,4 +60,23 @@ export type Model = {
 	id: string; // Internal identifier
 	subtitle: string;
 	capabilities: ModelCapabilities;
+	providerMetadata?: ProviderMetadata;
+}
+
+export type ProviderMetadata = 
+	| { provider: 'ollama', data: OllamaMetadata }
+	| { provider: 'lpcloud', data: LPCloudMetadata }
+
+export type OllamaMetadata = {
+	size: number;
+	parameterSize: string;
+	quantization?: string;
+	family?: string;
+	modifiedAt?: Date;
+}
+
+export type LPCloudMetadata = {
+	providerName: string;
+	premium: boolean;
+	tags?: string[]
 }
