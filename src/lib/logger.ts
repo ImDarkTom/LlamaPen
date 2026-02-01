@@ -26,6 +26,16 @@ class Logger {
 			...data
 		);
 	}
+	
+	error(origin: string, ...data: unknown[]) {
+		const currentTime = new Date().toLocaleString();
+
+		console.error(
+			`[${currentTime}] [%c${origin}%c] [%ERROR%c]`,
+			'color: lightblue', '', 'color: red', '',
+			...data
+		);
+	}
 }
 
 const logger = new Logger();

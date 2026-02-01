@@ -4,16 +4,16 @@ import { defineStore } from 'pinia';
 import { ref } from 'vue';
 import logger from '@/lib/logger';
 import { emitter } from '@/lib/mitt';
-import ollamaApi, { type ChatIteratorChunk } from '@/utils/ollama';
 import setPageTitle from '@/utils/core/setPageTitle';
 import { useConfigStore } from '../config';
 import useChatsStore from '../chatsStore';
-import { useUiStore } from '../uiStore';
 import useToolsStore from '../toolsStore';
 import { initLiveSync } from './initLiveSync';
 import { createNewChat } from './utils/createNewChat';
 import { addAttachmentsToDB } from './utils/addAttachmentsToDB';
-import { getMessagesInOllamaFormat } from './utils/getMessagesInOllamaFormat';
+import { useProviderManager } from '@/composables/useProviderManager';
+import type { ChatIteratorChunk } from '@/providers/base/types';
+import useUIStore from '../uiStore';
 
 /**
  * Handles messages, opened chat messages, and opened chat ID. Seperate from chatsStore.
@@ -101,7 +101,7 @@ const useMessagesStore = defineStore('messages', () => {
 		logger.info('Messages Store', 'Opening chat with id', id);
 
 		openedChatId.value = id || null;
-		useUiStore().chat.isScrollingDown = true;
+		useUIStore().chatIsScrollingDown = true;
 	}
 
 	// -----
@@ -217,7 +217,8 @@ const useMessagesStore = defineStore('messages', () => {
 	 */
 	async function getOllamaResponse(options?: GetResponseOptions) {
 		logger.info('Messages Store', 'Get ollama response with options', options);
-		const messageSaveInterval = useConfigStore().chat.tokenSaveInterval;
+		const config = useConfigStore();
+		const messageSaveInterval = config.chat.tokenSaveInterval;
 
 		// Helpers
 		const setMessageStatus = async (newStatus: ModelMessageStatus) => {
@@ -253,7 +254,7 @@ const useMessagesStore = defineStore('messages', () => {
 		}
 		const chatId = openedChatId.value;
 
-		const selectedModel = options?.modelOverride ?? useConfigStore().selectedModel;
+		const selectedModel = options?.modelOverride ?? config.selectedModel;
 
 		// 2. Add a blank model message to the chat to put the response in or get the overridden one.
 		const ollamaMessageId = options?.messageIdOverride ?? await addModelMessageToChat(selectedModel, chatId);
@@ -269,8 +270,6 @@ const useMessagesStore = defineStore('messages', () => {
 
 		emitter.on('stopChatGeneration', cancelHandler);
 		logger.info('Messages Store', 'Added stop chat generation emit listener');
-
-		const chatMessageList = await getMessagesInOllamaFormat(openedChatMessages.value);
 
 		let generatedContent = "";
 		let generatedThoughts = "";
@@ -293,8 +292,13 @@ const useMessagesStore = defineStore('messages', () => {
 
 		let hasAbortTrigger = false;
 		let messageSaveCounter = 0;
+		const chatIterator = await useProviderManager().chat(openedChatMessages.value, abortController.signal, {
+			model: selectedModel,
+			reasoningEnabled: config.chat.thinking.enabled,
+		});
+
 		try {
-			for await (const chunk of ollamaApi.chat(chatMessageList, abortController.signal, { modelOverride: selectedModel })) {
+			for await (const chunk of chatIterator) {
 				// First, check if the chunk is an error or done indicator.
 				if (chunk.type === 'error') {
 					throw chunk;
@@ -359,7 +363,6 @@ const useMessagesStore = defineStore('messages', () => {
 				}
 			}
 		} catch (error: unknown) {
-			// CustomErrorResponse | any
 			delete messageGenerationStates.value[ollamaMessageId];
 
 			if (thinkStarted !== -1) {
@@ -418,7 +421,7 @@ const useMessagesStore = defineStore('messages', () => {
 		logger.info('Messages Store', 'Generating chat title for opened chat', chatId);
 
 		const chatMessages = openedChatMessages.value;
-		const newChatTitle = await ollamaApi.generateChatTitle(chatMessages);
+		const newChatTitle = await useProviderManager().generateChatTitle(chatMessages);
 
 		useChatsStore().renameChat(chatId, newChatTitle);
 		chatsGeneratingTitles.value = chatsGeneratingTitles.value.filter(id => id !== chatId);

@@ -3,7 +3,7 @@ import { nextTick, onMounted, onUnmounted, ref, watch } from 'vue';
 import ChatMessage from './ChatMessage/ChatMessage.vue';
 import { useRoute } from 'vue-router';
 import { emitter } from '@/lib/mitt';
-import { useUiStore } from '@/stores/uiStore';
+import useUIStore from '@/stores/uiStore';
 import GreetingText from './GreetingText.vue';
 import useMessagesStore from '@/stores/messagesStore';
 import { storeToRefs } from 'pinia';
@@ -21,7 +21,7 @@ const chatsStore = useChatsStore();
 
 const { openedChatMessages } = storeToRefs(messagesStore);
 
-const uiStore = useUiStore();
+const { chatIsScrollingDown } = storeToRefs(useUIStore());
 
 function openChat(newId: string | string[] | undefined, oldId?: string | string[] | undefined) {
     if (newId !== oldId) {
@@ -64,7 +64,7 @@ onUnmounted(() => {
 });
 
 watch(() => openedChatMessages.value, async () => {
-    if (uiStore.chat.isScrollingDown) {
+    if (chatIsScrollingDown.value) {
         await nextTick();
 
         scrollToBottom({ force: true });
@@ -76,7 +76,7 @@ function scrollToBottom(event: { force?: boolean } | undefined) {
         return;
     }
 
-    if ((event && event.force) || uiStore.chat.isScrollingDown) {
+    if ((event && event.force) || chatIsScrollingDown.value) {
         const scrollPosition = messageListRef.value.scrollHeight;
         const scrollHeight = messageListRef.value.scrollHeight;
 
@@ -102,7 +102,7 @@ function handleScroll(_e: Event) {
     const userScrolled = messageListElem.scrollTop + messageListElem.clientHeight;
 
     // If scrolled more than 25px up.
-    uiStore.chat.isScrollingDown = elementHeight < userScrolled + 25; // 25px padding
+    chatIsScrollingDown.value = elementHeight < userScrolled + 25; // 25px padding
 }
 
 </script>

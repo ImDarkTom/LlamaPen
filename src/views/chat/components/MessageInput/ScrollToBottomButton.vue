@@ -1,16 +1,13 @@
 <script setup lang="ts">
-import { ref, watch } from 'vue';
+import { computed } from 'vue';
 import { emitter } from '@/lib/mitt';
-import { useUiStore } from '@/stores/uiStore';
+import useUIStore from '@/stores/uiStore';
 import { BiSolidDownArrowCircle } from 'vue-icons-plus/bi';
+import { storeToRefs } from 'pinia';
 
-const uiStore = useUiStore();
+const { chatIsScrollingDown } = storeToRefs(useUIStore());
 
-const showButton = ref<boolean>(false);
-
-watch(uiStore.chat, () => {
-    showButton.value = !uiStore.chat.isScrollingDown;
-});
+const showButton = computed(() => !chatIsScrollingDown.value);
 </script>
 
 <template>

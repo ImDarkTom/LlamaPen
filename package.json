@@ -11,23 +11,25 @@
     "local": "bun run build && echo \"✅ App should be running locally at http://localhost:8080\" && bunx --bun serve dist --listen 8080 --single"
   },
   "dependencies": {
-    "@supabase/supabase-js": "^2.90.1",
-    "dexie": "^4.2.1",
+    "@supabase/supabase-js": "^2.93.3",
+    "dexie": "^4.3.0",
     "dompurify": "^3.3.1",
     "highlight.js": "^11.11.1",
-    "katex": "^0.16.27",
+    "katex": "^0.16.28",
     "marked": "^17.0.1",
     "marked-katex-extension": "^5.1.6",
     "mitt": "^3.0.1",
     "mustache": "^4.2.0",
     "normalize.css": "^8.0.1",
+    "ollama": "^0.6.3",
     "path": "^0.12.7",
     "pinia": "^3.0.4",
     "pinia-plugin-persistedstate": "^4.7.1",
     "readable-stream": "^4.7.0",
-    "vue": "^3.5.26",
+    "reka-ui": "^2.8.0",
+    "vue": "^3.5.27",
     "vue-icons-plus": "^0.1.9",
-    "vue-router": "^4.6.4"
+    "vue-router": "^5.0.1"
   },
   "devDependencies": {
     "@castlenine/vite-remove-attribute": "^1.0.2",
@@ -38,11 +40,13 @@
     "@types/node": "^24.10.9",
     "@types/readable-stream": "^4.0.23",
     "@vitejs/plugin-vue": "^6.0.3",
-    "@vitest/coverage-v8": "4.0.17",
-    "@vitest/ui": "4.0.17",
+    "@vitest/coverage-v8": "4.0.18",
+    "@vitest/ui": "4.0.18",
     "@vue/eslint-config-typescript": "^14.6.0",
     "@vue/test-utils": "^2.4.6",
     "@vue/tsconfig": "^0.8.1",
+    "baseline-browser-mapping": "^2.9.19",
+    "caniuse-lite": "^1.0.30001766",
     "fake-indexeddb": "^6.2.5",
     "jsdom": "^27.4.0",
     "tailwindcss": "^4.1.18",
@@ -51,7 +55,7 @@
     "vite": "^7.3.1",
     "vite-plugin-pwa": "^1.2.0",
     "vite-svg-loader": "^5.1.0",
-    "vitest": "^4.0.17",
-    "vue-tsc": "^3.2.2"
+    "vitest": "^4.0.18",
+    "vue-tsc": "^3.2.4"
   }
 }

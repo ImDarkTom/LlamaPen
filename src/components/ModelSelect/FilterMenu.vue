@@ -9,7 +9,8 @@ import { emitter } from '@/lib/mitt';
 
 const config = useConfigStore();
 
-const { filterCapabilities, direction, orderBy, filterMenuOpen } = storeToRefs(useModelSelect());
+const modelSelectStore = useModelSelect();
+const { filterCapabilities, direction, orderBy, filterMenuOpen } = storeToRefs(modelSelectStore);
 
 const filterMenu = ref<HTMLElement | null>(null);
 
@@ -28,28 +29,28 @@ onBeforeUnmount(() => {
         <div class="flex flex-col justify-end">
             <button 
                 class="bg-surface-light hover:bg-border-muted p-2 rounded-md ring-inset ring-2 ring-border-muted hover:ring-border active:ring-highlight cursor-pointer outline-0 transition-colors duration-dynamic"
-                @click="filterCapabilities = []; orderBy = 'default'; direction = 'asc'" >
+                @click="modelSelectStore.resetFilters()" >
                 <BiRefresh class="size-5" />
             </button>
-        </div>
+        </div>  
         <label class="flex flex-col">
             <span class="text-sm">Filter</span>
             <MultiItemSelect 
-                v-model="filterCapabilities" 
+                v-model:record="filterCapabilities" 
                 :items="[
                     {
                         label: 'Thinking',
-                        value: 'thinking',
+                        value: 'supportsReasoning',
                         icon: BiBrain,
                     },
                     {
                         label: 'Vision',
-                        value: 'vision',
+                        value: 'supportsVision',
                         icon: BiShow,
                     },
                     {
                         label: 'Tools',
-                        value: 'tools',
+                        value: 'supportsFunctionCalling',
                         icon: BiWrench,
                     }
                 ]"

@@ -1,6 +1,6 @@
 import logger from '@/lib/logger';
-import ollamaRequest from '@/utils/ollamaRequest';
-import { streamChunks } from '@/utils/streamChunks';
+import { ollamaWrapper } from '@/providers/ollama/OllamaWrapper';
+import type { ProgressResponse } from 'ollama';
 import { defineStore } from 'pinia';
 import { ref } from 'vue';
 
@@ -16,45 +16,37 @@ import { ref } from 'vue';
 
 const useDownloadsStore = defineStore('downloads', () => {
     const abortControllerMap: Map<string, AbortController> = new Map();
-    const progressChunks = ref<Record<string, OllamaPullResponseChunk>>({});
+    const progressChunks = ref<Record<string, ProgressResponse>>({});
     
     async function downloadModel(modelId: string): Promise<{ success: boolean, reason?: string }> {
         const abortController = new AbortController();
 
-        const { data, error } = await ollamaRequest('/api/pull', 'POST', {
-            model: modelId
-        }, { signal: abortController.signal });
-
-        if (error) {
-            throw new Error(`Failed to download model: ${error}`);
-        }
+        const { data: stream, error } = await ollamaWrapper.pull({ model: modelId, stream: true }, abortController);
+        if (error) return { success: false, reason: 'Failed to download model.' }; // We already log the error
 
         abortControllerMap.set(modelId, abortController);
 
-        for await (const { error, chunk } of streamChunks<OllamaPullResponseChunk>(data)) {
-            if (error) {
-                if (error.message === 'userRequestCancel') {
+        try {
+            for await (const progress of stream) {
+                progressChunks.value[modelId] = progress;
+
+                if (progress.status === 'success') {
+                    logger.info('Download Manager', `Model ${modelId} downloaded successfully.`);
                     delete progressChunks.value[modelId];
-                    return { success: false, reason: `Cancelled downloading '${modelId}'.` };
+                    return { success: true }
                 }
-                
-                return { success: false, reason: `Internal error while downloading: ${error.message}` };
+            }
+        } catch (e) {
+            delete progressChunks.value[modelId];
+            if (e === 'userRequestCancel') {
+                return { success: false, reason: `Cancelled downloading '${modelId}'.` };
             }
 
-            progressChunks.value[modelId] = chunk;
-
-            if (chunk.error) {
-                delete progressChunks.value[modelId];
-                return { success: false, reason: `Ollama error while downloading: ${chunk.error}` };
-            }
-
-            if (chunk.status === 'success') {
-                logger.info('Download Manager', `Model ${modelId} downloaded successfully.`);
-                delete progressChunks.value[modelId];
-                return { success: true }
-            }
+            return { success: false, reason: `Error while downloading: ${e}` };
+        } finally {
+            abortControllerMap.delete(modelId);
         }
-
+        
         return { success: false, reason: 'Unknown error occurred during download.' };
     }
 

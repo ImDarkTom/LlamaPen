@@ -1,11 +1,12 @@
-import { useModelList, type ModelInfoListItem } from "@/composables/useModelList";
 import { defineStore } from "pinia";
 import { computed, ref } from "vue";
 import { useConfigStore } from "./config";
+import type { Model, ModelCapabilities, ProviderMetadata } from "@/providers/base/types";
+import { useProviderManager, type ModelInfo } from "@/composables/useProviderManager";
 import useUserStore from "./user";
 
 export const useModelSelect = defineStore('modelSelect', () => {
-    const { getModelCapabilities } = useModelList();
+    const { getModelCapabilities, currentProviderId } = useProviderManager();
     const config = useConfigStore();
     const userStore = useUserStore();
 
@@ -15,36 +16,42 @@ export const useModelSelect = defineStore('modelSelect', () => {
 
     const filterMenuOpen = ref(false);
     const orderBy = ref<'default' | 'alphabetically' | 'size'>('default');
-    const filterCapabilities = ref<OllamaCapability[]>([]);
     const direction = ref<'asc' | 'des'>('asc');
+    const filterCapabilities = ref<ModelCapabilities>({
+        supportsFunctionCalling: false,
+        supportsReasoning: false,
+        supportsVision: false,
+    });
 
-    const queriedModelList = computed<ModelInfoListItem[]>(() => {
-        return useModelList().models.value
+    const queriedModelList = computed<ModelInfo[]>(() => {
+        return useProviderManager().rawModels.value
             .filter((model) => {
                 const query = (searchQuery.value || "").toLowerCase();
 
                 return (
-                    model.modelData.name.toLowerCase().includes(query) ||
+                    model.info.name.toLowerCase().includes(query) ||
                     model.displayName.toLowerCase().includes(query) ||
-                    model.modelData.model.toLowerCase().includes(query)
+                    model.info.id.toLowerCase().includes(query)
                 );
             });
     });
 
-    function userSort(items: ModelInfoListItem[]) {
-        if (filterCapabilities.value.length > 0) {
-            items = items.filter((item) => {
-                const capabilities = getModelCapabilities(item);
-                return filterCapabilities.value.every((cap) => capabilities.includes(cap));
-            });
-        }
-
+    function userSort(items: ModelInfo[]) {
         const favoriteModels = config.models.favoriteModels ?? [];
-        const favorites: ModelInfoListItem[] = [];
-        const nonFavorites: ModelInfoListItem[] = [];
+        const favorites: ModelInfo[] = [];
+        const nonFavorites: ModelInfo[] = [];
 
-        items.forEach(item => {
-            if (favoriteModels.includes(item.modelData.model)) {
+        const filter = filterCapabilities.value;
+        const filteredItems = items.filter(model => {
+            const capabilities = getModelCapabilities(model.info.id);
+
+            return (Object.keys(filter) as Array<keyof ModelCapabilities>).every(key => {
+                return !filter[key] || capabilities[key];
+            });
+        });
+
+        filteredItems.forEach(item => {
+            if (favoriteModels.includes(item.info.id)) {
                 favorites.push(item);
             } else {
                 nonFavorites.push(item);
@@ -56,13 +63,16 @@ export const useModelSelect = defineStore('modelSelect', () => {
                 break;
             case 'alphabetically':
                 nonFavorites.sort((a, b) => {
-                    const item1 = a.modelData.model.split('/')[1] ?? a.modelData.model;
-                    const item2 = b.modelData.model.split('/')[1] ?? b.modelData.model;
+                    const item1 = a.info.id.split('/')[1] ?? a.info.id;
+                    const item2 = b.info.id.split('/')[1] ?? b.info.id;
                     return item1.localeCompare(item2, undefined, { sensitivity: 'base' });
                 });
                 break;
             case 'size':
-                nonFavorites.sort((a, b) => a.modelData.size - b.modelData.size);
+                nonFavorites.sort((a, b) => {
+                    if (a.info.providerMetadata?.provider !== 'ollama' || b.info.providerMetadata?.provider !== 'ollama') return 0;
+                    return a.info.providerMetadata.data.size - b.info.providerMetadata.data.size
+                });
                 break;
         }
 
@@ -74,26 +84,26 @@ export const useModelSelect = defineStore('modelSelect', () => {
         return [...favorites, ...nonFavorites];
     }
 
-    function sortItems(items: ModelInfoListItem[]) {
+    function sortItems(items: ModelInfo[]) {
         items = userSort(items) || items;
 
-        if (config.cloud.enabled) {
+        if (currentProviderId.value === 'lpcloud') {
             if (!userStore.isPremium) {
                 items.sort((a, b) => {
-                    return (a.modelData.llamapenMetadata?.premium ? 1 : 0) - (b.modelData.llamapenMetadata?.premium ? 1 : 0)
+                    return ((a.info.providerMetadata as (ProviderMetadata & { provider: 'lpcloud' })).data.premium ? 1 : 0) - ((b.info.providerMetadata as (ProviderMetadata & { provider: 'lpcloud' })).data.premium ? 1 : 0)
                 });
             }
 
             if (userStore.userInfo.options.showProprietaryModels === false) {
-                items = items.filter(item => !item.modelData.llamapenMetadata?.tags?.includes('closedSource'));
+                items = items.filter(item => !((item.info.providerMetadata as (ProviderMetadata & { provider: 'lpcloud' })).data.tags?.includes('closedSource')));
             }
         }
 
         return items;
     }
 
-    async function setModel(newModel: ModelListItem, skipUiUpdate: boolean = false) {
-        const newModelId = newModel.model;
+    async function setModel(newModel: Model, skipUiUpdate: boolean = false) {
+        const newModelId = newModel.id;
         config.selectedModel = newModelId;
 
         if (!skipUiUpdate) {
@@ -110,6 +120,17 @@ export const useModelSelect = defineStore('modelSelect', () => {
 
     const sortedItems = computed(() => sortItems(queriedModelList.value.filter((item) => !item.hidden)));
 
+    function resetFilters() {
+        filterCapabilities.value = {
+            supportsFunctionCalling: false,
+            supportsReasoning: false,
+            supportsVision: false,
+        };
+
+        orderBy.value = 'default';
+        direction.value = 'asc';
+    }
+
     return {
         isMenuOpened,
         searchQuery,
@@ -122,6 +143,7 @@ export const useModelSelect = defineStore('modelSelect', () => {
         sortedItems,
         sortItems,
         setModel,
-        resetState
+        resetState,
+        resetFilters,
     }
 });

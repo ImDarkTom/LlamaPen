@@ -2,17 +2,17 @@
 import { BiDotsHorizontalRounded, BiWrench } from 'vue-icons-plus/bi';
 import useToolsStore from '@/stores/toolsStore';
 import { computed, ref } from 'vue';
-import { useModelList } from '@/composables/useModelList';
 import { useConfigStore } from '@/stores/config';
 import FloatingMenu from '@/components/FloatingMenu/FloatingMenu.vue';
+import { useProviderManager } from '@/composables/useProviderManager';
 
 const toolsStore = useToolsStore();
 const config = useConfigStore();
-const { loading, selectedModelCapabilities } = useModelList();
+const { isLoading, selectedModelCapabilities } = useProviderManager();
 
 const searchQuery = ref<string>('');
 
-const selectedModelCanCallTools = computed(() => selectedModelCapabilities.value.includes('tools'));
+const selectedModelCanCallTools = computed(() => selectedModelCapabilities.value.supportsFunctionCalling);
 
 function toggleSelection(item: string) {
     const index = toolsStore.toggled.indexOf(item);
@@ -47,8 +47,8 @@ const isOpened = ref(false);
         v-model:is-opened="isOpened"
         preffered-position="top"
         :class="{ 
-            'opacity-50': loading,
-            'hidden': (config.ui.messageInput.hideUnusedButtons && !selectedModelCanCallTools) && !loading
+            'opacity-50': isLoading,
+            'hidden': (config.ui.messageInput.hideUnusedButtons && !selectedModelCanCallTools) && !isLoading
         }"
         title="Toggle available tools">
         <template #button>

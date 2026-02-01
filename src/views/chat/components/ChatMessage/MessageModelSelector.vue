@@ -1,6 +1,5 @@
 <script setup lang="ts">
 import Tooltip from '@/components/Tooltip/Tooltip.vue';
-import { useModelList, type ModelInfoListItem } from '@/composables/useModelList';
 import logger from '@/lib/logger';
 import useMessagesStore from '@/stores/messagesStore';
 import { computed } from '@vue/reactivity';
@@ -8,8 +7,9 @@ import { ref } from 'vue';
 import { BsCloudSlash } from 'vue-icons-plus/bs';
 import MessageModelSelectorItem from './MessageModelSelectorItem.vue';
 import { BiError, BiRefresh } from 'vue-icons-plus/bi';
-import useUserStore from '@/stores/user';
+// import useUserStore from '@/stores/user';
 import FloatingMenu from '@/components/FloatingMenu/FloatingMenu.vue';
+import { useProviderManager, type ModelInfo } from '@/composables/useProviderManager';
 
 const props = defineProps<{
     modelMessageDone: boolean;
@@ -17,28 +17,18 @@ const props = defineProps<{
 }>();
 
 const messagesStore = useMessagesStore();
-const userStore = useUserStore();
-const { models, getModelInfo, modelIds, loading } = useModelList();
+// const userStore = useUserStore();
+const { rawModels, getModelInfo } = useProviderManager();
+const { isLoading } = useProviderManager();
 
 const isOpened = ref<boolean>(false);
 const usedCloudForMessage = computed<boolean>(() => /\//g.test(props.message.model));
-const messageModelInfo = computed<{
-    exists: true;
-    data: ModelInfoListItem;
-} | {
-    exists: false;
-    data: null;
-}>(() => {
-    if (modelIds.value.includes(props.message.model)) {
-        return getModelInfo(props.message.model);
-    }
-    return { exists: false, data: null }
-});
+const messageModelInfo = computed(() => getModelInfo(props.message.model));
 
-const allModels = computed<ModelInfoListItem[]>(() => {
-    return models.value.filter(model => {
+const allModels = computed<ModelInfo[]>(() => {
+    return rawModels.value.filter(model => {
         // Get all models apart from the one the message used
-        return props.message.type === 'model' && props.message.model !== model.modelData.name
+        return props.message.type === 'model' && props.message.model !== model.info.name
     });
 });
 
@@ -61,7 +51,7 @@ const warningText = computed(() => {
 <template>
     <div class="relative flex flex-row items-center gap-1">
         <Tooltip
-            v-if="!messageModelInfo.exists && !loading"
+            v-if="!messageModelInfo.exists && !isLoading"
             :text=warningText
             size="small">
             <BsCloudSlash v-if="usedCloudForMessage" class="text-warning size-5 ml-1 translate-y-0.5" />
@@ -99,10 +89,10 @@ const warningText = computed(() => {
                     <div class="w-full min-h-0.5 bg-border"></div>
                     <MessageModelSelectorItem
                         v-for="model in allModels" 
-                        :key="model.modelData.digest"
-                        :modelId="model.modelData.model"
+                        :key="model.info.id"
+                        :modelId="model.info.id"
                         :modelName="model.displayName"
-                        :modelIsAvailable="(model.modelData.llamapenMetadata?.premium && userStore.isPremium) ?? true"
+                        :modelIsAvailable="true /* (model.modelData.llamapenMetadata?.premium && userStore.isPremium) ?? true */"
                         :regenerate-message="regenerateMessage" />
                 </div>
             </template>

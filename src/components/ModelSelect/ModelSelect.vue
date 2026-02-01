@@ -7,7 +7,6 @@ import logger from '@/lib/logger';
 import ModelIcon from '../Icon/ModelIcon.vue';
 import { TbListDetails } from 'vue-icons-plus/tb';
 import isOnMobile from '@/utils/core/isOnMobile';
-import { useModelList, type ModelInfoListItem } from '@/composables/useModelList';
 import PrimaryButton from '../Buttons/PrimaryButton.vue';
 import { BiExpand, BiFilterAlt, BiLoaderAlt, BiRefresh } from 'vue-icons-plus/bi';
 import FloatingMenu from '../FloatingMenu/FloatingMenu.vue';
@@ -16,18 +15,21 @@ import { storeToRefs } from 'pinia';
 import { useModelSelect } from '@/stores/useModelSelect';
 import { emitter } from '@/lib/mitt';
 import ModelSelectGridItem from './ModelSelectGridItem.vue';
+import { useProviderManager, type ModelInfo } from '@/composables/useProviderManager';
+import useUIStore from '@/stores/uiStore';
 
 const config = useConfigStore();
 
 // State
-const { 
-    models: modelsList, 
-    modelIds, 
-    load: loadModels, 
-    selectedModelInfo, 
-    loading: modelsLoading,
-    connectedToOllama
-} = useModelList();
+const {
+    isConnected,
+    isLoading,
+    rawModels,
+    loadModels,
+    refreshAndLoadModels,
+    selectedModelInfo,
+    allModelIds,
+} = useProviderManager();
 
 const {
     isMenuOpened: isOpened,
@@ -43,7 +45,7 @@ const {
     resetState
 } = useModelSelect();
 
-const modelList = useModelList();
+const { renameModel } = useUIStore();
 
 // Refs
 const searchBarRef = ref<HTMLInputElement | null>(null);
@@ -53,20 +55,20 @@ const listItemsRef = ref<Array<ComponentPublicInstance<{ listItemRef: HTMLLIElem
 onMounted(async () => {
     logger.info('Model Select Component', 'Selected model is', config.selectedModel);
 
-    await loadModels();
+    await loadModels(false);
     if (selectedModelInfo.value.exists) {
         setModel(
-            selectedModelInfo.value.data.modelData, 
+            selectedModelInfo.value.data.info, 
             true
         );
     } else {
-        if (modelIds.value.length > 0) {
+        if (allModelIds.value.length > 0) {
             if (
-                modelIds.value[0] !== undefined &&
-                modelsList.value[0] !== undefined
+                allModelIds.value[0] !== undefined &&
+                rawModels.value[0] !== undefined
             ) {
-                config.selectedModel = modelIds.value[0];
-                setModel(modelsList.value[0].modelData, true);
+                config.selectedModel = allModelIds.value[0];
+                setModel(rawModels.value[0].info, true);
             }
         }
     }
@@ -111,7 +113,7 @@ function searchKeyDown(e: KeyboardEvent) {
             const selectedItem = sortedItems.value[focusedItemIndex.value];
             
             if (selectedItem !== undefined) {
-                setModel(selectedItem.modelData);
+                setModel(selectedItem.info);
             }
 
             break;
@@ -157,7 +159,7 @@ function setFocused(index: number) {
     focusedItemIndex.value = index;
 }
 
-function renameModel(model: ModelInfoListItem) {
+function promptRenameModel(model: ModelInfo) {
     const displayName = model.displayName;
     
     let newName = prompt(`Enter a new name for '${displayName}' (app cosmetic only): '`, displayName);
@@ -165,7 +167,7 @@ function renameModel(model: ModelInfoListItem) {
         newName = displayName;
     }
 
-    modelList.renameModel(model.modelData.model, newName);
+    renameModel(model.info.id, newName);
 }
 
 
@@ -182,17 +184,17 @@ const menuWidth = computed(() => config.ui.modelList.useGridView ? 'sm:w-xl': 's
 <template>
     <FloatingMenu v-model:is-opened="isOpened" @toggled="onToggled" preffered-position="top" :menu-width="menuWidth" >
         <template #button>
-            <span v-if="modelsLoading" class="flex flex-row gap-2 items-center text-text-muted/75">
+            <span v-if="isLoading" class="flex flex-row gap-2 items-center text-text-muted/75">
                 <BiLoaderAlt class="animate-spin size-6 inline" />
                 Loading models...
             </span>
 
-            <span v-else-if="connectedToOllama && selectedModelInfo.exists" class="flex flex-row gap-2 items-center">
-                <ModelIcon :name="selectedModelInfo.data.modelData.model" class="size-6" />
+            <span v-else-if="isConnected && selectedModelInfo.exists" class="flex flex-row gap-2 items-center">
+                <ModelIcon :name="selectedModelInfo.data.info.id" class="size-6" />
                 {{ modelName }}
             </span>
 
-            <span v-else-if="connectedToOllama">
+            <span v-else-if="isConnected">
                 No model selected
             </span>
 
@@ -207,11 +209,11 @@ const menuWidth = computed(() => config.ui.modelList.useGridView ? 'sm:w-xl': 's
                 <div class="flex flex-row w-full rounded-lg border-2 overflow-hidden border-border focus-within:border-highlight hover:bg-surface-light">
                     <input 
                         class="w-full h-6 box-content p-3 outline-0"
-                        :class="{ 'cursor-not-allowed': !connectedToOllama }" 
+                        :class="{ 'cursor-not-allowed': !isConnected }" 
                         ref="searchBarRef" 
                         type="search"
                         placeholder="Search a model..."
-                        :disabled="!connectedToOllama"
+                        :disabled="!isConnected"
                         v-model="searchQuery" 
                         @keydown="searchKeyDown" 
                         aria-label="Search for a model..."
@@ -239,10 +241,10 @@ const menuWidth = computed(() => config.ui.modelList.useGridView ? 'sm:w-xl': 's
             <FilterMenu />
 
             <div :class="{ 'h-62!': filterMenuOpen }" class="h-80 overflow-y-auto [scrollbar-width:thin] ">
-                <div v-if="modelsLoading" class="h-24 flex justify-center items-center">
+                <div v-if="isLoading" class="h-24 flex justify-center items-center">
                     <BiLoaderAlt class="animate-spin size-6" />
                 </div>
-                <div v-else-if="!connectedToOllama" class="h-24 flex flex-col px-3 py-2 justify-center items-center font-bold gap-2">
+                <div v-else-if="!isConnected" class="h-24 flex flex-col px-3 py-2 justify-center items-center font-bold gap-2">
                     <span>
                         <VscDebugDisconnect class="inline" />
                         Not connected to Ollama.
@@ -252,7 +254,7 @@ const menuWidth = computed(() => config.ui.modelList.useGridView ? 'sm:w-xl': 's
                         color="primary"
                         text="Retry"
                         :icon="BiRefresh"
-                        @click="loadModels(true)"
+                        @click="refreshAndLoadModels "
                     />
                 </div>
                 <div v-else-if="queriedModelList.length === 0 && searchQuery !== ''"
@@ -275,24 +277,24 @@ const menuWidth = computed(() => config.ui.modelList.useGridView ? 'sm:w-xl': 's
                         role="list" >
                         <ModelSelectItem 
                             v-for="(model, index) in sortedItems" 
-                            :key="model.modelData.model" 
+                            :key="model.info.id" 
                             :index
                             :model 
-                            :isCurrentModel="model.modelData.model === selectedModelInfo.data?.modelData.model" 
+                            :isCurrentModel="model.info.id === selectedModelInfo.data?.info.id" 
                             :selected="index === focusedItemIndex"
-                            :renameModel="() => renameModel(model)"
+                            :renameModel="() => promptRenameModel(model)"
                             @mouseover="setFocused(index)"
                             ref="listItemsRef" />
                     </ul>
                     <div v-else class="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-5 gap-2 m-2">
                         <ModelSelectGridItem
                             v-for="(model, index) in sortedItems" 
-                            :key="model.modelData.model" 
+                            :key="model.info.id" 
                             :index
                             :model 
-                            :isCurrentModel="model.modelData.model === selectedModelInfo.data?.modelData.model" 
+                            :isCurrentModel="model.info.id === selectedModelInfo.data?.info.id" 
                             :selected="index === focusedItemIndex"
-                            :renameModel="() => renameModel(model)"
+                            :renameModel="() => promptRenameModel(model)"
                             @mouseover="setFocused(index)"
                             ref="listItemsRef" />
                     </div>

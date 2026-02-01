@@ -15,19 +15,19 @@ import { useConfigStore } from '@/stores/config';
 import MessageOptions from './buttons/MessageOptions.vue';
 import { BiSolidXCircle } from 'vue-icons-plus/bi';
 import MessageTools from './buttons/MessageTools.vue';
-import { useModelList } from '@/composables/useModelList';
 import isOnMobile from '@/utils/core/isOnMobile';
+import { useProviderManager } from '@/composables/useProviderManager';
 
 const messagesStore = useMessagesStore();
 const chatsStore = useChatsStore();
 const config = useConfigStore();
-const { connectedToOllama } = useModelList();
+const { isConnected } = useProviderManager();
 
 const messageInputRef = ref<HTMLTextAreaElement | null>(null);
 const messageInputValue = ref('');
 
 const canGenerate = computed<boolean>(() => {
-    return messageInputValue.value.trim() !== '' && connectedToOllama.value;
+    return messageInputValue.value.trim() !== '' && isConnected.value;
 });
 
 const focusInput = () => {

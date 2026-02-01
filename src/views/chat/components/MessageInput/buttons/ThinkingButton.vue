@@ -1,34 +1,34 @@
 <script setup lang="ts">
-import { useModelList } from '@/composables/useModelList';
 import { computed, watch } from 'vue';
 import { BiBrain } from 'vue-icons-plus/bi';
 import MessageInputButton from './MessageInputButton.vue';
 import { useConfigStore } from '@/stores/config';
+import { useProviderManager } from '@/composables/useProviderManager';
 
-const { selectedModelCapabilities, selectedModelInfo, loading } = useModelList();
+const { isLoading, selectedModelCapabilities, selectedModelInfo } = useProviderManager();
 const config = useConfigStore();
 
-defineProps(['modelValue']);
-const emits = defineEmits(['update:modelValue']);
+const model = defineModel()
 
-const selectedModelCanThink = computed(() => selectedModelCapabilities.value.includes('thinking'));
+const selectedModelCanThink = computed(() => selectedModelCapabilities.value.supportsReasoning);
 
 watch(selectedModelCanThink, () => {
-    if (!selectedModelCanThink.value) {
-        emits('update:modelValue', false)
+    if (selectedModelCanThink.value === false) {
+        model.value = false;
     }
 });
 
 const selectedAlwaysReasons = computed(() => {
     return !!(
-        selectedModelInfo.value.exists &&
-        selectedModelInfo.value.data.modelData.llamapenMetadata?.tags?.includes('alwaysReasons')
+        selectedModelInfo.value.exists
+        && selectedModelInfo.value.data.info.providerMetadata?.provider === 'lpcloud'
+        && selectedModelInfo.value.data.info.providerMetadata.data.tags?.includes('alwaysReasons')
     );
 });
 
 watch(selectedAlwaysReasons, () => {
     if (selectedAlwaysReasons.value) {
-        emits('update:modelValue', true);
+        model.value = false;
     }
 });
 
@@ -43,7 +43,7 @@ function toggleCheck(e: Event) {
         !selectedModelCanThink.value ||
         selectedAlwaysReasons.value
     ) return;
-    emits('update:modelValue', (e.target as HTMLInputElement).checked);
+    model.value = (e.target as HTMLInputElement).checked;
 }
 </script>
 
@@ -51,8 +51,8 @@ function toggleCheck(e: Event) {
     <MessageInputButton
         :class="{ 
             'bg-primary ring-background! text-background!': modelValue,
-            'opacity-50': selectedAlwaysReasons || loading,
-            'hidden': (config.ui.messageInput.hideUnusedButtons && !selectedModelCanThink) && !loading
+            'opacity-50': selectedAlwaysReasons || isLoading,
+            'hidden': (config.ui.messageInput.hideUnusedButtons && !selectedModelCanThink) && !isLoading
         }"
         :title="buttonHoverText"
     >
