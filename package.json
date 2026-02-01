@@ -45,6 +45,8 @@
     "@vue/eslint-config-typescript": "^14.6.0",
     "@vue/test-utils": "^2.4.6",
     "@vue/tsconfig": "^0.8.1",
+    "baseline-browser-mapping": "^2.9.19",
+    "caniuse-lite": "^1.0.30001766",
     "fake-indexeddb": "^6.2.5",
     "jsdom": "^27.4.0",
     "tailwindcss": "^4.1.18",
