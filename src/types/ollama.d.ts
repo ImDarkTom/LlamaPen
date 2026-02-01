@@ -1,4 +1,3 @@
-// src/types/ollama.d.ts
 import 'ollama/browser';
 
 declare module 'ollama/browser' {
