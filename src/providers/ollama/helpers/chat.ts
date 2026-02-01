@@ -4,7 +4,7 @@ import { useConfigStore } from "@/stores/config";
 import { appToolsToOllama } from "../converters/appToolsToOllama";
 import type { ChatIteratorChunk, ChatOptions } from "@/providers/base/types";
 import { ollamaWrapper } from "../OllamaWrapper";
-import type { ChatRequest } from "ollama";
+import type { ChatRequest } from "ollama/browser";
 import * as Ollama from 'ollama/browser';
 import { useProviderManager } from "@/composables/useProviderManager";
 

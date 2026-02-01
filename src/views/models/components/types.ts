@@ -1,5 +1,5 @@
 import type { ModelInfo } from "@/composables/useProviderManager";
-import type { ShowResponse } from "ollama";
+import type { ShowResponse } from "ollama/browser";
 
 export type ModelViewInfo =
  | { state: 'data', model: ShowResponse, isLoaded: boolean, type: 'ollama' }

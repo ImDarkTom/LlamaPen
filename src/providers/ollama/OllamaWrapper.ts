@@ -1,8 +1,6 @@
 import logger from "@/lib/logger";
 import { tryCatch } from "@/utils/core/tryCatch";
-import type { ChatRequest } from "ollama";
-import type { CopyRequest, DeleteRequest } from "ollama";
-import { Ollama, type PullRequest, type ShowRequest } from "ollama/browser";
+import { Ollama, type ChatRequest, type CopyRequest, type DeleteRequest, type ShowRequest, type PullRequest } from "ollama/browser";
 
 /**
  * Wrapper for the Ollama SDK to handle errors and have centralized Ollama interactions.

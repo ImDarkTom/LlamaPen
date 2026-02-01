@@ -1,4 +1,4 @@
-import { Ollama, type ChatRequest } from "ollama";
+import { Ollama, type ChatRequest } from "ollama/browser";
 import * as OllamaTypes from "ollama/browser";
 
 import logger from "@/lib/logger";

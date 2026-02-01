@@ -5,7 +5,7 @@ import { reactive, ref, type Reactive, type Ref } from "vue";
 import type { ConnectionState, LPCloudLLMProvider } from "../base/ProviderInterface";
 import { BaseProvider } from "../base/BaseProvider";
 import type { ModelInfo } from "@/composables/useProviderManager";
-import { appMesagesToOllama } from "../ollama/converters/appMessagesToOllama";
+import { appMessagesToLPCloud } from "./converters/appMessagesToLPCloud";
 import { chat } from "./helpers/chat";
 import * as helpers from "./helpers/generateChatTitle";
 
@@ -47,7 +47,7 @@ export class LPCloudProvider extends BaseProvider implements LPCloudLLMProvider 
     }
 
     async chat(messages: ChatMessage[], abortSignal: AbortSignal, options: ChatOptions): Promise<ReadableOf<ChatIteratorChunk>> {
-        const ollamaFormatMessages = await appMesagesToOllama(messages);
+        const ollamaFormatMessages = await appMessagesToLPCloud(messages);
         return chat(ollamaFormatMessages, abortSignal, options);
     }
     

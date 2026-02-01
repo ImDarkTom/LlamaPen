@@ -1,6 +1,6 @@
 import logger from "@/lib/logger";
 import { getMessageAttachments } from "@/utils/core/getMessageAttachments";
-import type { OllamaMessage, OllamaMessageRole } from "../types";
+import type { LPCloudMessage, LPCloudMessageRole } from "../types";
 
 async function getMessageAttachmentBase64(messageId: number): Promise<string[]> {
     const attachments = await getMessageAttachments(messageId);
@@ -18,7 +18,7 @@ async function getMessageAttachmentBase64(messageId: number): Promise<string[]> 
     }));
 }
 
-export async function appMesagesToOllama(chatMessages: ChatMessage[]): Promise<OllamaMessage[]> {
+export async function appMessagesToLPCloud(chatMessages: ChatMessage[]): Promise<LPCloudMessage[]> {
     const sortedMessages = chatMessages.sort((a, b) => a.created.getTime() - b.created.getTime());
 
     const formattedMessages = sortedMessages.map(async (message) => {
@@ -31,7 +31,7 @@ export async function appMesagesToOllama(chatMessages: ChatMessage[]): Promise<O
         }
 
         // TODO: handle system messages properly
-        const role: OllamaMessageRole = (() => {
+        const role: LPCloudMessageRole = (() => {
             switch (message.type) {
                 case 'user':
                     return 'user';
@@ -42,7 +42,7 @@ export async function appMesagesToOllama(chatMessages: ChatMessage[]): Promise<O
             }
         })();
 
-        const builtMessage: OllamaMessage = {
+        const builtMessage: LPCloudMessage = {
             role: role,
             content: message.content,
         };

@@ -3,7 +3,7 @@ import { chat, generateChatTitle } from "./helpers";
 import type { ChatIteratorChunk, ChatOptions, Model, ModelCapabilities } from "../base/types";
 import { appMesagesToOllama } from "./converters/appMessagesToOllama";
 import { ollamaWrapper } from "./OllamaWrapper";
-import type { ShowResponse } from "ollama";
+import type { ShowResponse } from "ollama/browser";
 import { reactive, ref, type Reactive, type Ref } from "vue";
 import type { ConnectionState, OllamaLLMProvider } from "../base/ProviderInterface";
 import { BaseProvider } from "../base/BaseProvider";
