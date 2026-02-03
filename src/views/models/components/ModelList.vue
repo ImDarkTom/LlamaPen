@@ -155,7 +155,6 @@ const hideAll = () => {
     refreshModelList();
 };
 
-// todo: fix
 const showProprietaryModels = ref(userStore.userInfo.options.showProprietaryModels);
 
 const searchQuery = ref('');
