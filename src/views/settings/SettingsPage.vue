@@ -4,14 +4,12 @@ import { useConfigStore } from '@/stores/config';
 import ToggleSetting from '@/views/settings/components/ToggleSetting.vue';
 import OptionCategory from './components/OptionCategory.vue';
 import { useRouter } from 'vue-router';
-import PrimaryButton from '../../components/Buttons/PrimaryButton.vue';
 import useChatsStore from '@/stores/chatsStore';
 import useMessagesStore from '@/stores/messagesStore';
 import TextInputSetting from './components/TextInputSetting.vue';
 import setPageTitle from '@/utils/core/setPageTitle';
 import CategoryLabel from './components/CategoryLabel.vue';
 import NumberInputSetting from './components/NumberInputSetting.vue';
-import PageHeader from '@/components/Page/PageHeader.vue';
 import SelectionSetting from './components/SelectionSetting.vue';
 import OptionText from './components/OptionText.vue';
 import { BiInfoCircle, BiRefresh, BiTrash } from 'vue-icons-plus/bi';
@@ -137,7 +135,7 @@ const selectedProvider = computed({
 <template>
     <div class="w-full h-full flex flex-col items-center py-4 box-border overflow-y-auto gap-4
     *:mx-auto *:md:w-4/5 *:lg:w-3/5 *:max-w-3xl">
-        <PageHeader text="Settings" />
+        <UIPageHeader text="Settings" />
 
         <OptionCategory label="Providers">
             <SelectionSetting 
@@ -176,7 +174,7 @@ const selectedProvider = computed({
             </div>
 
             <div class="flex items-center justify-center">
-                <PrimaryButton
+                <ButtonPrimary
                     text="Check Ollama version"
                     type="button"
                     @click="checkOllamaVersion"
@@ -277,7 +275,7 @@ const selectedProvider = computed({
                 label="Save message every x tokens"
                 tooltip="Save the message into local DB every x tokens. Lower values lead to worse performance.
                     Higher values may cause the end of the message to not save if an error occurs. (Default: 5)" />
-            <PrimaryButton
+            <ButtonPrimary
                 text="Clear all chats"
                 type="button"
                 color="danger"
@@ -289,7 +287,7 @@ const selectedProvider = computed({
             <span v-if="offlineReady">App is ready to work offline.</span>
             <span v-else>Caching app...</span>
             <span v-if="needRefresh">A new version is available, reload to update.</span>
-            <PrimaryButton
+            <ButtonPrimary
                 v-if="needRefresh"
                 text="Reload"
                 type="button"

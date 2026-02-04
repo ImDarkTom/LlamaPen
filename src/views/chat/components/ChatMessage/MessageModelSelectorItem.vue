@@ -1,6 +1,4 @@
 <script setup lang="ts">
-import ModelIcon from '@/components/Icon/ModelIcon.vue';
-
 const props = defineProps<{
     modelId: string;
     modelName: string;
@@ -27,7 +25,7 @@ function onClick() {
             'opacity-50': !modelIsAvailable
         }"
         @click="onClick" >
-        <ModelIcon :name="modelId" class="size-6 mr-2" />
+        <IconModel :name="modelId" class="size-6 mr-2" />
         {{ modelName }}
     </button>
 </template>

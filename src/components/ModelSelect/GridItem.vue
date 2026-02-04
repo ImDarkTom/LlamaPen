@@ -1,7 +1,6 @@
 <script setup lang="ts">
 import router from '@/lib/router';
 import useUserStore from '@/stores/user';
-import ModelIcon from '../Icon/ModelIcon.vue';
 import { computed, ref } from 'vue';
 import { BiBrain, BiDotsHorizontalRounded, BiDotsVerticalRounded, BiHeart, BiLock, BiPencil, BiShow, BiSolidBox, BiSolidHeart, BiStar, BiWrench } from 'vue-icons-plus/bi';
 import { useConfigStore } from '@/stores/config';
@@ -93,7 +92,7 @@ const selectActions: MenuEntry[] = [
 		}" @click="setModel($event, model.info)" ref="listItemRef" :aria-selected="selected">
 
 		<div class="flex flex-col items-center">
-            <ModelIcon :name="model.info.id" class="size-10 p-1" />
+            <IconModel :name="model.info.id" class="size-10 p-1" />
 			<span
 				class="text-md font-semibold text-sm text-center overflow-hidden text-text"
 				:title="model.info.id"

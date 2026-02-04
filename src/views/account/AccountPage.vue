@@ -10,7 +10,6 @@ import supabase from '@/lib/supabase';
 import isDateBeforeToday from '@/utils/core/isDateBeforeToday';
 import { BiBug, BiFile, BiLoaderAlt, BiLogoStripe, BiLogOut, BiMailSend, BiShield, BiSolidCheckSquare, BiTimeFive, BiUserMinus } from 'vue-icons-plus/bi';
 import ContactSection from './components/ContactSection.vue';
-import PrimaryButton from '../../components/Buttons/PrimaryButton.vue';
 import AccountOptions from './components/AccountOptions.vue';
 import SignIn from './components/SignIn.vue';
 
@@ -127,7 +126,7 @@ const periodEnd = computed(() => {
 		<div v-else>
 			<div class="flex flex-row justify-between items-center">
 				<span class="font-bold text-4xl!">My Account</span>
-				<PrimaryButton
+				<ButtonPrimary
 					text="Sign out"
 					type="button" 
 					:icon="BiLogOut"
@@ -244,7 +243,7 @@ const periodEnd = computed(() => {
 			</AccountSection>
 
 			<AccountSection title="Danger Zone">
-				<PrimaryButton
+				<ButtonPrimary
 					text="Delete Account"
 					color="danger"
 					type="button" 

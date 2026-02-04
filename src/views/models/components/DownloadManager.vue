@@ -1,8 +1,6 @@
 <script setup lang="ts">
 import { ref } from 'vue';
 import ViewerContainer from './ViewerContainer.vue';
-import ModelIcon from '@/components/Icon/ModelIcon.vue';
-import PrimaryButton from '@/components/Buttons/PrimaryButton.vue';
 import { BiCloudDownload, BiStopCircle } from 'vue-icons-plus/bi';
 import useDownloadsStore from '@/stores/useDownloadsStore';
 import { storeToRefs } from 'pinia';
@@ -63,7 +61,7 @@ async function downloadModel() {
                 :key="modelName"
                 class="p-4 rounded-md flex flex-col gap-4 bg-surface" >
                 <div class="flex flex-row gap-4">
-                    <ModelIcon :name="modelName" class="size-12" />
+                    <IconModel :name="modelName" class="size-12" />
 
                     <div class="flex flex-col gap-2 w-full">
                         <div class="text-text text-xl">
@@ -88,7 +86,7 @@ async function downloadModel() {
                         class="bg-background w-full h-8 rounded-md"
                         :max="status.total" 
                         :value="status.completed">32%</progress>
-                    <PrimaryButton 
+                    <ButtonPrimary
                         text="Cancel" 
                         :icon="BiStopCircle" 
                         @click="downloadsStore.cancelDownload(modelName)" />

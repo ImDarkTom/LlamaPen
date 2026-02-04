@@ -1,7 +1,6 @@
 <script setup lang="ts">
 import { useConfigStore } from '@/stores/config';
 import { BiBrain, BiRefresh, BiShow, BiWrench } from 'vue-icons-plus/bi';
-import MultiItemSelect from './MultiItemSelect.vue';
 import { useModelSelect } from '@/stores/useModelSelect';
 import { storeToRefs } from 'pinia';
 import { onBeforeUnmount, onMounted, ref } from 'vue';
@@ -35,7 +34,7 @@ onBeforeUnmount(() => {
         </div>  
         <label class="flex flex-col">
             <span class="text-sm">Filter</span>
-            <MultiItemSelect 
+            <UIMultiItemSelect 
                 v-model:record="filterCapabilities" 
                 :items="[
                     {

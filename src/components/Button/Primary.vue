@@ -1,14 +1,14 @@
 <script setup lang="ts">
 import type { IconType } from 'vue-icons-plus';
 import { RouterLink } from 'vue-router';
-import type MemoryUnloadIcon from '../Icon/MemoryUnloadIcon.vue';
+import type IconMemoryUnload from '../Icon/MemoryUnload.vue';
 
 type ComponentTypes = 'link' | 'button' | 'external-link';
 
 defineProps<{
 	text: string;
 	type?: ComponentTypes;
-	icon?: IconType | string | typeof MemoryUnloadIcon;
+	icon?: IconType | string | typeof IconMemoryUnload;
 	singleLine?: boolean;
 	color?: 'primary' | 'danger' | 'sunken';
 }>();

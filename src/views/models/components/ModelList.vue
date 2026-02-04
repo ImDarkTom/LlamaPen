@@ -1,8 +1,4 @@
 <script setup lang="ts">
-import PrimaryButton from '@/components/Buttons/PrimaryButton.vue';
-import MemoryLoadIcon from '@/components/Icon/MemoryLoadIcon.vue';
-import MemoryUnloadIcon from '@/components/Icon/MemoryUnloadIcon.vue';
-import ModelIcon from '@/components/Icon/ModelIcon.vue';
 import Tooltip from '@/components/Tooltip/Tooltip.vue';
 import router from '@/lib/router';
 import { useConfigStore } from '@/stores/config';
@@ -15,6 +11,7 @@ import { useProviderManager, type ModelInfo } from '@/composables/useProviderMan
 import { ollamaWrapper } from '@/providers/ollama/OllamaWrapper';
 import type { Model } from '@/providers/base/types';
 import useUIStore from '@/stores/uiStore';
+import IconMemoryUnload from '@/components/Icon/MemoryUnload.vue';
 
 const config = useConfigStore();
 const { setModelHidden } = useUIStore();
@@ -55,7 +52,7 @@ const modelActions: MenuEntry<{ modelData: Model, displayName: string }>[] = [
         onClick: ({ modelData }) => toggleModelLoaded(modelData.id),
         icon: {
             type: 'factory',
-            func: ({ modelData }: { modelData: Model }) => (isLoadedInMemory(modelData.id) ? MemoryUnloadIcon : Fa6Memory) as IconType
+            func: ({ modelData }: { modelData: Model }) => (isLoadedInMemory(modelData.id) ? IconMemoryUnload : Fa6Memory) as IconType
         },
         condition: isOllama.value
     },
@@ -186,7 +183,7 @@ const batchActions: MenuEntry[] = [
         <div class="flex flex-col gap-2 overflow-y-auto md:pr-3">
             <template v-if="!config.cloud.enabled">
                 <UITextDivider text="Download" />
-                <PrimaryButton class="w-full" text="Find models" :icon="BiLinkExternal" type="external-link"
+                <ButtonPrimary class="w-full" text="Find models" :icon="BiLinkExternal" type="external-link"
                     href="https://ollama.com/search" />
                 <RouterLink to="/models/downloads" v-slot="{ isActive }">
                     <button
@@ -222,7 +219,7 @@ const batchActions: MenuEntry[] = [
                 :to="`/models/${info.id}`">
                 <div class="flex flex-row items-center gap-2 p-2 rounded-md hover:bg-surface transition-colors duration-dynamic"
                     :class="{ 'opacity-75': hidden }">
-                    <ModelIcon :name="info.id ?? 'Unknown'" class="size-6" />
+                    <IconModel :name="info.id ?? 'Unknown'" class="size-6" />
                     {{ displayName }}
 
                     <div class="grow"></div>
@@ -230,7 +227,7 @@ const batchActions: MenuEntry[] = [
                         <BiHide class="h-full" />
                     </Tooltip>
                     <Tooltip v-if="loadedInMemory" text="Loaded in memory" class="flex items-center justify-center">
-                        <MemoryLoadIcon class="h-full" />
+                        <IconMemoryLoad class="h-full" />
                     </Tooltip>
                     <FloatingActionMenu :passArgs="{ modelData: info, displayName }" :actions="modelActions"
                         anchored="left">

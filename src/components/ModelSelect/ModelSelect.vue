@@ -2,18 +2,13 @@
 import { computed, nextTick, onBeforeUnmount, onMounted, ref, type ComponentPublicInstance } from 'vue';
 import { useConfigStore } from '../../stores/config';
 import { VscDebugDisconnect } from 'vue-icons-plus/vsc';
-import ModelSelectItem from './ModelSelectListItem.vue';
 import logger from '@/lib/logger';
-import ModelIcon from '../Icon/ModelIcon.vue';
 import { TbListDetails } from 'vue-icons-plus/tb';
 import isOnMobile from '@/utils/core/isOnMobile';
-import PrimaryButton from '../Buttons/PrimaryButton.vue';
 import { BiExpand, BiFilterAlt, BiLoaderAlt, BiRefresh } from 'vue-icons-plus/bi';
-import FilterMenu from './FilterMenu.vue';
 import { storeToRefs } from 'pinia';
 import { useModelSelect } from '@/stores/useModelSelect';
 import { emitter } from '@/lib/mitt';
-import ModelSelectGridItem from './ModelSelectGridItem.vue';
 import { useProviderManager, type ModelInfo } from '@/composables/useProviderManager';
 import useUIStore from '@/stores/uiStore';
 
@@ -189,7 +184,7 @@ const menuWidth = computed(() => config.ui.modelList.useGridView ? 'sm:w-xl': 's
             </span>
 
             <span v-else-if="isConnected && selectedModelInfo.exists" class="flex flex-row gap-2 items-center">
-                <ModelIcon :name="selectedModelInfo.data.info.id" class="size-6" />
+                <IconModel :name="selectedModelInfo.data.info.id" class="size-6" />
                 {{ modelName }}
             </span>
 
@@ -237,7 +232,7 @@ const menuWidth = computed(() => config.ui.modelList.useGridView ? 'sm:w-xl': 's
                 </button>
             </div>
 
-            <FilterMenu />
+            <ModelSelectFilterMenu />
 
             <div :class="{ 'h-62!': filterMenuOpen }" class="h-80 overflow-y-auto [scrollbar-width:thin] ">
                 <div v-if="isLoading" class="h-24 flex justify-center items-center">
@@ -248,7 +243,7 @@ const menuWidth = computed(() => config.ui.modelList.useGridView ? 'sm:w-xl': 's
                         <VscDebugDisconnect class="inline" />
                         Not connected to Ollama.
                     </span>
-                    <PrimaryButton
+                    <ButtonPrimary
                         type="button"
                         color="primary"
                         text="Retry"
@@ -274,7 +269,7 @@ const menuWidth = computed(() => config.ui.modelList.useGridView ? 'sm:w-xl': 's
                         v-if="!config.ui.modelList.useGridView"
                         class="*:not-last:mb-1"
                         role="list" >
-                        <ModelSelectItem 
+                        <ModelSelectListItem 
                             v-for="(model, index) in sortedItems" 
                             :key="model.info.id" 
                             :index

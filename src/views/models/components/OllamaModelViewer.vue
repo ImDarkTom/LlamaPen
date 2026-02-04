@@ -1,5 +1,4 @@
 <script setup lang="ts">
-import ModelIcon from '@/components/Icon/ModelIcon.vue';
 import { computed } from 'vue';
 import type { IconType } from 'vue-icons-plus';
 import { BiBrain, BiReflectVertical, BiShow, BiSkipNext, BiWrench } from 'vue-icons-plus/bi';
@@ -96,7 +95,7 @@ const modelInfo = computed(() =>
 <template>
     <ViewerContainer>
         <div class="text-2xl md:text-3xl mb-2 md:my-6 align-middle min-w-0 whitespace-normal">
-            <ModelIcon :name="modelFromParams ?? 'Unknown'" class="size-8 md:size-14! inline mr-2" />
+            <IconModel :name="modelFromParams ?? 'Unknown'" class="size-8 md:size-14! inline mr-2" />
 
             <span class="text-text font-bold mr-2">{{ modelName }}</span>
             <br>

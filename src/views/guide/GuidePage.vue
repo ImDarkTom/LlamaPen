@@ -1,5 +1,4 @@
 <script setup lang="ts">
-import PageHeader from '@/components/Page/PageHeader.vue';
 import router from '@/lib/router';
 import setPageTitle from '@/utils/core/setPageTitle';
 import hljs from 'highlight.js';
@@ -33,7 +32,7 @@ function handleEscape(e: KeyboardEvent) {
 <template>
     <div class="w-full h-full flex flex-col items-center py-4 box-border overflow-y-auto
     *:mx-auto *:md:w-4/5 *:lg:w-3/5 *:max-w-3xl">
-        <PageHeader text="Setup Guide" />
+        <UIPageHeader text="Setup Guide" />
 
         <div class="flex flex-col h-full w-full box-border">
             <h2 class="text-3xl font-semibold pb-2">Connecting to your local Ollama instance</h2>

@@ -1,5 +1,4 @@
 <script setup lang="ts">
-import PrimaryButton from '@/components/Buttons/PrimaryButton.vue';
 import supabase from '@/lib/supabase';
 import useUserStore from '@/stores/user';
 import { ref } from 'vue';
@@ -33,7 +32,7 @@ async function signIn() {
         <AccountSection class="items-center justify-center" flex-direction="col">
             <div class="flex flex-col items-center gap-4">
                 <span class="font-bold text-xl">Welcome to LlamaPen Cloud</span>
-                <PrimaryButton 
+                <ButtonPrimary
                     v-if="!userStore.isSignedIn" 
                     class="font-medium px-16" 
                     :class="{ 'opacity-75': isSigningIn }"
