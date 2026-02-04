@@ -2,7 +2,6 @@
 import { useConfigStore } from '@/stores/config';
 import useUserStore from '@/stores/user';
 import { computed } from 'vue';
-import MessageInputButton from './MessageInputButton.vue';
 import { BiImageAdd } from 'vue-icons-plus/bi';
 import { useProviderManager } from '@/composables/useProviderManager';
 
@@ -37,7 +36,7 @@ function onClick(e: MouseEvent) {
 </script>
 
 <template>
-    <MessageInputButton
+    <ChatMessageInputButtonBase
         class="aspect-square p-0!"
         :class="{ 
             'opacity-50 cursor-not-allowed': !selectedModelHasVision,
@@ -52,5 +51,5 @@ function onClick(e: MouseEvent) {
             <BiImageAdd />
         </label>
         <input type="file" id="file-upload" class="hidden" accept="image/*" multiple @change="onChange" @click="onClick" />
-    </MessageInputButton>
+    </ChatMessageInputButtonBase>
 </template>

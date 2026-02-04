@@ -1,5 +1,4 @@
 <script setup lang="ts">
-import MessageOption from './MessageOption.vue';
 import { useConfigStore } from '@/stores/config';
 import { BiSliderAlt } from 'vue-icons-plus/bi';
 import { ref } from 'vue';
@@ -40,10 +39,10 @@ const isOpened = ref(false);
                     <input type="checkbox" class="cursor-pointer" v-model="config.chat.messageOptionsEnabled" />
                 </div>
                 <div class="flex flex-col" :class="{ 'opacity-50 pointer-events-none': !config.chat.messageOptionsEnabled }">
-                    <MessageOption label="Temperature" :tooltip="tooltips['temperature']" v-model="config.chat.messageOptions.temperature" :min="0" :max="1" :step="0.05" />
-                    <MessageOption label="Top K" :tooltip="tooltips['top_k']" v-model="config.chat.messageOptions.top_k" :min="1" :max="200" :step="1" />
-                    <MessageOption label="Top P" :tooltip="tooltips['top_p']" v-model="config.chat.messageOptions.top_p" :min="0" :max="1" :step="0.05" />
-                    <MessageOption label="Min P" :tooltip="tooltips['min_p']" v-model="config.chat.messageOptions.min_p" :min="0" :max="config.chat.messageOptions.top_p" :step="0.05" />
+                    <ChatMessageInputGenerationOptionsOption label="Temperature" :tooltip="tooltips['temperature']" v-model="config.chat.messageOptions.temperature" :min="0" :max="1" :step="0.05" />
+                    <ChatMessageInputGenerationOptionsOption label="Top K" :tooltip="tooltips['top_k']" v-model="config.chat.messageOptions.top_k" :min="1" :max="200" :step="1" />
+                    <ChatMessageInputGenerationOptionsOption label="Top P" :tooltip="tooltips['top_p']" v-model="config.chat.messageOptions.top_p" :min="0" :max="1" :step="0.05" />
+                    <ChatMessageInputGenerationOptionsOption label="Min P" :tooltip="tooltips['min_p']" v-model="config.chat.messageOptions.min_p" :min="0" :max="config.chat.messageOptions.top_p" :step="0.05" />
                 </div>
             </div>
         </template>

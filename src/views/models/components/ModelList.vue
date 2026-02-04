@@ -1,5 +1,4 @@
 <script setup lang="ts">
-import Tooltip from '@/components/Tooltip/Tooltip.vue';
 import router from '@/lib/router';
 import { useConfigStore } from '@/stores/config';
 import useUserStore from '@/stores/user';
@@ -11,6 +10,7 @@ import { useProviderManager, type ModelInfo } from '@/composables/useProviderMan
 import { ollamaWrapper } from '@/providers/ollama/OllamaWrapper';
 import type { Model } from '@/providers/base/types';
 import useUIStore from '@/stores/uiStore';
+// This has to be imported as we are using it programatically
 import IconMemoryUnload from '@/components/Icon/MemoryUnload.vue';
 
 const config = useConfigStore();

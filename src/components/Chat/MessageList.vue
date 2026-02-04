@@ -1,10 +1,8 @@
 <script setup lang="ts">
 import { nextTick, onMounted, onUnmounted, ref, watch } from 'vue';
-import ChatMessage from './ChatMessage/ChatMessage.vue';
 import { useRoute } from 'vue-router';
 import { emitter } from '@/lib/mitt';
 import useUIStore from '@/stores/uiStore';
-import GreetingText from './GreetingText.vue';
 import useMessagesStore from '@/stores/messagesStore';
 import { storeToRefs } from 'pinia';
 import logger from '@/lib/logger';
@@ -114,12 +112,12 @@ function handleScroll(_e: Event) {
         <div 
             class="flex flex-col grow max-w-3xl" 
             :class="{ 'mt-14 md:mt-0': messagesStore.openedChatId !== null }">
-            <ChatMessage 
+            <ChatMessage
                 v-for="message of openedChatMessages"
                 class="last:pb-32"
                 :message
                 :key="message.id" />
         </div>
     </div>
-    <GreetingText v-else />
+    <ChatGreetingText v-else />
 </template>

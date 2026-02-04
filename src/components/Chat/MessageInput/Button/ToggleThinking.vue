@@ -1,7 +1,6 @@
 <script setup lang="ts">
 import { computed, watch } from 'vue';
 import { BiBrain } from 'vue-icons-plus/bi';
-import MessageInputButton from './MessageInputButton.vue';
 import { useConfigStore } from '@/stores/config';
 import { useProviderManager } from '@/composables/useProviderManager';
 
@@ -48,7 +47,7 @@ function toggleCheck(e: Event) {
 </script>
 
 <template>
-    <MessageInputButton
+    <ChatMessageInputButtonBase
         :class="{ 
             'bg-primary ring-background! text-background!': modelValue,
             'opacity-50': selectedAlwaysReasons || isLoading,
@@ -62,5 +61,5 @@ function toggleCheck(e: Event) {
         </label>
         <input type="checkbox" id="thinking-toggle" class="hidden" :value="modelValue"
             @input="toggleCheck" />
-    </MessageInputButton>
+    </ChatMessageInputButtonBase>
 </template>

@@ -1,20 +1,13 @@
 <script setup lang="ts">
 import { computed, onBeforeUnmount, onMounted, ref } from 'vue';
-import ModelSelect from '@/components/ModelSelect/ModelSelect.vue';
-import ActionButton from './ActionButton.vue';
-import ScrollToBottomButton from './ScrollToBottomButton.vue';
 import { emitter } from '@/lib/mitt';
 import useMessagesStore from '@/stores/messagesStore';
 import logger from '@/lib/logger';
 import { promptChatDeletion } from '@/utils/core/promptDeleteChat';
 import useChatsStore from '@/stores/chatsStore';
 import router from '@/lib/router';
-import FileUpload from './buttons/FileUpload.vue';
-import ThinkingButton from './buttons/ThinkingButton.vue';
 import { useConfigStore } from '@/stores/config';
-import MessageOptions from './buttons/MessageOptions.vue';
 import { BiSolidXCircle } from 'vue-icons-plus/bi';
-import MessageTools from './buttons/MessageTools.vue';
 import isOnMobile from '@/utils/core/isOnMobile';
 import { useProviderManager } from '@/composables/useProviderManager';
 
@@ -181,7 +174,7 @@ function onInput(e: Event) {
         <div
             class="w-[calc(100%-1rem)] lg:w-3xl mx-4 mb-2 p-2 shadow-sm
                 box-border flex flex-col items-center max-h-192 relative bg-background-light rounded-xl">
-            <ScrollToBottomButton />
+            <ChatMessageInputScrollToBottomButton />
             <div
                 ref="messageInputRef"
                 class="text-text    w-full box-border p-2 pb-8 text-base border-none outline-none resize-none max-h-48 overflow-y-auto wrap-break-word empty:before:content-[attr(data-placeholder)] empty:before:text-text-muted/60"
@@ -203,14 +196,14 @@ function onInput(e: Event) {
             </div>
             <div class="relative flex flex-row gap-2 justify-between w-full">
                 <div class="flex flex-row gap-2 overflow-x-auto p-px">
-                    <FileUpload :onChange="uploadFile" />
-                    <ModelSelect />
-                    <ThinkingButton v-model="config.chat.thinking.enabled" />
-                    <MessageTools />
-                    <MessageOptions />
+                    <ChatMessageInputButtonFileUpload :onChange="uploadFile" />
+                    <ChatModelSelect />
+                    <ChatMessageInputButtonToggleThinking v-model="config.chat.thinking.enabled" />
+                    <ChatMessageInputButtonTools />
+                    <ChatMessageInputGenerationOptionsButton />
                     <!-- we could revisit the persona selector later -->
                 </div>
-                <ActionButton :canGenerate @startGeneration="startGeneration" />
+                <ChatMessageInputActionButton :canGenerate @startGeneration="startGeneration" />
             </div>
         </div>
     </div>

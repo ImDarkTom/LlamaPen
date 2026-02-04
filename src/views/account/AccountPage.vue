@@ -5,13 +5,9 @@ import { authedFetch } from '@/utils/core/authedFetch';
 import logger from '@/lib/logger';
 import setPageTitle from '@/utils/core/setPageTitle';
 import { computed, onMounted, ref } from 'vue';
-import AccountSection from './components/AccountSection.vue';
 import supabase from '@/lib/supabase';
 import isDateBeforeToday from '@/utils/core/isDateBeforeToday';
 import { BiBug, BiFile, BiLoaderAlt, BiLogoStripe, BiLogOut, BiMailSend, BiShield, BiSolidCheckSquare, BiTimeFive, BiUserMinus } from 'vue-icons-plus/bi';
-import ContactSection from './components/ContactSection.vue';
-import AccountOptions from './components/AccountOptions.vue';
-import SignIn from './components/SignIn.vue';
 
 const userStore = useUserStore();
 const config = useConfigStore();
@@ -34,7 +30,7 @@ async function subscriptionButtonClick() {
 	if (userStore.isPremium) {
 		const url = config.requestUrl('/stripe/manage');
 
-		const response = await authedFetch(url)	;
+		const response = await authedFetch(url);
 		const { redirect } = await response.json();
 
 		logger.info('Account Page', 'Got subscription management url: ', redirect);	
@@ -122,7 +118,7 @@ const periodEnd = computed(() => {
 		<div v-if="userStore.isLoading" class="h-full flex items-center justify-center">
 			<BiLoaderAlt class="animate-spin size-12" />
 		</div>
-		<SignIn v-else-if="!userStore.isSignedIn" />
+		<AccountSignIn v-else-if="!userStore.isSignedIn" />
 		<div v-else>
 			<div class="flex flex-row justify-between items-center">
 				<span class="font-bold text-4xl!">My Account</span>
@@ -212,25 +208,25 @@ const periodEnd = computed(() => {
 			</AccountSection>
 			
 			<AccountSection title="Contact" flex-direction="col">
-				<ContactSection
+				<AccountContactSection
 					title="Account/billing support"
 					description="For account/billing issues, contact us at support@llamapen.app"
 					:icon="BiMailSend"
 					link="mailto:support@llamapen.app" 
 				/>
-				<ContactSection
+				<AccountContactSection
 					title="Terms of Service"
 					description="Read the terms of service."
 					:icon="BiFile"
 					link="https://cloud.llamapen.app/terms" 
 				/>
-				<ContactSection
+				<AccountContactSection
 					title="Privacy Policy"
 					description="Read the privacy policy."
 					:icon="BiShield"
 					link="https://cloud.llamapen.app/privacy" 
 				/>
-				<ContactSection
+				<AccountContactSection
 					title="App issues"
 					description="Found a bug? Report it on the GitHub."
 					:icon="BiBug"

@@ -1,5 +1,4 @@
 <script setup lang="ts">
-import Tooltip from '@/components/Tooltip/Tooltip.vue';
 import type { AccountSettings } from '@/stores/user';
 import useUserStore from '@/stores/user';
 import { onMounted, reactive, ref } from 'vue';

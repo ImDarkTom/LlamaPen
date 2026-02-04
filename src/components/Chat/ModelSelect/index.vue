@@ -1,6 +1,5 @@
 <script setup lang="ts">
 import { computed, nextTick, onBeforeUnmount, onMounted, ref, type ComponentPublicInstance } from 'vue';
-import { useConfigStore } from '../../stores/config';
 import { VscDebugDisconnect } from 'vue-icons-plus/vsc';
 import logger from '@/lib/logger';
 import { TbListDetails } from 'vue-icons-plus/tb';
@@ -11,6 +10,7 @@ import { useModelSelect } from '@/stores/useModelSelect';
 import { emitter } from '@/lib/mitt';
 import { useProviderManager, type ModelInfo } from '@/composables/useProviderManager';
 import useUIStore from '@/stores/uiStore';
+import { useConfigStore } from '@/stores/config';
 
 const config = useConfigStore();
 
@@ -232,7 +232,7 @@ const menuWidth = computed(() => config.ui.modelList.useGridView ? 'sm:w-xl': 's
                 </button>
             </div>
 
-            <ModelSelectFilterMenu />
+            <ChatModelSelectFilterMenu />
 
             <div :class="{ 'h-62!': filterMenuOpen }" class="h-80 overflow-y-auto [scrollbar-width:thin] ">
                 <div v-if="isLoading" class="h-24 flex justify-center items-center">
@@ -269,7 +269,7 @@ const menuWidth = computed(() => config.ui.modelList.useGridView ? 'sm:w-xl': 's
                         v-if="!config.ui.modelList.useGridView"
                         class="*:not-last:mb-1"
                         role="list" >
-                        <ModelSelectListItem 
+                        <ChatModelSelectListItem 
                             v-for="(model, index) in sortedItems" 
                             :key="model.info.id" 
                             :index
@@ -281,7 +281,7 @@ const menuWidth = computed(() => config.ui.modelList.useGridView ? 'sm:w-xl': 's
                             ref="listItemsRef" />
                     </ul>
                     <div v-else class="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-5 gap-2 m-2">
-                        <ModelSelectGridItem
+                        <ChatModelSelectGridItem
                             v-for="(model, index) in sortedItems" 
                             :key="model.info.id" 
                             :index

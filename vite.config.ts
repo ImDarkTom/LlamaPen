@@ -26,7 +26,7 @@ export default defineConfig({
         svgLoader(),
         Components({
             dts: '.vite/components.d.ts',
-            dirs: [ 'src/components' ],
+            dirs: [ 'src/components', 'src/views/**/components' ],
             directoryAsNamespace: true,
         }),
         VitePWA({ 

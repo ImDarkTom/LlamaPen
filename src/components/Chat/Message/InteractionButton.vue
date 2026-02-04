@@ -1,6 +1,4 @@
 <script setup lang="ts">
-import Tooltip from '@/components/Tooltip/Tooltip.vue';
-
 defineProps<{
     text: string;
 }>();

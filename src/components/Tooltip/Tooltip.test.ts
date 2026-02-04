@@ -1,6 +1,6 @@
 import { afterEach, beforeEach, describe, expect, it, vi } from "vitest";
 import { mount } from "@vue/test-utils";
-import Tooltip from "./Tooltip.vue";
+import Tooltip from "./index.vue";
 import { nextTick } from "vue";
 
 vi.mock('@/stores/config', () => {

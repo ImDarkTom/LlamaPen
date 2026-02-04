@@ -1,5 +1,4 @@
 <script setup lang="ts">
-import Tooltip from '@/components/Tooltip/Tooltip.vue';
 import { BiHelpCircle } from 'vue-icons-plus/bi';
 
 defineProps<{

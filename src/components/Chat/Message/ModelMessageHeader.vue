@@ -1,5 +1,4 @@
 <script setup lang="ts">
-import MessageModelSelector from '../MessageModelSelector.vue';
 import { BiTimeFive } from 'vue-icons-plus/bi';
 
 defineProps<{
@@ -15,7 +14,7 @@ defineProps<{
             :name="message.model"
             :ignore-styling="true" />
 
-        <MessageModelSelector 
+        <ChatMessageModelSelector 
             :message
             :modelMessageDone />
             

@@ -1,7 +1,6 @@
 <script setup lang="ts">
 import { computed, ref } from 'vue';
 import logger from '@/lib/logger';
-import MessageInteractionButton from './MessageInteractionButton.vue';
 import { BiBarChartAlt, BiCopy, BiInfoCircle, BiPencil, BiTrash } from 'vue-icons-plus/bi';
 import useMessagesStore from '@/stores/messagesStore';
 import { useConfigStore } from '@/stores/config';
@@ -96,38 +95,38 @@ const isDoneOrUserMessage = computed(() => props.done || props.message.type === 
 <template>
     <div class="flex flex-row gap-1.5 mt-0.5"
         :class="{ 'justify-end': message.type === 'user', 'justify-start': message.type !== 'user' }">
-        <MessageInteractionButton 
+        <ChatMessageInteractionButton
             v-if="isDoneOrUserMessage && !message.errorText" 
             :text="copyTooltipText" 
             @click="copyMessage" 
             data-testid="copy-btn" >
             <BiCopy class="size-full" title="Copy Text" />
-        </MessageInteractionButton>
-        <MessageInteractionButton 
+        </ChatMessageInteractionButton>
+        <ChatMessageInteractionButton 
             v-if="isDoneOrUserMessage && !message.errorText" 
             text="Edit" 
             @click="editMessage" 
             data-testid="edit-btn" >
             <BiPencil class="size-full" title="Edit" />
-        </MessageInteractionButton>
-        <MessageInteractionButton 
+        </ChatMessageInteractionButton>
+        <ChatMessageInteractionButton 
             v-if="isDoneOrUserMessage" 
             text="Delete"
             @click="deleteMessage">
             <BiTrash class="size-full" title="Delete" />
-        </MessageInteractionButton>
-        <MessageInteractionButton 
+        </ChatMessageInteractionButton>
+        <ChatMessageInteractionButton 
             v-if="done && (message as ModelChatMessage).stats" 
             text="Generation Stats"
             @click="showGenStats">
             <BiBarChartAlt class="size-full" title="Generation Stats" />
-        </MessageInteractionButton>
-        <MessageInteractionButton 
+        </ChatMessageInteractionButton>
+        <ChatMessageInteractionButton 
             v-if="done" 
             text="Raw Info"
             @click="openInfo">
             <BiInfoCircle class="size-full" title="Raw Info" />
-        </MessageInteractionButton>
+        </ChatMessageInteractionButton>
         <div v-if="done && messageStats?.evalCount && messageStats?.evalDuration && !config.chat.hideTPSInfoText" class="h-full flex items-center ml-1 text-text-muted/65 text-sm font-medium">
             {{ ((messageStats?.evalCount/(messageStats.evalDuration/1_000_000_000)).toFixed(2)) }}tok/s
         </div>

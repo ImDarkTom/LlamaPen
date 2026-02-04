@@ -1,6 +1,6 @@
 import { afterEach, beforeEach, describe, expect, it, vi } from "vitest";
 import { mount, VueWrapper } from "@vue/test-utils";
-import ChatMessage from "./ChatMessage.vue";
+import ChatMessage from "./index.vue";
 import { createTestingPinia } from "@pinia/testing";
 
 describe("ChatMessage.vue with user message", () => {

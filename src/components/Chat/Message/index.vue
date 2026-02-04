@@ -1,19 +1,12 @@
 <script setup lang="ts">
 import { computed, nextTick, onMounted, ref } from 'vue';
-
 import { emitter } from '@/lib/mitt';
-
 import { nanoid } from 'nanoid';
 import { renderMarkdown } from '@/lib/marked';
 import { getMessageAttachments } from '@/utils/core/getMessageAttachments';
-import ThinkBlock from './ThinkBlock.vue';
-import MessageInteractions from './MessageInteractions.vue';
-import MessageEditor from '../MessageEditor.vue';
-import ModelMessageHeader from './ModelMessage/ModelMessageHeader.vue';
-import ModelToolCalls from './ModelToolCalls.vue';
-import ToolCallsMessage from './ToolCallsMessage.vue';
 import useMessagesStore from '@/stores/messagesStore';
 import { BiError, BiRefresh } from 'vue-icons-plus/bi';
+import type Editor from './Editor.vue';
 
 const { editMessage, isMessageGenerating } = useMessagesStore();
 
@@ -25,7 +18,7 @@ const messageTextContainer = ref<HTMLDivElement | null>(null);
 
 // === State ===
 const editing = ref<boolean>(false);
-const messageEditorRef = ref<InstanceType<typeof MessageEditor> | null>(null);
+const messageEditorRef = ref<InstanceType<typeof Editor> | null>(null);
 const images = ref<{ id: string; blobSrc: string; file: Blob }[]>([]);
 
 onMounted(async () => {
@@ -113,7 +106,7 @@ function renderText(text: string) {
             'w-full max-w-[calc(100dvw-1rem)] box-border p-2! pb-1! m-0!': isModelMessage || editing,
             'bg-surface m-0! rounded-xl': props.message.type === 'tool'
         }">
-            <ModelMessageHeader v-if="message.type === 'model'" :message :modelMessageDone="modelMessageNotGenerating" />
+            <ChatMessageModelMessageHeader v-if="message.type === 'model'" :message :modelMessageDone="modelMessageNotGenerating" />
             <img 
                 v-for="image of images" 
                 :key="image.id" 
@@ -121,7 +114,7 @@ function renderText(text: string) {
                 class="rounded-xl max-w-64 max-h-full cursor-pointer mb-2"
                 @click="emitter.emit('openLightbox', { image: image.file })" alt="Message attached media" />
 
-            <MessageEditor 
+            <ChatMessageEditor
                 v-if="editing" 
                 ref="messageEditorRef" 
                 :message
@@ -141,8 +134,8 @@ function renderText(text: string) {
                 </article>
                 <div 
                     v-else-if="message.type === 'model'" >
-                    <ThinkBlock :message="(message as ModelChatMessage)" :messageState />
-                    <ModelToolCalls :message="(message as ModelChatMessage)" />
+                    <ChatMessageThinkBlock :message="(message as ModelChatMessage)" :messageState />
+                    <ChatMessageModelToolCalls :message="(message as ModelChatMessage)" />
                     <article class="max-w-none prose prose-app! dark:prose-invert" v-html="renderText(message.content)"></article>
                     <div
                         v-if="messageState.generating"
@@ -165,10 +158,10 @@ function renderText(text: string) {
                         </div>
                     </div>
                 </div>
-                <ToolCallsMessage :message v-else-if="message.type === 'tool'" />
+                <ChatMessageToolCallsMessage :message v-else-if="message.type === 'tool'" />
             </div>
         </div>
-        <MessageInteractions
+        <ChatMessageInteractions
             class="transition-opacity duration-dynamic hover:duration-0"
             :class="{
                 'group-hover/message:opacity-100 md:opacity-0': message.type === 'user'

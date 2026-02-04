@@ -1,11 +1,9 @@
 <script setup lang="ts">
-import Tooltip from '@/components/Tooltip/Tooltip.vue';
 import logger from '@/lib/logger';
 import useMessagesStore from '@/stores/messagesStore';
 import { computed } from '@vue/reactivity';
 import { ref } from 'vue';
 import { BsCloudSlash } from 'vue-icons-plus/bs';
-import MessageModelSelectorItem from './MessageModelSelectorItem.vue';
 import { BiError, BiRefresh } from 'vue-icons-plus/bi';
 // import useUserStore from '@/stores/user';
 import { useProviderManager, type ModelInfo } from '@/composables/useProviderManager';
@@ -80,13 +78,13 @@ const warningText = computed(() => {
                     class="max-h-[50vh] w-max max-w-[min(65ch, 100vw)] overflow-y-auto flex flex-col bg-surface z-20 p-2 rounded-xl gap-2 shadow-md shadow-background">
                     <span class="text-text text-center font-semibold">Regenerate using...</span>
                     <div class="w-full min-h-0.5 bg-border"></div>
-                    <MessageModelSelectorItem
+                    <ChatMessageModelSelectorItem
                         :modelId="message.model"
                         :modelName="messageModelInfo.exists ? messageModelInfo.data.displayName : message.model"
                         :modelIsAvailable="true"
                         :regenerate-message="regenerateMessage" />
                     <div class="w-full min-h-0.5 bg-border"></div>
-                    <MessageModelSelectorItem
+                    <ChatMessageModelSelectorItem
                         v-for="model in allModels" 
                         :key="model.info.id"
                         :modelId="model.info.id"
