@@ -1,6 +1,4 @@
 <script setup lang="ts">
-import TextInput from '../TextInput.vue';
-import SelectInput from '../SelectInput.vue';
 import { BiError } from 'vue-icons-plus/bi';
 
 defineProps<{
@@ -19,12 +17,12 @@ const bodyPlaceholder = `e.g:
 
 <template>
     <div class="flex flex-col gap-2 bg-surface p-2 rounded-lg" v-if="selectedTool">
-        <SelectInput
+        <ToolsPageInputSelect
             v-model="selectedTool.requestOptions.method"
             label="Method"
             :options="['GET', 'POST', 'PUT', 'PATCH']"/>
         <UITextDivider text="Headers" />
-        <SelectInput
+        <ToolsPageInputSelect
             label="Accept"
             v-model="selectedTool.requestOptions.accept"
             :options="[
@@ -34,7 +32,7 @@ const bodyPlaceholder = `e.g:
                 'application/xml',
                 '*/*'
             ]" />
-        <SelectInput
+        <ToolsPageInputSelect
             label="Content-Type"
             v-model="selectedTool.requestOptions.contentType"
             :options="[
@@ -44,7 +42,7 @@ const bodyPlaceholder = `e.g:
                 'application/xml',
                 'application/graphql'
             ]" />
-        <TextInput
+        <ToolsPageInputText
             label="User-Agent"
             v-model="selectedTool.requestOptions.userAgent"
             placeholder="LlamaPen/1.0 (user tool call)" />
@@ -52,7 +50,7 @@ const bodyPlaceholder = `e.g:
             <BiError class="inline size-4 mr-1" />
             <span class="align-middle text-sm">Authorization string is saved in local storage unencrypted. Use at your own risk.</span>
         </span>
-        <TextInput
+        <ToolsPageInputText
             label="Authorization"
             v-model="selectedTool.requestOptions.authorization"
             placeholder="(blank)" />

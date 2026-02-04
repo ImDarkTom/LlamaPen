@@ -2,11 +2,7 @@
 import useToolsStore from '@/stores/toolsStore';
 import { computed } from 'vue';
 import { BiError, BiLinkExternal, BiTrash } from 'vue-icons-plus/bi';
-import TextInput from './TextInput.vue';
 import { ref } from 'vue';
-import ToolRequestOptions from './edit/ToolRequestOptions.vue';
-import NumberInput from './NumberInput.vue';
-import ExternalLink from './ExternalLink.vue';
 
 const props = defineProps<{
     tool: string;
@@ -80,7 +76,7 @@ const timeoutValue = computed({
             class="py-2">
             <template v-if="props.tool === 'web_search'">
                 This tool is intended to be used with a running SearXNG instance. If you have one set up (with JSON requests enabled), you may use it here, otherwise, to set up SearXNG for LlamaPen specifically, see 
-                <ExternalLink href="https://github.com/ImDarkTom/LlamaPen-Search">https://github.com/ImDarkTom/LlamaPen-Search</ExternalLink>.
+                <ToolsPageExternalLink href="https://github.com/ImDarkTom/LlamaPen-Search">https://github.com/ImDarkTom/LlamaPen-Search</ToolsPageExternalLink>.
             </template>
         </div>
         <div
@@ -91,13 +87,13 @@ const timeoutValue = computed({
             <input type="checkbox" v-model="selectedTool.userConfirmation">
             <span class="ml-2">Require user confirmation?</span>
         </label>
-        <TextInput v-model="selectedTool.url" label="Query URL" placeholder="https://example.com/?param={{query}}&other={{param}}" />
+        <ToolsPageInputText v-model="selectedTool.url" label="Query URL" placeholder="https://example.com/?param={{query}}&other={{param}}" />
         <button
             class="btn-primary w-full p-3 my-2!"
             @click="reqOptionsOpened = !reqOptionsOpened">
             More options
         </button>
-        <ToolRequestOptions v-if="reqOptionsOpened" :toolName="props.tool" :selectedTool="selectedTool" />
+        <ToolsPageToolRequestOptions v-if="reqOptionsOpened" :toolName="props.tool" :selectedTool="selectedTool" />
         <div v-if="missingParams && missingParams.length > 0" class="text-warning">
             <BiError class="inline" />
             <span class="align-middle">Params not found in query URL: </span>
@@ -107,14 +103,14 @@ const timeoutValue = computed({
         </div>
         <UITextDivider class="mt-2" text="Model-facing" />
         <div class="flex flex-col gap-2">
-            <TextInput 
+            <ToolsPageInputText 
                 v-model="selectedTool.description" 
                 label="Description" 
                 placeholder="How/when to use the tool (e.g. Search the internet for a query)" />
             <h2>Parameters</h2>
             <div v-for="(param, index) in selectedTool.params" :key="index" class="flex flex-col bg-surface p-2 gap-2 rounded-lg">
                 <div class="flex flex-row gap-2">
-                    <TextInput v-model="param.name" placeholder="Parameter name (e.g. page)" class="w-full font-medium" />
+                    <ToolsPageInputText v-model="param.name" placeholder="Parameter name (e.g. page)" class="w-full font-medium" />
                     <button 
                         class="bg-danger text-background-light p-2 cursor-pointer aspect-square rounded-md hover hover:saturate-200 transition-quick"
                         @click="deleteParam(param.name)">
@@ -127,7 +123,7 @@ const timeoutValue = computed({
                         <option value="number">Number</option>
                         <option value="integer">Integer</option>
                     </select>
-                    <TextInput v-model="param.description" placeholder="Parameter description (e.g. 'What to search for.')" class="w-full" />
+                    <ToolsPageInputText v-model="param.description" placeholder="Parameter description (e.g. 'What to search for.')" class="w-full" />
                 </div>
                 <label>
                     <span>Enums (optional):</span>
@@ -141,7 +137,7 @@ const timeoutValue = computed({
             </button>
         </div>
         <UITextDivider class="mt-2" text="Response" />
-        <NumberInput
+        <ToolsPageInputNumber
             v-model="timeoutValue"
             label="Request timeout (ms)"
             placeholder="10000" />

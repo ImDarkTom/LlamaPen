@@ -54,7 +54,7 @@ const modelCapabilites = computed<ModelCapabilities>(() =>
 </script>
 
 <template>
-    <ModelsPageViewerContainer>
+    <UIViewerContainer>
         <div class="text-2xl md:text-3xl mb-2 md:my-6 align-middle min-w-0 whitespace-normal">
             <IconModel :name="modelFromParams ?? 'Unknown'" class="size-8 md:size-14! inline mr-2" />
 
@@ -71,5 +71,5 @@ const modelCapabilites = computed<ModelCapabilities>(() =>
                 <span class="capitalize">{{ capability }}</span>
             </div>
         </div>
-    </ModelsPageViewerContainer>
+    </UIViewerContainer>
 </template>

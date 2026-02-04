@@ -31,7 +31,7 @@ async function downloadModel() {
 </script>
 
 <template>
-    <ModelsPageViewerContainer class="flex flex-col gap-2">
+    <UIViewerContainer class="flex flex-col gap-2">
         <form 
             class="flex flex-row gap-2 w-full"
             @submit.prevent="downloadModel">
@@ -97,5 +97,5 @@ async function downloadModel() {
             class="text-center mt-8">
             No models currently downloading
         </div>
-    </ModelsPageViewerContainer>
+    </UIViewerContainer>
 </template>
