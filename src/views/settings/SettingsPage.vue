@@ -131,7 +131,7 @@ const selectedProvider = computed({
         <UIPageHeader text="Settings" />
 
         <SettingsOptionCategory label="Providers">
-            <SettingsSelectionSetting 
+            <SettingsInputSelection 
                 v-model="selectedProvider" 
                 label="Provider" 
                 :items="[...allProviders.keys()]" 
@@ -144,7 +144,7 @@ const selectedProvider = computed({
         Run more powerful models with LlamaPen's cloud service. -->
 
         <SettingsOptionCategory v-if="isOllama" label="Ollama">
-            <SettingsTextInputSetting 
+            <SettingsInputText 
                 label="Ollama URL" 
                 v-model="config.ollamaUrl" 
                 :default="ollamaDefault"
@@ -155,12 +155,12 @@ const selectedProvider = computed({
                 <RouterLink to="/guide" class="text-text underline">setup guide</RouterLink>.
             </span>
 
-            <SettingsToggleSetting
+            <SettingsInputToggle
                 v-model="config.ollama.modelCapabilities.autoload"
                 label="Autoload model capabilities"
                 tooltip="Load model capabilities on connect. By default only loads if 30 models or less. (Default: Enabled)" />
             <div v-if="config.ollama.modelCapabilities.autoload" class="border-l border-text pl-3 ml-3">
-                <SettingsToggleSetting 
+                <SettingsInputToggle 
                     v-model="config.ollama.modelCapabilities.alwaysAutoload" 
                     label="Always autoload model capabilities"
                     tooltip="Loads model capabilities regardless of no. of models. (Default: Disabled)" />
@@ -176,7 +176,7 @@ const selectedProvider = computed({
         </SettingsOptionCategory>
 
         <SettingsOptionCategory label="Appearance">
-            <SettingsSelectionSetting 
+            <SettingsInputSelection 
                 v-model="config.ui.theme" 
                 label="Theme" 
                 :items="['auto', 'dark', 'light', 'mono-dark', 'mono-light', 'amoled']" 
@@ -184,18 +184,18 @@ const selectedProvider = computed({
                 @update:model-value="config.loadTheme()" 
                 tooltip="The theme for the app. (Default: System default (dark/light))"
             />
-            <SettingsToggleSetting 
+            <SettingsInputToggle 
                 v-model="config.ui.nativeScrollbar" 
                 label="Native scrollbar" 
                 tooltip="Use the browser's default scrollbar styling. (Default: Disabled)"
                 @update:model-value="config.loadScrollbarSetting()"
             />
-            <SettingsToggleSetting 
+            <SettingsInputToggle 
                 v-model="config.ui.messageInput.sendButtonAltIcon" 
                 label="Alternate send button icon" 
                 tooltip="Use a paper-plane icon instead of an up arrow. (Default: Disabled)"
             />
-            <SettingsToggleSetting 
+            <SettingsInputToggle 
                 v-model="config.ui.messageInput.hideUnusedButtons" 
                 label="Hide unused message input buttons" 
                 tooltip="Hide buttons that rely on specific capabilities when the current model doesn't support them, such as the 'Think' button. (Default: Enabled)"
@@ -211,26 +211,26 @@ const selectedProvider = computed({
                 </span>
             </div>
             <SettingsCategoryLabel>Model Icons</SettingsCategoryLabel>
-            <SettingsToggleSetting 
+            <SettingsInputToggle 
                 v-model="config.ui.modelIcons.monochrome" 
                 label="Monochrome model icons"
                 tooltip="Use single-color variants of model icons. (Default: Enabled)" />
-            <SettingsToggleSetting 
+            <SettingsInputToggle 
                 v-model="config.ui.modelIcons.background" 
                 label="Model icons background"
                 tooltip="Add a background to model icons throughout the app. (Default: Disabled)" />
             <div v-if="config.ui.modelIcons.background" class="border-l border-text pl-3 ml-3">
-                <SettingsToggleSetting 
+                <SettingsInputToggle 
                     v-model="config.ui.modelIcons.backgroundDark" 
                     label="Dark icon background"
                     tooltip="Make the icon background darker. (Default: Disabled)" />
             </div>
-            <SettingsToggleSetting 
+            <SettingsInputToggle 
                 v-model="config.ui.modelIcons.alternateGemmaIcon" 
                 label="Alternate Gemma icon"
                 tooltip="Use the Google logo instead of the Gemma icon. (Default: Disabled)" />
             <SettingsCategoryLabel>Tooltip</SettingsCategoryLabel>
-            <SettingsNumberInputSetting 
+            <SettingsInputNumber
                 v-model="config.ui.tooltip.waitTimeoutMs" 
                 :default="100" 
                 :min="0" 
@@ -238,29 +238,29 @@ const selectedProvider = computed({
                 label="Hover delay (ms)"
                 tooltip="How long to mouse over an element before it's tooltip appears. (Default: 100)" />
             <SettingsCategoryLabel>Mobile</SettingsCategoryLabel>
-            <SettingsToggleSetting 
+            <SettingsInputToggle 
                 v-model="config.closeSidebarOnNavMobile" 
                 label="Hide sidebar on navigate"
                 tooltip="Hide the sidebar after navigating to a different page on mobile. (Default: Enabled)" />
         </SettingsOptionCategory>
 
         <SettingsOptionCategory label="Chat">
-            <SettingsSelectionSetting 
+            <SettingsInputSelection 
                 v-model="config.chat.titleGenerationStyle" 
                 label="Title generation style" 
                 :items="['dynamic', 'firstMessage', 'generate', 'chatId']" 
                 :itemNames="['Dynamic (default)', 'Use first message', 'Generate with current model', 'Use chat ID']"
                 tooltip="Dynamic: First message if question, otherwise generate. (Default: Dynamic)"
             />
-            <SettingsToggleSetting 
+            <SettingsInputToggle 
                 v-model="config.chat.thinking.infoOpenByDefault"
                 label="Reasoning text open by default"
                 tooltip="Have reasoning/thinking text open by default for each message. (Default: Disabled)" />
-            <SettingsToggleSetting 
+            <SettingsInputToggle 
                 v-model="config.chat.hideTPSInfoText"
                 label="Hide tokens/sec in message footer"
                 tooltip="Hide the <num>tok/s text in the message footer/controls for model messages. (Default: Disabled)" />
-            <SettingsNumberInputSetting
+            <SettingsInputNumber
                 v-model="config.chat.tokenSaveInterval"
                 :default="5"
                 :min="1"
@@ -290,7 +290,7 @@ const selectedProvider = computed({
 
         <SettingsOptionCategory label="Developer" v-if="!inProduction">
             <span class="text-danger">Do not change these settings unless you know what you're doing.</span>
-            <SettingsToggleSetting v-model="config.developer.infoLogs" label="Show info logs" />
+            <SettingsInputToggle v-model="config.developer.infoLogs" label="Show info logs" />
         </SettingsOptionCategory>
     </div>
 </template>
