@@ -1,7 +1,5 @@
 <script setup lang="ts">
-import StatusText from './StatusText.vue';
 import { BiCloud, BiCog, BiHelpCircle, BiLogoGithub } from 'vue-icons-plus/bi';
-import SidebarRouterLink from '../SidebarRouterLink.vue';
 import useUserStore from '@/stores/user';
 import { useConfigStore } from '@/stores/config';
 
@@ -13,7 +11,7 @@ const buttonClasses = 'w-full border-none p-1.5 m-0 box-border rounded-lg h-8 bg
 
 <template>
     <div class="flex flex-col max-w-full gap-2 pt-2">
-        <StatusText v-if="!config.cloud.enabled" />
+        <SidebarFooterStatusBanner v-if="!config.cloud.enabled" />
         <SidebarRouterLink v-else-if="config.cloud.enabled" to="/account">
             <div class="flex w-full h-16 bg-background-light ring-1 ring-border-muted rounded-xl p-2 hover:ring-primary transition-all duration-dynamic">
                 <template v-if="userStore.isLoading" >

@@ -9,7 +9,6 @@ import { TbListDetails } from 'vue-icons-plus/tb';
 import isOnMobile from '@/utils/core/isOnMobile';
 import PrimaryButton from '../Buttons/PrimaryButton.vue';
 import { BiExpand, BiFilterAlt, BiLoaderAlt, BiRefresh } from 'vue-icons-plus/bi';
-import FloatingMenu from '../FloatingMenu/FloatingMenu.vue';
 import FilterMenu from './FilterMenu.vue';
 import { storeToRefs } from 'pinia';
 import { useModelSelect } from '@/stores/useModelSelect';

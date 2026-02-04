@@ -8,7 +8,6 @@ import { BsCloudSlash } from 'vue-icons-plus/bs';
 import MessageModelSelectorItem from './MessageModelSelectorItem.vue';
 import { BiError, BiRefresh } from 'vue-icons-plus/bi';
 // import useUserStore from '@/stores/user';
-import FloatingMenu from '@/components/FloatingMenu/FloatingMenu.vue';
 import { useProviderManager, type ModelInfo } from '@/composables/useProviderManager';
 
 const props = defineProps<{

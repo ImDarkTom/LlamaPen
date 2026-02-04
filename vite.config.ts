@@ -6,6 +6,7 @@ import svgLoader from 'vite-svg-loader';
 import { VitePWA } from 'vite-plugin-pwa';
 import { execFileSync } from "node:child_process";
 import removeAttribute from '@castlenine/vite-remove-attribute';
+import Components from 'unplugin-vue-components/vite';
 
 const commitHash = execFileSync(
     'git',
@@ -23,6 +24,11 @@ export default defineConfig({
         vue(), 
         tailwindcss(), 
         svgLoader(),
+        Components({
+            dts: '.vite/components.d.ts',
+            dirs: [ 'src/components' ],
+            directoryAsNamespace: true,
+        }),
         VitePWA({ 
             manifest: {
                 name: 'LlamaPen',

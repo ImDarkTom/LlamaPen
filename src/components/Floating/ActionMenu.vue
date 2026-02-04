@@ -1,27 +1,6 @@
 <script setup lang="ts" generic="T = void">
 import { ref } from 'vue';
-import FloatingMenu from './FloatingMenu.vue';
 import type { IconType } from 'vue-icons-plus';
-
-export type TextResolver<T> = T extends void 
-    ? string | (() => string)
-    : string | ((args: T) => string);
-
-export type IconResolver<T> = T extends void
-    ? IconType | { type: 'factory'; func: () => IconType }
-    : IconType | { type: 'factory'; func: (args: T) => IconType };
-
-export type OnClickHandler<T> = T extends void
-    ? () => void
-    : (args: T) => void;
-
-export type MenuEntry<T = void> = {
-    text: TextResolver<T>;
-    onClick: OnClickHandler<T>;
-    icon?: IconResolver<T>;
-    category?: 'general' | 'danger',
-    condition?: boolean,
-}
 
 const props = defineProps<{
     actions: MenuEntry<T>[];

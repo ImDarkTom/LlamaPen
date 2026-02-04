@@ -5,7 +5,6 @@ import ModelIcon from '../Icon/ModelIcon.vue';
 import { computed, ref } from 'vue';
 import { BiBrain, BiDotsHorizontalRounded, BiDotsVerticalRounded, BiHeart, BiLock, BiPencil, BiShow, BiSolidBox, BiSolidHeart, BiStar, BiWrench } from 'vue-icons-plus/bi';
 import { useConfigStore } from '@/stores/config';
-import ActionMenu, { type MenuEntry } from '../FloatingMenu/ActionMenu.vue';
 import { useModelSelect } from '@/stores/useModelSelect';
 import type { Model } from '@/providers/base/types';
 import { useProviderManager, type ModelInfo } from '@/composables/useProviderManager';
@@ -157,13 +156,13 @@ const selectActions: MenuEntry[] = [
 					'flex!': selected,
 					'to-border!': isCurrentModel,
 				}">
-				<ActionMenu :actions="selectActions">
+				<FloatingActionMenu :actions="selectActions">
 					<div
 						ref="actionMenuButton"
 						class="p-1 ring-2 ring-text-muted hover:ring-text hover:text-text rounded-md">
 						<BiDotsVerticalRounded class="size-8" />
 					</div>
-				</ActionMenu>
+				</FloatingActionMenu>
 			</div>
 		</div>
 	</li>

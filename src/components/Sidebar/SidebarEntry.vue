@@ -1,12 +1,10 @@
 <script setup lang="ts">
 import { computed, ref } from 'vue';
-import SidebarRouterLink from './SidebarRouterLink.vue';
 import { BiChat, BiDotsVerticalRounded, BiPencil, BiPin, BiSolidChat, BiSolidPin, BiTrash, BiX } from 'vue-icons-plus/bi';
 import useChatsStore from '@/stores/chatsStore';
 import router from '@/lib/router';
 import useMessagesStore from '@/stores/messagesStore';
 import { getDateTimeString } from '@/utils/core/getDateTimeString';
-import ActionMenu, { type MenuEntry } from '../FloatingMenu/ActionMenu.vue';
 
 const props = defineProps<{
     chat: Chat,
@@ -162,11 +160,11 @@ const icon = computed(() => {
                     @mousedown.left.stop="promptDeleteChat">
                     <BiX />
                 </div>
-                <ActionMenu :actions>
+                <FloatingActionMenu :actions>
                     <div @mousedown.left.stop>
                         <BiDotsVerticalRounded />
                     </div>
-                </ActionMenu>
+                </FloatingActionMenu>
             </div>
         </div>
     </SidebarRouterLink>

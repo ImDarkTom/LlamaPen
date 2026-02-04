@@ -1,7 +1,6 @@
 <script setup lang="ts">
 import { ref, watch } from 'vue';
 import { emitter } from '../../../lib/mitt';
-import OllamaIcon from '@/components/Icon/OllamaIcon.vue';
 import { BiChevronUp } from 'vue-icons-plus/bi';
 import { useProviderManager } from '@/composables/useProviderManager';
 import logger from '@/lib/logger';
@@ -52,7 +51,7 @@ watch(connectionState, (newState) => {
         }"
         @click="expanded = !expanded">
         <div class="flex flex-row gap-2">
-            <OllamaIcon class="inline size-6" />
+            <IconOllama class="inline size-6" />
             <span 
                 class="font-medium" 
                 :class="{ 'animate-pulse': isLoading }"

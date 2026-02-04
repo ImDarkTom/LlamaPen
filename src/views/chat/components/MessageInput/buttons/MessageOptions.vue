@@ -2,7 +2,6 @@
 import MessageOption from './MessageOption.vue';
 import { useConfigStore } from '@/stores/config';
 import { BiSliderAlt } from 'vue-icons-plus/bi';
-import FloatingMenu from '@/components/FloatingMenu/FloatingMenu.vue';
 import { ref } from 'vue';
 
 const config = useConfigStore();

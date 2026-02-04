@@ -1,5 +1,4 @@
 <script setup lang="ts">
-import TextDivider from '@/components/TextDivider/TextDivider.vue';
 import TextInput from '../TextInput.vue';
 import SelectInput from '../SelectInput.vue';
 import { BiError } from 'vue-icons-plus/bi';
@@ -24,7 +23,7 @@ const bodyPlaceholder = `e.g:
             v-model="selectedTool.requestOptions.method"
             label="Method"
             :options="['GET', 'POST', 'PUT', 'PATCH']"/>
-        <TextDivider text="Headers" />
+        <UITextDivider text="Headers" />
         <SelectInput
             label="Accept"
             v-model="selectedTool.requestOptions.accept"
@@ -57,7 +56,7 @@ const bodyPlaceholder = `e.g:
             label="Authorization"
             v-model="selectedTool.requestOptions.authorization"
             placeholder="(blank)" />
-        <TextDivider text="Body" />
+        <UITextDivider text="Body" />
         <textarea
             class="w-full bg-surface-light p-4 rounded-md"
             rows="5"

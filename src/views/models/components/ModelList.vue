@@ -1,10 +1,8 @@
 <script setup lang="ts">
 import PrimaryButton from '@/components/Buttons/PrimaryButton.vue';
-import ActionMenu, { type MenuEntry } from '@/components/FloatingMenu/ActionMenu.vue';
 import MemoryLoadIcon from '@/components/Icon/MemoryLoadIcon.vue';
 import MemoryUnloadIcon from '@/components/Icon/MemoryUnloadIcon.vue';
 import ModelIcon from '@/components/Icon/ModelIcon.vue';
-import TextDivider from '@/components/TextDivider/TextDivider.vue';
 import Tooltip from '@/components/Tooltip/Tooltip.vue';
 import router from '@/lib/router';
 import { useConfigStore } from '@/stores/config';
@@ -49,7 +47,7 @@ const modelActions: MenuEntry<{ modelData: Model, displayName: string }>[] = [
         onClick: ({ modelData }) => setModelHidden(modelData.id, isHidden(modelData.id)),
         icon: {
             type: 'factory',
-            func: ({ modelData }) => isHidden(modelData.id) ? BiShow : BiHide
+            func: ({ modelData }: { modelData: Model }) => isHidden(modelData.id) ? BiShow : BiHide
         },
     },
     {
@@ -57,7 +55,7 @@ const modelActions: MenuEntry<{ modelData: Model, displayName: string }>[] = [
         onClick: ({ modelData }) => toggleModelLoaded(modelData.id),
         icon: {
             type: 'factory',
-            func: ({ modelData }) => (isLoadedInMemory(modelData.id) ? MemoryUnloadIcon : Fa6Memory) as IconType
+            func: ({ modelData }: { modelData: Model }) => (isLoadedInMemory(modelData.id) ? MemoryUnloadIcon : Fa6Memory) as IconType
         },
         condition: isOllama.value
     },
@@ -184,77 +182,65 @@ const batchActions: MenuEntry[] = [
 
 <template>
     <div
-        class="h-4/12 md:h-full w-full md:w-2/6 bg-background-light rounded-lg md:rounded-r-none md:border-r border-border flex flex-col gap-2 p-2 relative" >
-            <div class="flex flex-col gap-2 overflow-y-auto md:pr-3">
-                <template v-if="!config.cloud.enabled">
-                    <TextDivider text="Download" />
-                    <PrimaryButton 
-                        class="w-full"
-                        text="Find models" 
-                        :icon="BiLinkExternal" 
-                        type="external-link" 
-                        href="https://ollama.com/search" />
-                        <RouterLink to="/models/downloads" v-slot="{ isActive }">
-                            <button
-                            class="w-full text-text-muted enabled:hover:text-text bg-surface enabled:hover:bg-surface-light py-6 rounded-lg enabled:cursor-pointer select-none flex flex-row justify-center items-center gap-2 disabled:opacity-75"
-                            :class="{ 'bg-surface-light ring-2 ring-border ring-inset': isActive }"
-                            :disabled="!isConnected">
-                            <BiDownload />
-                            Download Manager
-                        </button>
-                    </RouterLink>
-                </template>
-                
-                <TextDivider text="Models" />
-                
-                <div 
-                    class="flex flex-row gap-2"
-                    :class="{ 'pointer-events-none': !isConnected }">
-                    <input 
-                        type="text" 
-                        v-model="searchQuery" 
-                        placeholder="Search..."
-                        :disabled="!isConnected"
-                        class="bg-background p-2 rounded-md outline-none focus:ring-1 ring-highlight ring-inset w-full">
-                    <ActionMenu :actions="batchActions">
-                        <button class="btn-ghost">
+        class="h-4/12 md:h-full w-full md:w-2/6 bg-background-light rounded-lg md:rounded-r-none md:border-r border-border flex flex-col gap-2 p-2 relative">
+        <div class="flex flex-col gap-2 overflow-y-auto md:pr-3">
+            <template v-if="!config.cloud.enabled">
+                <UITextDivider text="Download" />
+                <PrimaryButton class="w-full" text="Find models" :icon="BiLinkExternal" type="external-link"
+                    href="https://ollama.com/search" />
+                <RouterLink to="/models/downloads" v-slot="{ isActive }">
+                    <button
+                        class="w-full text-text-muted enabled:hover:text-text bg-surface enabled:hover:bg-surface-light py-6 rounded-lg enabled:cursor-pointer select-none flex flex-row justify-center items-center gap-2 disabled:opacity-75"
+                        :class="{ 'bg-surface-light ring-2 ring-border ring-inset': isActive }"
+                        :disabled="!isConnected">
+                        <BiDownload />
+                        Download Manager
+                    </button>
+                </RouterLink>
+            </template>
+
+            <UITextDivider text="Models" />
+
+            <div class="flex flex-row gap-2" :class="{ 'pointer-events-none': !isConnected }">
+                <input type="text" v-model="searchQuery" placeholder="Search..." :disabled="!isConnected"
+                    class="bg-background p-2 rounded-md outline-none focus:ring-1 ring-highlight ring-inset w-full">
+                <FloatingActionMenu :actions="batchActions">
+                    <button class="btn-ghost">
+                        <BiDotsVerticalRounded />
+                    </button>
+                </FloatingActionMenu>
+            </div>
+
+            <div v-if="!isConnected && !isLoading">
+                Not connected to Ollama
+            </div>
+            <div v-else-if="modelsList.length === 0">
+                No models found
+            </div>
+            <RouterLink v-for="{ info, loadedInMemory, hidden, displayName } in queriedModels"
+                exactActiveClass="*:bg-surface-light *:ring-1 *:ring-highlight *:ring-inset *:text-text"
+                :to="`/models/${info.id}`">
+                <div class="flex flex-row items-center gap-2 p-2 rounded-md hover:bg-surface transition-colors duration-dynamic"
+                    :class="{ 'opacity-75': hidden }">
+                    <ModelIcon :name="info.id ?? 'Unknown'" class="size-6" />
+                    {{ displayName }}
+
+                    <div class="grow"></div>
+                    <Tooltip v-if="hidden" text="Hidden" class="flex items-center justify-center">
+                        <BiHide class="h-full" />
+                    </Tooltip>
+                    <Tooltip v-if="loadedInMemory" text="Loaded in memory" class="flex items-center justify-center">
+                        <MemoryLoadIcon class="h-full" />
+                    </Tooltip>
+                    <FloatingActionMenu :passArgs="{ modelData: info, displayName }" :actions="modelActions"
+                        anchored="left">
+                        <button @click.prevent
+                            class="hover:bg-surface-light group-[.active]:bg-surface-light group-[.active]:text-text p-1.5 rounded-sm cursor-pointer">
                             <BiDotsVerticalRounded />
                         </button>
-                    </ActionMenu>
+                    </FloatingActionMenu>
                 </div>
-
-                <div v-if="!isConnected && !isLoading">
-                    Not connected to Ollama
-                </div>
-                <div v-else-if="modelsList.length === 0">
-                    No models found
-                </div>
-                <RouterLink
-                    v-for="{ info, loadedInMemory, hidden, displayName } in queriedModels" 
-                    exactActiveClass="*:bg-surface-light *:ring-1 *:ring-highlight *:ring-inset *:text-text"
-                    :to="`/models/${info.id}`" >
-                    <div 
-                        class="flex flex-row items-center gap-2 p-2 rounded-md hover:bg-surface transition-colors duration-dynamic"
-                        :class="{ 'opacity-75': hidden }">
-                        <ModelIcon :name="info.id ?? 'Unknown'" class="size-6" />
-                        {{ displayName }}
-
-                        <div class="grow"></div>
-                        <Tooltip v-if="hidden" text="Hidden"
-                            class="flex items-center justify-center">
-                            <BiHide class="h-full" />
-                        </Tooltip>
-                        <Tooltip v-if="loadedInMemory" text="Loaded in memory"
-                            class="flex items-center justify-center">
-                            <MemoryLoadIcon class="h-full" />
-                        </Tooltip>
-                        <ActionMenu :passArgs="{ modelData: info, displayName }" :actions="modelActions" anchored="left">
-                            <button @click.prevent class="hover:bg-surface-light group-[.active]:bg-surface-light group-[.active]:text-text p-1.5 rounded-sm cursor-pointer">
-                                <BiDotsVerticalRounded />
-                            </button>
-                        </ActionMenu>
-                    </div>
-                </RouterLink>
-            </div>
+            </RouterLink>
         </div>
+    </div>
 </template>

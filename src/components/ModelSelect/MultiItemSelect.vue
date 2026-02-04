@@ -2,7 +2,6 @@
 import { computed, nextTick, ref } from 'vue';
 import type { IconType } from 'vue-icons-plus';
 import { BiCheck, BiChevronDown } from 'vue-icons-plus/bi';
-import FloatingMenu from '../FloatingMenu/FloatingMenu.vue';
 
 type ListItem = {
     value: string;

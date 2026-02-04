@@ -1,7 +1,6 @@
 <script lang="ts" setup>
 import { storeToRefs } from 'pinia';
 import useChatsStore from '@/stores/chatsStore';
-import TextDivider from '../TextDivider/TextDivider.vue';
 import SidebarEntry from './SidebarEntry.vue';
 
 const chatsStore = useChatsStore();
@@ -10,7 +9,7 @@ const { pinnedChats, hasPinnedChats, unpinnedChatsByRecent } = storeToRefs(chats
 
 <template>
 	<div class="grow overflow-y-auto">
-		<TextDivider
+		<UITextDivider
 			v-if="hasPinnedChats"
 			text="Pinned" />
 		<div class="grow" role="list" aria-labelledby="pinnedChatsSection">
@@ -21,7 +20,7 @@ const { pinnedChats, hasPinnedChats, unpinnedChatsByRecent } = storeToRefs(chats
 				:chat />
 		</div>
 
-		<TextDivider 
+		<UITextDivider 
 			text="Chats" />
 
 		<div class="grow" role="list" aria-labelledby="unpinnedChatsSection">

@@ -3,7 +3,6 @@ import useToolsStore from '@/stores/toolsStore';
 import { computed } from 'vue';
 import { BiError, BiLinkExternal, BiTrash } from 'vue-icons-plus/bi';
 import TextInput from './TextInput.vue';
-import TextDivider from '@/components/TextDivider/TextDivider.vue';
 import { ref } from 'vue';
 import ToolRequestOptions from './edit/ToolRequestOptions.vue';
 import NumberInput from './NumberInput.vue';
@@ -87,7 +86,7 @@ const timeoutValue = computed({
         <div
             v-else-if="selectedTool.userHint"
             class="py-2">{{ selectedTool.userHint }}</div>
-        <TextDivider text="User-facing" />
+        <UITextDivider text="User-facing" />
         <label class="text-lg mb-2">
             <input type="checkbox" v-model="selectedTool.userConfirmation">
             <span class="ml-2">Require user confirmation?</span>
@@ -106,7 +105,7 @@ const timeoutValue = computed({
                 <li v-for="param in missingParams"><span class="select-none">• </span>{{ `\{\{${param || '<blank>'}\}\}` }}</li>
             </ul>
         </div>
-        <TextDivider class="mt-2" text="Model-facing" />
+        <UITextDivider class="mt-2" text="Model-facing" />
         <div class="flex flex-col gap-2">
             <TextInput 
                 v-model="selectedTool.description" 
@@ -141,7 +140,7 @@ const timeoutValue = computed({
                 Add parameter
             </button>
         </div>
-        <TextDivider class="mt-2" text="Response" />
+        <UITextDivider class="mt-2" text="Response" />
         <NumberInput
             v-model="timeoutValue"
             label="Request timeout (ms)"

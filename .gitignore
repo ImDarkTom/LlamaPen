@@ -26,6 +26,8 @@ dist-ssr
 .env
 .env.local
 
+.vite/
+
 # Dev
 icons_all/
 

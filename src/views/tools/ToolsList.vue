@@ -1,6 +1,4 @@
 <script setup lang="ts">
-import ActionMenu, { type MenuEntry } from '@/components/FloatingMenu/ActionMenu.vue';
-import TextDivider from '@/components/TextDivider/TextDivider.vue';
 import router from '@/lib/router';
 import useToolsStore from '@/stores/toolsStore';
 import { BiCheckCircle, BiDotsVerticalRounded, BiMinusCircle, BiPencil, BiPlus, BiRefresh, BiTrash } from 'vue-icons-plus/bi';
@@ -110,13 +108,13 @@ function renameItem(toolName: string) {
                 <BiPlus class="inline mr-1" />
                 <span class="align-middle">New Tool</span>
             </button>
-            <ActionMenu :actions="toolsActions" anchored="left">
+            <FloatingActionMenu :actions="toolsActions" anchored="left">
                 <button class="btn-ghost">
                     <BiDotsVerticalRounded />
                 </button>
-            </ActionMenu>
+            </FloatingActionMenu>
         </div>
-        <TextDivider text="Added Tools" />
+        <UITextDivider text="Added Tools" />
         <RouterLink 
             v-for="toolName in Object.keys(toolsStore.tools)"
             :to="`/tools/${toolName}`"
@@ -129,11 +127,11 @@ function renameItem(toolName: string) {
                     <BiMinusCircle v-else />
                     <span>{{ toolName }}</span>
                 </div>
-                <ActionMenu :passArgs="toolName" :actions="itemActions" anchored="left">
+                <FloatingActionMenu :passArgs="toolName" :actions="itemActions" anchored="left">
                     <button @click.prevent class="hover:bg-surface-light group-[.active]:bg-surface-light group-[.active]:text-text p-1.5 rounded-sm cursor-pointer">
                         <BiDotsVerticalRounded />
                     </button>
-                </ActionMenu>
+                </FloatingActionMenu>
             </div>
         </RouterLink>
     </div>

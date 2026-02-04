@@ -1,5 +1,4 @@
 <script setup lang="ts">
-import SidebarRouterLink from './SidebarRouterLink.vue';
 import { emitter } from '@/lib/mitt';
 import { BiSearchAlt2 } from 'vue-icons-plus/bi';
 

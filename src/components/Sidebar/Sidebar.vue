@@ -1,11 +1,8 @@
 <script setup lang="ts">
 import { onMounted, onUnmounted } from 'vue';
 import { TbLayoutSidebarFilled } from 'vue-icons-plus/tb';
-import SidebarHeader from './SidebarHeader.vue';
-import SidebarFooter from './footer/SidebarFooter.vue';
 import { useConfigStore } from '../../stores/config';
 import { emitter } from '@/lib/mitt';
-import ChatList from './ChatList.vue';
 
 const useConfig = useConfigStore();
 
@@ -48,10 +45,12 @@ onUnmounted(() => {
     <div class="flex">
         <aside 
             class="flex flex-col fixed top-0 left-0 h-full w-72 z-29 bg-background-dark box-border p-2 transition-all duration-dynamic"
-            :class="{ '-translate-x-full': !useConfig.showSidebar, 'translate-x-0': useConfig.showSidebar }"
-        >
+            :class="{ 
+                '-translate-x-full': !useConfig.showSidebar, 
+                'translate-x-0': useConfig.showSidebar
+            }" >
             <SidebarHeader />
-            <ChatList />
+            <SidebarChatList />
             <SidebarFooter />
         </aside>
         <div class="absolute top-0 left-0 h-12 w-12 p-2 z-30">
