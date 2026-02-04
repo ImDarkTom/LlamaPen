@@ -1,7 +1,6 @@
 <script setup lang="ts">
 import { onBeforeMount } from 'vue';
 import { useConfigStore } from './stores/config';
-import PopupLoader from './components/Popups/PopupLoader.vue';
 import { useProviderManager } from './composables/useProviderManager';
 
 const config = useConfigStore();

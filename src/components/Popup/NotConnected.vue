@@ -1,6 +1,5 @@
 <script setup lang="ts">
 import { BiHelpCircle, BiSolidErrorCircle } from 'vue-icons-plus/bi';
-import Popup from './Popup.vue';
 import { onMounted, onUnmounted, ref } from 'vue';
 import { emitter } from '../../lib/mitt';
 import { useConfigStore } from '../../stores/config';
@@ -51,7 +50,7 @@ function hide() {
 
 
 <template>
-	<Popup :showing @close="hide">
+	<PopupBase :showing @close="hide">
 		<template #title>
 			<BiSolidErrorCircle class="h-full w-auto" />
 			Ollama not connected
@@ -77,5 +76,5 @@ function hide() {
 			<button @click="openGuide">Guide</button>
 			<button @click="hide">Close</button>
 		</template>
-	</Popup>
+	</PopupBase>
 </template>

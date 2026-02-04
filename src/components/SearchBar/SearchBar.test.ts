@@ -1,6 +1,6 @@
 import { mount } from "@vue/test-utils";
 import { describe, expect, it, vi } from "vitest";
-import SearchBar from "./SearchBar.vue";
+import SearchBar from "./index.vue";
 import { createTestingPinia } from "@pinia/testing";
 import { emitter } from "@/lib/mitt";
 import { nextTick } from "vue";
