@@ -3,15 +3,10 @@ import router from '@/lib/router';
 import { useConfigStore } from '@/stores/config';
 import setPageTitle from '@/utils/core/setPageTitle';
 import { computed, onMounted, ref, watch } from 'vue';
-import ModelList from './components/ModelList.vue';
-import ViewerContainer from './components/ViewerContainer.vue';
-import DownloadManager from './components/DownloadManager.vue';
 import logger from '@/lib/logger';
 import { useProviderManager } from '@/composables/useProviderManager';
-import OllamaModelViewer from './components/OllamaModelViewer.vue';
-import type { ModelViewInfo } from './components/types';
+import type { ModelViewInfo } from '@/components/ModelsPage/types';
 import { isOllamaProvider } from '@/providers/base/ProviderInterface';
-import GenericModelViewer from './components/GenericModelViewer.vue';
 
 const config = useConfigStore();
 
@@ -100,26 +95,26 @@ async function setModelViewInfo(modelId: string) {
 
 <template>
     <div class="w-full h-full flex flex-col md:flex-row box-border overflow-y-auto gap-2 md:gap-0">
-        <ModelList
+        <ModelsPageModelList
             :modelsList="rawModels"
             @refresh-model-list="refreshModelList" />
 
-        <ViewerContainer 
+        <ModelsPageViewerContainer 
             v-if="selectedModel.state === 'unselected' && modelFromParams !== 'downloads'" 
             class="flex items-center justify-center text-xl" >
             {{ config.cloud.enabled ?
                 'Model management is only available without API mode.' :
                 'Select a model to view its details, or download a new model.' }}
-        </ViewerContainer>
+        </ModelsPageViewerContainer>
         
-        <DownloadManager 
+        <ModelsPageDownloadManager 
             v-else-if="modelFromParams === 'downloads' && isOllama" 
             @refresh-model-list="refreshModelList" />
-        <OllamaModelViewer 
+        <ModelsPageViewerOllama 
             v-else-if="isOllama"
             :modelFromParams 
             :selectedModel />
-        <GenericModelViewer
+        <ModelsPageViewerGeneric
             v-else
             :modelFromParams
             :selectedModel />

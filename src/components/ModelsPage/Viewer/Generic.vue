@@ -3,9 +3,7 @@ import { computed } from 'vue';
 import type { IconType } from 'vue-icons-plus';
 import { BiBrain, BiShow, BiWrench } from 'vue-icons-plus/bi';
 import Unknown from '@/icons/unknown.svg';
-import CapabilitiesSkeleton from './CapabilitiesSkeleton.vue';
-import ViewerContainer from './ViewerContainer.vue';
-import type { ModelViewInfo } from './types';
+import type { ModelViewInfo } from '../types';
 import { useProviderManager, type ModelInfo } from '@/composables/useProviderManager';
 import type { ModelCapabilities } from '@/providers/base/types';
 
@@ -56,7 +54,7 @@ const modelCapabilites = computed<ModelCapabilities>(() =>
 </script>
 
 <template>
-    <ViewerContainer>
+    <ModelsPageViewerContainer>
         <div class="text-2xl md:text-3xl mb-2 md:my-6 align-middle min-w-0 whitespace-normal">
             <IconModel :name="modelFromParams ?? 'Unknown'" class="size-8 md:size-14! inline mr-2" />
 
@@ -65,7 +63,7 @@ const modelCapabilites = computed<ModelCapabilities>(() =>
             <span class="text-text-muted text-xl">{{ modelFromParams }}</span>
         </div>
 
-        <CapabilitiesSkeleton v-if="selectedModel.state === 'loading'" />
+        <ModelsPageCapabilitiesSkeleton v-if="selectedModel.state === 'loading'" />
         <div v-else role="list" class="flex flex-row gap-2">
             <div v-for="capability of Object.keys(modelCapabilites) as Array<keyof ModelCapabilities>" role="listitem"
                 class="flex flex-row bg-secondary text-background-light p-2 rounded-lg">
@@ -73,5 +71,5 @@ const modelCapabilites = computed<ModelCapabilities>(() =>
                 <span class="capitalize">{{ capability }}</span>
             </div>
         </div>
-    </ViewerContainer>
+    </ModelsPageViewerContainer>
 </template>

@@ -1,7 +1,7 @@
 <script setup lang="ts">
 import ToolsList from './ToolsList.vue';
 import ToolEdit from './ToolEdit.vue';
-import ViewerContainer from '../models/components/ViewerContainer.vue';
+import ViewerContainer from '../../components/ModelsPage/ViewerContainer.vue';
 </script>
 
 <template>

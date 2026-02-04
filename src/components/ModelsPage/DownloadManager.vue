@@ -1,6 +1,5 @@
 <script setup lang="ts">
 import { ref } from 'vue';
-import ViewerContainer from './ViewerContainer.vue';
 import { BiCloudDownload, BiStopCircle } from 'vue-icons-plus/bi';
 import useDownloadsStore from '@/stores/useDownloadsStore';
 import { storeToRefs } from 'pinia';
@@ -32,7 +31,7 @@ async function downloadModel() {
 </script>
 
 <template>
-    <ViewerContainer class="flex flex-col gap-2">
+    <ModelsPageViewerContainer class="flex flex-col gap-2">
         <form 
             class="flex flex-row gap-2 w-full"
             @submit.prevent="downloadModel">
@@ -98,5 +97,5 @@ async function downloadModel() {
             class="text-center mt-8">
             No models currently downloading
         </div>
-    </ViewerContainer>
+    </ModelsPageViewerContainer>
 </template>

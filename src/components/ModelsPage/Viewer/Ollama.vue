@@ -4,11 +4,8 @@ import type { IconType } from 'vue-icons-plus';
 import { BiBrain, BiReflectVertical, BiShow, BiSkipNext, BiWrench } from 'vue-icons-plus/bi';
 import DOMPurify from 'dompurify';
 import Unknown from '@/icons/unknown.svg';
-import InfoSection from './InfoSection.vue';
-import CapabilitiesSkeleton from './CapabilitiesSkeleton.vue';
-import ViewerContainer from './ViewerContainer.vue';
 import { useConfigStore } from '@/stores/config';
-import type { ModelViewInfo } from './types';
+import type { ModelViewInfo } from '../types';
 import type { ShowResponse, ModelDetails } from 'ollama/browser';
 
 const config = useConfigStore();
@@ -93,7 +90,7 @@ const modelInfo = computed(() =>
 </script>
 
 <template>
-    <ViewerContainer>
+    <ModelsPageViewerContainer>
         <div class="text-2xl md:text-3xl mb-2 md:my-6 align-middle min-w-0 whitespace-normal">
             <IconModel :name="modelFromParams ?? 'Unknown'" class="size-8 md:size-14! inline mr-2" />
 
@@ -102,7 +99,7 @@ const modelInfo = computed(() =>
             <span class="text-text-muted text-xl">{{ modelFromParams }}</span>
         </div>
 
-        <CapabilitiesSkeleton v-if="selectedModel.state === 'loading'" />
+        <ModelsPageCapabilitiesSkeleton v-if="selectedModel.state === 'loading'" />
         <div v-else role="list" class="flex flex-row gap-2">
             <div v-for="capability in modelCapabilites" role="listitem"
                 class="flex flex-row bg-secondary text-background-light p-2 rounded-lg">
@@ -116,11 +113,11 @@ const modelInfo = computed(() =>
                 Info unavailable in Cloud mode.
             </div>
             <h2 class="text-xl md:text-3xl pt-4 pb-2 text-text">Info</h2>
-            <InfoSection title="License" :content="sanitizeSection(modelLicense)" />
-            <InfoSection title="Modelfile" :content="sanitizeSection(modelModelfile)" />
-            <InfoSection title="Template" :content="sanitizeSection(modelTemplate)" />
-            <InfoSection title="Details" :kv-list="(modelDetails as Record<string, any>)" />
-            <InfoSection title="Model Info" :kv-list="modelInfo" />
+            <ModelsPageInfoSection title="License" :content="sanitizeSection(modelLicense)" />
+            <ModelsPageInfoSection title="Modelfile" :content="sanitizeSection(modelModelfile)" />
+            <ModelsPageInfoSection title="Template" :content="sanitizeSection(modelTemplate)" />
+            <ModelsPageInfoSection title="Details" :kv-list="(modelDetails as Record<string, any>)" />
+            <ModelsPageInfoSection title="Model Info" :kv-list="modelInfo" />
         </div>
-    </ViewerContainer>
+    </ModelsPageViewerContainer>
 </template>
