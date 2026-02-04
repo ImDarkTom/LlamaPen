@@ -1,6 +1,4 @@
 <script setup lang="ts">
-import OptionText from './OptionText.vue';
-
 const emit = defineEmits(['update:modelValue']);
 
 const props = defineProps<{
@@ -16,7 +14,7 @@ const updateValue = () => {
 
 <template>
 	<label class="w-full flex flex-row justify-between items-center transition-all duration-dynamic" @click="updateValue">
-		<OptionText :label :tooltip />
+		<SettingsOptionText :label :tooltip />
 		
 		<input 
 			class="sr-only"

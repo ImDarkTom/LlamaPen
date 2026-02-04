@@ -1,6 +1,5 @@
 <script setup lang="ts">
 import { ref, watch } from 'vue';
-import OptionText from './OptionText.vue';
 import { BiCheck, BiSave } from 'vue-icons-plus/bi';
 
 const emit = defineEmits(['update:modelValue']);
@@ -41,7 +40,7 @@ const updateValue = () => {
 
 <template>
 	<label class="w-full flex flex-col justify-between items-start">
-		<OptionText :label :tooltip />
+		<SettingsOptionText :label :tooltip />
 		
 		<div class="w-full flex flex-row gap-2">
 			<input

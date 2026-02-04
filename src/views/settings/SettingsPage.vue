@@ -1,17 +1,10 @@
 <script setup lang="ts">
 import { computed, onBeforeUnmount, onMounted, ref } from 'vue';
 import { useConfigStore } from '@/stores/config';
-import ToggleSetting from '@/views/settings/components/ToggleSetting.vue';
-import OptionCategory from './components/OptionCategory.vue';
 import { useRouter } from 'vue-router';
 import useChatsStore from '@/stores/chatsStore';
 import useMessagesStore from '@/stores/messagesStore';
-import TextInputSetting from './components/TextInputSetting.vue';
 import setPageTitle from '@/utils/core/setPageTitle';
-import CategoryLabel from './components/CategoryLabel.vue';
-import NumberInputSetting from './components/NumberInputSetting.vue';
-import SelectionSetting from './components/SelectionSetting.vue';
-import OptionText from './components/OptionText.vue';
 import { BiInfoCircle, BiRefresh, BiTrash } from 'vue-icons-plus/bi';
 import { useRegisterSW } from 'virtual:pwa-register/vue';
 import { ollamaWrapper } from '@/providers/ollama/OllamaWrapper';
@@ -137,21 +130,21 @@ const selectedProvider = computed({
     *:mx-auto *:md:w-4/5 *:lg:w-3/5 *:max-w-3xl">
         <UIPageHeader text="Settings" />
 
-        <OptionCategory label="Providers">
-            <SelectionSetting 
+        <SettingsOptionCategory label="Providers">
+            <SettingsSelectionSetting 
                 v-model="selectedProvider" 
                 label="Provider" 
                 :items="[...allProviders.keys()]" 
                 :itemNames="[...allProviders.values()].map(p => p.name)"
                 tooltip="The LLM provider to use. (Default: Ollama)"
             />
-        </OptionCategory>
+        </SettingsOptionCategory>
 
         <!-- <BiRocket class="size-4 inline align-middle" />
         Run more powerful models with LlamaPen's cloud service. -->
 
-        <OptionCategory v-if="isOllama" label="Ollama">
-            <TextInputSetting 
+        <SettingsOptionCategory v-if="isOllama" label="Ollama">
+            <SettingsTextInputSetting 
                 label="Ollama URL" 
                 v-model="config.ollamaUrl" 
                 :default="ollamaDefault"
@@ -162,12 +155,12 @@ const selectedProvider = computed({
                 <RouterLink to="/guide" class="text-text underline">setup guide</RouterLink>.
             </span>
 
-            <ToggleSetting
+            <SettingsToggleSetting
                 v-model="config.ollama.modelCapabilities.autoload"
                 label="Autoload model capabilities"
                 tooltip="Load model capabilities on connect. By default only loads if 30 models or less. (Default: Enabled)" />
             <div v-if="config.ollama.modelCapabilities.autoload" class="border-l border-text pl-3 ml-3">
-                <ToggleSetting 
+                <SettingsToggleSetting 
                     v-model="config.ollama.modelCapabilities.alwaysAutoload" 
                     label="Always autoload model capabilities"
                     tooltip="Loads model capabilities regardless of no. of models. (Default: Disabled)" />
@@ -180,10 +173,10 @@ const selectedProvider = computed({
                     @click="checkOllamaVersion"
                     :icon="BiInfoCircle" />
             </div>
-        </OptionCategory>
+        </SettingsOptionCategory>
 
-        <OptionCategory label="Appearance">
-            <SelectionSetting 
+        <SettingsOptionCategory label="Appearance">
+            <SettingsSelectionSetting 
                 v-model="config.ui.theme" 
                 label="Theme" 
                 :items="['auto', 'dark', 'light', 'mono-dark', 'mono-light', 'amoled']" 
@@ -191,24 +184,24 @@ const selectedProvider = computed({
                 @update:model-value="config.loadTheme()" 
                 tooltip="The theme for the app. (Default: System default (dark/light))"
             />
-            <ToggleSetting 
+            <SettingsToggleSetting 
                 v-model="config.ui.nativeScrollbar" 
                 label="Native scrollbar" 
                 tooltip="Use the browser's default scrollbar styling. (Default: Disabled)"
                 @update:model-value="config.loadScrollbarSetting()"
             />
-            <ToggleSetting 
+            <SettingsToggleSetting 
                 v-model="config.ui.messageInput.sendButtonAltIcon" 
                 label="Alternate send button icon" 
                 tooltip="Use a paper-plane icon instead of an up arrow. (Default: Disabled)"
             />
-            <ToggleSetting 
+            <SettingsToggleSetting 
                 v-model="config.ui.messageInput.hideUnusedButtons" 
                 label="Hide unused message input buttons" 
                 tooltip="Hide buttons that rely on specific capabilities when the current model doesn't support them, such as the 'Think' button. (Default: Enabled)"
             />
             <div class="flex flex-col gap-2 w-full">
-                <OptionText label="Animation Duration" tooltip="The length of animations/transitions throughout the UI. (Default: 125ms)" />
+                <SettingsOptionText label="Animation Duration" tooltip="The length of animations/transitions throughout the UI. (Default: 125ms)" />
                 <input class="accent-primary w-full" @change="updateTransitionSpeed" v-model="transitionSpeed"
                     type="range" min="0" max="1" step="0.025" />
                 <span class="py-2">
@@ -217,57 +210,57 @@ const selectedProvider = computed({
                     <span class="pl-2">{{ transitionSpeed == 0.125 ? '(Default)' : '' }}</span>
                 </span>
             </div>
-            <CategoryLabel>Model Icons</CategoryLabel>
-            <ToggleSetting 
+            <SettingsCategoryLabel>Model Icons</SettingsCategoryLabel>
+            <SettingsToggleSetting 
                 v-model="config.ui.modelIcons.monochrome" 
                 label="Monochrome model icons"
                 tooltip="Use single-color variants of model icons. (Default: Enabled)" />
-            <ToggleSetting 
+            <SettingsToggleSetting 
                 v-model="config.ui.modelIcons.background" 
                 label="Model icons background"
                 tooltip="Add a background to model icons throughout the app. (Default: Disabled)" />
             <div v-if="config.ui.modelIcons.background" class="border-l border-text pl-3 ml-3">
-                <ToggleSetting 
+                <SettingsToggleSetting 
                     v-model="config.ui.modelIcons.backgroundDark" 
                     label="Dark icon background"
                     tooltip="Make the icon background darker. (Default: Disabled)" />
             </div>
-            <ToggleSetting 
+            <SettingsToggleSetting 
                 v-model="config.ui.modelIcons.alternateGemmaIcon" 
                 label="Alternate Gemma icon"
                 tooltip="Use the Google logo instead of the Gemma icon. (Default: Disabled)" />
-            <CategoryLabel>Tooltip</CategoryLabel>
-            <NumberInputSetting 
+            <SettingsCategoryLabel>Tooltip</SettingsCategoryLabel>
+            <SettingsNumberInputSetting 
                 v-model="config.ui.tooltip.waitTimeoutMs" 
                 :default="100" 
                 :min="0" 
                 :max="1000"
                 label="Hover delay (ms)"
                 tooltip="How long to mouse over an element before it's tooltip appears. (Default: 100)" />
-            <CategoryLabel>Mobile</CategoryLabel>
-            <ToggleSetting 
+            <SettingsCategoryLabel>Mobile</SettingsCategoryLabel>
+            <SettingsToggleSetting 
                 v-model="config.closeSidebarOnNavMobile" 
                 label="Hide sidebar on navigate"
                 tooltip="Hide the sidebar after navigating to a different page on mobile. (Default: Enabled)" />
-        </OptionCategory>
+        </SettingsOptionCategory>
 
-        <OptionCategory label="Chat">
-            <SelectionSetting 
+        <SettingsOptionCategory label="Chat">
+            <SettingsSelectionSetting 
                 v-model="config.chat.titleGenerationStyle" 
                 label="Title generation style" 
                 :items="['dynamic', 'firstMessage', 'generate', 'chatId']" 
                 :itemNames="['Dynamic (default)', 'Use first message', 'Generate with current model', 'Use chat ID']"
                 tooltip="Dynamic: First message if question, otherwise generate. (Default: Dynamic)"
             />
-            <ToggleSetting 
+            <SettingsToggleSetting 
                 v-model="config.chat.thinking.infoOpenByDefault"
                 label="Reasoning text open by default"
                 tooltip="Have reasoning/thinking text open by default for each message. (Default: Disabled)" />
-            <ToggleSetting 
+            <SettingsToggleSetting 
                 v-model="config.chat.hideTPSInfoText"
                 label="Hide tokens/sec in message footer"
                 tooltip="Hide the <num>tok/s text in the message footer/controls for model messages. (Default: Disabled)" />
-            <NumberInputSetting
+            <SettingsNumberInputSetting
                 v-model="config.chat.tokenSaveInterval"
                 :default="5"
                 :min="1"
@@ -281,9 +274,9 @@ const selectedProvider = computed({
                 color="danger"
                 :icon="BiTrash"
                 @click="clearChats" />
-        </OptionCategory>
+        </SettingsOptionCategory>
 
-        <OptionCategory label="PWA">
+        <SettingsOptionCategory label="PWA">
             <span v-if="offlineReady">App is ready to work offline.</span>
             <span v-else>Caching app...</span>
             <span v-if="needRefresh">A new version is available, reload to update.</span>
@@ -293,11 +286,11 @@ const selectedProvider = computed({
                 type="button"
                 :icon="BiRefresh"
                 @click="updateServiceWorker()" />
-        </OptionCategory>
+        </SettingsOptionCategory>
 
-        <OptionCategory label="Developer" v-if="!inProduction">
+        <SettingsOptionCategory label="Developer" v-if="!inProduction">
             <span class="text-danger">Do not change these settings unless you know what you're doing.</span>
-            <ToggleSetting v-model="config.developer.infoLogs" label="Show info logs" />
-        </OptionCategory>
+            <SettingsToggleSetting v-model="config.developer.infoLogs" label="Show info logs" />
+        </SettingsOptionCategory>
     </div>
 </template>

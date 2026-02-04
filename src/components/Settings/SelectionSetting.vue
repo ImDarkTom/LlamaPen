@@ -1,6 +1,5 @@
 <script setup lang="ts" generic="T">
 import { onMounted } from 'vue';
-import OptionText from './OptionText.vue';
 
 const props = defineProps<{
 	label: string;
@@ -20,7 +19,7 @@ onMounted(() => {
 
 <template>
 	<label class="w-full flex flex-col justify-between items-start">
-		<OptionText :label :tooltip />
+		<SettingsOptionText :label :tooltip />
 		
 		<div class="w-full flex flex-row gap-2">
             <select 
