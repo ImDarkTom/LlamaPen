@@ -2,7 +2,6 @@
 import router from '@/lib/router';
 import setPageTitle from '@/utils/core/setPageTitle';
 import { onBeforeUnmount, onMounted } from 'vue';
-import ShortcutDisplay from './components/ShortcutDisplay.vue';
 
 onMounted(() => {
     setPageTitle('Keyboard Shortcuts');
@@ -32,13 +31,13 @@ function handleEscape(e: KeyboardEvent) {
 
         <div class="flex flex-col h-full box-border">
             <h2 class="text-3xl font-semibold pb-2 text-text">Interface</h2>
-            <ShortcutDisplay label="Toggle sidebar" shortcut="ctrl shift s" />
-            <ShortcutDisplay label="Open model selector" shortcut="ctrl shift m" />
-            <ShortcutDisplay label="Search chats" shortcut="ctrl k" />
+            <ShortcutsPageDisplay label="Toggle sidebar" shortcut="ctrl shift s" />
+            <ShortcutsPageDisplay label="Open model selector" shortcut="ctrl shift m" />
+            <ShortcutsPageDisplay label="Search chats" shortcut="ctrl k" />
             <h2 class="text-3xl font-semibold pb-2 text-text">Chat</h2>
-            <ShortcutDisplay label="New chat" shortcut="ctrl shift o" />
-            <ShortcutDisplay label="Focus chat input" shortcut="shift esc" />
-            <ShortcutDisplay label="Delete chat" shortcut="ctrl shift ⌫" />
+            <ShortcutsPageDisplay label="New chat" shortcut="ctrl shift o" />
+            <ShortcutsPageDisplay label="Focus chat input" shortcut="shift esc" />
+            <ShortcutsPageDisplay label="Delete chat" shortcut="ctrl shift ⌫" />
         </div>
     </div>
 </template>
