@@ -9,6 +9,7 @@ import ModelsPage from '@/views/models/ModelsPage.vue';
 import ChatLayout from '@/layouts/ChatLayout.vue';
 import ToolsPage from '@/views/tools/ToolsPage.vue';
 import UtilityLayout from '@/layouts/UtilityLayout.vue';
+import NotFoundPage from '@/views/404.vue';
 
 const routes: RouteRecordRaw[] = [
     {
@@ -50,6 +51,10 @@ const routes: RouteRecordRaw[] = [
                 ]
             },
         ]   
+    },
+    {
+        path: '/:pathMatch(.*)*',
+        component: NotFoundPage,
     }
 ];
 
