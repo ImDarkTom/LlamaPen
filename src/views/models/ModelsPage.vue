@@ -8,6 +8,9 @@ import { useProviderManager } from '@/composables/useProviderManager';
 import type { ModelViewInfo } from '@/components/ModelsPage/types';
 import { isOllamaProvider } from '@/providers/base/ProviderInterface';
 
+// todo(provider-separation): organise the components for this by provider,
+// e.g. ollama/Viewer.vue, ollama/DownloadManager.vue, generic/Viewer.vue, etc.
+
 const config = useConfigStore();
 
 // State

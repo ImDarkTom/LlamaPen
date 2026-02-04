@@ -3,7 +3,6 @@ import supabase from '@/lib/supabase';
 import useUserStore from '@/stores/user';
 import { ref } from 'vue';
 import { BiLogoGoogle } from 'vue-icons-plus/bi';
-import AccountSection from './AccountSection.vue';
 
 const userStore = useUserStore();
 
@@ -29,7 +28,7 @@ async function signIn() {
 
 <template>
     <div class="flex flex-col items-center justify-center h-full">
-        <AccountSection class="items-center justify-center" flex-direction="col">
+        <AccountPageSection class="items-center justify-center" flex-direction="col">
             <div class="flex flex-col items-center gap-4">
                 <span class="font-bold text-xl">Welcome to LlamaPen Cloud</span>
                 <ButtonPrimary
@@ -48,6 +47,6 @@ async function signIn() {
                         class="text-secondary hover:underline">Privacy Policy</a>.
                 </span>
             </div>
-        </AccountSection>
+        </AccountPageSection>
     </div>
 </template>

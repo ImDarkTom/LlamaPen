@@ -118,7 +118,7 @@ const periodEnd = computed(() => {
 		<div v-if="userStore.isLoading" class="h-full flex items-center justify-center">
 			<BiLoaderAlt class="animate-spin size-12" />
 		</div>
-		<AccountSignIn v-else-if="!userStore.isSignedIn" />
+		<AccountPageSignIn v-else-if="!userStore.isSignedIn" />
 		<div v-else>
 			<div class="flex flex-row justify-between items-center">
 				<span class="font-bold text-4xl!">My Account</span>
@@ -128,7 +128,7 @@ const periodEnd = computed(() => {
 					:icon="BiLogOut"
 					@click="signOut" />
 			</div>
-			<AccountSection flex-direction="row">
+			<AccountPageSection flex-direction="row">
 				<img :src="userStore.userInfo.details.pictureUrl" alt="User avatar" 
 				class="size-28 rounded-full outline-2 outline-border-muted">
 				<div class="flex flex-col overflow-hidden gap-2">
@@ -136,9 +136,9 @@ const periodEnd = computed(() => {
 					<span>{{ userStore.userInfo.details.email }}</span>
 					<span>{{ userStore.subName }} Tier</span>
 				</div>
-			</AccountSection>
+			</AccountPageSection>
 			
-			<AccountSection title="Plan & Usage" flex-direction="col">
+			<AccountPageSection title="Plan & Usage" flex-direction="col">
 				<h3 class="text-2xl">Usage Limits</h3>
 				<span v-if="userStore.isLoading">Loading...</span>
 				<div v-else class="w-full">
@@ -205,47 +205,47 @@ const periodEnd = computed(() => {
 						</ul>
 					</div>
 				</div>
-			</AccountSection>
+			</AccountPageSection>
 			
-			<AccountSection title="Contact" flex-direction="col">
-				<AccountContactSection
+			<AccountPageSection title="Contact" flex-direction="col">
+				<AccountPageContactSection
 					title="Account/billing support"
 					description="For account/billing issues, contact us at support@llamapen.app"
 					:icon="BiMailSend"
 					link="mailto:support@llamapen.app" 
 				/>
-				<AccountContactSection
+				<AccountPageContactSection
 					title="Terms of Service"
 					description="Read the terms of service."
 					:icon="BiFile"
 					link="https://cloud.llamapen.app/terms" 
 				/>
-				<AccountContactSection
+				<AccountPageContactSection
 					title="Privacy Policy"
 					description="Read the privacy policy."
 					:icon="BiShield"
 					link="https://cloud.llamapen.app/privacy" 
 				/>
-				<AccountContactSection
+				<AccountPageContactSection
 					title="App issues"
 					description="Found a bug? Report it on the GitHub."
 					:icon="BiBug"
 					link="https://github.com/ImDarkTom/LlamaPen/issues" 
 				/>
-			</AccountSection>
+			</AccountPageSection>
 
-			<AccountSection title="Options">
-				<AccountOptions />
-			</AccountSection>
+			<AccountPageSection title="Options">
+				<AccountPageOptions />
+			</AccountPageSection>
 
-			<AccountSection title="Danger Zone">
+			<AccountPageSection title="Danger Zone">
 				<ButtonPrimary
 					text="Delete Account"
 					color="danger"
 					type="button" 
 					:icon="BiUserMinus"
 					@click="deleteAccount" />
-			</AccountSection>
+			</AccountPageSection>
 		</div>
 	</div>
 </template>
