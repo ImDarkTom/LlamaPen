@@ -193,7 +193,7 @@ const useMessagesStore = defineStore('messages', () => {
 		} else {
 			if (options?.generateTitle) {
 				const chatTitle = await generateChatTitle();
-				setPageTitle(`${chatTitle} | Chat`);
+				setPageTitle(chatTitle);
 			}
 		}
 

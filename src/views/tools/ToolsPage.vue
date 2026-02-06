@@ -1,7 +1,11 @@
 <script setup lang="ts">
+import setPageTitle from '@/utils/core/setPageTitle';
+import { onMounted } from 'vue';
 import { useRoute } from 'vue-router';
 
 const route = useRoute();
+
+onMounted(() => setPageTitle('Tools'));
 </script>
 
 <template>

@@ -27,10 +27,10 @@ function openChat(newId: string | string[] | undefined, oldId?: string | string[
     }
 
     if (!newId) {
-        setPageTitle('Chat');
+        setPageTitle();
     } else {
         chatsStore.getChatTitle(parseInt(newId as string))
-            .then(title => setPageTitle(`${title} | Chat`));
+            .then(setPageTitle);
     }
 }
 
@@ -42,10 +42,10 @@ onMounted(() => {
     messagesStore.openChat(parseNumOrNull(route.params.id));
 
     if (!route.params.id) {
-        setPageTitle('Chat');
+        setPageTitle();
     } else {
         chatsStore.getChatTitle(parseInt(route.params.id as string))
-            .then(title => setPageTitle(`${title} | Chat`));
+            .then(setPageTitle);
     }
 
     emitter.on('scrollToBottom', (args) => scrollToBottom(args));

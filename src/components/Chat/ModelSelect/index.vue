@@ -225,7 +225,7 @@ const useGridView = computed(() => config.ui.modelList.useGridView);
                     </div>
                 </RouterLink>
                 <button
-                    @click="useGridView = !useGridView"
+                    @click="config.ui.modelList.useGridView = !config.ui.modelList.useGridView"
                     :class="{ 'bg-border!': useGridView }"
                     class="relative p-3 text-background bg-primary hover:bg-highlight cursor-pointer transition-colors duration-dynamic rounded-lg">
                     <BiExpand />

@@ -1,3 +1,7 @@
-export default function setPageTitle(title: string) {
-	document.title = `${title} | LlamaPen`;
+export default function setPageTitle(title?: string) {
+	if (!title) {
+		document.title = `LlamaPen`
+	} else {
+		document.title = `${title} - LlamaPen`;
+	}
 }

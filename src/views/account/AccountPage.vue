@@ -22,7 +22,7 @@ onMounted(() => {
 	}
 
 	userStore.refreshUserInfo();
-	setPageTitle('My Account');
+	setPageTitle('Account');
 });
 
 async function subscriptionButtonClick() {

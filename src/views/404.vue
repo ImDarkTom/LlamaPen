@@ -1,3 +1,10 @@
+<script setup lang="ts">
+import setPageTitle from '@/utils/core/setPageTitle';
+import { onMounted } from 'vue';
+
+onMounted(() => setPageTitle('Page not found'))
+</script>
+
 <template>
     <div class="flex w-full min-h-svh items-center justify-center">
         <div class="mx-auto flex flex-col gap-4 items-center">
