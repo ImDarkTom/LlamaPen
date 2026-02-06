@@ -7,6 +7,7 @@ import { VitePWA } from 'vite-plugin-pwa';
 import { execFileSync } from "node:child_process";
 import removeAttribute from '@castlenine/vite-remove-attribute';
 import Components from 'unplugin-vue-components/vite';
+import AutoImport from 'unplugin-auto-import/vite';
 
 const commitHash = execFileSync(
     'git',
@@ -28,6 +29,13 @@ export default defineConfig({
             dts: '.vite/components.d.ts',
             dirs: [ 'src/components', 'src/views/**/components' ],
             directoryAsNamespace: true,
+        }),
+        AutoImport({
+            dts: '.vite/auto-imports.d.ts',
+            imports: [
+                'vue',
+                'vue-router',
+            ],
         }),
         VitePWA({ 
             manifest: {

@@ -1,7 +1,6 @@
 <script setup lang="ts">
 import { inject, onBeforeUnmount, onMounted, provide, ref, toRef, watch } from 'vue';
 import { BiChevronUp } from 'vue-icons-plus/bi';
-import { nanoid } from 'nanoid';
 import { useFloatingMenu } from '@/composables/useFloatingMenu';
 
 const props = withDefaults(defineProps<{
@@ -27,7 +26,7 @@ const emit = defineEmits<{
 }>();
 
 // Provide/inject to manage nested dropdowns
-const myDropdownId = nanoid();
+const myDropdownId = useId();
 const registerToParent = inject<((childId: string) => void) | undefined>('registerChild', undefined);
 const unregisterToParent = inject<((childId: string) => void) | undefined>('unregisterChild', undefined);
 
