@@ -172,6 +172,11 @@ body:not([data-native-scrollbar]) {
         0 0.25rem 1.25rem rgba(0, 0, 0, 0.2), 
         0 0 0 0.5px oklch(from var(--color-highlight) l c h / 0.7);
 
+    /* large popups */
+    --shadow-elevation-5: 
+        0 0.25rem 1.25rem rgba(0, 0, 0, 0.3), 
+        0 0 0 0.75px oklch(from var(--color-highlight) l c h / 0.9);
+
     @keyframes breathe {
         0%,
         100% {
