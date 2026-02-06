@@ -42,15 +42,6 @@ const modelActions: MenuEntry<{ modelData: Model, displayName: string }>[] = [
     },
     {
         type: 'text',
-        text: ({ modelData }) => isHidden(modelData.id) ? 'Unhide model' : 'Hide model',
-        onClick: ({ modelData }) => setModelHidden(modelData.id, isHidden(modelData.id)),
-        icon: {
-            type: 'factory',
-            func: ({ modelData }: { modelData: Model }) => isHidden(modelData.id) ? BiShow : BiHide
-        },
-    },
-    {
-        type: 'text',
         text: ({ modelData }) => isLoadedInMemory(modelData.id) ? 'Unload from memory' : 'Load into memory',
         onClick: ({ modelData }) => toggleModelLoaded(modelData.id),
         icon: {
@@ -58,6 +49,19 @@ const modelActions: MenuEntry<{ modelData: Model, displayName: string }>[] = [
             func: ({ modelData }: { modelData: Model }) => (isLoadedInMemory(modelData.id) ? IconMemoryUnload : Fa6Memory) as IconType
         },
         condition: isOllama.value
+    },
+    {
+        type: 'divider',
+        condition: isOllama.value,
+    },
+    {
+        type: 'text',
+        text: ({ modelData }) => isHidden(modelData.id) ? 'Unhide model' : 'Hide model',
+        onClick: ({ modelData }) => setModelHidden(modelData.id, isHidden(modelData.id)),
+        icon: {
+            type: 'factory',
+            func: ({ modelData }: { modelData: Model }) => isHidden(modelData.id) ? BiShow : BiHide
+        },
     },
     {
         type: 'text',

@@ -57,7 +57,7 @@ const isOpened = ref(false);
                         </span>
                     </li>
                     <div 
-                        v-else-if="entry.type === 'divider'"
+                        v-else-if="entry.type === 'divider' && (entry.condition === undefined || entry.condition === true)"
                         class="w-[calc(100%-1.5rem)] h-px bg-border/75 my-1 mx-3"></div>
                 </template>
             </ul>

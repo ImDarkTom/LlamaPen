@@ -19,4 +19,5 @@ type MenuEntry<T = void> = {
     condition?: boolean,
 } | {
     type: 'divider',
+    condition?: boolean,
 };
