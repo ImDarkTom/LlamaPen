@@ -33,6 +33,7 @@ function newTool() {
 
 const toolsActions: MenuEntry[] = [
     {
+        type: 'text',
         text: 'Reset to default',
         onClick: resetToDefault,
         icon: BiRefresh,
@@ -48,16 +49,19 @@ function resetToDefault() {
 
 const itemActions: MenuEntry<string>[] = [
     {
+        type: 'text',
         text: 'Toggle tool',
         onClick: toggleTool,
         icon: BiRefresh,
     },
     {
+        type: 'text',
         text: 'Rename',
         onClick: renameItem,
         icon: BiPencil
     },
     {
+        type: 'text',
         text: 'Delete',
         onClick: deleteItem,
         icon: BiTrash,

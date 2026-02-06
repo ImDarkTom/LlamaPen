@@ -237,10 +237,14 @@ const selectedProvider = computed({
                 :max="1000"
                 label="Hover delay (ms)"
                 tooltip="How long to mouse over an element before it's tooltip appears. (Default: 100)" />
-            <SettingsCategoryLabel>Mobile</SettingsCategoryLabel>
+            <SettingsCategoryLabel>Sidebar</SettingsCategoryLabel>
+            <SettingsInputToggle
+                v-model="config.ui.sidebar.entryIcons"
+                label="Sidebar chat icons"
+                tooltip="Whether or not to show icons next to chat names in the sidebar (Default: Enabled)" />
             <SettingsInputToggle 
                 v-model="config.closeSidebarOnNavMobile" 
-                label="Hide sidebar on navigate"
+                label="Mobile: Hide sidebar on navigate"
                 tooltip="Hide the sidebar after navigating to a different page on mobile. (Default: Enabled)" />
         </SettingsOptionCategory>
 

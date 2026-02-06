@@ -31,7 +31,10 @@ interface Config {
         messageInput: {
             sendButtonAltIcon: boolean; // Use paper plane icon instead of up arrow
             hideUnusedButtons: boolean;
-        }
+        },
+        sidebar: {
+            entryIcons: boolean;
+        },
     },
     cloud: {
         enabled: boolean,
@@ -110,7 +113,10 @@ export const useConfigStore = defineStore('config', {
             messageInput: {
                 sendButtonAltIcon: false,
                 hideUnusedButtons: true
-            }
+            },
+            sidebar: {
+                entryIcons: true,
+            },
         },
         cloud: {
             enabled: false,

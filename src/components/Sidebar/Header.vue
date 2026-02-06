@@ -11,7 +11,7 @@ function search() {
 </script>
 
 <template>
-    <div class="flex flex-col gap-2 pb-2">
+    <div class="flex flex-col gap-2 pb-2 px-2">
         <div class="flex flex-row p-0 box-border justify-between items-center">
             <div class="size-10 p-1"></div><!-- sidebar toggle space holder -->
             <SidebarRouterLink to="/"

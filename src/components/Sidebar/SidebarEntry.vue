@@ -1,10 +1,11 @@
 <script setup lang="ts">
 import { computed, ref } from 'vue';
-import { BiChat, BiDotsVerticalRounded, BiPencil, BiPin, BiSolidChat, BiSolidPin, BiTrash, BiX } from 'vue-icons-plus/bi';
+import { BiChat, BiDotsHorizontalRounded, BiPencil, BiPin, BiSolidChat, BiSolidPin, BiTrash } from 'vue-icons-plus/bi';
 import useChatsStore from '@/stores/chatsStore';
 import router from '@/lib/router';
 import useMessagesStore from '@/stores/messagesStore';
 import { getDateTimeString } from '@/utils/core/getDateTimeString';
+import { useConfigStore } from '@/stores/config';
 
 const props = defineProps<{
     chat: Chat,
@@ -12,6 +13,7 @@ const props = defineProps<{
 
 const { setPinned, isOpened, renameChat, deleteChat } = useChatsStore();
 const messagesStore = useMessagesStore();
+const config = useConfigStore();
 
 const entryTextRef = ref<HTMLInputElement | null>(null);
 const isHoveringOverIcon = ref<boolean>(false);
@@ -78,24 +80,33 @@ function promptDeleteChat(e?: MouseEvent) {
     }
 }
 
+const dropdownPinText = computed(() => isPinned.value ? 'Unpin' : 'Pin');
+const dropdownPinIcon = computed(() => isPinned.value ? BiSolidPin : BiPin);
+
 const actions: MenuEntry<MouseEvent>[] = [
     {
-        text: 'Pin',
-        icon: BiPin,
-        onClick: () => setPinned(props.chat.id, !isPinned),
+        type: 'text',
+        text: dropdownPinText.value,
+        icon: dropdownPinIcon.value,
+        onClick: () => setPinned(props.chat.id, !isPinned.value),
     },
     {
+        type: 'text',
         text: 'Rename',
         icon: BiPencil,
         onClick: editChatName,
     },
     {
+        type: 'divider',
+    },
+    {
+        type: 'text',
         text: 'Delete',
         icon: BiTrash,
         onClick: promptDeleteChat,
         category: 'danger',
-    }
-]
+    },
+];
 
 const icon = computed(() => {
     if (isHoveringOverIcon.value) {
@@ -125,44 +136,45 @@ const icon = computed(() => {
 
 <template>
 	<SidebarRouterLink
+        role="listitem"
         :to="`/chat/${props.chat.id}`" 
-        class="my-2 flex flex-col"
         :title="hoverMessage" 
-        @dblclick="editChatName" 
-        role="listitem" >
+        @dblclick="editChatName" >
         <div 
-            class="group w-full h-10 flex flex-row gap-2 p-2 pointer-coarse:p-3 relative rounded-lg hover:text-text hover:bg-background transition-quick"
-            :class="{ 'bg-background-light! ring-1 ring-inset ring-border is-opened': isChatOpened }">
+            class="group relative flex flex-row gap-1 p-1.5 px-2 pr-6 not-has-[div.absolute:hover]:hover:bg-background rounded-sm"
+            :class="{ 'bg-background-light!': isChatOpened }">
             <div 
+                v-if="config.ui.sidebar.entryIcons"
                 class="box-content aspect-square"
                 @mouseenter="isHoveringOverIcon = true"
                 @mouseleave="isHoveringOverIcon = false" >
                 <component
                     :is="icon"
-                    class="box-border p-0.5 group-[.is-opened]:text-secondary"
-                    @mousedown.stop="setPinned(chat.id, !isPinned)" />
+                    class="box-border p-0.5"
+                    @mousedown.stop
+                    @click="setPinned(chat.id, !isPinned)" />
             </div>
             <input
                 type="text"
                 ref="entryTextRef" 
-                class="cursor-pointer text-ellipsis w-full group-hover:w-[calc(100%-1rem)] outline-none group-hover:pointer-coarse:w-[calc(100%-1.5rem)]"
+                class="w-full cursor-pointer truncate outline-none"
                 :value="props.chat.title"
                 @blur="stopEditing()" 
                 @keydown="editKeyPressed" 
                 :readonly="!isEditingName"
                 :class="{ 
-                    'rounded-sm border-2 border-border-muted': isEditingName,
+                    'cursor-text! rounded-sm border-2 border-border-muted': isEditingName,
                     'animate-blink': isGeneratingTitle,
                 }">
-            <div class="flex md:not-group-hover:hidden gap-1">
-                <div 
-                    class="hover:text-danger hidden md:block transition-all duration-dynamic"
-                    @mousedown.left.stop="promptDeleteChat">
-                    <BiX />
-                </div>
+            <div class="size-8 p-1 block md:not-group-hover:hidden absolute right-0 top-1/2 -translate-y-1/2 rounded-sm 
+                bg-background-dark md:bg-background 
+                hover:text-text hover:bg-background-light"
+                :class="{ 
+                    'bg-background-light! block!': isChatOpened
+                }">
                 <FloatingActionMenu :actions>
                     <div @mousedown.left.stop>
-                        <BiDotsVerticalRounded />
+                        <BiDotsHorizontalRounded />
                     </div>
                 </FloatingActionMenu>
             </div>

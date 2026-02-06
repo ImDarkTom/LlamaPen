@@ -11,9 +11,12 @@ type OnClickHandler<T> = T extends void
     : (args: T) => void;
 
 type MenuEntry<T = void> = {
-    text: TextResolver<T>;
-    onClick: OnClickHandler<T>;
-    icon?: IconResolver<T>;
+    type: 'text',
+    text: TextResolver<T>,
+    onClick: OnClickHandler<T>,
+    icon?: IconResolver<T>,
     category?: 'general' | 'danger',
     condition?: boolean,
-}
+} | {
+    type: 'divider',
+};

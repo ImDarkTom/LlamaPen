@@ -152,6 +152,26 @@ body:not([data-native-scrollbar]) {
     --animate-breathe: breathe 2s ease-in-out infinite;
     --animate-blink: blink 1s ease-in-out infinite;
 
+    /* base */
+    --shadow-elevation-1: 
+        0 0.25rem 1.25rem rgba(0, 0, 0, 0.05), 
+        0 0 0 0.5px oklch(from var(--color-highlight) l c h / 0.15);
+        
+    /* hovered items */
+    --shadow-elevation-2: 
+        0 0.25rem 1.25rem rgba(0, 0, 0, 0.05), 
+        0 0 0 0.5px oklch(from var(--color-highlight) l c h / 0.3);
+
+    /* focused items */
+    --shadow-elevation-3: 
+        0 0.25rem 1.25rem rgba(0, 0, 0, 0.1), 
+        0 0 0 0.5px oklch(from var(--color-highlight) l c h / 0.3);
+
+    /* popup menus */
+    --shadow-elevation-4: 
+        0 0.25rem 1.25rem rgba(0, 0, 0, 0.2), 
+        0 0 0 0.5px oklch(from var(--color-highlight) l c h / 0.7);
+
     @keyframes breathe {
         0%,
         100% {

@@ -106,8 +106,9 @@ watch(
     <div v-click-outside="handleClickOutside">
         <div
             :class="{
-                'flex flex-row items-center gap-1 w-max select-none cursor-pointer rounded-lg transition-all duration-dynamic text-text-muted hover:text-text ring-1 ring-text-muted hover:ring-text h-10 p-2 pointer-coarse:p-3 box-border': !unstyledButton,
+                'flex flex-row items-center gap-1 w-max select-none cursor-pointer rounded-lg transition-all duration-dynamic text-text-muted hover:text-text ring-1 ring-highlight hover:ring-text-muted h-10 p-2 pointer-coarse:p-3 box-border': !unstyledButton,
                 'group active': isOpened,
+                'ring-text-muted': isOpened && !unstyledButton
             }"
             :aria-expanded="isOpened"
             @click="toggleMenu" 
@@ -141,7 +142,7 @@ watch(
                     :data-dropdown-id="myDropdownId"
                     :class="[
                         {
-                            'bg-surface p-1.5 flex flex-col gap-2 rounded-lg max-w-[100dvw-3rem] w-full shadow-md shadow-background': !unstyledMenu,
+                            'bg-surface p-1.5 flex flex-col gap-2 rounded-lg max-w-[100dvw-3rem] w-full shadow-elevation-4': !unstyledMenu,
                         },
                         menuWidth ? menuWidth : unstyledMenu ? '' : 'sm:w-96'
                     ]"

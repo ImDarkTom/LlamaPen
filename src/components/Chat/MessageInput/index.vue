@@ -172,12 +172,17 @@ function onInput(e: Event) {
 <template>
     <div class="w-full flex justify-center">
         <div
-            class="w-[calc(100%-1rem)] lg:w-3xl mx-4 mb-2 p-2 shadow-sm
-                box-border flex flex-col items-center max-h-192 relative bg-background-light rounded-xl">
+            class="w-[calc(100%-1rem)] lg:w-3xl mx-4 mb-2 p-2
+                box-border flex flex-col items-center max-h-192 relative bg-background-light rounded-xl
+                transition-all duration-dynamic
+                shadow-elevation-1
+                hover:shadow-elevation-2
+                focus-within:shadow-elevation-3
+                hover:focus-within:shadow-elevation-3">
             <ChatMessageInputScrollToBottomButton />
             <div
                 ref="messageInputRef"
-                class="text-text    w-full box-border p-2 pb-8 text-base border-none outline-none resize-none max-h-48 overflow-y-auto wrap-break-word empty:before:content-[attr(data-placeholder)] empty:before:text-text-muted/60"
+                class="text-text w-full box-border p-2 pb-8 text-base border-none outline-none resize-none max-h-48 overflow-y-auto wrap-break-word empty:before:content-[attr(data-placeholder)] empty:before:text-text-muted/60"
                 contenteditable="true"
                 :data-placeholder="'Enter a message...'"
                 @input="onInput"

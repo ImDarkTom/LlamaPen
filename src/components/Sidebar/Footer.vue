@@ -10,7 +10,7 @@ const buttonClasses = 'w-full border-none p-1.5 m-0 box-border rounded-lg h-8 bg
 </script>
 
 <template>
-    <div class="flex flex-col max-w-full gap-2 pt-2">
+    <div class="flex flex-col max-w-full gap-2 pt-2 px-2">
         <SidebarFooterStatusBanner v-if="!config.cloud.enabled" />
         <SidebarRouterLink v-else-if="config.cloud.enabled" to="/account">
             <div class="flex w-full h-16 bg-background-light ring-1 ring-border-muted rounded-xl p-2 hover:ring-primary transition-all duration-dynamic">

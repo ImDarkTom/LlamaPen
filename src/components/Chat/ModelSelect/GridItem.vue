@@ -62,6 +62,7 @@ const favoriteModel = () => {
 
 const selectActions: MenuEntry[] = [
 	{
+		type: 'text',
 		text: () => isFavorited() ? 'Unfavorite' : 'Favorite',
 		icon: {
 			type: 'factory',
@@ -70,11 +71,13 @@ const selectActions: MenuEntry[] = [
 		onClick: favoriteModel
 	},
 	{
+		type: 'text',
 		text: 'Rename Model',
 		icon: BiPencil,
 		onClick: props.renameModel
 	},
 	{
+		type: 'text',
 		text: 'Manage Model',
 		icon: BiDotsHorizontalRounded,
 		onClick: () => router.push(`/models/${props.model.info.id}`)

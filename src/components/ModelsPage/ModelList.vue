@@ -34,12 +34,14 @@ const isLoadedInMemory = (modelName: string) => rawModels.value.some(item => ite
 
 const modelActions: MenuEntry<{ modelData: Model, displayName: string }>[] = [
     {
+        type: 'text',
         text: 'Open in Ollama Library',
         icon: BiLinkExternal,
         onClick: ({ modelData }) => window.open(`https://ollama.com/library/${modelData.id}`, '_blank'),
         condition: isOllama.value
     },
     {
+        type: 'text',
         text: ({ modelData }) => isHidden(modelData.id) ? 'Unhide model' : 'Hide model',
         onClick: ({ modelData }) => setModelHidden(modelData.id, isHidden(modelData.id)),
         icon: {
@@ -48,6 +50,7 @@ const modelActions: MenuEntry<{ modelData: Model, displayName: string }>[] = [
         },
     },
     {
+        type: 'text',
         text: ({ modelData }) => isLoadedInMemory(modelData.id) ? 'Unload from memory' : 'Load into memory',
         onClick: ({ modelData }) => toggleModelLoaded(modelData.id),
         icon: {
@@ -57,17 +60,20 @@ const modelActions: MenuEntry<{ modelData: Model, displayName: string }>[] = [
         condition: isOllama.value
     },
     {
+        type: 'text',
         text: 'Rename',
         icon: BiPencil,
         onClick: ({ modelData, displayName }) => renameModel(modelData, displayName),
     },
     {
+        type: 'text',
         text: 'Duplicate model',
         icon: BiCopy,
         onClick: ({ modelData }) => copyModel(modelData.id),
         condition: isOllama.value
     },
     {
+        type: 'text',
         text: 'Delete model',
         icon: BiTrash,
         onClick: ({ modelData }) => deleteModel(modelData.id),
@@ -165,11 +171,13 @@ const queriedModels = computed(() => props.modelsList.filter((m) => {
 
 const batchActions: MenuEntry[] = [
     {
+        type: 'text',
         text: 'Hide all',
         icon: BiHide,
         onClick: hideAll
     },
     {
+        type: 'text',
         text: 'Show all',
         icon: BiShow,
         onClick: showAll,

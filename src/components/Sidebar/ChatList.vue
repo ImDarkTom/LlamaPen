@@ -8,7 +8,7 @@ const { pinnedChats, hasPinnedChats, unpinnedChatsByRecent } = storeToRefs(chats
 </script>
 
 <template>
-	<div class="grow overflow-y-auto">
+	<div class="grow overflow-y-auto px-2 [scrollbar-width:thin]">
 		<UITextDivider
 			v-if="hasPinnedChats"
 			text="Pinned" />
@@ -23,7 +23,7 @@ const { pinnedChats, hasPinnedChats, unpinnedChatsByRecent } = storeToRefs(chats
 		<UITextDivider 
 			text="Chats" />
 
-		<div class="grow" role="list" aria-labelledby="unpinnedChatsSection">
+		<div class="grow flex flex-col gap-px" role="list" aria-labelledby="unpinnedChatsSection">
 			<h3 id="unpinnedChatsSection" class="sr-only">Unpinned Chats</h3>
 			<SidebarEntry 
 				v-for="chat of unpinnedChatsByRecent" 
