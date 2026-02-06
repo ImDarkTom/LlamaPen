@@ -184,7 +184,7 @@ function onInput(e: Event) {
                 ref="messageInputRef"
                 class="text-text w-full box-border p-2 pb-8 text-base border-none outline-none resize-none max-h-48 overflow-y-auto wrap-break-word empty:before:content-[attr(data-placeholder)] empty:before:text-text-muted/60"
                 contenteditable="true"
-                :data-placeholder="'Enter a message...'"
+                :data-placeholder="messagesStore.openedChatId === null ? 'Enter a message...' : 'Reply...'"
                 @input="onInput"
                 @keydown="inputKeyDown" />
 
