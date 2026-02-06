@@ -172,7 +172,7 @@ const modelName = computed(() => {
 });
 
 const menuWidth = computed(() => config.ui.modelList.useGridView ? 'sm:w-xl': 'sm:w-96');
-
+const useGridView = computed(() => config.ui.modelList.useGridView);
 </script>
 
 <template>
@@ -200,7 +200,7 @@ const menuWidth = computed(() => config.ui.modelList.useGridView ? 'sm:w-xl': 's
         <template #menu>
             <div class="flex flex-row gap-2 items-center justify-center" role="listbox">
                 <!-- Search bar -->
-                <div class="flex flex-row w-full rounded-lg border-2 overflow-hidden border-border focus-within:border-highlight hover:bg-surface-light">
+                <div class="flex flex-row w-full rounded-lg overflow-hidden ring-[0.5px] ring-border focus-within:ring-highlight shadow-elevation-1 bg-surface-light">
                     <input 
                         class="w-full h-6 box-content p-3 outline-0"
                         :class="{ 'cursor-not-allowed': !isConnected }" 
@@ -225,8 +225,8 @@ const menuWidth = computed(() => config.ui.modelList.useGridView ? 'sm:w-xl': 's
                     </div>
                 </RouterLink>
                 <button
-                    @click="config.ui.modelList.useGridView = !config.ui.modelList.useGridView"
-                    :class="{ 'bg-border!': config.ui.modelList.useGridView }"
+                    @click="useGridView = !useGridView"
+                    :class="{ 'bg-border!': useGridView }"
                     class="relative p-3 text-background bg-primary hover:bg-highlight cursor-pointer transition-colors duration-dynamic rounded-lg">
                     <BiExpand />
                 </button>
@@ -234,7 +234,9 @@ const menuWidth = computed(() => config.ui.modelList.useGridView ? 'sm:w-xl': 's
 
             <ChatModelSelectFilterMenu />
 
-            <div :class="{ 'h-62!': filterMenuOpen }" class="h-80 overflow-y-auto [scrollbar-width:thin] ">
+            <div 
+                class="h-80 overflow-y-auto [scrollbar-width:thin]"
+                :class="{ 'h-62!': filterMenuOpen }">
                 <div v-if="isLoading" class="h-24 flex justify-center items-center">
                     <BiLoaderAlt class="animate-spin size-6" />
                 </div>
@@ -265,13 +267,16 @@ const menuWidth = computed(() => config.ui.modelList.useGridView ? 'sm:w-xl': 's
                     <span>No models matched filter.</span>
                 </div>
                 <template v-else-if="queriedModelList.filter((item) => !item.hidden).length > 0">
-                    <ul
-                        v-if="!config.ui.modelList.useGridView"
-                        class="*:not-last:mb-1"
-                        role="list" >
-                        <ChatModelSelectListItem 
+                    <component
+                        :is="useGridView ? 'div' : 'ul'"
+                        :class="useGridView
+                            ? ' grid grid-cols-2 sm:grid-cols-3 md:grid-cols-5 gap-2 m-2'
+                            : '*:not-last:mb-1'"
+                        :role="useGridView ? undefined : 'list'">
+                        <ChatModelSelectItem 
                             v-for="(model, index) in sortedItems" 
                             :key="model.info.id" 
+                            :layout="useGridView ? 'grid': 'row'"
                             :index
                             :model 
                             :isCurrentModel="model.info.id === selectedModelInfo.data?.info.id" 
@@ -279,19 +284,7 @@ const menuWidth = computed(() => config.ui.modelList.useGridView ? 'sm:w-xl': 's
                             :renameModel="() => promptRenameModel(model)"
                             @mouseover="setFocused(index)"
                             ref="listItemsRef" />
-                    </ul>
-                    <div v-else class="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-5 gap-2 m-2">
-                        <ChatModelSelectGridItem
-                            v-for="(model, index) in sortedItems" 
-                            :key="model.info.id" 
-                            :index
-                            :model 
-                            :isCurrentModel="model.info.id === selectedModelInfo.data?.info.id" 
-                            :selected="index === focusedItemIndex"
-                            :renameModel="() => promptRenameModel(model)"
-                            @mouseover="setFocused(index)"
-                            ref="listItemsRef" />
-                    </div>
+                    </component>
                 </template>
                 <li v-else class="flex flex-col w-full p-4 justify-center items-center">
                     <span>No unhidden models found. </span>

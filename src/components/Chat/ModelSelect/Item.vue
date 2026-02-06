@@ -10,15 +10,18 @@ import { useProviderManager, type ModelInfo } from '@/composables/useProviderMan
 
 const userStore = useUserStore();
 const config = useConfigStore();
-const { getModelCapabilities }  = useProviderManager();
+const { getModelCapabilities } = useProviderManager();
 
-const props = defineProps<{
+const props = withDefaults(defineProps<{
 	model: ModelInfo,
 	index: number,
 	isCurrentModel: boolean,
 	selected: boolean,
-	renameModel: () => void
-}>();
+	renameModel: () => void,
+	layout?: 'row' | 'grid',
+}>(), {
+	layout: 'row',
+});
 
 const { setModel: setModelInfo } = useModelSelect();
 
@@ -86,7 +89,94 @@ const selectActions: MenuEntry[] = [
 </script>
 
 <template>
-	<li class="relative group flex flex-col gap-2 ring-1 ring-border-muted ring-inset cursor-pointer p-2 hover:bg-surface-light transition-colors duration-dynamic rounded-lg overflow-x-visible"
+	<!-- Row Layout -->
+	<li 
+		v-if="layout === 'row'" 
+		class="relative group flex flex-row gap-3 ring-1 ring-border-muted ring-inset cursor-pointer p-3 hover:bg-surface-light transition-colors duration-dynamic rounded-lg overflow-x-hidden"
+		:class="{
+			'bg-surface-light': selected && !isCurrentModel,
+			'bg-surface-light ring-highlight!': isCurrentModel,
+			'opacity-50': providerMetadata?.provider === 'lpcloud' 
+				&& ((providerMetadata.data.premium && !userStore.isPremium) || (config.cloud.enabled && !userStore.isSignedIn)),
+		}" @click="setModel($event, model.info)" ref="listItemRef" :aria-selected="selected">
+
+		<IconModel :name="model.info.id" class="size-10 p-1" />
+
+		<div class="flex flex-col">
+			<div class="flex flex-row items-center">
+				<span 
+					class="text-md font-semibold text-ellipsis whitespace-nowrap overflow-hidden text-text"
+					:title="model.info.id"
+				>
+					{{ model.displayName}}
+				</span>
+				<div class="flex flex-row gap-2 ml-2 shrink-0 min-w-fit">
+					<div 
+						v-if="isFavorited()"
+						class="bg-red-400/25 rounded-sm ring-1 ring-red-400 p-0.5"
+						title="Favorited model">
+						<BiHeart class="text-red-400 size-4" />
+					</div>
+					<template v-if="model.info.providerMetadata?.provider === 'lpcloud'">
+						<div 
+							v-if="model.info.providerMetadata.data.premium"
+							class="bg-yellow-400/25 rounded-sm ring-1 ring-yellow-400 p-0.5"
+							title="Premium model - requires LlamaPen Cloud Premium">
+							<BiStar class="text-yellow-400 size-4" />
+						</div>
+						<div 
+							v-if="model.info.providerMetadata.data.tags?.includes('closedSource')"
+							class="bg-orange-400/25 rounded-sm ring-1 ring-orange-400 p-0.5"
+							title="Proprietary model - closed-source model that is not open-source.">
+							<BiSolidBox class="text-orange-400 size-4" />
+
+						</div>
+					</template>
+					<!-- Capability tags -->
+					<div 
+						v-if="modelCapabilities.supportsVision"
+						class="bg-green-400/25 rounded-sm ring-1 ring-green-400 p-0.5"
+						title="Vision - can process images">
+						<BiShow class="text-green-400 size-4" />
+					</div>
+					<div 
+						v-if="modelCapabilities.supportsReasoning"
+						class="bg-violet-400/25 rounded-sm ring-1 ring-violet-400 p-0.5 flex flex-row"
+						:title="providerMetadata?.provider === 'lpcloud' && providerMetadata.data.tags?.includes('alwaysReasons') 
+							? 'Locked reasoning - always uses reasoning capabilities' 
+							: 'Thinking - toggleable enhanced reasoning capabilities'">
+						<BiBrain class="text-violet-400 size-4" />
+						<BiLock
+							v-if="providerMetadata?.provider === 'lpcloud' && providerMetadata?.data.tags?.includes('alwaysReasons')"
+							class="text-violet-400 size-4" />
+					</div>
+					<div 
+						v-if="modelCapabilities.supportsFunctionCalling"
+						class="bg-blue-400/25 rounded-sm ring-1 ring-blue-400 p-0.5"
+						title="Tools - can use external tools">
+						<BiWrench class="text-blue-400 size-4" />
+					</div>
+				</div>
+			</div>
+			<span class="text-sm text-text-muted">{{ model.info.subtitle }}</span>
+			<div class="absolute hidden items-center justify-center right-0 top-0 h-full w-16 bg-linear-to-r from-transparent to-surface-light group-hover:flex"
+				:class="{ 
+					'flex!': selected,
+					'to-border!': isCurrentModel,
+				}">
+				<FloatingActionMenu :actions="selectActions">
+					<div
+						ref="actionMenuButton"
+						class="p-1 ring-2 ring-text-muted hover:ring-text hover:text-text rounded-md">
+						<BiDotsVerticalRounded class="size-8" />
+					</div>
+				</FloatingActionMenu>
+			</div>
+		</div>
+	</li>
+	<li 
+		v-else
+		class="relative group flex flex-col gap-2 ring-1 ring-border-muted ring-inset cursor-pointer p-2 hover:bg-surface-light transition-colors duration-dynamic rounded-lg overflow-x-visible"
 		:class="{
 			'bg-surface-light': selected && !isCurrentModel,
 			'bg-surface-light ring-highlight!': isCurrentModel,
