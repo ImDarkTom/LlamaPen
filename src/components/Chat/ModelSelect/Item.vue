@@ -100,7 +100,7 @@ const selectActions: MenuEntry[] = [
 				&& ((providerMetadata.data.premium && !cloudUserStore.isPremium) || (config.cloud.enabled && !cloudUserStore.isSignedIn)),
 		}" @click="setModel($event, model.info)" ref="listItemRef" :aria-selected="selected">
 
-		<IconModel :name="model.info.id" class="size-10 p-1" />
+		<IconModel :name="model.info.id" class="size-10 min-w-10 p-1" />
 
 		<div class="flex flex-col">
 			<div class="flex flex-row items-center">
