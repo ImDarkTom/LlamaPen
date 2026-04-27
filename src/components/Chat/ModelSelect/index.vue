@@ -4,7 +4,7 @@ import { VscDebugDisconnect } from 'vue-icons-plus/vsc';
 import logger from '@/lib/logger';
 import { TbListDetails } from 'vue-icons-plus/tb';
 import isOnMobile from '@/utils/core/isOnMobile';
-import { BiExpand, BiFilterAlt, BiLoaderAlt, BiRefresh } from 'vue-icons-plus/bi';
+import { BiExpand, BiFilterAlt, BiLoaderAlt, BiRefresh, BiSearch } from 'vue-icons-plus/bi';
 import { storeToRefs } from 'pinia';
 import { useModelSelect } from '@/stores/useModelSelect';
 import { emitter } from '@/lib/mitt';
@@ -198,15 +198,19 @@ const useGridView = computed(() => config.ui.modelList.useGridView);
             </span>
         </template>
         <template #menu>
-            <div class="flex flex-row gap-2 items-center justify-center" role="listbox">
+            <div 
+                class="flex flex-row gap-2 items-center justify-center" 
+                role="listbox">
                 <!-- Search bar -->
-                <div class="flex flex-row w-full rounded-lg overflow-hidden ring-[0.5px] ring-border focus-within:ring-highlight shadow-elevation-1 bg-surface-light">
+                <div 
+                    class="flex flex-row w-full h-12 rounded-lg overflow-hidden ring-inset ring-[0.5px] ring-border focus-within:ring-highlight shadow-elevation-1 bg-surface-light">
+                    <BiSearch class="h-full ml-3" />
                     <input 
-                        class="w-full h-6 box-content p-3 outline-0"
+                        class="px-2 w-full h-full box-content outline-0"
                         :class="{ 'cursor-not-allowed': !isConnected }" 
                         ref="searchBarRef" 
                         type="search"
-                        placeholder="Search a model..."
+                        placeholder="Search for a model..."
                         :disabled="!isConnected"
                         v-model="searchQuery" 
                         @keydown="searchKeyDown" 
@@ -215,19 +219,20 @@ const useGridView = computed(() => config.ui.modelList.useGridView);
                     <button
                         @click="filterMenuOpen = !filterMenuOpen"
                         :class="{ 'bg-border-muted!': filterMenuOpen }"
-                        class="p-3 hover:text-primary cursor-pointer transition-colors duration-dynamic">
-                        <BiFilterAlt />
+                        class="hover:text-primary cursor-pointer transition-colors duration-dynamic">
+                        <BiFilterAlt class="size-5 mx-2.5" />
                     </button>
                 </div>
+
                 <RouterLink to="/models">
-                    <div class="p-3 box-content text-background bg-primary hover:bg-highlight cursor-pointer transition-colors duration-dynamic rounded-lg">
+                    <div class="size-12 min-w-10 flex items-center justify-center box-content text-background bg-primary hover:bg-highlight cursor-pointer transition-colors duration-dynamic rounded-lg">
                         <TbListDetails />
                     </div>
                 </RouterLink>
                 <button
                     @click="config.ui.modelList.useGridView = !config.ui.modelList.useGridView"
                     :class="{ 'bg-border!': useGridView }"
-                    class="relative p-3 text-background bg-primary hover:bg-highlight cursor-pointer transition-colors duration-dynamic rounded-lg">
+                    class="size-12 min-w-12 flex items-center justify-center relative text-background bg-primary hover:bg-highlight cursor-pointer transition-colors duration-dynamic rounded-lg">
                     <BiExpand />
                 </button>
             </div>
