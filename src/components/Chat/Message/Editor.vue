@@ -42,7 +42,7 @@ defineExpose({
 
 <template>
     <form 
-        class="bg-surface rounded-xl shadow-sm shadow-black"
+        class="bg-base-700 rounded-xl shadow-sm shadow-black"
         @submit.prevent="submit" > 
         <textarea 
             class="border-none outline-none p-4 resize-y w-full" 
@@ -52,19 +52,19 @@ defineExpose({
             @keyup="onKeyUp"></textarea>
         <div class="min-w-full flex flex-row gap-2 justify-end p-2 font-medium">
             <button
-                class="bg-highlight text-background-dark p-2 rounded-lg cursor-pointer"
+                class="bg-base-300 text-base-950 p-2 rounded-lg cursor-pointer"
                 @click="emit('onCancelEdit')">
                 Cancel
             </button>
             <button 
                 v-if="message.type === 'model'"
-                class="bg-highlight text-background-dark p-2 rounded-lg cursor-pointer"
+                class="bg-base-300 text-base-950 p-2 rounded-lg cursor-pointer"
                 @click="finishAndContinue">
                 Continue
             </button>
             <button
                 type="submit"
-                class="bg-primary text-background-dark p-2 rounded-lg cursor-pointer">
+                class="bg-primary text-base-950 p-2 rounded-lg cursor-pointer">
                 {{ message.type === 'user' ? 'Send' : 'Finish' }}
             </button>
 

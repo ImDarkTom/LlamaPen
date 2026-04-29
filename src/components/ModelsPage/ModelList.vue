@@ -191,7 +191,7 @@ const batchActions: MenuEntry[] = [
 
 <template>
     <div
-        class="h-4/12 md:h-full w-full md:w-2/6 bg-background-light rounded-lg md:rounded-r-none md:border-r border-border flex flex-col gap-2 p-2 relative">
+        class="h-4/12 md:h-full w-full md:w-2/6 bg-base-800 rounded-lg md:rounded-r-none md:border-r border-base-400 flex flex-col gap-2 p-2 relative">
         <div class="flex flex-col gap-2 overflow-y-auto md:pr-3">
             <template v-if="!config.cloud.enabled">
                 <UITextDivider text="Download" />
@@ -199,8 +199,8 @@ const batchActions: MenuEntry[] = [
                     href="https://ollama.com/search" />
                 <RouterLink to="/models/downloads" v-slot="{ isActive }">
                     <button
-                        class="w-full text-text-muted enabled:hover:text-text bg-surface enabled:hover:bg-surface-light py-6 rounded-lg enabled:cursor-pointer select-none flex flex-row justify-center items-center gap-2 disabled:opacity-75"
-                        :class="{ 'bg-surface-light ring-2 ring-border ring-inset': isActive }"
+                        class="w-full text-base-200 enabled:hover:text-base-100 bg-base-700 enabled:hover:bg-base-600 py-6 rounded-lg enabled:cursor-pointer select-none flex flex-row justify-center items-center gap-2 disabled:opacity-75"
+                        :class="{ 'bg-base-600 ring-2 ring-base-400 ring-inset': isActive }"
                         :disabled="!isConnected">
                         <BiDownload />
                         Download Manager
@@ -212,7 +212,7 @@ const batchActions: MenuEntry[] = [
 
             <div class="flex flex-row gap-2" :class="{ 'pointer-events-none': !isConnected }">
                 <input type="text" v-model="searchQuery" placeholder="Search..." :disabled="!isConnected"
-                    class="bg-background p-2 rounded-md outline-none focus:ring-1 ring-highlight ring-inset w-full">
+                    class="bg-base-900 p-2 rounded-md outline-none focus:ring-1 ring-base-300 ring-inset w-full">
                 <FloatingActionMenu :actions="batchActions">
                     <button class="btn-ghost">
                         <BiDotsVerticalRounded />
@@ -227,9 +227,9 @@ const batchActions: MenuEntry[] = [
                 No models found
             </div>
             <RouterLink v-for="{ info, loadedInMemory, hidden, displayName } in queriedModels"
-                exactActiveClass="*:bg-surface-light *:ring-1 *:ring-highlight *:ring-inset *:text-text"
+                exactActiveClass="*:bg-base-600 *:ring-1 *:ring-base-300 *:ring-inset *:text-base-100"
                 :to="`/models/${info.id}`">
-                <div class="flex flex-row items-center gap-2 p-2 rounded-md hover:bg-surface transition-colors duration-dynamic"
+                <div class="flex flex-row items-center gap-2 p-2 rounded-md hover:bg-base-700 transition-colors duration-dynamic"
                     :class="{ 'opacity-75': hidden }">
                     <IconModel :name="info.id ?? 'Unknown'" class="size-6" />
                     {{ displayName }}
@@ -244,7 +244,7 @@ const batchActions: MenuEntry[] = [
                     <FloatingActionMenu :passArgs="{ modelData: info, displayName }" :actions="modelActions"
                         anchored="left">
                         <button @click.prevent
-                            class="hover:bg-surface-light group-[.active]:bg-surface-light group-[.active]:text-text p-1.5 rounded-sm cursor-pointer">
+                            class="hover:bg-base-600 group-[.active]:bg-base-600 group-[.active]:text-base-100 p-1.5 rounded-sm cursor-pointer">
                             <BiDotsVerticalRounded />
                         </button>
                     </FloatingActionMenu>

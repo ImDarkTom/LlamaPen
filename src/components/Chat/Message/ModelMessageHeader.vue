@@ -10,7 +10,7 @@ defineProps<{
 <template>
     <div class="group/msg-header flex flex-row items-center gap-2 mb-2">
         <IconModel 
-            class="size-10 p-2 bg-border-muted rounded-full ring-1 ring-border" 
+            class="size-10 p-2 bg-base-500 rounded-full ring-1 ring-base-400" 
             :name="message.model"
             :ignore-styling="true" />
 

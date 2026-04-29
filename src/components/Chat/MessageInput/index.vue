@@ -173,7 +173,7 @@ function onInput(e: Event) {
     <div class="w-full flex justify-center">
         <div
             class="w-[calc(100%-1rem)] lg:w-3xl mx-4 mb-2 p-2
-                box-border flex flex-col items-center max-h-192 relative bg-background-light rounded-xl
+                box-border flex flex-col items-center max-h-192 relative bg-base-800 rounded-xl
                 transition-all duration-dynamic
                 shadow-elevation-1
                 hover:shadow-elevation-2
@@ -182,7 +182,7 @@ function onInput(e: Event) {
             <ChatMessageInputScrollToBottomButton />
             <div
                 ref="messageInputRef"
-                class="text-text w-full box-border p-2 pb-8 text-base border-none outline-none resize-none max-h-48 overflow-y-auto wrap-break-word empty:before:content-[attr(data-placeholder)] empty:before:text-text-muted/60"
+                class="text-base-100 w-full box-border p-2 pb-8 text-base border-none outline-none resize-none max-h-48 overflow-y-auto wrap-break-word empty:before:content-[attr(data-placeholder)] empty:before:text-base-200/60"
                 contenteditable="true"
                 :data-placeholder="messagesStore.openedChatId === null ? 'Enter a message...' : 'Reply...'"
                 @input="onInput"
@@ -195,7 +195,7 @@ function onInput(e: Event) {
                         class="ring-1 ring-primary rounded-lg h-full cursor-pointer hover:brightness-115 transition-color duration-dynamic"
                         @click="openInLightbox(file)" alt="User attached image" />
                     <BiSolidXCircle
-                        class="absolute top-0 right-0 drop-shadow-sm drop-shadow-background hover:text-red-300 cursor-pointer transition-colors duration-dynamic"
+                        class="absolute top-0 right-0 drop-shadow-sm drop-shadow-base-900 hover:text-red-300 cursor-pointer transition-colors duration-dynamic"
                         @click="removeFileFromUploadList(file)" />
                 </div>
             </div>

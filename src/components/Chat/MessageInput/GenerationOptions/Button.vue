@@ -32,7 +32,7 @@ const isOpened = ref(false);
             <div>
                 <div class="flex flex-row items-center justify-between">
                     <span class="font-semibold text-lg">Generation Parameters</span>
-                    <button class="bg-surface-light p-2 rounded-md cursor-pointer hover:bg-primary hover:text-surface-light transition-colors duration-dynamic" @click="reset">Reset</button>
+                    <button class="bg-base-600 p-2 rounded-md cursor-pointer hover:bg-primary hover:text-base-600 transition-colors duration-dynamic" @click="reset">Reset</button>
                 </div>
                 <div class="flex flex-row items-center gap-2 mb-2">
                     <span class="text-sm">Enabled</span>

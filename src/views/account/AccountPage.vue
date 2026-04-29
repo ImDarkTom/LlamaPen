@@ -130,9 +130,9 @@ const periodEnd = computed(() => {
 			</div>
 			<AccountPageSection flex-direction="row">
 				<img :src="cloudUserStore.userInfo.details.pictureUrl" alt="User avatar" 
-				class="size-28 rounded-full outline-2 outline-border-muted">
+				class="size-28 rounded-full outline-2 outline-base-500">
 				<div class="flex flex-col overflow-hidden gap-2">
-					<span class="text-text text-2xl font-semibold">{{ cloudUserStore.userInfo.details.name }}</span>
+					<span class="text-base-100 text-2xl font-semibold">{{ cloudUserStore.userInfo.details.name }}</span>
 					<span>{{ cloudUserStore.userInfo.details.email }}</span>
 					<span>{{ cloudUserStore.subName }} Tier</span>
 				</div>
@@ -149,7 +149,7 @@ const periodEnd = computed(() => {
 						<div class="grow"></div>
 						<span>Resets daily at 00:00 UTC</span>
 					</span>
-					<div class="mt-2 h-8 w-full bg-surface-light rounded-xl">
+					<div class="mt-2 h-8 w-full bg-base-600 rounded-xl">
 						<div 
 							class="h-full bg-primary rounded-xl"
 							:style="`width: ${quotaUsedPercentage}%;`"
@@ -158,44 +158,44 @@ const periodEnd = computed(() => {
 				</div>
 				<h3 class="text-2xl" id="plan">Plan</h3>
 				<div v-if="cloudUserStore.isPremium" class="flex flex-row gap-2">
-					<span class="border-2 border-border-muted rounded-lg p-2">
+					<span class="border-2 border-base-500 rounded-lg p-2">
 						Status: <span class="font-semibold capitalize">{{ cloudUserStore.userInfo.subscription.status }}</span>
 					</span>
 					<span 
 						v-if="cloudUserStore.userInfo.subscription.cancel_at_period_end" 
-						class="bg-warning/75 text-background-light p-2 rounded-lg border-2 border-warning flex flex-row gap-2 items-center"
+						class="bg-warning/75 text-base-800 p-2 rounded-lg border-2 border-warning flex flex-row gap-2 items-center"
 					>
 						Ending {{ periodEnd }} <BiTimeFive />
 					</span>
 					<span 
 						v-else
-						class="bg-success/75 text-background-light p-2 rounded-lg border-2 border-success flex flex-row gap-2 items-center"
+						class="bg-success/75 text-base-800 p-2 rounded-lg border-2 border-success flex flex-row gap-2 items-center"
 					>
 						Renewing on {{ periodEnd }} <BiTimeFive />
 					</span>
 				</div>
 				<div class="w-full flex justify-center">
-					<button class="group w-fit flex flex-row text-surface-light hover:text-surface font-semibold bg-linear-to-br from-text to-primary hover:from-secondary hover:scale-105 hover:shadow-primary/50 shadow-transparent shadow-lg shadow- p-1 transition-all duration-dynamic rounded-lg cursor-pointer" @click="subscriptionButtonClick">
+					<button class="group w-fit flex flex-row text-base-600 hover:text-base-700 font-semibold bg-linear-to-br from-base-100 to-primary hover:from-secondary hover:scale-105 hover:shadow-primary/50 shadow-transparent shadow-lg shadow- p-1 transition-all duration-dynamic rounded-lg cursor-pointer" @click="subscriptionButtonClick">
 						<div class="p-3 flex flex-row gap-2 items-center">
 							{{ subButtonText }}
 						</div>
-						<div v-if="showPriceTag" class="group-hover:text-secondary bg-surface-light group-hover:bg-surface transition-all duration-dynamic text-text-muted flex items-center justify-center p-3 rounded-md">
+						<div v-if="showPriceTag" class="group-hover:text-secondary bg-base-600 group-hover:bg-base-700 transition-all duration-dynamic text-base-200 flex items-center justify-center p-3 rounded-md">
 							€8/mo
 						</div>
 					</button>
 				</div>
 				<span class="text-sm flex flex-row gap-1 items-center justify-center"><BiLogoStripe class="size-4" />Payments handled securely by Stripe</span>
 				<div v-if="!cloudUserStore.isPremium" class="flex flex-col md:flex-row gap-4 md:gap-2">
-					<div class="w-full md:w-1/2 border-2 border-border-muted rounded-lg">
-						<h4 class="text-xl font-semibold bg-border-muted text-center select-none p-2">Free (current plan)</h4>
+					<div class="w-full md:w-1/2 border-2 border-base-500 rounded-lg">
+						<h4 class="text-xl font-semibold bg-base-500 text-center select-none p-2">Free (current plan)</h4>
 						<ul class="p-4 flex flex-col gap-1 *:flex *:flex-row *:gap-2 *:items-center">
 							<li><BiSolidCheckSquare class="size-5 shrink-0" />20 message tokens/day</li>
 							<li><BiSolidCheckSquare class="size-5 shrink-0"/>Access to free AI models</li>
 							<li><BiSolidCheckSquare class="size-5 shrink-0"/>Standard account support</li>
 						</ul>
 					</div>
-					<div class="w-full md:w-1/2 border-2 border-primary rounded-lg bg-surface">
-						<h4 class="text-xl font-semibold text-center bg-primary text-background select-none p-2">Premium ✨</h4>
+					<div class="w-full md:w-1/2 border-2 border-primary rounded-lg bg-base-700">
+						<h4 class="text-xl font-semibold text-center bg-primary text-base-900 select-none p-2">Premium ✨</h4>
 						<ul class="p-4 flex flex-col gap-1 *:flex *:flex-row *:items-start *:gap-2">
 							<li><BiSolidCheckSquare class="size-5 shrink-0 text-secondary" /><span><strong>100</strong> message tokens/day</span></li>
 							<li><BiSolidCheckSquare class="size-5 shrink-0 text-secondary" /><span>Access to free + <strong>premium</strong> AI models</span></li>

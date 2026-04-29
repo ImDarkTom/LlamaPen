@@ -30,11 +30,11 @@ function handleEscape(e: KeyboardEvent) {
         <UIPageHeader text="Keyboard Shortcuts" />
 
         <div class="flex flex-col h-full box-border">
-            <h2 class="text-3xl font-semibold pb-2 text-text">Interface</h2>
+            <h2 class="text-3xl font-semibold pb-2 text-base-100">Interface</h2>
             <ShortcutsPageDisplay label="Toggle sidebar" shortcut="ctrl shift s" />
             <ShortcutsPageDisplay label="Open model selector" shortcut="ctrl shift m" />
             <ShortcutsPageDisplay label="Search chats" shortcut="ctrl k" />
-            <h2 class="text-3xl font-semibold pb-2 text-text">Chat</h2>
+            <h2 class="text-3xl font-semibold pb-2 text-base-100">Chat</h2>
             <ShortcutsPageDisplay label="New chat" shortcut="ctrl shift o" />
             <ShortcutsPageDisplay label="Focus chat input" shortcut="shift esc" />
             <ShortcutsPageDisplay label="Delete chat" shortcut="ctrl shift ⌫" />

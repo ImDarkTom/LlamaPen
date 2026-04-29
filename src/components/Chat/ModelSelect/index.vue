@@ -178,7 +178,7 @@ const useGridView = computed(() => config.ui.modelList.useGridView);
 <template>
     <FloatingMenu v-model:is-opened="isOpened" @toggled="onToggled" preffered-position="top" :menu-width="menuWidth" >
         <template #button>
-            <span v-if="isLoading" class="flex flex-row gap-2 items-center text-text-muted/75">
+            <span v-if="isLoading" class="flex flex-row gap-2 items-center text-base-200/75">
                 <BiLoaderAlt class="animate-spin size-6 inline" />
                 Loading models...
             </span>
@@ -192,7 +192,7 @@ const useGridView = computed(() => config.ui.modelList.useGridView);
                 No model selected
             </span>
 
-            <span v-else class="flex flex-row gap-2 items-center text-text-muted/75">
+            <span v-else class="flex flex-row gap-2 items-center text-base-200/75">
                 <VscDebugDisconnect />
                 Disconnected
             </span>
@@ -203,7 +203,7 @@ const useGridView = computed(() => config.ui.modelList.useGridView);
                 role="listbox">
                 <!-- Search bar -->
                 <div 
-                    class="flex flex-row w-full h-12 rounded-lg overflow-hidden ring-inset ring-[0.5px] ring-border focus-within:ring-highlight shadow-elevation-1 bg-surface-light">
+                    class="flex flex-row w-full h-12 rounded-lg overflow-hidden ring-inset ring-[0.5px] ring-base-400 focus-within:ring-base-300 shadow-elevation-1 bg-base-600">
                     <BiSearch class="h-full ml-3" />
                     <input 
                         class="px-2 w-full h-full box-content outline-0"
@@ -218,21 +218,21 @@ const useGridView = computed(() => config.ui.modelList.useGridView);
                         aria-controls="model-list" >
                     <button
                         @click="filterMenuOpen = !filterMenuOpen"
-                        :class="{ 'bg-border-muted!': filterMenuOpen }"
+                        :class="{ 'bg-base-500!': filterMenuOpen }"
                         class="hover:text-primary cursor-pointer transition-colors duration-dynamic">
                         <BiFilterAlt class="size-5 mx-2.5" />
                     </button>
                 </div>
 
                 <RouterLink to="/models">
-                    <div class="size-12 min-w-10 flex items-center justify-center box-content text-background bg-primary hover:bg-highlight cursor-pointer transition-colors duration-dynamic rounded-lg">
+                    <div class="size-12 min-w-10 flex items-center justify-center box-content text-base-900 bg-primary hover:bg-base-300 cursor-pointer transition-colors duration-dynamic rounded-lg">
                         <TbListDetails />
                     </div>
                 </RouterLink>
                 <button
                     @click="config.ui.modelList.useGridView = !config.ui.modelList.useGridView"
-                    :class="{ 'bg-border!': useGridView }"
-                    class="size-12 min-w-12 flex items-center justify-center relative text-background bg-primary hover:bg-highlight cursor-pointer transition-colors duration-dynamic rounded-lg">
+                    :class="{ 'bg-base-400!': useGridView }"
+                    class="size-12 min-w-12 flex items-center justify-center relative text-base-900 bg-primary hover:bg-base-300 cursor-pointer transition-colors duration-dynamic rounded-lg">
                     <BiExpand />
                 </button>
             </div>

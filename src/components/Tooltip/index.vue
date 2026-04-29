@@ -64,7 +64,7 @@ onUnmounted(() => {
                 class="absolute z-45"
                 :style="menuPosition">
                 <div
-                    class="bg-surface-light ring-border ring-1 max-w-prose w-max p-2 rounded-lg shadow-md"
+                    class="bg-base-600 ring-base-400 ring-1 max-w-prose w-max p-2 rounded-lg shadow-md"
                     :class="{ 'p-1.5!': size === 'small' }">
                     <span
                         data-testid="tooltip-text"

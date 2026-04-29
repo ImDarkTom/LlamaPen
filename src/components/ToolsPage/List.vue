@@ -106,9 +106,9 @@ function renameItem(toolName: string) {
 </script>
 
 <template>
-    <div class="h-4/12 md:h-full w-full md:w-1/3 bg-background-light rounded-lg flex flex-col gap-2 p-2 relative overflow-y-auto md:border-r border-border md:rounded-r-none">
-        <div class="flex flex-row gap-2 justify-between *:text-primary *:hover:text-text">
-            <button class="bg-surface p-2 rounded-md cursor-pointer grow shrink" @click="newTool">
+    <div class="h-4/12 md:h-full w-full md:w-1/3 bg-base-800 rounded-lg flex flex-col gap-2 p-2 relative overflow-y-auto md:border-r border-base-400 md:rounded-r-none">
+        <div class="flex flex-row gap-2 justify-between *:text-primary *:hover:text-base-100">
+            <button class="bg-base-700 p-2 rounded-md cursor-pointer grow shrink" @click="newTool">
                 <BiPlus class="inline mr-1" />
                 <span class="align-middle">New Tool</span>
             </button>
@@ -122,9 +122,9 @@ function renameItem(toolName: string) {
         <RouterLink 
             v-for="toolName in Object.keys(toolsStore.tools)"
             :to="`/tools/${toolName}`"
-            exactActiveClass="*:bg-surface *:ring-1 [&_span]:text-text">
+            exactActiveClass="*:bg-base-700 *:ring-1 [&_span]:text-base-100">
             <div
-                class="flex flex-row justify-between items-center hover:bg-surface ring-highlight ring-inset p-1.5 pl-2 pointer-coarse:py-4 rounded-md transition-colors duration-dynamic"
+                class="flex flex-row justify-between items-center hover:bg-base-700 ring-base-300 ring-inset p-1.5 pl-2 pointer-coarse:py-4 rounded-md transition-colors duration-dynamic"
                 :class="{ 'opacity-75': !toolsStore.toggled.includes(toolName) }">
                 <div class="flex flex-row gap-2">
                     <BiCheckCircle v-if="toolsStore.toggled.includes(toolName)" />
@@ -132,7 +132,7 @@ function renameItem(toolName: string) {
                     <span>{{ toolName }}</span>
                 </div>
                 <FloatingActionMenu :passArgs="toolName" :actions="itemActions" anchored="left">
-                    <button @click.prevent class="hover:bg-surface-light group-[.active]:bg-surface-light group-[.active]:text-text p-1.5 rounded-sm cursor-pointer">
+                    <button @click.prevent class="hover:bg-base-600 group-[.active]:bg-base-600 group-[.active]:text-base-100 p-1.5 rounded-sm cursor-pointer">
                         <BiDotsVerticalRounded />
                     </button>
                 </FloatingActionMenu>

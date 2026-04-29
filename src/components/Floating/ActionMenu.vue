@@ -38,13 +38,13 @@ const isOpened = ref(false);
             <slot />
         </template>
         <template #menu>
-            <ul class="min-w-36 p-1 mt-2 bg-surface rounded-lg shadow-elevation-4">
+            <ul class="min-w-36 p-1 mt-2 bg-base-700 rounded-lg shadow-elevation-4">
                 <template v-for="entry in actions">
                     <li
                         v-if="entry.type === 'text' && (entry.condition === undefined || entry.condition === true)"
-                        class="flex flex-row gap-2 items-center p-1.5 rounded-md cursor-pointer select-none hover:bg-surface-light transition-colors duration-dynamic" 
+                        class="flex flex-row gap-2 items-center p-1.5 rounded-md cursor-pointer select-none hover:bg-base-600 transition-colors duration-dynamic" 
                         :class="{ 
-                            'hover:text-text': !entry.category || entry.category === 'general',
+                            'hover:text-base-100': !entry.category || entry.category === 'general',
                             'hover:text-danger': entry.category === 'danger',
                         }"
                         @click="entry.onClick(passArgs!); isOpened = false;">
@@ -58,7 +58,7 @@ const isOpened = ref(false);
                     </li>
                     <div 
                         v-else-if="entry.type === 'divider' && (entry.condition === undefined || entry.condition === true)"
-                        class="w-[calc(100%-1.5rem)] h-px bg-border/75 my-1 mx-3"></div>
+                        class="w-[calc(100%-1.5rem)] h-px bg-base-400/75 my-1 mx-3"></div>
                 </template>
             </ul>
         </template>

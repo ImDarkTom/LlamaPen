@@ -102,9 +102,9 @@ function renderText(text: string) {
 <template>
     <div class="group/message m-2 mb-0 flex flex-col" ref="messageTextContainer">
         <div class="box-border p-4 flex flex-col" :class="{
-            'ml-auto rounded-2xl bg-background-light max-w-[70%] shadow-md shadow-background-dark/50': isUserMessage && !editing,
+            'ml-auto rounded-2xl bg-base-800 max-w-[70%] shadow-md shadow-base-950/50': isUserMessage && !editing,
             'w-full max-w-[calc(100dvw-1rem)] box-border p-2! pb-1! m-0!': isModelMessage || editing,
-            'bg-surface m-0! rounded-xl': props.message.type === 'tool'
+            'bg-base-700 m-0! rounded-xl': props.message.type === 'tool'
         }">
             <ChatMessageModelMessageHeader v-if="message.type === 'model'" :message :modelMessageDone="modelMessageNotGenerating" />
             <img 
@@ -139,7 +139,7 @@ function renderText(text: string) {
                     <article class="max-w-none prose prose-app! dark:prose-invert" v-html="renderText(message.content)"></article>
                     <div
                         v-if="messageState.generating"
-                        class="animate-breathe rounded-full bg-text inline-block"
+                        class="animate-breathe rounded-full bg-base-100 inline-block"
                         :class="{
                             'size-6': messageState.status === 'waiting',
                             'size-4': messageState.status === 'generating',
@@ -147,10 +147,10 @@ function renderText(text: string) {
                     <div v-else-if="message.status === 'inProgress'">
                         <!-- if state is marked as 'inProgress', but we don't have an associated messageState, generation got interrupted -->
                         <div>
-                            <div class="w-full h-px bg-text-muted/50 my-2"></div>
-                            <span class="text-text-muted/75 italic mr-2">Generation interrupted.</span>
+                            <div class="w-full h-px bg-base-200/50 my-2"></div>
+                            <span class="text-base-200/75 italic mr-2">Generation interrupted.</span>
                             <button 
-                                class="bg-background-light p-2 ring-1 ring-border rounded-md cursor-pointer outline-0 hover:outline-2 outline-highlight transition-all duration-dynamic"
+                                class="bg-base-800 p-2 ring-1 ring-base-400 rounded-md cursor-pointer outline-0 hover:outline-2 outline-base-300 transition-all duration-dynamic"
                                 @click="editMessage(message.id, message.content, message.type, true);">
                                 <BiRefresh class="inline mr-1" />
                                 <span>Continue</span>

@@ -15,7 +15,7 @@ const getTitleCase = (text: string) => {
             <span>{{ label }}</span>
             <div class="flex flex-row gap-2">
                 <kbd v-for="key in shortcut.split(' ')"
-                    class="bg-background-light p-1 rounded-lg ring-1 ring-border px-3 text-center">{{
+                    class="bg-base-800 p-1 rounded-lg ring-1 ring-base-400 px-3 text-center">{{
                         getTitleCase(key) }}</kbd>
             </div>
         </div>

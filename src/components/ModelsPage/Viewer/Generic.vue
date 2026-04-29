@@ -58,15 +58,15 @@ const modelCapabilites = computed<ModelCapabilities>(() =>
         <div class="text-2xl md:text-3xl mb-2 md:my-6 align-middle min-w-0 whitespace-normal">
             <IconModel :name="modelFromParams ?? 'Unknown'" class="size-8 md:size-14! inline mr-2" />
 
-            <span class="text-text font-bold mr-2">{{ modelName }}</span>
+            <span class="text-base-100 font-bold mr-2">{{ modelName }}</span>
             <br>
-            <span class="text-text-muted text-xl">{{ modelFromParams }}</span>
+            <span class="text-base-200 text-xl">{{ modelFromParams }}</span>
         </div>
 
         <ModelsPageCapabilitiesSkeleton v-if="selectedModel.state === 'loading'" />
         <div v-else role="list" class="flex flex-row gap-2">
             <div v-for="capability of Object.keys(modelCapabilites) as Array<keyof ModelCapabilities>" role="listitem"
-                class="flex flex-row bg-secondary text-background-light p-2 rounded-lg">
+                class="flex flex-row bg-secondary text-base-800 p-2 rounded-lg">
                 <component :is="capabilityIcons[capability] ?? Unknown" class="size-6 p-1" />
                 <span class="capitalize">{{ capability }}</span>
             </div>

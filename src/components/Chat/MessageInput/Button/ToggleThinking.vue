@@ -49,7 +49,7 @@ function toggleCheck(e: Event) {
 <template>
     <ChatMessageInputButtonBase
         :class="{ 
-            'bg-primary ring-background! text-background!': modelValue,
+            'bg-primary ring-base-900! text-base-900!': modelValue,
             'opacity-50': selectedAlwaysReasons || isLoading,
             'hidden': (config.ui.messageInput.hideUnusedButtons && !selectedModelCanThink) && !isLoading
         }"

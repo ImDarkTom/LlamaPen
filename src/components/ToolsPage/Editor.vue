@@ -71,7 +71,7 @@ const timeoutValue = computed({
         Invalid tool name.
     </div>
     <div v-else class="overflow-auto flex flex-col md:pr-4">
-        <h1 class="text-text font-bold">{{ props.tool }}</h1>
+        <h1 class="text-base-100 font-bold">{{ props.tool }}</h1>
         <div v-if="selectedTool.isInternal"
             class="py-2">
             <template v-if="props.tool === 'web_search'">
@@ -108,11 +108,11 @@ const timeoutValue = computed({
                 label="Description" 
                 placeholder="How/when to use the tool (e.g. Search the internet for a query)" />
             <h2>Parameters</h2>
-            <div v-for="(param, index) in selectedTool.params" :key="index" class="flex flex-col bg-surface p-2 gap-2 rounded-lg">
+            <div v-for="(param, index) in selectedTool.params" :key="index" class="flex flex-col bg-base-700 p-2 gap-2 rounded-lg">
                 <div class="flex flex-row gap-2">
                     <ToolsPageInputText v-model="param.name" placeholder="Parameter name (e.g. page)" class="w-full font-medium" />
                     <button 
-                        class="bg-danger text-background-light p-2 cursor-pointer aspect-square rounded-md hover hover:saturate-200 transition-quick"
+                        class="bg-danger text-base-800 p-2 cursor-pointer aspect-square rounded-md hover hover:saturate-200 transition-quick"
                         @click="deleteParam(param.name)">
                         <BiTrash class="mx-auto" />
                     </button>

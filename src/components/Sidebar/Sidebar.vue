@@ -44,7 +44,7 @@ onUnmounted(() => {
     <!-- note: removing the wrapper breaks this -->
     <div class="flex">
         <aside 
-            class="flex flex-col fixed top-0 left-0 h-full w-72 z-29 bg-background-dark box-border py-2 transition-all duration-dynamic"
+            class="flex flex-col fixed top-0 left-0 h-full w-72 z-29 bg-base-950 box-border py-2 transition-all duration-dynamic"
             :class="{ 
                 '-translate-x-full': !useConfig.showSidebar, 
                 'translate-x-0': useConfig.showSidebar
@@ -55,8 +55,8 @@ onUnmounted(() => {
         </aside>
         <div class="absolute top-0 left-0 h-12 w-12 p-2 z-30">
             <div 
-                class="size-10 p-1.5 cursor-pointer rounded-lg text-text hover:bg-surface hover:shadow-md shadow-background-dark transition-all duration-dynamic"
-                :class="{ 'bg-background-light': !useConfig.showSidebar }"
+                class="size-10 p-1.5 cursor-pointer rounded-lg text-base-100 hover:bg-base-700 hover:shadow-md shadow-base-950 transition-all duration-dynamic"
+                :class="{ 'bg-base-800': !useConfig.showSidebar }"
                 @pointerdown="handlePointerDown" 
                 aria-label="Toggle Sidebar" >
                 <TbLayoutSidebarFilled class="size-full" />

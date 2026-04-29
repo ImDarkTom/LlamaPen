@@ -38,7 +38,7 @@ const thinkingOngoing = computed(() => {
 </script>
 
 <template>
-	<div v-if="thinkBlockText !== null" class="flex flex-col bg-surface *:p-4 rounded-xl mb-4">
+	<div v-if="thinkBlockText !== null" class="flex flex-col bg-base-700 *:p-4 rounded-xl mb-4">
 		<div 
 			class="flex flex-row items-center justify-between cursor-pointer" 
 			:class="{ 'pb-0!': opened }"
@@ -59,8 +59,8 @@ const thinkingOngoing = computed(() => {
 		</div>
 		<Transition name="expand-height">
 			<div v-if="opened" class="pt-0!">
-				<div class="w-full h-px bg-text-muted mt-4 mb-2"></div>
-				<div class="whitespace-pre-wrap text-text-muted italic">
+				<div class="w-full h-px bg-base-200 mt-4 mb-2"></div>
+				<div class="whitespace-pre-wrap text-base-200 italic">
 					{{ thinkBlockText }}
 				</div>
 			</div>

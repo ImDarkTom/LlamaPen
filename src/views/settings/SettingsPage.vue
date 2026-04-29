@@ -152,14 +152,14 @@ const selectedProvider = computed({
                 :tooltip="`The URL to connect to Ollama on. (Default: ${ollamaDefault})`" />
             <span class="text-sm" v-if="!isConnected && !isLoading">
                 Can't connect? Checkout the
-                <RouterLink to="/guide" class="text-text underline">setup guide</RouterLink>.
+                <RouterLink to="/guide" class="text-base-100 underline">setup guide</RouterLink>.
             </span>
 
             <SettingsInputToggle
                 v-model="config.ollama.modelCapabilities.autoload"
                 label="Autoload model capabilities"
                 tooltip="Load model capabilities on connect. By default only loads if 30 models or less. (Default: Enabled)" />
-            <div v-if="config.ollama.modelCapabilities.autoload" class="border-l border-text pl-3 ml-3">
+            <div v-if="config.ollama.modelCapabilities.autoload" class="border-l border-base-100 pl-3 ml-3">
                 <SettingsInputToggle 
                     v-model="config.ollama.modelCapabilities.alwaysAutoload" 
                     label="Always autoload model capabilities"
@@ -179,8 +179,8 @@ const selectedProvider = computed({
             <SettingsInputSelection 
                 v-model="config.ui.theme" 
                 label="Theme" 
-                :items="['auto', 'dark', 'light', 'mono-dark', 'mono-light', 'amoled']" 
-                :itemNames="['System default', 'Dark', 'Light', 'Plain Dark', 'Plain Light', 'AMOLED']"
+                :items="['auto', 'dark', 'light', 'mono-dark', 'mono-light', 'amoled', 'legacy-dark', 'legacy-light']" 
+                :itemNames="['System default', 'Dark', 'Light', 'Plain Dark', 'Plain Light', 'AMOLED', 'Dark (Legacy)', 'Light (Legacy)']"
                 @update:model-value="config.loadTheme()" 
                 tooltip="The theme for the app. (Default: System default (dark/light))"
             />
@@ -205,7 +205,7 @@ const selectedProvider = computed({
                 <input class="accent-primary w-full" @change="updateTransitionSpeed" v-model="transitionSpeed"
                     type="range" min="0" max="1" step="0.025" />
                 <span class="py-2">
-                    <span class="border-2 border-border-muted w-fit p-2 rounded-lg cursor-default box-border">{{
+                    <span class="border-2 border-base-500 w-fit p-2 rounded-lg cursor-default box-border">{{
                         transitionSpeedText }}</span>
                     <span class="pl-2">{{ transitionSpeed == 0.125 ? '(Default)' : '' }}</span>
                 </span>
@@ -219,7 +219,7 @@ const selectedProvider = computed({
                 v-model="config.ui.modelIcons.background" 
                 label="Model icons background"
                 tooltip="Add a background to model icons throughout the app. (Default: Disabled)" />
-            <div v-if="config.ui.modelIcons.background" class="border-l border-text pl-3 ml-3">
+            <div v-if="config.ui.modelIcons.background" class="border-l border-base-100 pl-3 ml-3">
                 <SettingsInputToggle 
                     v-model="config.ui.modelIcons.backgroundDark" 
                     label="Dark icon background"
