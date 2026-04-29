@@ -123,6 +123,21 @@ const selectedProvider = computed({
     }
 });
 
+const themes = {
+    'Auto': { 'auto': 'System Default' },
+    'Light': {
+        'light': 'Light',
+        'mono-light': 'Plain Light',
+        'legacy-light': 'Plain Light (Legacy)',
+    },
+    'Dark': {
+        'dark': 'Dark',
+        'mono-dark': 'Plain Dark',
+        'amoled': 'AMOLED',
+        'legacy-dark': 'Dark (Legacy)',
+        'legacy-mono-dark': 'Plain Dark (Legacy)',
+    },
+};
 </script>
 
 <template>
@@ -179,8 +194,8 @@ const selectedProvider = computed({
             <SettingsInputSelection 
                 v-model="config.ui.theme" 
                 label="Theme" 
-                :items="['auto', 'dark', 'light', 'mono-dark', 'mono-light', 'amoled', 'legacy-dark', 'legacy-light']" 
-                :itemNames="['System default', 'Dark', 'Light', 'Plain Dark', 'Plain Light', 'AMOLED', 'Dark (Legacy)', 'Light (Legacy)']"
+                :items="themes"
+                :itemNames="[]"
                 @update:model-value="config.loadTheme()" 
                 tooltip="The theme for the app. (Default: System default (dark/light))"
             />

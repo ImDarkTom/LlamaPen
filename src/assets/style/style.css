@@ -28,6 +28,23 @@ z-99 - z-100: Popup
     -moz-osx-font-smoothing: grayscale;
 
     --transition-duration: 0.125s;
+
+
+    --light-primary: oklch(0.76 0.13 266);
+    --light-secondary: oklch(0.76 0.13 86);
+
+    --light-danger: oklch(0.7 0.13 30);
+    --light-warning: oklch(0.7 0.13 100);
+    --light-success: oklch(0.7 0.13 160);
+    --light-info: oklch(0.7 0.13 260);
+
+    --dark-primary: oklch(0.4 0.13 266);
+    --dark-secondary: oklch(0.4 0.13 86);
+
+    --dark-danger: oklch(0.5 0.13 30);
+    --dark-warning: oklch(0.5 0.13 100);
+    --dark-success: oklch(0.5 0.13 160);
+    --dark-info: oklch(0.5 0.13 260);
 }
 
 html {
@@ -50,62 +67,63 @@ body:not([data-native-scrollbar]) {
 /* Themes */
 @layer base {
     html[theme='light'] {
-        --color-base-950: oklch(0.85 0.065 266);
-        --color-base-900: oklch(0.89 0.065 266);
-        --color-base-800: oklch(0.93 0.065 266);
-        --color-base-700: oklch(0.97 0.065 266);
-        --color-base-600: oklch(1 0.065 266);
-        --color-base-100: oklch(0.15 0.13 266);
-        --color-base-200: oklch(0.4 0.13 266);
-        --color-base-300: oklch(0.5 0.13 266);
-        --color-base-400: oklch(0.6 0.13 266);
-        --color-base-500: oklch(0.7 0.13 266);
-        --color-primary: oklch(0.4 0.13 266);
-        --color-secondary: oklch(0.4 0.13 86);
-        --color-danger: oklch(0.5 0.13 30);
-        --color-warning: oklch(0.5 0.13 100);
-        --color-success: oklch(0.5 0.13 160);
-        --color-info: oklch(0.5 0.13 260);
+        --color-base-600: #ffffff;
+        --color-base-700: #fcfcfc;
+        --color-base-800: oklch(0.914 0.008 278.74);
+        --color-base-900: oklch(0.844 0.021 276.94);
+        --color-base-950: oklch(0.768 0.04 275.87);
+        --color-base-500: oklch(0.615 0.092 271.88);
+        --color-base-400: oklch(0.537 0.102 270.02);
+        --color-base-300: oklch(0.469 0.096 268.61);
+        --color-base-200: oklch(0.391 0.09 267.52);
+        --color-base-100: oklch(0.191 0.038 268.72);
+
+        --color-primary: var(--dark-primary);
+        --color-secondary: var(--dark-secondary);
+        --color-danger: var(--dark-danger);
+        --color-warning: var(--dark-warning);
+        --color-success: var(--dark-success);
+        --color-info: var(--dark-info);
     }
 
     html[theme='mono-dark'] {
-        --color-base-950: var(--color-slate-950);
-        --color-base-900: var(--color-slate-900);
-        --color-base-800: var(--color-slate-800);
-        --color-base-700: var(--color-slate-700);
-        --color-base-600: var(--color-slate-600);
-        --color-base-500: var(--color-slate-500);
-        --color-base-400: var(--color-slate-400);
-        --color-base-300: var(--color-slate-300);
-        --color-base-200: var(--color-slate-200);
-        --color-base-100: var(--color-slate-100);
+        --color-base-950: var(--color-neutral-950);
+        --color-base-900: var(--color-neutral-900);
+        --color-base-800: var(--color-neutral-800);
+        --color-base-700: var(--color-neutral-700);
+        --color-base-600: var(--color-neutral-600);
+        --color-base-500: var(--color-neutral-500);
+        --color-base-400: var(--color-neutral-400);
+        --color-base-300: var(--color-neutral-300);
+        --color-base-200: var(--color-neutral-200);
+        --color-base-100: var(--color-neutral-100);
 
-        --color-primary: oklch(0.76 0.13 266);
-        --color-secondary: oklch(0.76 0.13 86);
-
-        --color-danger: var(--color-red-400);
-        --color-warning: var(--color-yellow-400);
-        --color-success: var(--color-emerald-400);
-        --color-info: var(--color-blue-400);
+        --color-primary: var(--light-primary);
+        --color-secondary: var(--light-secondary);
+        --color-danger: var(--light-danger);
+        --color-warning: var(--light-warning);
+        --color-success: var(--light-success);
+        --color-info: var(--light-info);
     }
 
     html[theme='mono-light'] {
         --color-base-600: var(--color-white);
-        --color-base-700: var(--color-slate-50);
-        --color-base-800: var(--color-slate-100);
-        --color-base-900: var(--color-slate-200);
-        --color-base-950: var(--color-slate-300);
-        --color-base-500: var(--color-slate-400);
-        --color-base-400: var(--color-slate-600);
-        --color-base-300: var(--color-slate-700);
-        --color-base-200: var(--color-slate-800);
-        --color-base-100: var(--color-slate-900);
-        --color-primary: oklch(0.4 0.1 266);
-        --color-secondary: oklch(0.4 0.1 86);
-        --color-danger: oklch(0.5 0.05 30);
-        --color-warning: oklch(0.5 0.05 100);
-        --color-success: oklch(0.5 0.05 160);
-        --color-info: oklch(0.5 0.05 260);
+        --color-base-700: var(--color-neutral-50);
+        --color-base-800: var(--color-neutral-100);
+        --color-base-900: var(--color-neutral-200);
+        --color-base-950: var(--color-neutral-300);
+        --color-base-500: var(--color-neutral-400);
+        --color-base-400: var(--color-neutral-600);
+        --color-base-300: var(--color-neutral-700);
+        --color-base-200: var(--color-neutral-800);
+        --color-base-100: var(--color-neutral-900);
+
+        --color-primary: var(--dark-primary);
+        --color-secondary: var(--dark-secondary);
+        --color-danger: var(--dark-danger);
+        --color-warning: var(--dark-warning);
+        --color-success: var(--dark-success);
+        --color-info: var(--dark-info);
     }
 
     html[theme='amoled'] {
@@ -119,12 +137,13 @@ body:not([data-native-scrollbar]) {
         --color-base-300: oklch(0.5 0.01 266);
         --color-base-400: oklch(0.4 0.01 266);
         --color-base-500: oklch(0.3 0.01 266);
-        --color-primary: oklch(0.76 0.1 266);
-        --color-secondary: oklch(0.76 0.1 86);
-        --color-danger: oklch(0.7 0.05 30);
-        --color-warning: oklch(0.7 0.05 100);
-        --color-success: oklch(0.7 0.05 160);
-        --color-info: oklch(0.7 0.05 260);
+
+        --color-primary: var(--light-primary);
+        --color-secondary: var(--light-secondary);
+        --color-danger: var(--light-danger);
+        --color-warning: var(--light-warning);
+        --color-success: var(--light-success);
+        --color-info: var(--light-info);
     }
 
 
@@ -132,24 +151,40 @@ body:not([data-native-scrollbar]) {
         --color-base-950: oklch(0.1 0.065 266);
         --color-base-900: oklch(0.15 0.065 266);
         --color-base-800: oklch(0.2 0.065 266);
-
         --color-base-700: oklch(0.23 0.065 266);
         --color-base-600: oklch(0.26 0.065 266);
-
         --color-base-100: oklch(0.96 0.1 266);
         --color-base-200: oklch(0.76 0.1 266);
-
         --color-base-300: oklch(0.5 0.13 266);
         --color-base-400: oklch(0.4 0.13 266);
         --color-base-500: oklch(0.3 0.13 266);
 
-        --color-primary: oklch(0.76 0.13 266);
-        --color-secondary: oklch(0.76 0.13 86);
+        --color-primary: var(--light-primary);
+        --color-secondary: var(--light-secondary);
+        --color-danger: var(--light-danger);
+        --color-warning: var(--light-warning);
+        --color-success: var(--light-success);
+        --color-info: var(--light-info);
+    }
 
-        --color-danger: oklch(0.7 0.13 30);
-        --color-warning: oklch(0.7 0.13 100);
-        --color-success: oklch(0.7 0.13 160);
-        --color-info: oklch(0.7 0.13 260);
+    html[theme='legacy-mono-dark'] {
+        --color-base-950: oklch(0.1 0.005 266);
+        --color-base-900: oklch(0.15 0.005 266);
+        --color-base-800: oklch(0.2 0.005 266);
+        --color-base-700: oklch(0.23 0.005 266);
+        --color-base-600: oklch(0.26 0.005 266);
+        --color-base-500: oklch(0.3 0.01 266);
+        --color-base-400: oklch(0.4 0.01 266);
+        --color-base-300: oklch(0.5 0.01 266);
+        --color-base-200: oklch(0.76 0.01 266);
+        --color-base-100: oklch(0.96 0.01 266);
+
+        --color-primary: var(--light-primary);
+        --color-secondary: var(--light-secondary);
+        --color-danger: var(--light-danger);
+        --color-warning: var(--light-warning);
+        --color-success: var(--light-success);
+        --color-info: var(--light-info);
     }
 
     html[theme='legacy-light'] {
@@ -163,34 +198,36 @@ body:not([data-native-scrollbar]) {
         --color-base-300: oklch(0.5 0.13 266);
         --color-base-400: oklch(0.6 0.13 266);
         --color-base-500: oklch(0.7 0.13 266);
-        --color-primary: oklch(0.4 0.13 266);
-        --color-secondary: oklch(0.4 0.13 86);
-        --color-danger: oklch(0.5 0.13 30);
-        --color-warning: oklch(0.5 0.13 100);
-        --color-success: oklch(0.5 0.13 160);
-        --color-info: oklch(0.5 0.13 260);
+
+        --color-primary: var(--dark-primary);
+        --color-secondary: var(--dark-secondary);
+        --color-danger: var(--dark-danger);
+        --color-warning: var(--dark-warning);
+        --color-success: var(--dark-success);
+        --color-info: var(--dark-info);
     }
 }
 
 @theme {
-    --color-base-950: oklch(0.1 0.065 266);
-    --color-base-900: oklch(0.15 0.065 266);
-    --color-base-800: oklch(0.2 0.065 266);
-    --color-base-700: oklch(0.23 0.065 266);
-    --color-base-600: oklch(0.26 0.065 266);
-    --color-base-500: oklch(0.3 0.13 266);
-    --color-base-400: oklch(0.4 0.13 266);
-    --color-base-300: oklch(0.5 0.13 266);
-    --color-base-200: oklch(0.76 0.1 266);
-    --color-base-100: oklch(0.96 0.1 266);
+    /* https://tints.dev/palette/v1:YmFzZXwxNTIyNDN8NTAwfHB8MHwwfDB8MTAwfG0 */
+    --color-base-50: oklch(0.939 0.02 276.99);
+    --color-base-100: oklch(0.88 0.039 276);
+    --color-base-200: oklch(0.753 0.084 272.14);
+    --color-base-300: oklch(0.634 0.128 267.93);
+    --color-base-400: oklch(0.513 0.128 266.16);
+    --color-base-500: oklch(0.383 0.094 265.86);
+    --color-base-600: oklch(0.26 0.065 265.9);
+    --color-base-700: oklch(0.225 0.057 265.88);
+    --color-base-800: oklch(0.201 0.048 264.71);
+    --color-base-900: oklch(0.15 0.038 267.11);
+    --color-base-950: oklch(0.132 0.033 264.72);
 
-    --color-primary: oklch(0.76 0.13 266);
-    --color-secondary: oklch(0.76 0.13 86);
-
-    --color-danger: oklch(0.7 0.13 30);
-    --color-warning: oklch(0.7 0.13 100);
-    --color-success: oklch(0.7 0.13 160);
-    --color-info: oklch(0.7 0.13 260);
+    --color-primary: var(--light-primary);
+    --color-secondary: var(--light-secondary);
+    --color-danger: var(--light-danger);
+    --color-warning: var(--light-warning);
+    --color-success: var(--light-success);
+    --color-info: var(--light-info);
 
     --animate-breathe: breathe 2s ease-in-out infinite;
     --animate-blink: blink 1s ease-in-out infinite;
