@@ -10,11 +10,19 @@ type OnClickHandler<T> = T extends void
     ? () => void
     : (args: T) => void;
 
+type Hotkey = {
+    alt?: boolean;
+    shift?: boolean;
+    ctrl?: boolean;
+    key: string;
+};
+
 type MenuEntry<T = void> = {
     type: 'text',
     text: TextResolver<T>,
     onClick: OnClickHandler<T>,
     icon?: IconResolver<T>,
+    hotkey?: Hotkey,
     category?: 'general' | 'danger',
     condition?: boolean,
 } | {

@@ -3,8 +3,12 @@ import { onMounted, onUnmounted } from 'vue';
 import { TbLayoutSidebarFilled } from 'vue-icons-plus/tb';
 import { useConfigStore } from '../../stores/config';
 import { emitter } from '@/lib/mitt';
+import useMessagesStore from '@/stores/messagesStore';
+import useChatsStore from '@/stores/chatsStore';
 
 const useConfig = useConfigStore();
+const messagesStore = useMessagesStore();
+const chatsStore = useChatsStore();
 
 const toggleSidebar = () => {
     useConfig.showSidebar = !useConfig.showSidebar;
@@ -19,9 +23,16 @@ function handlePointerDown(e: MouseEvent) {
 }
 
 function shortcutListener(e: KeyboardEvent) {
-    if (e.key === "S" && e.ctrlKey && e.shiftKey) {
+    if (e.key === 'S' && e.ctrlKey && e.shiftKey) {
         e.preventDefault();
         toggleSidebar();
+    } else if (e.key === 'P' && e.shiftKey && e.altKey) {
+        e.preventDefault();
+        const openedChatId = messagesStore.openedChatId;
+        if (!openedChatId) return;
+
+        const isPinned = chatsStore.pinnedChats.some(c => c.id === openedChatId);
+        chatsStore.setPinned(openedChatId, !isPinned);
     }
 }
 

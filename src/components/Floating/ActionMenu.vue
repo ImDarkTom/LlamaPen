@@ -1,4 +1,5 @@
 <script setup lang="ts" generic="T = void">
+import { formatHotkeys } from '@/utils/formatHotkeys';
 import { ref } from 'vue';
 import type { IconType } from 'vue-icons-plus';
 
@@ -54,6 +55,16 @@ const isOpened = ref(false);
                             class="inline size-5" />
                         <span>
                             {{ getText(entry.text) }}
+                        </span>
+                        <span 
+                            v-if="entry.hotkey" 
+                            class="ml-4 text-xs flex flex-row gap-1">
+                            <kbd 
+                                v-for="key in formatHotkeys(entry.hotkey, 'win')"
+                                class="ring-1 ring-inset rounded-sm px-1"
+                                :key="key">
+                                {{ key }}
+                            </kbd>
                         </span>
                     </li>
                     <div 

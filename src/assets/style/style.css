@@ -53,7 +53,7 @@ html {
 }
 
 body:not([data-native-scrollbar]) {
-    scrollbar-color: var(--color-primary) var(--color-base-700);
+    scrollbar-color: var(--color-base-600) var(--color-base-700);
 }
 
 #app {

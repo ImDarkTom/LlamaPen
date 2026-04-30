@@ -37,6 +37,7 @@ function handleEscape(e: KeyboardEvent) {
             <h2 class="text-3xl font-semibold pb-2 text-base-100">Chat</h2>
             <ShortcutsPageDisplay label="New chat" shortcut="ctrl shift o" />
             <ShortcutsPageDisplay label="Focus chat input" shortcut="shift esc" />
+            <ShortcutsPageDisplay label="Pin chat" shortcut="shift alt p" />
             <ShortcutsPageDisplay label="Delete chat" shortcut="ctrl shift ⌫" />
         </div>
     </div>

@@ -88,6 +88,7 @@ const actions: MenuEntry<MouseEvent>[] = [
         type: 'text',
         text: dropdownPinText.value,
         icon: dropdownPinIcon.value,
+        hotkey: { alt: true, ctrl: true, key: 'p' },
         onClick: () => setPinned(props.chat.id, !isPinned.value),
     },
     {
