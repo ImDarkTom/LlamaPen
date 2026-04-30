@@ -1,7 +1,7 @@
 <script setup lang="ts">
 import { computed } from 'vue';
 import type { IconType } from 'vue-icons-plus';
-import { BiBrain, BiReflectVertical, BiShow, BiSkipNext, BiWrench } from 'vue-icons-plus/bi';
+import { BiBrain, BiHeadphone, BiReflectVertical, BiShow, BiSkipNext, BiText, BiWrench } from 'vue-icons-plus/bi';
 import DOMPurify from 'dompurify';
 import Unknown from '@/icons/unknown.svg';
 import { useConfigStore } from '@/stores/config';
@@ -23,11 +23,12 @@ function sanitizeSection(text: string | null) {
 }
 
 const capabilityIcons: Record<string, IconType> = {
-    'completion': BiSkipNext,
+    'completion': BiText,
     'tools': BiWrench,
     'thinking': BiBrain,
     'vision': BiShow,
-    'insert': BiReflectVertical
+    'insert': BiReflectVertical,
+    'audio': BiHeadphone
 };
 
 function getModelValue<T>(
