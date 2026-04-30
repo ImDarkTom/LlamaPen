@@ -191,19 +191,28 @@ const batchActions: MenuEntry[] = [
 
 <template>
     <div
-        class="h-4/12 md:h-full w-full md:w-2/6 bg-base-800 rounded-lg md:rounded-r-none md:border-r border-base-400 flex flex-col gap-2 p-2 relative">
+        class="h-4/12 md:h-full w-full md:w-2/6 rounded-lg md:rounded-r-none md:border-r border-base-400 flex flex-col gap-2 p-2 relative">
         <div class="flex flex-col gap-2 overflow-y-auto md:pr-3">
             <template v-if="!config.cloud.enabled">
                 <UITextDivider text="Download" />
-                <ButtonPrimary class="w-full" text="Find models" :icon="BiLinkExternal" type="external-link"
-                    href="https://ollama.com/search" />
+                <a 
+                    href="https://ollama.com/search"
+                    target="_blank"
+                    rel="noopener noreferrer">
+                    <button
+                        class="w-full text-base-900 hover:text-base-950 bg-primary hover:bg-secondary py-2 rounded-lg cursor-pointer select-none flex flex-row justify-center items-center">
+                        <IconOllama class="size-4 mr-2" />
+                        Find models
+                        <BiLinkExternal class="size-3 ml-1 mb-auto" />
+                    </button>
+                </a>
                 <RouterLink to="/models/downloads" v-slot="{ isActive }">
                     <button
-                        class="w-full text-base-200 enabled:hover:text-base-100 bg-base-700 enabled:hover:bg-base-600 py-6 rounded-lg enabled:cursor-pointer select-none flex flex-row justify-center items-center gap-2 disabled:opacity-75"
+                        class="w-full text-base-200 enabled:hover:text-base-100 bg-base-700 enabled:hover:bg-base-600 py-2 rounded-lg enabled:cursor-pointer select-none flex flex-row justify-center items-center gap-2 disabled:opacity-75"
                         :class="{ 'bg-base-600 ring-2 ring-base-400 ring-inset': isActive }"
                         :disabled="!isConnected">
-                        <BiDownload />
-                        Download Manager
+                        <BiDownload class="size-4" />
+                        Downloads
                     </button>
                 </RouterLink>
             </template>

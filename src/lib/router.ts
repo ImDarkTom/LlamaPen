@@ -25,32 +25,32 @@ const routes: RouteRecordRaw[] = [
                     { path: "/chat/:id", component: ChatPage }
                 ]
             },
+            {
+                path: '/',
+                component: UtilityLayout,
+                meta: { layer: 'utility' },
+                children: [
+                    { path: '/settings', component: SettingsPage },
+                    { path: "/shortcuts", component: ShortcutsPage },
+                    { path: '/guide', component: GuidePage },
+                    { path: '/account', component: AccountPage },
+                    { 
+                        path: '/models', 
+                        component: ModelsPage,
+                        children: [
+                            { path: '/models/:model(.*)', component: ModelsPage }
+                        ]
+                    },
+                    { 
+                        path: '/tools', 
+                        component: ToolsPage,
+                        children: [
+                            { path: '/tools/:tool(.*)', component: ToolsPage }
+                        ]
+                    },
+                ]   
+            },
         ],
-    },
-    {
-        path: '/',
-        component: UtilityLayout,
-        meta: { layer: 'utility' },
-        children: [
-            { path: '/settings', component: SettingsPage },
-            { path: "/shortcuts", component: ShortcutsPage },
-            { path: '/guide', component: GuidePage },
-            { path: '/account', component: AccountPage },
-            { 
-                path: '/models', 
-                component: ModelsPage,
-                children: [
-                    { path: '/models/:model(.*)', component: ModelsPage }
-                ]
-            },
-            { 
-                path: '/tools', 
-                component: ToolsPage,
-                children: [
-                    { path: '/tools/:tool(.*)', component: ToolsPage }
-                ]
-            },
-        ]   
     },
     {
         path: '/:pathMatch(.*)*',

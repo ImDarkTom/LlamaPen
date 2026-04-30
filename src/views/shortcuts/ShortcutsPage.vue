@@ -26,10 +26,10 @@ function handleEscape(e: KeyboardEvent) {
 
 <template>
     <div class="w-full h-full flex flex-col items-center py-4 box-border overflow-y-auto px-2
-    *:mx-auto *:md:w-4/5 *:lg:w-3/5">
+    *:mx-auto *:max-w-prose">
         <UIPageHeader text="Keyboard Shortcuts" />
 
-        <div class="flex flex-col h-full box-border">
+        <div class="flex flex-col w-full h-full box-border">
             <h2 class="text-3xl font-semibold pb-2 text-base-100">Interface</h2>
             <ShortcutsPageDisplay label="Toggle sidebar" shortcut="ctrl shift s" />
             <ShortcutsPageDisplay label="Open model selector" shortcut="ctrl shift m" />
