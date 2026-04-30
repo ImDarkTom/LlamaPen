@@ -210,17 +210,17 @@ body:not([data-native-scrollbar]) {
 
 @theme {
     /* https://tints.dev/palette/v1:YmFzZXwxNTIyNDN8NTAwfHB8MHwwfDB8MTAwfG0 */
-    --color-base-50: oklch(0.939 0.02 276.99);
-    --color-base-100: oklch(0.88 0.039 276);
-    --color-base-200: oklch(0.753 0.084 272.14);
-    --color-base-300: oklch(0.634 0.128 267.93);
-    --color-base-400: oklch(0.513 0.128 266.16);
-    --color-base-500: oklch(0.383 0.094 265.86);
-    --color-base-600: oklch(0.26 0.065 265.9);
-    --color-base-700: oklch(0.225 0.057 265.88);
-    --color-base-800: oklch(0.201 0.048 264.71);
-    --color-base-900: oklch(0.15 0.038 267.11);
-    --color-base-950: oklch(0.132 0.033 264.72);
+    --color-base-50: oklch(0.985 0.02 276.99);
+    --color-base-100: oklch(0.97 0.039 276);
+    --color-base-200: oklch(0.922 0.084 272.14);
+    --color-base-300: oklch(0.87 0.128 267.93);
+    --color-base-400: oklch(0.708 0.128 266.16);
+    --color-base-500: oklch(0.556 0.094 265.86);
+    --color-base-600: oklch(0.439 0.065 265.9);
+    --color-base-700: oklch(0.371 0.057 265.88);
+    --color-base-800: oklch(0.269 0.048 264.71);
+    --color-base-900: oklch(0.205 0.038 267.11);
+    --color-base-950: oklch(0.145 0.033 264.72);
 
     --color-primary: var(--light-primary);
     --color-secondary: var(--light-secondary);
