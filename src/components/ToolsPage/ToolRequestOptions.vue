@@ -16,7 +16,7 @@ const bodyPlaceholder = `e.g:
 </script>
 
 <template>
-    <div class="flex flex-col gap-2 bg-surface p-2 rounded-lg" v-if="selectedTool">
+    <div class="flex flex-col gap-2 bg-base-800 p-2 rounded-lg" v-if="selectedTool">
         <ToolsPageInputSelect
             v-model="selectedTool.requestOptions.method"
             label="Method"
@@ -56,7 +56,7 @@ const bodyPlaceholder = `e.g:
             placeholder="(blank)" />
         <UITextDivider text="Body" />
         <textarea
-            class="w-full bg-surface-light p-4 rounded-md"
+            class="w-full bg-base-600 p-4 rounded-md"
             rows="5"
             :placeholder="bodyPlaceholder"
             v-model="selectedTool.requestOptions.body"></textarea>

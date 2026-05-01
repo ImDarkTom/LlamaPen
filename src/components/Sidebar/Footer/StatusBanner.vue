@@ -43,7 +43,7 @@ watch(connectionState, (newState) => {
 
 <template>
     <div 
-        class="overflow-hidden overflow-ellipsis p-1 rounded-md ring-1 cursor-pointer transition-colors duration-dynamic"
+        class="overflow-hidden text-ellipsis p-1 rounded-md ring-1 cursor-pointer transition-colors duration-dynamic"
         :class="{ 
             'text-warning bg-warning/25 hover:bg-warning/35 ring-warning/50': isLoading,
             'text-success bg-success/25 hover:bg-success/35 ring-success/50': isConnected && !isLoading, 

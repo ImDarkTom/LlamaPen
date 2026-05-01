@@ -92,10 +92,10 @@ const selectActions: MenuEntry[] = [
 	<!-- Row Layout -->
 	<li 
 		v-if="layout === 'row'" 
-		class="relative group flex flex-row gap-3 ring-1 ring-border-muted ring-inset cursor-pointer p-3 hover:bg-surface-light transition-colors duration-dynamic rounded-lg overflow-x-hidden"
+		class="relative group flex flex-row gap-3 ring-1 ring-base-500 ring-inset cursor-pointer p-3 hover:bg-base-600 transition-colors duration-dynamic rounded-lg overflow-x-hidden"
 		:class="{
-			'bg-surface-light': selected && !isCurrentModel,
-			'bg-surface-light ring-highlight!': isCurrentModel,
+			'bg-base-600': selected && !isCurrentModel,
+			'bg-base-600 ring-base-300!': isCurrentModel,
 			'opacity-50': providerMetadata?.provider === 'lpcloud' 
 				&& ((providerMetadata.data.premium && !cloudUserStore.isPremium) || (config.cloud.enabled && !cloudUserStore.isSignedIn)),
 		}" @click="setModel($event, model.info)" ref="listItemRef" :aria-selected="selected">
@@ -105,7 +105,7 @@ const selectActions: MenuEntry[] = [
 		<div class="flex flex-col">
 			<div class="flex flex-row items-center">
 				<span 
-					class="text-md font-semibold text-ellipsis whitespace-nowrap overflow-hidden text-text"
+					class="text-md font-semibold text-ellipsis whitespace-nowrap overflow-hidden text-base-100"
 					:title="model.info.id"
 				>
 					{{ model.displayName}}
@@ -134,39 +134,39 @@ const selectActions: MenuEntry[] = [
 					<!-- Capability tags -->
 					<div 
 						v-if="modelCapabilities.supportsVision"
-						class="bg-green-400/25 rounded-sm ring-1 ring-green-400 p-0.5"
+						class="bg-capability-vision/25 rounded-sm ring-1 ring-capability-vision p-0.5"
 						title="Vision - can process images">
-						<BiShow class="text-green-400 size-4" />
+						<BiShow class="text-capability-vision size-4" />
 					</div>
 					<div 
 						v-if="modelCapabilities.supportsReasoning"
-						class="bg-violet-400/25 rounded-sm ring-1 ring-violet-400 p-0.5 flex flex-row"
+						class="bg-capability-reasoning/25 rounded-sm ring-1 ring-capability-reasoning p-0.5 flex flex-row"
 						:title="providerMetadata?.provider === 'lpcloud' && providerMetadata.data.tags?.includes('alwaysReasons') 
 							? 'Locked reasoning - always uses reasoning capabilities' 
 							: 'Thinking - toggleable enhanced reasoning capabilities'">
-						<BiBrain class="text-violet-400 size-4" />
+						<BiBrain class="text-capability-reasoning size-4" />
 						<BiLock
 							v-if="providerMetadata?.provider === 'lpcloud' && providerMetadata?.data.tags?.includes('alwaysReasons')"
-							class="text-violet-400 size-4" />
+							class="text-capability-reasoning size-4" />
 					</div>
 					<div 
 						v-if="modelCapabilities.supportsFunctionCalling"
-						class="bg-blue-400/25 rounded-sm ring-1 ring-blue-400 p-0.5"
+						class="bg-capability-tools/25 rounded-sm ring-1 ring-capability-tools p-0.5"
 						title="Tools - can use external tools">
-						<BiWrench class="text-blue-400 size-4" />
+						<BiWrench class="text-capability-tools size-4" />
 					</div>
 				</div>
 			</div>
-			<span class="text-sm text-text-muted">{{ model.info.subtitle }}</span>
-			<div class="absolute hidden items-center justify-center right-0 top-0 h-full w-16 bg-linear-to-r from-transparent to-surface-light group-hover:flex"
+			<span class="text-sm text-base-200">{{ model.info.subtitle }}</span>
+			<div class="absolute hidden items-center justify-center right-0 top-0 h-full w-16 bg-linear-to-r from-transparent to-base-600 group-hover:flex"
 				:class="{ 
 					'flex!': selected,
-					'to-border!': isCurrentModel,
+					'to-base-400!': isCurrentModel,
 				}">
 				<FloatingActionMenu :actions="selectActions">
 					<div
 						ref="actionMenuButton"
-						class="p-1 ring-2 ring-text-muted hover:ring-text hover:text-text rounded-md">
+						class="p-1 ring-2 ring-base-200 hover:ring-base-100 hover:text-base-100 rounded-md">
 						<BiDotsVerticalRounded class="size-8" />
 					</div>
 				</FloatingActionMenu>
@@ -175,10 +175,10 @@ const selectActions: MenuEntry[] = [
 	</li>
 	<li 
 		v-else
-		class="relative group flex flex-col gap-2 ring-1 ring-border-muted ring-inset cursor-pointer p-2 hover:bg-surface-light transition-colors duration-dynamic rounded-lg overflow-x-visible"
+		class="relative group flex flex-col gap-2 ring-1 ring-base-500 ring-inset cursor-pointer p-2 hover:bg-base-600 transition-colors duration-dynamic rounded-lg overflow-x-visible"
 		:class="{
-			'bg-surface-light': selected && !isCurrentModel,
-			'bg-surface-light ring-highlight!': isCurrentModel,
+			'bg-base-600': selected && !isCurrentModel,
+			'bg-base-600 ring-base-300!': isCurrentModel,
 			'opacity-50': providerMetadata?.provider === 'lpcloud' 
 				&& ((providerMetadata.data.premium && !cloudUserStore.isPremium) || (config.cloud.enabled && !cloudUserStore.isSignedIn)),
 		}" @click="setModel($event, model.info)" ref="listItemRef" :aria-selected="selected">
@@ -186,12 +186,12 @@ const selectActions: MenuEntry[] = [
 		<div class="flex flex-col items-center">
             <IconModel :name="model.info.id" class="size-10 p-1" />
 			<span
-				class="text-md font-semibold text-sm text-center overflow-hidden text-text"
+				class="text-md font-semibold text-sm text-center overflow-hidden text-base-100"
 				:title="model.info.id"
 			>
 				{{ model.displayName }}
 			</span>
-			<span class="text-xs text-text-muted">{{ model.info.subtitle }}</span>
+			<span class="text-xs text-base-200">{{ model.info.subtitle }}</span>
             <div class="flex flex-row flex-wrap justify-center gap-2 shrink-0 min-w-fit">
 				<div 
 					v-if="isFavorited()"
@@ -216,38 +216,36 @@ const selectActions: MenuEntry[] = [
 				<!-- Capability tags -->
 				<div 
 					v-if="modelCapabilities.supportsVision"
-					class="bg-green-400/25 rounded-sm ring-1 ring-green-400 p-0.5"
+					class="bg-capability-vision/25 rounded-sm ring-1 ring-capability-vision p-0.5"
 					title="Vision - can process images">
-					<BiShow class="text-green-400 size-4" />
+					<BiShow class="text-capability-vision size-4" />
 				</div>
 				<div 
 					v-if="modelCapabilities.supportsReasoning"
-					class="bg-violet-400/25 rounded-sm ring-1 ring-violet-400 p-0.5 flex flex-row"
+					class="bg-capability-reasoning/25 rounded-sm ring-1 ring-capability-reasoning p-0.5 flex flex-row"
 					:title="providerMetadata?.provider === 'lpcloud' && providerMetadata.data.tags?.includes('alwaysReasons') 
 						? 'Locked reasoning - always uses reasoning capabilities' 
 						: 'Thinking - toggleable enhanced reasoning capabilities'">
-					<BiBrain class="text-violet-400 size-4" />
+					<BiBrain class="text-capability-reasoning size-4" />
 					<BiLock
 						v-if="providerMetadata?.provider === 'lpcloud' && providerMetadata?.data.tags?.includes('alwaysReasons')"
-						class="text-violet-400 size-4" />
+						class="text-capability-reasoning size-4" />
 				</div>
 				<div 
 					v-if="modelCapabilities.supportsFunctionCalling"
-					class="bg-blue-400/25 rounded-sm ring-1 ring-blue-400 p-0.5"
+					class="bg-capability-tools/25 rounded-sm ring-1 ring-capability-tools p-0.5"
 					title="Tools - can use external tools">
-					<BiWrench class="text-blue-400 size-4" />
+					<BiWrench class="text-capability-tools size-4" />
 				</div>
 			</div>
 			<div class="absolute hidden items-center justify-center -right-1 -top-1 size-8 group-hover:flex">
 				<FloatingActionMenu :actions="selectActions">
-					<Transition name="layout-to-chat">
-						<div
-							v-if="selected"
-							ref="actionMenuButton"
-							class="p-0.5 bg-surface-light ring-1 ring-text-muted hover:ring-text hover:text-text rounded-md">
-							<BiDotsVerticalRounded class="size-6" />
-						</div>
-					</Transition>
+					<div
+						v-if="selected"
+						ref="actionMenuButton"
+						class="p-0.5 bg-base-600 ring-1 ring-base-200 hover:ring-base-100 hover:text-base-100 rounded-md">
+						<BiDotsVerticalRounded class="size-6" />
+					</div>
 				</FloatingActionMenu>
 			</div>
 		</div>

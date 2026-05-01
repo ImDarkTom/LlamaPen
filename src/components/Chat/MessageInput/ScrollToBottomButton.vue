@@ -25,7 +25,7 @@ const showButton = computed(() => !chatIsScrollingDown.value);
     >
         <span 
             v-if="showButton" 
-            class="absolute -top-14 translate-x-0 bg-surface-light font-medium p-2 rounded-lg select-none cursor-pointer shadow-sm shadow-black"
+            class="absolute -top-14 translate-x-0 bg-base-600 font-medium p-2 rounded-lg select-none cursor-pointer shadow-sm shadow-black"
             @click="emitter.emit('scrollToBottom', { force: true })" >
             <BiSolidDownArrowCircle class="size-5 inline mr-2" />
             <span class="align-middle text-sm">Scroll to bottom</span>

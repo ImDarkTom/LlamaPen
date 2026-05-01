@@ -27,7 +27,7 @@ onBeforeUnmount(() => {
     <div v-if="filterMenuOpen" class="max-h-16 relative flex flex-row gap-2 pb-2 overflow-x-auto" ref="filterMenu">
         <div class="flex flex-col justify-end">
             <button 
-                class="bg-surface-light hover:bg-border-muted p-2 rounded-md ring-inset ring-2 ring-border-muted hover:ring-border active:ring-highlight cursor-pointer outline-0 transition-colors duration-dynamic"
+                class="bg-base-600 hover:bg-base-500 p-2 rounded-md ring-inset ring-2 ring-base-500 hover:ring-base-400 active:ring-base-300 cursor-pointer outline-0 transition-colors duration-dynamic"
                 @click="modelSelectStore.resetFilters()" >
                 <BiRefresh class="size-5" />
             </button>
@@ -53,15 +53,15 @@ onBeforeUnmount(() => {
                         icon: BiWrench,
                     }
                 ]"
-                button-class="bg-surface-light hover:bg-border-muted w-full p-2 rounded-md ring-inset ring-2 ring-border-muted hover:ring-border focus:ring-highlight cursor-pointer outline-0 line-clamp-1 transition-colors duration-dynamic"
-                menu-class="bg-surface w-full min-w-fit p-2 rounded-md ring-inset ring-2 ring-border-muted focus:ring-border outline-0 max-h-48 overflow-y-auto"
-                item-class="p-1 rounded-md hover:bg-surface-light" 
-                selected-item-class="bg-primary! text-background" />
+                button-class="bg-base-600 hover:bg-base-500 w-full p-2 rounded-md ring-inset ring-2 ring-base-500 hover:ring-base-400 focus:ring-base-300 cursor-pointer outline-0 line-clamp-1 transition-colors duration-dynamic"
+                menu-class="bg-base-700 w-full min-w-fit p-2 rounded-md ring-inset ring-2 ring-base-500 focus:ring-base-400 outline-0 max-h-48 overflow-y-auto"
+                item-class="p-1 rounded-md hover:bg-base-600" 
+                selected-item-class="bg-primary! text-base-900" />
         </label>
         <label class="flex flex-col">
             <span class="text-sm">Order</span>
             <select v-model="orderBy" ref="orderBySelect"
-                class="bg-surface-light hover:bg-border-muted p-2 rounded-md ring-inset ring-2 ring-border-muted hover:ring-border focus:ring-highlight cursor-pointer outline-0 transition-colors duration-dynamic">
+                class="bg-base-600 hover:bg-base-500 p-2 rounded-md ring-inset ring-2 ring-base-500 hover:ring-base-400 focus:ring-base-300 cursor-pointer outline-0 transition-colors duration-dynamic">
                 <option value="default">Default ({{ config.cloud.enabled ? 'Creator Name' : 'Added date' }})</option>
                 <option value="alphabetically">Alphabetically</option>
                 <option value="size">Size</option>
@@ -70,7 +70,7 @@ onBeforeUnmount(() => {
         <label class="flex flex-col">
             <span class="text-sm">Direction</span>
             <select v-model="direction" ref="directionSelect"
-                class="bg-surface-light hover:bg-border-muted p-2 rounded-md ring-inset ring-2 ring-border-muted hover:ring-border focus:ring-highlight cursor-pointer outline-0 transition-colors duration-dynamic">
+                class="bg-base-600 hover:bg-base-500 p-2 rounded-md ring-inset ring-2 ring-base-500 hover:ring-base-400 focus:ring-base-300 cursor-pointer outline-0 transition-colors duration-dynamic">
                 <option value="des">Descending</option>
                 <option value="asc">Ascending</option>
             </select>

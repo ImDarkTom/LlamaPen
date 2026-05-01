@@ -25,7 +25,7 @@ const updateValue = () => {
 		/>
 
 		<div
-			class="w-12 h-6 flex items-center bg-background-dark rounded-full p-0.5 cursor-pointer transition-all duration-dynamic"
+			class="w-12 h-6 flex items-center bg-base-950 rounded-full p-0.5 cursor-pointer transition-all duration-dynamic"
 			:class="{ 'bg-primary': modelValue }"
 			role="switch"
 			:aria-checked="modelValue"
@@ -33,7 +33,7 @@ const updateValue = () => {
 			@keydown.space.prevent="updateValue"
 		>
 			<div
-				class="size-5 bg-text rounded-full transition-transform duration-dynamic"
+				class="size-5 bg-base-100 rounded-full transition-transform duration-dynamic"
 				:class="{ 'translate-x-6': modelValue }"
 			></div>
 		</div>

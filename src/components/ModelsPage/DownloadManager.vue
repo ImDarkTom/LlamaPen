@@ -38,13 +38,13 @@ async function downloadModel() {
             <input 
                 type="text" 
                 placeholder="Model tag (e.g. gemma3:latest)"
-                class="w-full bg-surface px-4 py-6 rounded-md text-lg"
+                class="w-full bg-base-700 px-4 py-6 rounded-md text-lg"
                 v-model="modelInputValue"
                 required
                 aria-label="Model ID input">
             <button
                 type="submit"
-                class="bg-primary hover:bg-secondary transition-all duration-dynamic hover:duration-0 text-background p-4 rounded-md text-lg w-fit cursor-pointer" >
+                class="bg-primary hover:bg-secondary transition-all duration-dynamic hover:duration-0 text-base-900 p-4 rounded-md text-lg w-fit cursor-pointer" >
                 <span class="whitespace-normal md:whitespace-nowrap">
                     <BiCloudDownload class="inline mr-2 align-middle" /> 
                     <span class="align-middle">Start Download</span>
@@ -58,12 +58,12 @@ async function downloadModel() {
             <div 
                 v-for="(status, modelName) in progressChunks"
                 :key="modelName"
-                class="p-4 rounded-md flex flex-col gap-4 bg-surface" >
+                class="p-4 rounded-md flex flex-col gap-4 bg-base-700" >
                 <div class="flex flex-row gap-4">
                     <IconModel :name="modelName" class="size-12" />
 
                     <div class="flex flex-col gap-2 w-full">
-                        <div class="text-text text-xl">
+                        <div class="text-base-100 text-xl">
                             {{ modelName }}
                         </div>
                         <div class="text-sm flex flex-col gap-1">
@@ -82,7 +82,7 @@ async function downloadModel() {
                 </div>
                 <div>
                     <progress
-                        class="bg-background w-full h-8 rounded-md"
+                        class="bg-base-900 w-full h-8 rounded-md"
                         :max="status.total" 
                         :value="status.completed">32%</progress>
                     <ButtonPrimary

@@ -60,7 +60,7 @@ const isOpened = ref(false);
             <div class="flex flex-col">
                 <div class="flex flex-row gap-2 mb-2">
                     <input
-                        class="border-2 border-primary focus:border-border w-full rounded-lg h-6 box-content p-3 outline-0" 
+                        class="border-2 border-primary focus:border-base-400 w-full rounded-lg h-6 box-content p-3 outline-0" 
                         type="text" 
                         placeholder="Search tools..."
                         v-model="searchQuery"
@@ -76,7 +76,7 @@ const isOpened = ref(false);
                 <div 
                     v-for="[toolName, tool] in searchedTools" 
                     :key="toolName"
-                    class="hover:bg-surface-light transition-quick rounded-md">
+                    class="hover:bg-base-600 transition-quick rounded-md">
                     <label class="cursor-pointer">
                         <div class="flex flex-row items-center ml-3 select-none ">
                             <input
@@ -85,11 +85,11 @@ const isOpened = ref(false);
                                 :checked="toolsStore.toggled.includes(toolName)" 
                                 @change="toggleSelection(toolName)">
                             <div class="flex flex-col ml-3">
-                                <span class="text-text font-medium">{{ toolName }}</span>
+                                <span class="text-base-100 font-medium">{{ toolName }}</span>
                                 <span>{{ tool.description || '<blank description>' }}</span>
                             </div>
                             <RouterLink :to="`/tools/${toolName}`" class="ml-auto">
-                                <div class="ring-border hover:ring-primary ring-1 p-2 rounded-md transition-quick ">
+                                <div class="ring-base-400 hover:ring-primary ring-1 p-2 rounded-md transition-quick ">
                                     <BiDotsHorizontalRounded />
                                 </div>
                             </RouterLink>

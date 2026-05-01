@@ -6,7 +6,7 @@ defineProps<{
 
 <template>
 	<Tooltip :text size="small">
-        <div class="size-8 pointer-coarse:size-7 p-1.5 pointer-coarse:p-1 rounded-lg cursor-pointer hover:bg-background-light">
+        <div class="size-8 pointer-coarse:size-7 p-1.5 pointer-coarse:p-1 rounded-lg cursor-pointer hover:bg-base-800">
             <slot />
         </div>
     </Tooltip>

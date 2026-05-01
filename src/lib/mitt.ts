@@ -19,6 +19,7 @@ type Events = {
     hideSidebar: void,
     focusInputBar: void,
     modelSelectFocusFilter: void,
+    shortcutsPopup: void,
 };
 
 export const emitter = mitt<Events>();

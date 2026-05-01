@@ -127,7 +127,7 @@ const isDoneOrUserMessage = computed(() => props.done || props.message.type === 
             @click="openInfo">
             <BiInfoCircle class="size-full" title="Raw Info" />
         </ChatMessageInteractionButton>
-        <div v-if="done && messageStats?.evalCount && messageStats?.evalDuration && !config.chat.hideTPSInfoText" class="h-full flex items-center ml-1 text-text-muted/65 text-sm font-medium">
+        <div v-if="done && messageStats?.evalCount && messageStats?.evalDuration && !config.chat.hideTPSInfoText" class="h-full flex items-center ml-1 text-base-200/65 text-sm font-medium">
             {{ ((messageStats?.evalCount/(messageStats.evalDuration/1_000_000_000)).toFixed(2)) }}tok/s
         </div>
     </div>

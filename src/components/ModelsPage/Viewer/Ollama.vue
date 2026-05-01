@@ -1,9 +1,6 @@
 <script setup lang="ts">
 import { computed } from 'vue';
-import type { IconType } from 'vue-icons-plus';
-import { BiBrain, BiReflectVertical, BiShow, BiSkipNext, BiWrench } from 'vue-icons-plus/bi';
 import DOMPurify from 'dompurify';
-import Unknown from '@/icons/unknown.svg';
 import { useConfigStore } from '@/stores/config';
 import type { ModelViewInfo } from '../types';
 import type { ShowResponse, ModelDetails } from 'ollama/browser';
@@ -21,14 +18,6 @@ const props = defineProps<{
 function sanitizeSection(text: string | null) {
     return DOMPurify.sanitize(text ?? '')
 }
-
-const capabilityIcons: Record<string, IconType> = {
-    'completion': BiSkipNext,
-    'tools': BiWrench,
-    'thinking': BiBrain,
-    'vision': BiShow,
-    'insert': BiReflectVertical
-};
 
 function getModelValue<T>(
     fallback: T,
@@ -94,25 +83,21 @@ const modelInfo = computed(() =>
         <div class="text-2xl md:text-3xl mb-2 md:my-6 align-middle min-w-0 whitespace-normal">
             <IconModel :name="modelFromParams ?? 'Unknown'" class="size-8 md:size-14! inline mr-2" />
 
-            <span class="text-text font-bold mr-2">{{ modelName }}</span>
+            <span class="text-base-100 font-bold mr-2">{{ modelName }}</span>
             <br>
-            <span class="text-text-muted text-xl">{{ modelFromParams }}</span>
+            <span class="text-base-200 text-xl">{{ modelFromParams }}</span>
         </div>
 
         <ModelsPageCapabilitiesSkeleton v-if="selectedModel.state === 'loading'" />
-        <div v-else role="list" class="flex flex-row gap-2">
-            <div v-for="capability in modelCapabilites" role="listitem"
-                class="flex flex-row bg-secondary text-background-light p-2 rounded-lg">
-                <component :is="capabilityIcons[capability] ?? Unknown" class="size-6 p-1" />
-                <span class="capitalize">{{ capability }}</span>
-            </div>
-        </div>
+        <ModelsPageCapabilitiesList
+            v-else
+            :model-capabilities="modelCapabilites" />
 
         <div class="relative">
             <div v-if="cloudEnabled" class="absolute w-full min-h-full bg-black/35 rounded-lg backdrop-blur-sm flex items-center justify-center text-lg shadow-sm">
                 Info unavailable in Cloud mode.
             </div>
-            <h2 class="text-xl md:text-3xl pt-4 pb-2 text-text">Info</h2>
+            <h2 class="text-xl md:text-3xl pt-4 pb-2 text-base-100">Info</h2>
             <ModelsPageInfoSection title="License" :content="sanitizeSection(modelLicense)" />
             <ModelsPageInfoSection title="Modelfile" :content="sanitizeSection(modelModelfile)" />
             <ModelsPageInfoSection title="Template" :content="sanitizeSection(modelTemplate)" />

@@ -29,16 +29,16 @@ function getGreetingMessage() {
 <template>
     <div class="flex flex-col justify-center md:justify-end items-center w-full h-full md:h-2/5 mb-12">
         <span class="text-xl md:text-2xl">{{ getGreetingMessage() }},</span>
-        <span class="text-2xl md:text-4xl font-semibold text-center text-text">What can I help you with?</span>
-        <span class="pt-2 text-text-muted/80 flex flex-wrap gap-1.5 justify-center">
+        <span class="text-2xl md:text-4xl font-semibold text-center text-base-100">What can I help you with?</span>
+        <span class="pt-2 text-base-200/80 flex flex-wrap gap-1.5 justify-center">
             <RouterLink v-if="currentProviderId === 'lpcloud'" to="/account" >
-                <span class="bg-background-light/80 hover:bg-surface p-2 pr-3 rounded-full box-content hover:text-text cursor-pointer transition-colors duration-dynamic">
+                <span class="bg-base-800/80 hover:bg-base-700 p-2 pr-3 rounded-full box-content hover:text-base-100 cursor-pointer transition-colors duration-dynamic">
                     <BiCloud class="inline mr-2" />
                     <span class="items-center">LlamaPen Cloud</span>
                 </span>
             </RouterLink>
             <RouterLink v-else-if="currentProviderId === 'ollama'" to="/models">
-                <span class="bg-background-light/80 hover:bg-surface p-2 px-3 rounded-full box-content hover:text-text cursor-pointer transition-colors duration-dynamic">
+                <span class="bg-base-800/80 hover:bg-base-700 p-2 px-3 rounded-full box-content hover:text-base-100 cursor-pointer transition-colors duration-dynamic">
                     <template v-if="isConnected">
                         {{ rawModels.length }} Models Available
                     </template>
@@ -49,7 +49,7 @@ function getGreetingMessage() {
             </RouterLink>
             &middot;
             <a :href="`https://github.com/ImDarkTom/LlamaPen/tree/${commitHashFull}`" target="_blank">
-                <span :title="commitHashFull" class="bg-background-light/80 hover:bg-surface p-2 px-3 rounded-full box-content hover:text-text cursor-pointer transition-colors duration-dynamic">
+                <span :title="commitHashFull" class="bg-base-800/80 hover:bg-base-700 p-2 px-3 rounded-full box-content hover:text-base-100 cursor-pointer transition-colors duration-dynamic">
                     <span class="align-middle">v{{ appVersion }} ({{ commitHashShort }})</span>
                     <BiLinkExternal class="inline size-4 ml-1" />
                 </span>

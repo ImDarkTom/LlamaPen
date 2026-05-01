@@ -49,10 +49,12 @@ const updateValue = () => {
 				:placeholder="default"
 				:aria-label="label || 'Text Input'"
 				@keyup.enter="updateValue"
-				class="w-full p-2 rounded-lg ring-1 ring-border hover:ring-highlight outline-highlight outline-0 focus:outline-2 transition-all duration-dynamic"
+				class="w-full p-2 rounded-lg ring-1 ring-base-600 hover:ring-base-300 outline-base-300 outline-0 focus:outline-2 transition-all duration-dynamic"
 			/>
-			<div class="w-fit p-2 rounded-lg text-center aspect-square bg-primary hover:bg-highlight text-surface cursor-pointer" @click="updateValue">
-                <component :is="showSaveSuccess ? BiCheck : BiSave" />
+			<div class="w-fit p-2 rounded-lg text-center aspect-square bg-base-600 hover:bg-base-500 text-base-300 hover:text-base-200 cursor-pointer" @click="updateValue">
+                <component 
+					:is="showSaveSuccess ? BiCheck : BiSave"
+					class="p-0.5" />
             </div>
 		</div>
 	</label>

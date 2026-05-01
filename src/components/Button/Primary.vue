@@ -23,12 +23,12 @@ const componentTypes: Record<ComponentTypes, unknown> = {
 <template>
 	<component 
 		:is="componentTypes[type ?? 'button']" 
-		class="text-background p-3 md:p-4 rounded-lg cursor-pointer transition-quick shrink-0 text-center"
+		class="text-base-900 p-3 md:p-4 rounded-lg cursor-pointer transition-quick shrink-0 text-center"
 		:class="{
 			'whitespace-nowrap': singleLine,
 			'bg-primary! hover:bg-secondary!': color === 'primary' || !color,
 			'bg-danger! hover:saturate-200 hover:bg-danger!': color === 'danger',
-			'bg-border-muted text-text-muted': color === 'sunken',
+			'bg-base-500 text-base-200': color === 'sunken',
 		}"
 		v-bind="type === 'external-link' ? { target: '_blank', rel: 'noopener noreferrer' } : {}"
 	>

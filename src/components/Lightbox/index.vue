@@ -28,7 +28,7 @@ function closeLightbox() {
     <div 
         v-if="lightboxOpen"
         data-testid="lightbox-overlay"
-        class="absolute top-0 left-0 w-full h-full flex items-center justify-center bg-background-dark/45 z-100"
+        class="absolute top-0 left-0 w-full h-full flex items-center justify-center bg-base-950/45 z-100"
         @click="closeLightbox">
         <img class="max-h-screen p-2 md:p-8 lg:p-16" :src="imageSrc" alt="Lightbox image">
     </div>

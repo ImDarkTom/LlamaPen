@@ -4,18 +4,15 @@ import ChatPage from "@/views/chat/ChatPage.vue";
 import SettingsPage from "@/views/settings/SettingsPage.vue";
 import GuidePage from "@/views/guide/GuidePage.vue";
 import AccountPage from '@/views/account/AccountPage.vue';
-import ShortcutsPage from '@/views/shortcuts/ShortcutsPage.vue';
 import ModelsPage from '@/views/models/ModelsPage.vue';
 import ChatLayout from '@/layouts/ChatLayout.vue';
 import ToolsPage from '@/views/tools/ToolsPage.vue';
-import UtilityLayout from '@/layouts/UtilityLayout.vue';
 import NotFoundPage from '@/views/404.vue';
 
 const routes: RouteRecordRaw[] = [
     {
         path: "/",
         component: ChatLayout,
-        meta: { layer: "chat" },
         children: [
             { path: "/", component: ChatPage },
             { 
@@ -25,15 +22,7 @@ const routes: RouteRecordRaw[] = [
                     { path: "/chat/:id", component: ChatPage }
                 ]
             },
-        ],
-    },
-    {
-        path: '/',
-        component: UtilityLayout,
-        meta: { layer: 'utility' },
-        children: [
             { path: '/settings', component: SettingsPage },
-            { path: "/shortcuts", component: ShortcutsPage },
             { path: '/guide', component: GuidePage },
             { path: '/account', component: AccountPage },
             { 
@@ -50,7 +39,7 @@ const routes: RouteRecordRaw[] = [
                     { path: '/tools/:tool(.*)', component: ToolsPage }
                 ]
             },
-        ]   
+        ],
     },
     {
         path: '/:pathMatch(.*)*',

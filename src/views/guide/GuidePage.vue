@@ -31,7 +31,7 @@ function handleEscape(e: KeyboardEvent) {
 
 <template>
     <div class="w-full h-full flex flex-col items-center py-4 box-border overflow-y-auto
-    *:mx-auto *:md:w-4/5 *:lg:w-3/5 *:max-w-3xl">
+    *:mx-auto *:max-w-prose">
         <UIPageHeader text="Setup Guide" />
 
         <div class="flex flex-col h-full w-full box-border">

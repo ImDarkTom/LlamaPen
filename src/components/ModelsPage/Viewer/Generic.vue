@@ -1,8 +1,5 @@
 <script setup lang="ts">
 import { computed } from 'vue';
-import type { IconType } from 'vue-icons-plus';
-import { BiBrain, BiShow, BiWrench } from 'vue-icons-plus/bi';
-import Unknown from '@/icons/unknown.svg';
 import type { ModelViewInfo } from '../types';
 import { useProviderManager, type ModelInfo } from '@/composables/useProviderManager';
 import type { ModelCapabilities } from '@/providers/base/types';
@@ -13,12 +10,6 @@ const props = defineProps<{
     modelFromParams: string | null,
     selectedModel: ModelViewInfo,
 }>();
-
-const capabilityIcons: Record<keyof ModelCapabilities, IconType> = {
-    'supportsFunctionCalling': BiWrench,
-    'supportsReasoning': BiBrain,
-    'supportsVision': BiShow,
-};
 
 function getModelValue<T>(
     fallback: T,
@@ -40,8 +31,15 @@ const modelName = computed<string>(() =>
     getModelValue(props.modelFromParams || '', 'Loading...', m => m.displayName)
 );
 
-const modelCapabilites = computed<ModelCapabilities>(() =>
-    getModelValue({
+const capabilityToString: Record<keyof ModelCapabilities, string> = {
+    supportsFunctionCalling: 'tools',
+    supportsReasoning: 'thinking',
+    supportsVision: 'vision',
+};
+
+
+const modelCapabilites = computed<string[]>(() => {
+    const capabilities = getModelValue({
         supportsFunctionCalling: false,
         supportsReasoning: false,
         supportsVision: false,
@@ -49,8 +47,14 @@ const modelCapabilites = computed<ModelCapabilities>(() =>
         supportsFunctionCalling: false,
         supportsReasoning: false,
         supportsVision: false,
-    }, m => getModelCapabilities(m.info.id))
-);
+    }, m => getModelCapabilities(m.info.id));
+
+
+    return Object.entries(capabilities)
+        .filter(([_, value]) => value)
+        .map(([key]) => capabilityToString[(key as keyof ModelCapabilities)]) ?? [];
+});
+
 </script>
 
 <template>
@@ -58,18 +62,14 @@ const modelCapabilites = computed<ModelCapabilities>(() =>
         <div class="text-2xl md:text-3xl mb-2 md:my-6 align-middle min-w-0 whitespace-normal">
             <IconModel :name="modelFromParams ?? 'Unknown'" class="size-8 md:size-14! inline mr-2" />
 
-            <span class="text-text font-bold mr-2">{{ modelName }}</span>
+            <span class="text-base-100 font-bold mr-2">{{ modelName }}</span>
             <br>
-            <span class="text-text-muted text-xl">{{ modelFromParams }}</span>
+            <span class="text-base-200 text-xl">{{ modelFromParams }}</span>
         </div>
 
         <ModelsPageCapabilitiesSkeleton v-if="selectedModel.state === 'loading'" />
-        <div v-else role="list" class="flex flex-row gap-2">
-            <div v-for="capability of Object.keys(modelCapabilites) as Array<keyof ModelCapabilities>" role="listitem"
-                class="flex flex-row bg-secondary text-background-light p-2 rounded-lg">
-                <component :is="capabilityIcons[capability] ?? Unknown" class="size-6 p-1" />
-                <span class="capitalize">{{ capability }}</span>
-            </div>
-        </div>
+        <ModelsPageCapabilitiesList
+            v-else
+            :model-capabilities="modelCapabilites" />
     </UIViewerContainer>
 </template>

@@ -5,4 +5,5 @@
     <PopupNotConnected />
     <Lightbox />
     <SearchBar />
+    <PopupShortcuts />
 </template>

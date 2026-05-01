@@ -190,20 +190,28 @@ const batchActions: MenuEntry[] = [
 </script>
 
 <template>
-    <div
-        class="h-4/12 md:h-full w-full md:w-2/6 bg-background-light rounded-lg md:rounded-r-none md:border-r border-border flex flex-col gap-2 p-2 relative">
+    <div class="h-4/12 md:h-full w-full md:md:w-96 rounded-lg md:rounded-r-none flex flex-col gap-2 p-2 relative">
         <div class="flex flex-col gap-2 overflow-y-auto md:pr-3">
             <template v-if="!config.cloud.enabled">
                 <UITextDivider text="Download" />
-                <ButtonPrimary class="w-full" text="Find models" :icon="BiLinkExternal" type="external-link"
-                    href="https://ollama.com/search" />
+                <a 
+                    href="https://ollama.com/search"
+                    target="_blank"
+                    rel="noopener noreferrer">
+                    <button
+                        class="w-full text-base-900 hover:text-base-950 bg-primary hover:bg-secondary py-2 rounded-lg cursor-pointer select-none flex flex-row justify-center items-center">
+                        <IconOllama class="size-4 mr-2" />
+                        Find models
+                        <BiLinkExternal class="size-3 ml-1 mb-auto" />
+                    </button>
+                </a>
                 <RouterLink to="/models/downloads" v-slot="{ isActive }">
                     <button
-                        class="w-full text-text-muted enabled:hover:text-text bg-surface enabled:hover:bg-surface-light py-6 rounded-lg enabled:cursor-pointer select-none flex flex-row justify-center items-center gap-2 disabled:opacity-75"
-                        :class="{ 'bg-surface-light ring-2 ring-border ring-inset': isActive }"
+                        class="w-full text-base-200 enabled:hover:text-base-100 bg-base-700 enabled:hover:bg-base-600 py-2 rounded-lg enabled:cursor-pointer select-none flex flex-row justify-center items-center gap-2 disabled:opacity-75"
+                        :class="{ 'bg-base-600 ring-2 ring-base-400 ring-inset': isActive }"
                         :disabled="!isConnected">
-                        <BiDownload />
-                        Download Manager
+                        <BiDownload class="size-4" />
+                        Downloads
                     </button>
                 </RouterLink>
             </template>
@@ -211,8 +219,12 @@ const batchActions: MenuEntry[] = [
             <UITextDivider text="Models" />
 
             <div class="flex flex-row gap-2" :class="{ 'pointer-events-none': !isConnected }">
-                <input type="text" v-model="searchQuery" placeholder="Search..." :disabled="!isConnected"
-                    class="bg-background p-2 rounded-md outline-none focus:ring-1 ring-highlight ring-inset w-full">
+                <input 
+                    type="text" 
+                    v-model="searchQuery" 
+                    placeholder="Search..." 
+                    :disabled="!isConnected"
+                    class="bg-base-800 p-2 rounded-md outline-none focus:ring-1 ring-base-300 ring-inset w-full">
                 <FloatingActionMenu :actions="batchActions">
                     <button class="btn-ghost">
                         <BiDotsVerticalRounded />
@@ -226,14 +238,22 @@ const batchActions: MenuEntry[] = [
             <div v-else-if="modelsList.length === 0">
                 No models found
             </div>
-            <RouterLink v-for="{ info, loadedInMemory, hidden, displayName } in queriedModels"
-                exactActiveClass="*:bg-surface-light *:ring-1 *:ring-highlight *:ring-inset *:text-text"
-                :to="`/models/${info.id}`">
-                <div class="flex flex-row items-center gap-2 p-2 rounded-md hover:bg-surface transition-colors duration-dynamic"
-                    :class="{ 'opacity-75': hidden }">
+            <div v-else-if="queriedModels.length === 0">
+                No models match search
+            </div>
+            <RouterLink 
+                v-for="{ info, loadedInMemory, hidden, displayName } in queriedModels"
+                exactActiveClass="router-link-exact-active"
+                :to="`/models/${info.id}`"
+                class="group"
+                :class="{ 'opacity-75': hidden }">
+                <div 
+                    class="group-[.router-link-exact-active]:bg-base-950! flex flex-row items-center gap-2 p-2 rounded-md hover:bg-base-800">
                     <IconModel :name="info.id ?? 'Unknown'" class="size-6" />
-                    {{ displayName }}
-
+                    <span class="text-sm font-medium">
+                        {{ displayName }}
+                    </span>
+                    
                     <div class="grow"></div>
                     <Tooltip v-if="hidden" text="Hidden" class="flex items-center justify-center">
                         <BiHide class="h-full" />
@@ -241,10 +261,12 @@ const batchActions: MenuEntry[] = [
                     <Tooltip v-if="loadedInMemory" text="Loaded in memory" class="flex items-center justify-center">
                         <IconMemoryLoad class="h-full" />
                     </Tooltip>
-                    <FloatingActionMenu :passArgs="{ modelData: info, displayName }" :actions="modelActions"
-                        anchored="left">
+                    <FloatingActionMenu 
+                        anchored="left"
+                        :passArgs="{ modelData: info, displayName }" 
+                        :actions="modelActions">
                         <button @click.prevent
-                            class="hover:bg-surface-light group-[.active]:bg-surface-light group-[.active]:text-text p-1.5 rounded-sm cursor-pointer">
+                            class="hover:bg-base-700 group-[.active]:bg-base-600 group-[.active]:text-base-100 p-1.5 rounded-sm cursor-pointer">
                             <BiDotsVerticalRounded />
                         </button>
                     </FloatingActionMenu>

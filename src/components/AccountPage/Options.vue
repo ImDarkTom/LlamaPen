@@ -53,7 +53,7 @@ async function updateOptions() {
                     </span>
                     <select 
                         v-model="form.providerSelection"
-                        class="bg-surface p-2 rounded-md ring-1 ring-border-muted focus:ring-border w-full overflow-hidden text-ellipsis">
+                        class="bg-base-700 p-2 rounded-md ring-1 ring-base-500 focus:ring-base-400 w-full overflow-hidden text-ellipsis">
                         <option value="all">Any - use any provider for generation</option>
                         <option value="no_training">No training - do not use providers that train on prompts</option>
                         <option value="no_retention">No retention - do not use providers that store any persistent data</option>

@@ -10,11 +10,17 @@ defineProps<{
 
 <template>
     <RouterLink :to class="group">
-        <div class="flex p-2 hover:bg-surface rounded-md group-[.router-link-active]:text-text group-[.router-link-active]:ring-1 group-[.router-link-active]:bg-surface ring-highlight">
-            <span class="items-center">
-                <component :is="icon" class="inline-block" :class="{ 'mr-2': text }" />
-                {{ text }}
-            </span>
+        <div class="flex p-2 hover:bg-base-800 rounded-md group-[.router-link-active]:bg-base-950!">
+            <div class="flex flex-row items-center justify-center gap-2">
+                <component 
+                    :is="icon" 
+                    class="inline-block size-5" />
+                <span 
+                    v-if="text" 
+                    class="text-sm font-medium">
+                    {{ text }}
+                </span>
+            </div>
         </div>
     </RouterLink>
 </template>
