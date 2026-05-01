@@ -1,6 +1,6 @@
 <script setup lang="ts">
 import { BiEdit } from 'vue-icons-plus/bi';
-import { computed, onMounted, watch } from 'vue';
+import { computed, onMounted, watch, onBeforeUnmount } from 'vue';
 import useMessagesStore from '@/stores/messagesStore';
 import { emitter } from '@/lib/mitt';
 
