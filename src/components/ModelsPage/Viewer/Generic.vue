@@ -1,8 +1,5 @@
 <script setup lang="ts">
 import { computed } from 'vue';
-import type { IconType } from 'vue-icons-plus';
-import { BiBrain, BiShow, BiWrench } from 'vue-icons-plus/bi';
-import Unknown from '@/icons/unknown.svg';
 import type { ModelViewInfo } from '../types';
 import { useProviderManager, type ModelInfo } from '@/composables/useProviderManager';
 import type { ModelCapabilities } from '@/providers/base/types';
@@ -13,12 +10,6 @@ const props = defineProps<{
     modelFromParams: string | null,
     selectedModel: ModelViewInfo,
 }>();
-
-const capabilityIcons: Record<keyof ModelCapabilities, IconType> = {
-    'supportsFunctionCalling': BiWrench,
-    'supportsReasoning': BiBrain,
-    'supportsVision': BiShow,
-};
 
 function getModelValue<T>(
     fallback: T,
