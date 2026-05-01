@@ -2,6 +2,9 @@
 import { storeToRefs } from 'pinia';
 import useChatsStore from '@/stores/chatsStore';
 import SidebarEntry from './SidebarEntry.vue';
+import { TbListDetails } from 'vue-icons-plus/tb';
+import { BiWrench } from 'vue-icons-plus/bi';
+import { BsKeyboard } from 'vue-icons-plus/bs';
 
 const chatsStore = useChatsStore();
 const { pinnedChats, hasPinnedChats, unpinnedChatsByRecent } = storeToRefs(chatsStore);
@@ -9,6 +12,24 @@ const { pinnedChats, hasPinnedChats, unpinnedChatsByRecent } = storeToRefs(chats
 
 <template>
 	<div class="grow overflow-y-auto px-2 [scrollbar-width:thin]">
+		
+		<div class="flex flex-col">
+			<SidebarMenuLink
+				text="Models"
+				:icon="TbListDetails"
+				:to="{ path: '/models' }" />
+
+			<SidebarMenuLink
+				text="Tools"
+				:icon="BiWrench"
+				:to="{ path: '/tools' }" />
+
+			<SidebarMenuLink
+				text="Shortcuts"
+				:icon="BsKeyboard"
+				:to="{ path: '/shortcuts' }" />
+		</div>
+
 		<UITextDivider
 			v-if="hasPinnedChats"
 			text="Pinned" />

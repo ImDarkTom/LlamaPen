@@ -29,4 +29,14 @@ const config = useConfigStore();
             <RouterView />
         </main>
     </div>
+
+    <!-- <div class="flex flex-row gap-2 h-svh w-full md:bg-base-900">
+        <main class="w-full pb-14 p-2 md:pb-0 md:p-0">
+            <RouterView v-slot="{ Component }">
+                <Transition name="page-switch" mode="out-in">
+                    <component :is="Component" />
+                </Transition>
+            </RouterView>
+        </main>
+    </div> -->
 </template>

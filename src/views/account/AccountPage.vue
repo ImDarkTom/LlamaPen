@@ -114,7 +114,7 @@ const periodEnd = computed(() => {
 
 <template>
 	<div class="w-full h-full flex flex-col items-center py-4 box-border overflow-y-auto px-2
-	*:mx-auto *:md:w-4/5 *:lg:w-3/5 *:max-w-3xl">
+	*:mx-auto *:max-w-prose">
 		<div v-if="cloudUserStore.isLoading" class="h-full flex items-center justify-center">
 			<BiLoaderAlt class="animate-spin size-12" />
 		</div>

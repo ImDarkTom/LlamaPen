@@ -40,26 +40,6 @@ body[data-reduce-motion] {
     transform-origin: top;
 }
 
-/* layout-to-chat & layout-to-utility - for layout switches */
-.layout-to-chat-enter-active,
-.layout-to-chat-leave-active,
-.layout-to-utility-enter-active,
-.layout-to-utility-leave-active {
-    transition: opacity var(--transition-duration) ease, transform var(--transition-duration) ease;
-    z-index: -100;
-}
-.layout-to-chat-leave-to,
-.layout-to-utility-enter-from {
-    transform: scale(0.75) translateY(100%);
-    opacity: 0;
-}
-
-.layout-to-chat-enter-from,
-.layout-to-utility-leave-to {
-    transform: scale(1) translateY(0%);
-    opacity: 0;
-}
-
 /* open-search - search menu */
 .open-search-enter-active,
 .open-search-leave-active {

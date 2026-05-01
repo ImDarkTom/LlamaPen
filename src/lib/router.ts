@@ -8,14 +8,12 @@ import ShortcutsPage from '@/views/shortcuts/ShortcutsPage.vue';
 import ModelsPage from '@/views/models/ModelsPage.vue';
 import ChatLayout from '@/layouts/ChatLayout.vue';
 import ToolsPage from '@/views/tools/ToolsPage.vue';
-import UtilityLayout from '@/layouts/UtilityLayout.vue';
 import NotFoundPage from '@/views/404.vue';
 
 const routes: RouteRecordRaw[] = [
     {
         path: "/",
         component: ChatLayout,
-        meta: { layer: "chat" },
         children: [
             { path: "/", component: ChatPage },
             { 
@@ -25,30 +23,23 @@ const routes: RouteRecordRaw[] = [
                     { path: "/chat/:id", component: ChatPage }
                 ]
             },
-            {
-                path: '/',
-                component: UtilityLayout,
-                meta: { layer: 'utility' },
+            { path: '/settings', component: SettingsPage },
+            { path: "/shortcuts", component: ShortcutsPage },
+            { path: '/guide', component: GuidePage },
+            { path: '/account', component: AccountPage },
+            { 
+                path: '/models', 
+                component: ModelsPage,
                 children: [
-                    { path: '/settings', component: SettingsPage },
-                    { path: "/shortcuts", component: ShortcutsPage },
-                    { path: '/guide', component: GuidePage },
-                    { path: '/account', component: AccountPage },
-                    { 
-                        path: '/models', 
-                        component: ModelsPage,
-                        children: [
-                            { path: '/models/:model(.*)', component: ModelsPage }
-                        ]
-                    },
-                    { 
-                        path: '/tools', 
-                        component: ToolsPage,
-                        children: [
-                            { path: '/tools/:tool(.*)', component: ToolsPage }
-                        ]
-                    },
-                ]   
+                    { path: '/models/:model(.*)', component: ModelsPage }
+                ]
+            },
+            { 
+                path: '/tools', 
+                component: ToolsPage,
+                children: [
+                    { path: '/tools/:tool(.*)', component: ToolsPage }
+                ]
             },
         ],
     },

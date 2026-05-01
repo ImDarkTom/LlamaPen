@@ -240,14 +240,12 @@ const selectActions: MenuEntry[] = [
 			</div>
 			<div class="absolute hidden items-center justify-center -right-1 -top-1 size-8 group-hover:flex">
 				<FloatingActionMenu :actions="selectActions">
-					<Transition name="layout-to-chat">
-						<div
-							v-if="selected"
-							ref="actionMenuButton"
-							class="p-0.5 bg-base-600 ring-1 ring-base-200 hover:ring-base-100 hover:text-base-100 rounded-md">
-							<BiDotsVerticalRounded class="size-6" />
-						</div>
-					</Transition>
+					<div
+						v-if="selected"
+						ref="actionMenuButton"
+						class="p-0.5 bg-base-600 ring-1 ring-base-200 hover:ring-base-100 hover:text-base-100 rounded-md">
+						<BiDotsVerticalRounded class="size-6" />
+					</div>
 				</FloatingActionMenu>
 			</div>
 		</div>
