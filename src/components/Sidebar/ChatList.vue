@@ -4,7 +4,6 @@ import useChatsStore from '@/stores/chatsStore';
 import SidebarEntry from './SidebarEntry.vue';
 import { TbListDetails } from 'vue-icons-plus/tb';
 import { BiWrench } from 'vue-icons-plus/bi';
-import { BsKeyboard } from 'vue-icons-plus/bs';
 
 const chatsStore = useChatsStore();
 const { pinnedChats, hasPinnedChats, unpinnedChatsByRecent } = storeToRefs(chatsStore);
