@@ -72,28 +72,39 @@ const timeoutValue = computed({
     </div>
     <div v-else class="overflow-auto flex flex-col md:pr-4">
         <h1 class="text-base-100 font-bold">{{ props.tool }}</h1>
-        <div v-if="selectedTool.isInternal"
-            class="py-2">
-            <template v-if="props.tool === 'web_search'">
-                This tool is intended to be used with a running SearXNG instance. If you have one set up (with JSON requests enabled), you may use it here, otherwise, to set up SearXNG for LlamaPen specifically, see 
-                <ToolsPageExternalLink href="https://github.com/ImDarkTom/LlamaPen-Search">https://github.com/ImDarkTom/LlamaPen-Search</ToolsPageExternalLink>.
-            </template>
-        </div>
+        <p 
+            v-if="selectedTool.isInternal && props.tool === 'web_search'"
+            class="p-2 my-2 ring ring-base-700 bg-base-800 ring-inset rounded-lg">
+            This tool is intended to be used with a running SearXNG instance. If you have one set up (with JSON requests enabled), you may use it here, otherwise, to set up SearXNG for LlamaPen specifically, see 
+            <ToolsPageExternalLink href="https://github.com/ImDarkTom/LlamaPen-Search">https://github.com/ImDarkTom/LlamaPen-Search</ToolsPageExternalLink>.
+        </p>
+
         <div
             v-else-if="selectedTool.userHint"
             class="py-2">{{ selectedTool.userHint }}</div>
         <UITextDivider text="User-facing" />
         <label class="text-lg mb-2">
-            <input type="checkbox" v-model="selectedTool.userConfirmation">
+            <input 
+                type="checkbox" 
+                v-model="selectedTool.userConfirmation"
+                class="accent-secondary">
             <span class="ml-2">Require user confirmation?</span>
         </label>
-        <ToolsPageInputText v-model="selectedTool.url" label="Query URL" placeholder="https://example.com/?param={{query}}&other={{param}}" />
+
+        <ToolsPageInputText 
+            v-model="selectedTool.url" 
+            label="Query URL" 
+            placeholder="https://example.com/?param={{query}}&other={{param}}" />
+
         <button
             class="btn-primary w-full p-3 my-2!"
             @click="reqOptionsOpened = !reqOptionsOpened">
             More options
         </button>
-        <ToolsPageToolRequestOptions v-if="reqOptionsOpened" :toolName="props.tool" :selectedTool="selectedTool" />
+        <ToolsPageToolRequestOptions 
+            v-if="reqOptionsOpened" 
+            :toolName="props.tool" 
+            :selectedTool="selectedTool" />
         <div v-if="missingParams && missingParams.length > 0" class="text-warning">
             <BiError class="inline" />
             <span class="align-middle">Params not found in query URL: </span>
@@ -108,9 +119,15 @@ const timeoutValue = computed({
                 label="Description" 
                 placeholder="How/when to use the tool (e.g. Search the internet for a query)" />
             <h2>Parameters</h2>
-            <div v-for="(param, index) in selectedTool.params" :key="index" class="flex flex-col bg-base-700 p-2 gap-2 rounded-lg">
+            <div 
+                v-for="(param, index) in selectedTool.params" 
+                :key="index" 
+                class="flex flex-col bg-base-800 p-2 gap-2 rounded-lg">
                 <div class="flex flex-row gap-2">
-                    <ToolsPageInputText v-model="param.name" placeholder="Parameter name (e.g. page)" class="w-full font-medium" />
+                    <ToolsPageInputText 
+                        v-model="param.name" 
+                        placeholder="Parameter name (e.g. page)" 
+                        class="w-full font-medium" />
                     <button 
                         class="bg-danger text-base-800 p-2 cursor-pointer aspect-square rounded-md hover hover:saturate-200 transition-quick"
                         @click="deleteParam(param.name)">

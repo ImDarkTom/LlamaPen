@@ -11,7 +11,7 @@ const emit = defineEmits(['update:modelValue']);
     <label>
         <span>{{ label }}</span>
         <select 
-            class="w-full bg-base-600 p-4 rounded-md"
+            class="w-full bg-base-700 p-4 rounded-md"
             :value="props.modelValue"
             @input="emit('update:modelValue', ($event.target as HTMLSelectElement).value)">>
             <option

@@ -298,7 +298,7 @@ body:not([data-native-scrollbar]) {
 }
 
 @utility tools-input {
-    @apply bg-base-600 rounded-md focus:ring-1 ring-base-300 ring-inset outline-none
+    @apply bg-base-700 rounded-md focus:ring-1 ring-base-300 ring-inset outline-none;
 }
 
 

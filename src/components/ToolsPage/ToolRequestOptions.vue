@@ -16,7 +16,7 @@ const bodyPlaceholder = `e.g:
 </script>
 
 <template>
-    <div class="flex flex-col gap-2 bg-base-700 p-2 rounded-lg" v-if="selectedTool">
+    <div class="flex flex-col gap-2 bg-base-800 p-2 rounded-lg" v-if="selectedTool">
         <ToolsPageInputSelect
             v-model="selectedTool.requestOptions.method"
             label="Method"
