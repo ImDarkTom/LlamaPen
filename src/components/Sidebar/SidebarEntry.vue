@@ -142,7 +142,7 @@ const icon = computed(() => {
         :title="hoverMessage" 
         @dblclick="editChatName" >
         <div 
-            class="group relative flex flex-row gap-1 p-1.5 px-2 pr-6 not-has-[div.absolute:hover]:hover:bg-base-900 rounded-sm"
+            class="group text-base-300 relative flex flex-row gap-1 p-1.5 px-2 pr-6 not-has-[div.absolute:hover]:hover:bg-base-900 rounded-sm"
             :class="{ 'bg-base-800!': isChatOpened }">
             <div 
                 v-if="config.ui.sidebar.entryIcons"
@@ -169,7 +169,7 @@ const icon = computed(() => {
                 }">
             <div class="size-8 p-1 block md:not-group-hover:hidden absolute right-0 top-1/2 -translate-y-1/2 rounded-sm 
                 bg-base-950 md:bg-base-900 
-                hover:text-base-100 hover:bg-base-800"
+                hover:text-base-100 hover:bg-base-800!"
                 :class="{ 
                     'bg-base-800! block!': isChatOpened
                 }">

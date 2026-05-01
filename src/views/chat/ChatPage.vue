@@ -15,6 +15,10 @@ const shouldShowNewChatButton = computed(() => messagesStore.openedChatId !== nu
 watch(() => messagesStore.openedChatId, 
     () => emitter.emit('focusInputBar')
 );
+
+onBeforeUnmount(() => {
+    messagesStore.openedChatId = null;
+});
 </script>
 
 <template>

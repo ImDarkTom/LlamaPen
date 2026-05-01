@@ -10,7 +10,7 @@ defineProps<{
 </script>
 
 <template>
-    <RouterLink :to class="group">
+    <SidebarRouterLink :to class="group" active-class="router-link-active" >
         <div class="flex p-2 hover:bg-base-900 rounded-md text-base-300 group-[.router-link-active]:text-base-200! group-[.router-link-active]:bg-base-800!">
             <div class="flex flex-row items-center justify-center gap-2">
                 <component 
@@ -21,5 +21,5 @@ defineProps<{
                 </span>
             </div>
         </div>
-    </RouterLink>
+    </SidebarRouterLink>
 </template>
