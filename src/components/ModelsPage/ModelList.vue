@@ -190,8 +190,7 @@ const batchActions: MenuEntry[] = [
 </script>
 
 <template>
-    <div
-        class="h-4/12 md:h-full w-full md:w-2/6 rounded-lg md:rounded-r-none md:border-r border-base-400 flex flex-col gap-2 p-2 relative">
+    <div class="h-4/12 md:h-full w-full md:w-2/6 rounded-lg md:rounded-r-none flex flex-col gap-2 p-2 relative">
         <div class="flex flex-col gap-2 overflow-y-auto md:pr-3">
             <template v-if="!config.cloud.enabled">
                 <UITextDivider text="Download" />
@@ -220,8 +219,12 @@ const batchActions: MenuEntry[] = [
             <UITextDivider text="Models" />
 
             <div class="flex flex-row gap-2" :class="{ 'pointer-events-none': !isConnected }">
-                <input type="text" v-model="searchQuery" placeholder="Search..." :disabled="!isConnected"
-                    class="bg-base-900 p-2 rounded-md outline-none focus:ring-1 ring-base-300 ring-inset w-full">
+                <input 
+                    type="text" 
+                    v-model="searchQuery" 
+                    placeholder="Search..." 
+                    :disabled="!isConnected"
+                    class="bg-base-800 p-2 rounded-md outline-none focus:ring-1 ring-base-300 ring-inset w-full">
                 <FloatingActionMenu :actions="batchActions">
                     <button class="btn-ghost">
                         <BiDotsVerticalRounded />
@@ -235,14 +238,22 @@ const batchActions: MenuEntry[] = [
             <div v-else-if="modelsList.length === 0">
                 No models found
             </div>
-            <RouterLink v-for="{ info, loadedInMemory, hidden, displayName } in queriedModels"
-                exactActiveClass="*:bg-base-600 *:ring-1 *:ring-base-300 *:ring-inset *:text-base-100"
-                :to="`/models/${info.id}`">
-                <div class="flex flex-row items-center gap-2 p-2 rounded-md hover:bg-base-700 transition-colors duration-dynamic"
-                    :class="{ 'opacity-75': hidden }">
+            <div v-else-if="queriedModels.length === 0">
+                No models match search
+            </div>
+            <RouterLink 
+                v-for="{ info, loadedInMemory, hidden, displayName } in queriedModels"
+                exactActiveClass="router-link-exact-active"
+                :to="`/models/${info.id}`"
+                class="group"
+                :class="{ 'opacity-75': hidden }">
+                <div 
+                    class="group-[.router-link-exact-active]:bg-base-950! inline-flex items-center gap-2 p-2 rounded-md hover:bg-base-800">
                     <IconModel :name="info.id ?? 'Unknown'" class="size-6" />
-                    {{ displayName }}
-
+                    <span class="text-sm font-medium">
+                        {{ displayName }}
+                    </span>
+                    
                     <div class="grow"></div>
                     <Tooltip v-if="hidden" text="Hidden" class="flex items-center justify-center">
                         <BiHide class="h-full" />
@@ -250,10 +261,12 @@ const batchActions: MenuEntry[] = [
                     <Tooltip v-if="loadedInMemory" text="Loaded in memory" class="flex items-center justify-center">
                         <IconMemoryLoad class="h-full" />
                     </Tooltip>
-                    <FloatingActionMenu :passArgs="{ modelData: info, displayName }" :actions="modelActions"
-                        anchored="left">
+                    <FloatingActionMenu 
+                        anchored="left"
+                        :passArgs="{ modelData: info, displayName }" 
+                        :actions="modelActions">
                         <button @click.prevent
-                            class="hover:bg-base-600 group-[.active]:bg-base-600 group-[.active]:text-base-100 p-1.5 rounded-sm cursor-pointer">
+                            class="hover:bg-base-700 group-[.active]:bg-base-600 group-[.active]:text-base-100 p-1.5 rounded-sm cursor-pointer">
                             <BiDotsVerticalRounded />
                         </button>
                     </FloatingActionMenu>
