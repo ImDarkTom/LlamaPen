@@ -9,6 +9,7 @@ import { BiInfoCircle, BiRefresh, BiTrash } from 'vue-icons-plus/bi';
 import { useRegisterSW } from 'virtual:pwa-register/vue';
 import { ollamaWrapper } from '@/providers/ollama/OllamaWrapper';
 import { useProviderManager } from '@/composables/useProviderManager';
+import { emitter } from '@/lib/mitt';
 
 const config = useConfigStore();
 const router = useRouter();
@@ -294,6 +295,14 @@ const themes = {
                 color="danger"
                 :icon="BiTrash"
                 @click="clearChats" />
+        </SettingsOptionCategory>
+
+        <SettingsOptionCategory label="Keyboard Shortcuts">
+            <ButtonPrimary
+                text="View shortcuts"
+                type="button"
+                color="primary"
+                @click="emitter.emit('shortcutsPopup')" />
         </SettingsOptionCategory>
 
         <SettingsOptionCategory label="PWA">

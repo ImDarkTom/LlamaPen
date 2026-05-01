@@ -65,13 +65,22 @@ onUnmounted(() => {
             <SidebarFooter />
         </aside>
         <div class="absolute top-0 left-0 h-12 w-12 p-2 z-30">
-            <div 
-                class="size-10 p-1.5 cursor-pointer rounded-lg text-base-100 hover:bg-base-700 hover:shadow-md shadow-base-950 transition-all duration-dynamic"
-                :class="{ 'bg-base-800': !useConfig.showSidebar }"
-                @pointerdown="handlePointerDown" 
-                aria-label="Toggle Sidebar" >
-                <TbLayoutSidebarFilled class="size-full" />
-            </div>
+            <Tooltip 
+                text="Toggle Sidebar" 
+                size="tiny"
+                :kbd-shortcut="{
+                    key: 's',
+                    ctrl: true,
+                    shift: true,
+                }">
+                <div 
+                    class="size-10 p-1.5 cursor-pointer rounded-lg text-base-100 hover:bg-base-700 hover:shadow-md shadow-base-950 transition-all duration-dynamic"
+                    :class="{ 'bg-base-800': !useConfig.showSidebar }"
+                    @pointerdown="handlePointerDown" 
+                    aria-label="Toggle Sidebar" >
+                    <TbLayoutSidebarFilled class="size-full" />
+                </div>
+            </Tooltip>
         </div>
     </div>
 </template>

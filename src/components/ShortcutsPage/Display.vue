@@ -11,7 +11,7 @@ const getTitleCase = (text: string) => {
 
 <template>
     <div class="flex flex-col">
-        <div class="flex flex-row w-full items-center justify-between">
+        <div class="flex flex-row w-full items-center justify-between text-sm">
             <span>{{ label }}</span>
             <div class="flex flex-row gap-2">
                 <kbd 

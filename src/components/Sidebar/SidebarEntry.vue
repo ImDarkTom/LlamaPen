@@ -88,7 +88,7 @@ const actions: MenuEntry<MouseEvent>[] = [
         type: 'text',
         text: dropdownPinText.value,
         icon: dropdownPinIcon.value,
-        hotkey: { alt: true, ctrl: true, key: 'p' },
+        hotkey: { shift: true, alt: true, key: 'p' },
         onClick: () => setPinned(props.chat.id, !isPinned.value),
     },
     {
@@ -104,6 +104,7 @@ const actions: MenuEntry<MouseEvent>[] = [
         type: 'text',
         text: 'Delete',
         icon: BiTrash,
+        hotkey: { ctrl: true, shift: true, key: '⌫' },
         onClick: promptDeleteChat,
         category: 'danger',
     },

@@ -23,11 +23,6 @@ const { pinnedChats, hasPinnedChats, unpinnedChatsByRecent } = storeToRefs(chats
 				text="Tools"
 				:icon="BiWrench"
 				:to="{ path: '/tools' }" />
-
-			<SidebarMenuLink
-				text="Shortcuts"
-				:icon="BsKeyboard"
-				:to="{ path: '/shortcuts' }" />
 		</div>
 
 		<UITextDivider

@@ -5,8 +5,9 @@ import { onUnmounted, ref } from 'vue';
 
 const props = withDefaults(defineProps<{
     text: string;
+    kbdShortcut?: Hotkey;
     disabled?: boolean;
-    size? : 'small' | 'medium' | 'large';
+    size? : 'tiny' | 'small' | 'medium' | 'large';
 }>(), {
     disabled: false,
     size: 'medium',
@@ -64,17 +65,20 @@ onUnmounted(() => {
                 class="absolute z-45"
                 :style="menuPosition">
                 <div
-                    class="bg-base-600 ring-base-400 ring-1 max-w-prose w-max p-2 rounded-lg shadow-md"
-                    :class="{ 'p-1.5!': size === 'small' }">
-                    <span
-                        data-testid="tooltip-text"
-                        :class="{ 
-                            'text-sm': size === 'small',
-                            'text-md': size === 'medium',
-                            'text-lg': size === 'large',
-                        }">
+                    class="flex flex-col items-center bg-base-700 ring-base-600 ring-1 max-w-prose w-max p-2 rounded-lg shadow-md"
+                    :class="{ 
+                        'text-xs font-medium px-1.5! py-0.5!': size === 'tiny',
+                        'text-sm font-medium p-1.5!': size === 'small',
+                        'text-md': size === 'medium',
+                        'text-lg': size === 'large',
+                    }">
+                    <span data-testid="tooltip-text">
                         {{ text }}
                     </span>
+                    
+                    <AppKeyboardShortcutRenderer 
+                        v-if="kbdShortcut" 
+                        :hotkey="kbdShortcut" />
                 </div>
             </div>
         </Teleport>

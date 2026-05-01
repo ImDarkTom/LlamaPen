@@ -8,7 +8,7 @@ export function formatHotkeys(hotkey: Hotkey, platform: 'win' | 'mac') {
     } else {
         if (hotkey.ctrl) result.push('Ctrl');
         if (hotkey.alt) result.push('Alt');
-        if (hotkey.shift) result.push('Shift');
+        if (hotkey.shift) result.push('⇧');
     }
 
     result.push(hotkey.key.toUpperCase());

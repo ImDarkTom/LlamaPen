@@ -33,9 +33,9 @@ const emit = defineEmits<{
             <h2 id="popupTitle" class="text-3xl font-semibold flex flex-row items-center gap-2">
                 <slot name="title">Popup</slot>
             </h2>
-            <p id="popupText" class="mt-4 grow text-lg line-space">
+            <div id="popupText" class="mt-4 grow text-lg line-space overflow-hidden">
                 <slot name="body"></slot>
-            </p>
+            </div>
             <div class="*:mt-4 *:bg-primary *:text-base-700 *:font-semibold *:hover:bg-secondary *:transition-colors *:duration-dynamic *:w-36 *:h-12 *:rounded-md *:cursor-pointer
                 flex flex-row gap-6">
                 <slot name="buttons"></slot>

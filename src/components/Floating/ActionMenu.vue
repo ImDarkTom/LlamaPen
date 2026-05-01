@@ -1,5 +1,4 @@
 <script setup lang="ts" generic="T = void">
-import { formatHotkeys } from '@/utils/formatHotkeys';
 import { ref } from 'vue';
 import type { IconType } from 'vue-icons-plus';
 
@@ -53,19 +52,12 @@ const isOpened = ref(false);
                             v-if="entry.icon !== undefined" 
                             :is="getIcon(entry.icon)" 
                             class="inline size-5" />
-                        <span>
+                        <span class="mr-auto">
                             {{ getText(entry.text) }}
                         </span>
-                        <span 
-                            v-if="entry.hotkey" 
-                            class="ml-4 text-xs flex flex-row gap-1">
-                            <kbd 
-                                v-for="key in formatHotkeys(entry.hotkey, 'win')"
-                                class="ring-1 ring-inset rounded-sm px-1"
-                                :key="key">
-                                {{ key }}
-                            </kbd>
-                        </span>
+                        <AppKeyboardShortcutRenderer
+                            v-if="entry.hotkey"
+                            :hotkey="entry.hotkey" />
                     </li>
                     <div 
                         v-else-if="entry.type === 'divider' && (entry.condition === undefined || entry.condition === true)"
