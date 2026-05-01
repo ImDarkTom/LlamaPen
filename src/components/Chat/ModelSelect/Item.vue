@@ -134,26 +134,26 @@ const selectActions: MenuEntry[] = [
 					<!-- Capability tags -->
 					<div 
 						v-if="modelCapabilities.supportsVision"
-						class="bg-green-400/25 rounded-sm ring-1 ring-green-400 p-0.5"
+						class="bg-capability-vision/25 rounded-sm ring-1 ring-capability-vision p-0.5"
 						title="Vision - can process images">
-						<BiShow class="text-green-400 size-4" />
+						<BiShow class="text-capability-vision size-4" />
 					</div>
 					<div 
 						v-if="modelCapabilities.supportsReasoning"
-						class="bg-violet-400/25 rounded-sm ring-1 ring-violet-400 p-0.5 flex flex-row"
+						class="bg-capability-reasoning/25 rounded-sm ring-1 ring-capability-reasoning p-0.5 flex flex-row"
 						:title="providerMetadata?.provider === 'lpcloud' && providerMetadata.data.tags?.includes('alwaysReasons') 
 							? 'Locked reasoning - always uses reasoning capabilities' 
 							: 'Thinking - toggleable enhanced reasoning capabilities'">
-						<BiBrain class="text-violet-400 size-4" />
+						<BiBrain class="text-capability-reasoning size-4" />
 						<BiLock
 							v-if="providerMetadata?.provider === 'lpcloud' && providerMetadata?.data.tags?.includes('alwaysReasons')"
-							class="text-violet-400 size-4" />
+							class="text-capability-reasoning size-4" />
 					</div>
 					<div 
 						v-if="modelCapabilities.supportsFunctionCalling"
-						class="bg-blue-400/25 rounded-sm ring-1 ring-blue-400 p-0.5"
+						class="bg-capability-tools/25 rounded-sm ring-1 ring-capability-tools p-0.5"
 						title="Tools - can use external tools">
-						<BiWrench class="text-blue-400 size-4" />
+						<BiWrench class="text-capability-tools size-4" />
 					</div>
 				</div>
 			</div>
@@ -216,26 +216,26 @@ const selectActions: MenuEntry[] = [
 				<!-- Capability tags -->
 				<div 
 					v-if="modelCapabilities.supportsVision"
-					class="bg-green-400/25 rounded-sm ring-1 ring-green-400 p-0.5"
+					class="bg-capability-vision/25 rounded-sm ring-1 ring-capability-vision p-0.5"
 					title="Vision - can process images">
-					<BiShow class="text-green-400 size-4" />
+					<BiShow class="text-capability-vision size-4" />
 				</div>
 				<div 
 					v-if="modelCapabilities.supportsReasoning"
-					class="bg-violet-400/25 rounded-sm ring-1 ring-violet-400 p-0.5 flex flex-row"
+					class="bg-capability-reasoning/25 rounded-sm ring-1 ring-capability-reasoning p-0.5 flex flex-row"
 					:title="providerMetadata?.provider === 'lpcloud' && providerMetadata.data.tags?.includes('alwaysReasons') 
 						? 'Locked reasoning - always uses reasoning capabilities' 
 						: 'Thinking - toggleable enhanced reasoning capabilities'">
-					<BiBrain class="text-violet-400 size-4" />
+					<BiBrain class="text-capability-reasoning size-4" />
 					<BiLock
 						v-if="providerMetadata?.provider === 'lpcloud' && providerMetadata?.data.tags?.includes('alwaysReasons')"
-						class="text-violet-400 size-4" />
+						class="text-capability-reasoning size-4" />
 				</div>
 				<div 
 					v-if="modelCapabilities.supportsFunctionCalling"
-					class="bg-blue-400/25 rounded-sm ring-1 ring-blue-400 p-0.5"
+					class="bg-capability-tools/25 rounded-sm ring-1 ring-capability-tools p-0.5"
 					title="Tools - can use external tools">
-					<BiWrench class="text-blue-400 size-4" />
+					<BiWrench class="text-capability-tools size-4" />
 				</div>
 			</div>
 			<div class="absolute hidden items-center justify-center -right-1 -top-1 size-8 group-hover:flex">

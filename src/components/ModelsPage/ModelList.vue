@@ -190,7 +190,7 @@ const batchActions: MenuEntry[] = [
 </script>
 
 <template>
-    <div class="h-4/12 md:h-full w-full md:w-2/6 rounded-lg md:rounded-r-none flex flex-col gap-2 p-2 relative">
+    <div class="h-4/12 md:h-full w-full md:md:w-96 rounded-lg md:rounded-r-none flex flex-col gap-2 p-2 relative">
         <div class="flex flex-col gap-2 overflow-y-auto md:pr-3">
             <template v-if="!config.cloud.enabled">
                 <UITextDivider text="Download" />
@@ -248,7 +248,7 @@ const batchActions: MenuEntry[] = [
                 class="group"
                 :class="{ 'opacity-75': hidden }">
                 <div 
-                    class="group-[.router-link-exact-active]:bg-base-950! inline-flex items-center gap-2 p-2 rounded-md hover:bg-base-800">
+                    class="group-[.router-link-exact-active]:bg-base-950! flex flex-row items-center gap-2 p-2 rounded-md hover:bg-base-800">
                     <IconModel :name="info.id ?? 'Unknown'" class="size-6" />
                     <span class="text-sm font-medium">
                         {{ displayName }}

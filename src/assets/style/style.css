@@ -229,6 +229,12 @@ body:not([data-native-scrollbar]) {
     --color-success: var(--light-success);
     --color-info: var(--light-info);
 
+    --color-capability-completion: var(--color-teal-400);
+    --color-capability-vision: var(--color-green-400);
+    --color-capability-reasoning: var(--color-violet-400);
+    --color-capability-tools: var(--color-blue-400);
+    --color-capability-audio: var(--color-cyan-400);
+
     --animate-breathe: breathe 2s ease-in-out infinite;
     --animate-blink: blink 1s ease-in-out infinite;
 

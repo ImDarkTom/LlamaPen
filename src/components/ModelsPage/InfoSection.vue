@@ -26,7 +26,7 @@ function formatValue(value: unknown | null) {
 
 <template>
     <div class="w-full mb-6">
-        <div class="flex flex-row items-center justify-center w-full cursor-pointer bg-base-700 hover:bg-base-600 hover:text-base-100 p-2 rounded-lg gap-2"
+        <div class="flex flex-row items-center justify-center w-full cursor-pointer bg-base-800 hover:bg-base-700 hover:text-base-100 p-2 rounded-lg gap-2"
             @click="showingFull = !showingFull">
             <span class="text-lg md:text-2xl w-full select-none">{{ title }}</span>
             <BiChevronUp class="h-full w-8 p-1" v-if="showingFull" />
