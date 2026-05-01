@@ -3,7 +3,7 @@ import { useChatSearch } from '@/composables/useChatSearch';
 import { emitter } from '@/lib/mitt';
 import router from '@/lib/router';
 import { nextTick, onBeforeUnmount, onMounted, ref } from 'vue';
-import { BiFilterAlt, BiTimeFive } from 'vue-icons-plus/bi';
+import { BiFilterAlt, BiTimeFive, BiX } from 'vue-icons-plus/bi';
 import { PiSparkleFill } from 'vue-icons-plus/pi';
 
 const {
@@ -130,6 +130,12 @@ function onInputKeyDown(e: KeyboardEvent) {
                         :class="{ 'hover:bg-base-500! text-base-200 bg-base-600!': isShowingFiltersMenu }">
                             <BiFilterAlt class="mr-0.5" />
                     </label>
+
+                    <button 
+                        class="px-1.5 flex items-center justify-center cursor-pointer text-base-300 hover:text-base-200"
+                        @click="isShowingSearchMenu = false">
+                        <BiX class="size-7" />
+                    </button>
                 </div>
                 <div 
                     v-if="isShowingFiltersMenu" 
