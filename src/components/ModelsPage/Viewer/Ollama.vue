@@ -1,7 +1,7 @@
 <script setup lang="ts">
 import { computed } from 'vue';
 import type { IconType } from 'vue-icons-plus';
-import { BiBrain, BiHeadphone, BiReflectVertical, BiShow, BiSkipNext, BiText, BiWrench } from 'vue-icons-plus/bi';
+import { BiBrain, BiHeadphone, BiReflectVertical, BiShow, BiText, BiWrench } from 'vue-icons-plus/bi';
 import DOMPurify from 'dompurify';
 import Unknown from '@/icons/unknown.svg';
 import { useConfigStore } from '@/stores/config';
