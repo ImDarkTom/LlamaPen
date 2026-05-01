@@ -1,9 +1,6 @@
 <script setup lang="ts">
 import { computed } from 'vue';
-import type { IconType } from 'vue-icons-plus';
-import { BiBrain, BiHeadphone, BiMicrophone, BiReflectVertical, BiShow, BiText, BiWrench } from 'vue-icons-plus/bi';
 import DOMPurify from 'dompurify';
-import Unknown from '@/icons/unknown.svg';
 import { useConfigStore } from '@/stores/config';
 import type { ModelViewInfo } from '../types';
 import type { ShowResponse, ModelDetails } from 'ollama/browser';
@@ -21,27 +18,6 @@ const props = defineProps<{
 function sanitizeSection(text: string | null) {
     return DOMPurify.sanitize(text ?? '')
 }
-
-const capabilityDetails: Record<string, { icon: IconType, color: string, ring: string }> = {
-    'completion': { 
-        icon: BiText, color: 'bg-capability-completion/40', ring: 'ring-capability-completion' 
-    },
-    'tools': { 
-        icon: BiWrench, color: 'bg-capability-tools/40', ring: 'ring-capability-tools' 
-    },
-    'thinking': { 
-        icon: BiBrain, color: 'bg-capability-reasoning/40', ring: 'ring-capability-reasoning' 
-    },
-    'vision': { 
-        icon: BiShow, color: 'bg-capability-vision/40', ring: 'ring-capability-vision' 
-    },
-    'insert': { 
-        icon: BiReflectVertical, color: 'bg-capability-completion/40', ring: 'ring-capability-completion' 
-    },
-    'audio': { 
-        icon: BiMicrophone, color: 'bg-capability-audio/40', ring: 'ring-capability-audio' 
-    }
-};
 
 function getModelValue<T>(
     fallback: T,
@@ -113,21 +89,9 @@ const modelInfo = computed(() =>
         </div>
 
         <ModelsPageCapabilitiesSkeleton v-if="selectedModel.state === 'loading'" />
-        <div 
-            v-else 
-            role="list" 
-            class="flex flex-row gap-2 overflow-auto">
-            <div 
-                v-for="capability in modelCapabilites" 
-                role="listitem"
-                class="flex flex-row items-center text-sm font-medium gap-1.5 text-base-300 p-2 rounded-lg ring-1 ring-inset select-none"
-                :class="`${capabilityDetails[capability].color} ${capabilityDetails[capability].ring}`">
-                <component 
-                    :is="capabilityDetails[capability].icon ?? Unknown" 
-                    class="size-4" />
-                <span class="capitalize">{{ capability }}</span>
-            </div>
-        </div>
+        <ModelsPageCapabilitiesList
+            v-else
+            :model-capabilities="modelCapabilites" />
 
         <div class="relative">
             <div v-if="cloudEnabled" class="absolute w-full min-h-full bg-black/35 rounded-lg backdrop-blur-sm flex items-center justify-center text-lg shadow-sm">

@@ -40,8 +40,15 @@ const modelName = computed<string>(() =>
     getModelValue(props.modelFromParams || '', 'Loading...', m => m.displayName)
 );
 
-const modelCapabilites = computed<ModelCapabilities>(() =>
-    getModelValue({
+const capabilityToString: Record<keyof ModelCapabilities, string> = {
+    supportsFunctionCalling: 'tools',
+    supportsReasoning: 'thinking',
+    supportsVision: 'vision',
+};
+
+
+const modelCapabilites = computed<string[]>(() => {
+    const capabilities = getModelValue({
         supportsFunctionCalling: false,
         supportsReasoning: false,
         supportsVision: false,
@@ -49,8 +56,14 @@ const modelCapabilites = computed<ModelCapabilities>(() =>
         supportsFunctionCalling: false,
         supportsReasoning: false,
         supportsVision: false,
-    }, m => getModelCapabilities(m.info.id))
-);
+    }, m => getModelCapabilities(m.info.id));
+
+
+    return Object.entries(capabilities)
+        .filter(([_, value]) => value)
+        .map(([key]) => capabilityToString[(key as keyof ModelCapabilities)]) ?? [];
+});
+
 </script>
 
 <template>
@@ -64,12 +77,8 @@ const modelCapabilites = computed<ModelCapabilities>(() =>
         </div>
 
         <ModelsPageCapabilitiesSkeleton v-if="selectedModel.state === 'loading'" />
-        <div v-else role="list" class="flex flex-row gap-2">
-            <div v-for="capability of Object.keys(modelCapabilites) as Array<keyof ModelCapabilities>" role="listitem"
-                class="flex flex-row bg-secondary text-base-800 p-2 rounded-lg">
-                <component :is="capabilityIcons[capability] ?? Unknown" class="size-6 p-1" />
-                <span class="capitalize">{{ capability }}</span>
-            </div>
-        </div>
+        <ModelsPageCapabilitiesList
+            v-else
+            :model-capabilities="modelCapabilites" />
     </UIViewerContainer>
 </template>
