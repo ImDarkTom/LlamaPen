@@ -10,7 +10,7 @@ defineProps<{
 
 <template>
     <RouterLink :to class="group">
-        <div class="flex p-2 hover:bg-base-800 rounded-md group-[.router-link-active]:bg-base-950! ring-base-300">
+        <div class="flex p-2 hover:bg-base-800 rounded-md group-[.router-link-active]:bg-base-950!">
             <div class="flex flex-row items-center justify-center gap-2">
                 <component 
                     :is="icon" 
