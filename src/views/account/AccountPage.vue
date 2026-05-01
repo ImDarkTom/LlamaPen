@@ -158,18 +158,18 @@ const periodEnd = computed(() => {
 				</div>
 				<h3 class="text-2xl" id="plan">Plan</h3>
 				<div v-if="cloudUserStore.isPremium" class="flex flex-row gap-2">
-					<span class="border-2 border-base-500 rounded-lg p-2">
+					<span class="border border-base-600 rounded-lg p-2">
 						Status: <span class="font-semibold capitalize">{{ cloudUserStore.userInfo.subscription.status }}</span>
 					</span>
 					<span 
 						v-if="cloudUserStore.userInfo.subscription.cancel_at_period_end" 
-						class="bg-warning/75 text-base-800 p-2 rounded-lg border-2 border-warning flex flex-row gap-2 items-center"
+						class="bg-warning/40 text-base-200 p-2 rounded-lg border border-warning flex flex-row gap-2 items-center"
 					>
 						Ending {{ periodEnd }} <BiTimeFive />
 					</span>
 					<span 
 						v-else
-						class="bg-success/75 text-base-800 p-2 rounded-lg border-2 border-success flex flex-row gap-2 items-center"
+						class="bg-success/40 text-base-200 p-2 rounded-lg border border-success flex flex-row gap-2 items-center"
 					>
 						Renewing on {{ periodEnd }} <BiTimeFive />
 					</span>
@@ -186,7 +186,7 @@ const periodEnd = computed(() => {
 				</div>
 				<span class="text-sm flex flex-row gap-1 items-center justify-center"><BiLogoStripe class="size-4" />Payments handled securely by Stripe</span>
 				<div v-if="!cloudUserStore.isPremium" class="flex flex-col md:flex-row gap-4 md:gap-2">
-					<div class="w-full md:w-1/2 border-2 border-base-500 rounded-lg">
+					<div class="w-full md:w-1/2 border border-base-500 rounded-lg">
 						<h4 class="text-xl font-semibold bg-base-500 text-center select-none p-2">Free (current plan)</h4>
 						<ul class="p-4 flex flex-col gap-1 *:flex *:flex-row *:gap-2 *:items-center">
 							<li><BiSolidCheckSquare class="size-5 shrink-0" />20 message tokens/day</li>
@@ -194,7 +194,7 @@ const periodEnd = computed(() => {
 							<li><BiSolidCheckSquare class="size-5 shrink-0"/>Standard account support</li>
 						</ul>
 					</div>
-					<div class="w-full md:w-1/2 border-2 border-primary rounded-lg bg-base-700">
+					<div class="w-full md:w-1/2 border border-primary rounded-lg bg-base-700">
 						<h4 class="text-xl font-semibold text-center bg-primary text-base-900 select-none p-2">Premium ✨</h4>
 						<ul class="p-4 flex flex-col gap-1 *:flex *:flex-row *:items-start *:gap-2">
 							<li><BiSolidCheckSquare class="size-5 shrink-0 text-secondary" /><span><strong>100</strong> message tokens/day</span></li>
