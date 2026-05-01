@@ -2,7 +2,6 @@
 import { computed, nextTick, onBeforeUnmount, onMounted, ref, type ComponentPublicInstance } from 'vue';
 import { VscDebugDisconnect } from 'vue-icons-plus/vsc';
 import logger from '@/lib/logger';
-import { TbListDetails } from 'vue-icons-plus/tb';
 import isOnMobile from '@/utils/core/isOnMobile';
 import { BiExpand, BiFilterAlt, BiLoaderAlt, BiRefresh, BiSearch } from 'vue-icons-plus/bi';
 import { storeToRefs } from 'pinia';
@@ -224,11 +223,6 @@ const useGridView = computed(() => config.ui.modelList.useGridView);
                     </button>
                 </div>
 
-                <RouterLink to="/models">
-                    <div class="size-12 min-w-10 flex items-center justify-center box-content text-base-900 bg-primary hover:bg-base-300 cursor-pointer transition-colors duration-dynamic rounded-lg">
-                        <TbListDetails />
-                    </div>
-                </RouterLink>
                 <button
                     @click="config.ui.modelList.useGridView = !config.ui.modelList.useGridView"
                     :class="{ 'bg-base-400!': useGridView }"

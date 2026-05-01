@@ -176,7 +176,7 @@ const themes = {
                 v-model="config.ollama.modelCapabilities.autoload"
                 label="Autoload model capabilities"
                 tooltip="Load model capabilities on connect. By default only loads if 30 models or less. (Default: Enabled)" />
-            <div v-if="config.ollama.modelCapabilities.autoload" class="border-l border-base-100 pl-3 ml-3">
+            <div v-if="config.ollama.modelCapabilities.autoload" class="border-l border-base-400 pl-3 ml-3">
                 <SettingsInputToggle 
                     v-model="config.ollama.modelCapabilities.alwaysAutoload" 
                     label="Always autoload model capabilities"
