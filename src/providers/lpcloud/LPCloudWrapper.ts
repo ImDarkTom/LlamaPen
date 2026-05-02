@@ -6,14 +6,18 @@ import supabase from "@/lib/supabase";
 import { useConfigStore } from "@/stores/config";
 import { getSessionToken } from "@/stores/useCloudUserStore";
 import { tryCatch } from "@/utils/core/tryCatch";
+import type { LpCloudPricing } from "./types";
+
+
 
 namespace LPCloudTypes {
     export type ListResponse = { 
         models: (OllamaTypes.ModelResponse & {
             capabilities: ('completion' | 'tools' | 'thinking' | 'vision' | 'insert' | 'embedding' | 'search')[];
             llamapenMetadata: {
-                creator: string;
                 premium?: boolean;
+                creator: string;
+                priceTier: LpCloudPricing;
                 tags?: ('closedSource' | 'alwaysReasons')[];
             }
         })[];

@@ -7,6 +7,7 @@ import { useConfigStore } from '@/stores/config';
 import { useModelSelect } from '@/stores/useModelSelect';
 import type { Model } from '@/providers/base/types';
 import { useProviderManager, type ModelInfo } from '@/composables/useProviderManager';
+import type { LpCloudPricing } from '@/providers/lpcloud/types';
 
 const cloudUserStore = useCloudUserStore();
 const config = useConfigStore();
@@ -86,6 +87,22 @@ const selectActions: MenuEntry[] = [
 		onClick: () => router.push(`/models/${props.model.info.id}`)
 	}
 ];
+
+const lpCloudPricingMap: Record<LpCloudPricing, string> = {
+	"0": '¢',
+	"1": "$",
+	"2": "$$",
+	"3": "$$$",
+	"4": "$$$+",
+};
+
+const lpCloudPricingMapNames: Record<LpCloudPricing, string> = {
+	"0": 'Very low cost',
+	"1": "Low cost",
+	"2": "Medium cost",
+	"3": "High cost",
+	"4": "Very high cost",
+};
 </script>
 
 <template>
@@ -110,6 +127,21 @@ const selectActions: MenuEntry[] = [
 				>
 					{{ model.displayName}}
 				</span>
+				<template v-if="model.info.providerMetadata?.provider === 'lpcloud'">
+					<Tooltip 
+						size="small"
+						:text="lpCloudPricingMapNames[model.info.providerMetadata.data.priceTier]">
+						<span
+							class="text-xs font-medium flex items-center pl-2"
+							:class="{
+								'text-lpcloudpricing-low': [0,1,2].includes(model.info.providerMetadata.data.priceTier),
+								'text-lpcloudpricing-moderate': model.info.providerMetadata.data.priceTier === 3,
+								'text-lpcloudpricing-high': model.info.providerMetadata.data.priceTier === 4,
+							}">
+							{{ lpCloudPricingMap[model.info.providerMetadata.data.priceTier] }}
+						</span>
+					</Tooltip>
+				</template>
 				<div class="flex flex-row gap-2 ml-2 shrink-0 min-w-fit">
 					<div 
 						v-if="isFavorited()"

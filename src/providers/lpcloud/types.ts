@@ -19,3 +19,10 @@ export type LPCloudMessage = {
     tool_name: string;
     content: string;
 }
+export enum LpCloudPricing {
+    VeryLow,
+    Low,
+    Medium,
+    High,
+    VeryHigh
+};
