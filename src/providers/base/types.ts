@@ -1,3 +1,5 @@
+import type { LpCloudPricing } from "../lpcloud/types";
+
 export type ChatIteratorChunk = {
 	type: 'error',
 	error: {
@@ -77,6 +79,7 @@ export type OllamaMetadata = {
 
 export type LPCloudMetadata = {
 	providerName: string;
+	priceTier: LpCloudPricing;
 	premium: boolean;
 	tags?: string[]
 }

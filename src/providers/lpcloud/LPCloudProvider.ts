@@ -70,9 +70,10 @@ export class LPCloudProvider extends BaseProvider implements LPCloudLLMProvider 
                     provider: 'lpcloud',
                     data: {
                         premium: m.llamapenMetadata.premium ?? false,
+                        priceTier: m.llamapenMetadata.priceTier,
                         providerName: m.llamapenMetadata.creator,
                         tags: m.llamapenMetadata.tags ?? [],
-                    }
+                    },
                 }
             }
         });
