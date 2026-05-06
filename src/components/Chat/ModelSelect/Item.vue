@@ -134,7 +134,8 @@ const lpCloudPricingMapNames: Record<LpCloudPricing, string> = {
 						<span
 							class="text-xs font-medium flex items-center pl-2"
 							:class="{
-								'text-lpcloudpricing-low': [0,1,2].includes(model.info.providerMetadata.data.priceTier),
+								'text-lpcloudpricing-verylow': model.info.providerMetadata.data.priceTier === 0,
+								'text-lpcloudpricing-low': [1,2].includes(model.info.providerMetadata.data.priceTier),
 								'text-lpcloudpricing-moderate': model.info.providerMetadata.data.priceTier === 3,
 								'text-lpcloudpricing-high': model.info.providerMetadata.data.priceTier === 4,
 							}">

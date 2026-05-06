@@ -235,7 +235,8 @@ body:not([data-native-scrollbar]) {
     --color-capability-tools: var(--color-blue-400);
     --color-capability-audio: var(--color-cyan-400);
 
-    --color-lpcloudpricing-low: var(--color-teal-400);
+    --color-lpcloudpricing-verylow: var(--color-teal-400);
+    --color-lpcloudpricing-low: var(--color-green-400);
     --color-lpcloudpricing-moderate: var(--color-orange-400);
     --color-lpcloudpricing-high: var(--color-red-400);
 
