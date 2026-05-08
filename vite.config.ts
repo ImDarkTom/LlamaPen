@@ -41,6 +41,7 @@ export default defineConfig({
             imports: [
                 'vue',
                 'vue-router',
+                '@vueuse/core'
             ],
         }),
         VitePWA({ 
