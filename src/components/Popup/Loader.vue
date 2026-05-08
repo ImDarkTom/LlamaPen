@@ -3,7 +3,7 @@
 
 <template>
     <PopupNotConnected />
-    <Lightbox />
-    <SearchBar />
+    <PopupLightbox />
+    <PopupSearch />
     <PopupShortcuts />
 </template>

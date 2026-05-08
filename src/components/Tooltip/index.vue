@@ -76,7 +76,7 @@ onUnmounted(() => {
                         {{ text }}
                     </span>
                     
-                    <AppKeyboardShortcutRenderer 
+                    <UIKeyboardShortcutRenderer 
                         v-if="kbdShortcut" 
                         :hotkey="kbdShortcut" />
                 </div>

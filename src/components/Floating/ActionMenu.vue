@@ -55,7 +55,7 @@ const isOpened = ref(false);
                         <span class="mr-auto">
                             {{ getText(entry.text) }}
                         </span>
-                        <AppKeyboardShortcutRenderer
+                        <UIKeyboardShortcutRenderer
                             v-if="entry.hotkey"
                             :hotkey="entry.hotkey" />
                     </li>
