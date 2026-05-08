@@ -28,15 +28,15 @@ function hide() {
 		</template>
 		<template #body>
 			<div class="flex flex-col w-full h-full box-border overflow-auto">
-				<h2 class=" font-semibold pb-2 text-base-100">Interface</h2>
-				<PopupShortcutsDisplay label="Toggle sidebar" shortcut="ctrl shift s" />
-				<PopupShortcutsDisplay label="Open model selector" shortcut="ctrl shift m" />
-				<PopupShortcutsDisplay label="Search chats" shortcut="ctrl k" />
+				<h2 class="font-semibold pb-2 text-base-100">Interface</h2>
+				<PopupShortcutsDisplay label="Toggle sidebar" :hotkey="{ ctrl: true, shift: true, key: 's' }" />
+				<PopupShortcutsDisplay label="Open model selector" :hotkey="{ ctrl: true, shift: true, key: 'm' }" />
+				<PopupShortcutsDisplay label="Search chats" :hotkey="{ ctrl: true, key: 'k' }" />
 				<h2 class="font-semibold pb-2 text-base-100">Chat</h2>
-				<PopupShortcutsDisplay label="New chat" shortcut="ctrl shift o" />
-				<PopupShortcutsDisplay label="Focus chat input" shortcut="shift esc" />
-				<PopupShortcutsDisplay label="Pin chat" shortcut="shift alt p" />
-				<PopupShortcutsDisplay label="Delete chat" shortcut="ctrl shift ⌫" />
+				<PopupShortcutsDisplay label="New chat":hotkey="{ ctrl: true, shift: true, key: 'o' }" />
+				<PopupShortcutsDisplay label="Focus chat input" :hotkey="{ shift: true, key: 'esc' }" />
+				<PopupShortcutsDisplay label="Pin chat" :hotkey="{ shift: true, alt: true, key: 'p' }" />
+				<PopupShortcutsDisplay label="Delete chat" :hotkey="{ ctrl: true, shift: true, key: '⌫' }" />
 			</div>
 		</template>
 		<template #buttons>
