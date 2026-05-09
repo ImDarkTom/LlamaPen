@@ -8,33 +8,65 @@ import ModelsPage from '@/views/models/ModelsPage.vue';
 import ChatLayout from '@/layouts/ChatLayout.vue';
 import ToolsPage from '@/views/tools/ToolsPage.vue';
 import NotFoundPage from '@/views/404.vue';
+import useSidebarStore, { type SidebarMode } from '@/stores/useSidebarStore';
 
 const routes: RouteRecordRaw[] = [
     {
         path: "/",
         component: ChatLayout,
         children: [
-            { path: "/", component: ChatPage },
+            { 
+                path: "/", 
+                component: ChatPage,
+                meta: { sidebarType: 'chats' },
+            },
             { 
                 path: "/chat", 
                 component: ChatPage,
+                meta: { sidebarType: 'chats' },
                 children: [
                     { path: "/chat/:id", component: ChatPage }
-                ]
+                ],
             },
-            { path: '/settings', component: SettingsPage },
-            { path: '/guide', component: GuidePage },
-            { path: '/account', component: AccountPage },
             { 
-                path: '/models', 
+                path: '/settings',
+                component: SettingsPage,
+                meta: { sidebarType: 'chats' },
+            },
+            { 
+                path: '/guide', 
+                component: GuidePage,
+                meta: { sidebarType: 'chats' },
+            },
+            { 
+                path: '/account',
+                component: AccountPage,
+                meta: { sidebarType: 'chats' },
+            },
+            { 
+                path: '/models',
+                redirect: '/models/installed',
                 component: ModelsPage,
+                meta: { sidebarType: 'models' },
                 children: [
-                    { path: '/models/:model(.*)', component: ModelsPage }
+                    { 
+                        path: '/models/installed', 
+                        component: ModelsPage
+                    },
+                    { 
+                        path: '/models/installed/:model(.*)', 
+                        component: ModelsPage
+                    },
+                    { 
+                        path: '/models/downloads', 
+                        component: ModelsPage
+                    },
                 ]
             },
             { 
                 path: '/tools', 
                 component: ToolsPage,
+                meta: { sidebarType: 'chats' },
                 children: [
                     { path: '/tools/:tool(.*)', component: ToolsPage }
                 ]
@@ -50,6 +82,11 @@ const routes: RouteRecordRaw[] = [
 const router = createRouter({
     history: createWebHistory(),
     routes,
+});
+
+router.afterEach((to) => {
+    const sidebarStore = useSidebarStore();
+    sidebarStore.setSidebarMode((to.meta.sidebarType as SidebarMode) ?? 'chats');
 });
 
 export default router;

@@ -244,7 +244,7 @@ const batchActions: MenuEntry[] = [
             <RouterLink 
                 v-for="{ info, loadedInMemory, hidden, displayName } in queriedModels"
                 exactActiveClass="router-link-exact-active"
-                :to="`/models/${info.id}`"
+                :to="`/models/installed/${info.id}`"
                 class="group"
                 :class="{ 'opacity-75': hidden }">
                 <div 
