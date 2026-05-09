@@ -6,6 +6,7 @@ defineProps<{
     text: string;
     icon: IconType;
     to: RouterLinkProps['to'];
+    badge?: string;
 }>();
 </script>
 
@@ -19,6 +20,11 @@ defineProps<{
                 <span class="text-sm font-medium">
                     {{ text }}
                 </span>
+            </div>
+            <div 
+                v-if="badge"
+                class="text-xs font-medium ml-auto bg-base-700 rounded-full size-5 flex items-center justify-center">
+                {{ badge }}
             </div>
         </div>
     </SidebarRouterLink>

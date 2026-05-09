@@ -9,6 +9,8 @@ import ChatLayout from '@/layouts/ChatLayout.vue';
 import ToolsPage from '@/views/tools/ToolsPage.vue';
 import NotFoundPage from '@/views/404.vue';
 import useSidebarStore, { type SidebarMode } from '@/stores/useSidebarStore';
+import DownloadsPage from '@/views/models/DownloadsPage.vue';
+import BrowsePage from '@/views/models/BrowsePage.vue';
 
 const routes: RouteRecordRaw[] = [
     {
@@ -46,7 +48,6 @@ const routes: RouteRecordRaw[] = [
             { 
                 path: '/models',
                 redirect: '/models/installed',
-                component: ModelsPage,
                 meta: { sidebarType: 'models' },
                 children: [
                     { 
@@ -58,8 +59,12 @@ const routes: RouteRecordRaw[] = [
                         component: ModelsPage
                     },
                     { 
+                        path: '/models/browse', 
+                        component: BrowsePage
+                    },
+                    { 
                         path: '/models/downloads', 
-                        component: ModelsPage
+                        component: DownloadsPage
                     },
                 ]
             },

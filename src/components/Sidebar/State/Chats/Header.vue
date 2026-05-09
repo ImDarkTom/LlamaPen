@@ -43,7 +43,7 @@ function search() {
             </Tooltip>
         </div>
 
-        <div class="flex flex-col pt-2">
+        <div class="flex flex-col pt-2 gap-px">
 			<SidebarMenuLink
 				text="Models"
 				:icon="TbListDetails"

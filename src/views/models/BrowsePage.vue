@@ -1,19 +1,17 @@
 <script setup lang="ts">
-// import { useProviderManager } from '@/composables/useProviderManager';
+import useDownloadsStore from '@/stores/useDownloadsStore';
 import useOllamaModelLibraryStore from '@/stores/useOllamaModelLibrary';
 
+const downloadStore = useDownloadsStore();
 const ollamaModelLibrary = useOllamaModelLibraryStore();
-// const providerManager = useProviderManager();
+const router = useRouter();
 
-const emit = defineEmits<{
-    selectModel: [ string ];
-}>();
+ollamaModelLibrary.fetchOnce();
 
-const selectModel = (modelVariant: string) => emit('selectModel', modelVariant);
-
-// const isModelDownloaded = (modelId: string) => providerManager.allModelIds.value.includes(modelId);
-// :disabled="isModelDownloaded(`${model.model}:${size}`)"
-// temporarilt taken out while we work out updating via checking timestamps
+function selectModel(modelVariant: string) {
+    downloadStore.inputValue = modelVariant;
+    router.push('/models/downloads');
+}
 
 const searchQuery = ref('');
 const searchQueryDebounced = refDebounced(searchQuery, 200);
@@ -21,15 +19,26 @@ const searchQueryDebounced = refDebounced(searchQuery, 200);
 const queriedModels = computed(() => {
     return ollamaModelLibrary.ollamaModels.filter((m) => m.model.includes(searchQueryDebounced.value));
 });
-
 </script>
 
 <template>
-    <div class="flex flex-col overflow-hidden">
-        <UITextDivider text="Ollama Library" />
+    <div class="w-full h-full flex flex-col box-border overflow-y-auto gap-2 p-2">
         <UIInput
             placeholder="Search for a model..."
             v-model="searchQuery" />
+        
+        <p class="text-sm text-base-500">
+            List does not include user-uploaded models. To view all models see
+            <a 
+                href="https://ollama.com/search" 
+                target="_blank" 
+                rel="noopener noreferrer"
+                class="underline">ollama.com</a>.
+        </p>
+
+        <p class="text-sm text-base-500">
+            Models ordered by newest. List is updated every 72 hours. 
+        </p>
 
         <div class="w-full max-h-full overflow-auto p-2">
             <span 
@@ -43,7 +52,7 @@ const queriedModels = computed(() => {
             <ul 
                 v-else
                 class="flex flex-col w-full max-w-prose mx-auto">
-                <ModelsPageDownloadManagerLibraryListItem
+                <BrowsePageItem
                     v-for="model in queriedModels"
                     :model
                     :key="model.model"
