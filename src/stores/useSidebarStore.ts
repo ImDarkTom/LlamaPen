@@ -14,8 +14,6 @@ const useSidebarStore = defineStore('sidebar', () => {
         sidebarMode,
         setSidebarMode,
     }
-}, {
-    persist: true,
 });
 
 export default useSidebarStore;
