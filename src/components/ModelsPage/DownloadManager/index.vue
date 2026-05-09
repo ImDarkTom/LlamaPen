@@ -5,6 +5,7 @@ import useDownloadsStore from '@/stores/useDownloadsStore';
 import { storeToRefs } from 'pinia';
 import type { ProgressResponse } from 'ollama';
 import useOllamaModelLibraryStore from '@/stores/useOllamaModelLibrary';
+import logger from '@/lib/logger';
 
 const downloadsStore = useDownloadsStore();
 const { progressChunks } = storeToRefs(downloadsStore)
@@ -14,6 +15,7 @@ const emit = defineEmits<{
 }>();
 
 const modelInputValue = ref<string>('');
+const downloadError = ref<string | null>(null);
 
 async function downloadModel() {
     const modelName = modelInputValue.value;
@@ -22,11 +24,14 @@ async function downloadModel() {
     }
 
     const { success, reason } = await downloadsStore.downloadModel(modelName);
-    if (success) {
-        emit('refreshModelList');
-    } else {
-        alert(reason);
+    if (!success && reason) {
+        logger.error('Download Manager', `Failed to download model: ${reason}`);
+        downloadError.value = reason;
     }
+
+    // !success with no reason means the user cancelled, so we're ok
+
+    emit('refreshModelList');
 }
 
 const getStatusText = (status: ProgressResponse) => 
@@ -81,10 +86,16 @@ function selectModel(modelVariant: string) {
                     class="bg-base-700 hover:bg-base-600 transition-all duration-dynamic hover:duration-0 px-4 rounded-md text-lg w-fit cursor-pointer" >
                     <span class="whitespace-normal md:whitespace-nowrap">
                         <BiCloudDownload class="inline mr-2 align-middle" /> 
-                        <span class="align-middle">Download</span>
+                        <span class="align-middle">Start</span>
                     </span>
                 </button>
             </form>
+
+            <p 
+                v-if="downloadError"
+                class="text-danger">
+                {{ downloadError }}
+            </p>
 
             <div class="flex flex-col gap-2">
                 <div class="bg-base-800 p-2 rounded-lg">
