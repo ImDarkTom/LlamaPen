@@ -18,7 +18,7 @@ const downloadCount = computed<string | undefined>(() => {
 </script>
 
 <template>
-    <div class="flex flex-col px-2 gap-px">
+    <div class="flex flex-col p-2 gap-px w-full">
         <SidebarStateBackHeader />
 
         <SidebarMenuLink

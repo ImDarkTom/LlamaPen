@@ -51,3 +51,20 @@ body[data-reduce-motion] {
     transform: scale(0.95);
     opacity: 0;
 }
+
+/* sidebar switch */
+.sidebar-switch-enter-active,
+.sidebar-switch-leave-active {
+    transition: opacity var(--transition-duration) ease, 
+        transform var(--transition-duration) ease;
+    z-index: -100;
+    position: fixed;
+    top: 0;
+    left: 0;
+}
+
+.sidebar-switch-enter-from,
+.sidebar-switch-leave-to {
+    transform: translateX(10%);
+    opacity: 0;
+}
