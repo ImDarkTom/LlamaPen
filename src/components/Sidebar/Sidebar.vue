@@ -65,7 +65,7 @@ const { sidebarMode } = storeToRefs(sidebarState);
                 '-translate-x-full': !useConfig.showSidebar, 
                 'translate-x-0': useConfig.showSidebar
             }" >
-            <Transition name="sidebar-switch" mode="out-in">
+            <Transition name="sidebar-switch">
                 <SidebarStateChats v-if="sidebarMode == 'chats'" />
                 <SidebarStateModels v-else-if="sidebarMode === 'models'" />
             </Transition>
