@@ -242,10 +242,6 @@ const themes = {
                     label="Dark icon background"
                     tooltip="Make the icon background darker. (Default: Disabled)" />
             </div>
-            <SettingsInputToggle 
-                v-model="config.ui.modelIcons.alternateGemmaIcon" 
-                label="Alternate Gemma icon"
-                tooltip="Use the Google logo instead of the Gemma icon. (Default: Disabled)" />
             <SettingsCategoryLabel>Tooltip</SettingsCategoryLabel>
             <SettingsInputNumber
                 v-model="config.ui.tooltip.waitTimeoutMs" 

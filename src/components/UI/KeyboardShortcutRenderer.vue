@@ -5,7 +5,7 @@ const props = defineProps<{
     hotkey: Hotkey;
 }>();
 
-const platform = 'win';
+const platform: 'mac' | 'win' = /Mac|iPhone|iPad|iPod/.test(navigator.userAgent) ? 'mac' : 'win';
 
 const formatted = formatHotkeys(props.hotkey, platform);
 </script>
@@ -17,7 +17,9 @@ const formatted = formatHotkeys(props.hotkey, platform);
             :key="key">
             <kbd>{{ key }}</kbd>
 
-            <span v-if="platform === 'win' && index < (formatted.length - 1)">
+            <span 
+                v-if="platform === 'win' && index < (formatted.length - 1)"
+                class="mx-0.5">
                 +
             </span>
         </template>

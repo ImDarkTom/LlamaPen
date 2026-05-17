@@ -347,7 +347,13 @@ body:not([data-native-scrollbar]) {
 
 progress::-webkit-progress-value,
 progress::-moz-progress-bar {
-    @apply bg-secondary;
+    background: repeating-linear-gradient(
+        45deg,
+        var(--color-primary),
+        var(--color-primary) 10px,
+        color-mix(var(--color-primary) 80%, black 20%) 10px,
+        color-mix(var(--color-primary) 80%, black 20%) 20px
+    );
 }
 
 /* HLJS */
