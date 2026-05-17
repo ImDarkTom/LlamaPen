@@ -15,16 +15,23 @@ import { ref } from 'vue';
 // }
 
 const useDownloadsStore = defineStore('downloads', () => {
+    const inputValue = ref('');
+
     const abortControllerMap: Map<string, AbortController> = new Map();
     const progressChunks = ref<Record<string, ProgressResponse>>({});
     
     async function downloadModel(modelId: string): Promise<{ success: boolean, reason?: string }> {
+        if (progressChunks.value[modelId]) return { success: false, reason: `Already downloading '${modelId}'` };
+
         const abortController = new AbortController();
-
-        const { data: stream, error } = await ollamaWrapper.pull({ model: modelId, stream: true }, abortController);
-        if (error) return { success: false, reason: 'Failed to download model.' }; // We already log the error
-
         abortControllerMap.set(modelId, abortController);
+        
+        const { data: stream, error } = await ollamaWrapper.pull({ model: modelId, stream: true }, abortController);
+        
+        if (error) {
+            abortControllerMap.delete(modelId);
+            return { success: false, reason: 'Failed to download model.' }; // We already log the error
+        }
 
         try {
             for await (const progress of stream) {
@@ -39,10 +46,10 @@ const useDownloadsStore = defineStore('downloads', () => {
         } catch (e) {
             delete progressChunks.value[modelId];
             if (e === 'userRequestCancel') {
-                return { success: false, reason: `Cancelled downloading '${modelId}'.` };
+                return { success: false };
             }
 
-            return { success: false, reason: `Error while downloading: ${e}` };
+            return { success: false, reason: `Error while downloading: ${e instanceof Error ? e.message : String(e)}` };
         } finally {
             abortControllerMap.delete(modelId);
         }
@@ -58,6 +65,7 @@ const useDownloadsStore = defineStore('downloads', () => {
     }
 
     return {
+        inputValue,
         progressChunks,
         downloadModel,
         cancelDownload,

@@ -3,7 +3,7 @@ import { ref } from 'vue';
 
 const MODELS_JSON_URL = 'https://imdarktom.github.io/OllamaLibraryAPI/models.json';
 
-type ModelLibraryResponse = {
+export type ModelLibraryResponse = {
     model: string;
     description: string;
     capabilities: string[];
