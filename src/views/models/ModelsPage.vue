@@ -109,10 +109,6 @@ async function setModelViewInfo(modelId: string) {
                 'Model management is only available without API mode.' :
                 'Select a model to view its details, or download a new model.' }}
         </UIViewerContainer>
-        
-        <ModelsPageDownloadManager 
-            v-else-if="modelFromParams === 'downloads' && isOllama" 
-            @refresh-model-list="refreshModelList" />
         <ModelsPageViewerOllama 
             v-else-if="isOllama"
             :modelFromParams 

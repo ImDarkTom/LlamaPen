@@ -15,6 +15,8 @@ import { ref } from 'vue';
 // }
 
 const useDownloadsStore = defineStore('downloads', () => {
+    const inputValue = ref('');
+
     const abortControllerMap: Map<string, AbortController> = new Map();
     const progressChunks = ref<Record<string, ProgressResponse>>({});
     
@@ -63,6 +65,7 @@ const useDownloadsStore = defineStore('downloads', () => {
     }
 
     return {
+        inputValue,
         progressChunks,
         downloadModel,
         cancelDownload,

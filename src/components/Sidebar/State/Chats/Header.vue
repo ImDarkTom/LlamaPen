@@ -1,6 +1,7 @@
 <script setup lang="ts">
 import { emitter } from '@/lib/mitt';
-import { BiSearchAlt2 } from 'vue-icons-plus/bi';
+import { BiSearchAlt2, BiWrench } from 'vue-icons-plus/bi';
+import { TbListDetails } from 'vue-icons-plus/tb';
 
 const logoFile = import.meta.glob('@/icons/llamapen/favicon.svg', { eager: true });
 const logo = Object.values(logoFile)[0];
@@ -11,7 +12,7 @@ function search() {
 </script>
 
 <template>
-    <div class="flex flex-col gap-2 pb-2 px-2">
+    <div class="flex flex-col gap-2 px-2">
         <div class="flex flex-row p-0 box-border justify-between items-center">
             <div class="size-10 p-1"></div><!-- sidebar toggle space holder -->
             <Tooltip
@@ -41,5 +42,17 @@ function search() {
                     @click="search" />
             </Tooltip>
         </div>
+
+        <div class="flex flex-col pt-2 gap-px">
+			<SidebarMenuLink
+				text="Models"
+				:icon="TbListDetails"
+				:to="{ path: '/models' }" />
+
+			<SidebarMenuLink
+				text="Tools"
+				:icon="BiWrench"
+				:to="{ path: '/tools' }" />
+		</div>
     </div>
 </template>
