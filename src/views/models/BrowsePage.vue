@@ -1,6 +1,9 @@
 <script setup lang="ts">
 import useDownloadsStore from '@/stores/useDownloadsStore';
 import useOllamaModelLibraryStore from '@/stores/useOllamaModelLibrary';
+import { ref, computed } from "vue";
+import { useRouter } from "vue-router";
+import { refDebounced } from "@vueuse/core";
 
 const downloadStore = useDownloadsStore();
 const ollamaModelLibrary = useOllamaModelLibraryStore();

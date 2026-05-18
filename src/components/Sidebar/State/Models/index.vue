@@ -2,6 +2,7 @@
 import { useProviderManager } from '@/composables/useProviderManager';
 import useDownloadsStore from '@/stores/useDownloadsStore';
 import { BiCloud, BiData, BiDownload } from 'vue-icons-plus/bi';
+import { computed } from "vue";
 
 const providerStore = useProviderManager();
 const downloadStore = useDownloadsStore();

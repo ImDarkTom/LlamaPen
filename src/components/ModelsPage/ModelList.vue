@@ -4,7 +4,7 @@ import { useConfigStore } from '@/stores/config';
 import useCloudUserStore from '@/stores/useCloudUserStore';
 import { computed, ref } from 'vue';
 import type { IconType } from 'vue-icons-plus';
-import { BiCopy, BiDotsVerticalRounded, BiDownload, BiHide, BiLinkExternal, BiPencil, BiShow, BiTrash } from 'vue-icons-plus/bi';
+import { BiCopy, BiDotsVerticalRounded, BiHide, BiLinkExternal, BiPencil, BiShow, BiTrash } from 'vue-icons-plus/bi';
 import { Fa6Memory } from 'vue-icons-plus/fa6';
 import { useProviderManager, type ModelInfo } from '@/composables/useProviderManager';
 import { ollamaWrapper } from '@/providers/ollama/OllamaWrapper';

@@ -6,6 +6,7 @@ import useOllamaModelLibraryStore from '@/stores/useOllamaModelLibrary';
 import type { ProgressResponse } from 'ollama';
 import { storeToRefs } from 'pinia';
 import { BiCloudDownload, BiStopCircle } from 'vue-icons-plus/bi';
+import { ref, computed } from "vue";
 
 const { loadModels } = useProviderManager();
 
