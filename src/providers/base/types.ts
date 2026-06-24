@@ -67,4 +67,5 @@ export type LPCloudMetadata = {
 export type OpenAIMetadata = {
 	created: Date;
 	ownedBy: string;
+	allInfo?: Record<any, any>;
 }
