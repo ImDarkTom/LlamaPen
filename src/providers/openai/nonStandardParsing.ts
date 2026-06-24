@@ -99,7 +99,6 @@ export class NameParser {
     private static attemptParseOpenRouter(providerMetadata: OpenAIProviderMetadata): string | null {
         const allInfo = providerMetadata.data.allInfo;
 
-        console.log(allInfo?.name.split(': '));
         if (allInfo?.name) {
             const name: string = allInfo.name;
             if (name.split(': ').length > 1) {
