@@ -55,6 +55,7 @@ export type OllamaMetadata = {
 	quantization?: string;
 	family?: string;
 	modifiedAt?: Date;
+	context_length?: number;
 }
 
 export type LPCloudMetadata = {
