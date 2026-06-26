@@ -117,7 +117,7 @@ const selectActions: MenuEntry[] = [
 					:capabilities="modelCapabilities"
 					:is-favorited="isFavorited()" />
 			</div>
-			<span class="text-sm text-base-200">{{ model.info.subtitle }}</span>
+			<span class="text-xs text-base-200">{{ model.info.subtitle }}</span>
 			<div class="absolute hidden items-center justify-center right-0 top-0 h-full w-16 bg-linear-to-r from-transparent to-base-600 group-hover:flex"
 				:class="{ 
 					'flex!': selected,

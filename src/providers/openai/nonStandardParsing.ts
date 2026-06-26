@@ -3,9 +3,13 @@ import type { ProviderMetadata } from "../base/types";
 import { numberToNumeral } from "@/utils/core/numberToNumeral";
 
 type OpenAIProviderMetadata = Extract<ProviderMetadata, { provider: 'openai' }>;
+type OllamaProviderMetadata = Extract<ProviderMetadata, { provider: 'ollama' }>;
 
 const isOpenAIMetadata = (providerMetadata: ProviderMetadata): providerMetadata is OpenAIProviderMetadata =>
     providerMetadata.provider === 'openai';
+
+const isOllamaMetadata = (providerMetadata: ProviderMetadata): providerMetadata is OllamaProviderMetadata =>
+    providerMetadata.provider === 'ollama';
 
 export class CapabilityParser {
     public static attemptParseModelCapabilities(providerMetadata: ProviderMetadata): ModelCapability[] {
@@ -54,13 +58,24 @@ export class CapabilityParser {
 
 export class SubtitleParser {
     public static getSubtitleForModel(providerMetadata: ProviderMetadata): string {
-        if (!isOpenAIMetadata(providerMetadata)) return '';
+        if (isOpenAIMetadata(providerMetadata)) {
+            // Try parse as OpenRouter
+            const subtitleFromOpenRouter = SubtitleParser.attemptParseOpenRouter(providerMetadata);
+            if (subtitleFromOpenRouter !== null) return subtitleFromOpenRouter;
 
-        // Try parse as OpenRouter
-        const subtitleFromOpenRouter = SubtitleParser.attemptParseOpenRouter(providerMetadata);
-        if (subtitleFromOpenRouter !== null) return subtitleFromOpenRouter;
+            return `Owner: ${providerMetadata.data.ownedBy}`;
+        } else if (isOllamaMetadata(providerMetadata)) {
+            return [
+                providerMetadata.data.context_length 
+                    ? `${numberToNumeral(providerMetadata.data.context_length, 0)} ctx` 
+                    : null,
+                providerMetadata.data.parameterSize,
+                providerMetadata.data.quantization ]
+                    .filter(Boolean)
+                    .join(' ⸱ ');
+        }
 
-        return `Owner: ${providerMetadata.data.ownedBy}`;
+        return '';
     }
 
     private static attemptParseOpenRouter(providerMetadata: OpenAIProviderMetadata): string | null {
