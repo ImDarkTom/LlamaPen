@@ -40,11 +40,9 @@ export class OllamaProvider extends BaseProvider implements MemoryManagedProvide
         });
 
         const config = useConfigStore();
-        const shouldAutoloadCapabilities = !config.cloud.enabled &&
-            (
-                config.ollama.modelCapabilities.autoload && this.rawModels.value.length < 31
-                || config.ollama.modelCapabilities.alwaysAutoload
-            );
+        const shouldAutoloadCapabilities = 
+            config.ollama.modelCapabilities.autoload && this.rawModels.value.length < 31
+            || config.ollama.modelCapabilities.alwaysAutoload;
 
         if (shouldAutoloadCapabilities) {
             for (const model of this.rawModels.value) {

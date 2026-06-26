@@ -11,7 +11,7 @@ export type ConnectionState = {
 
 export interface LLMProvider {
     readonly name: string;
-    readonly type: 'ollama' | 'lpcloud' | 'openai';
+    readonly type: 'ollama' | 'openai';
     readonly connectionState: Reactive<ConnectionState>;
     readonly rawModels: Ref<ModelInfo[]>;
 
@@ -82,10 +82,6 @@ export interface MemoryManagedProvider extends LLMProvider {
      * @returns If the model was successfully unloaded from memory.
      */
     unloadModel(modelId: string): Promise<boolean>;
-}
-
-export interface LPCloudLLMProvider extends LLMProvider {
-    isSignedIn: boolean;
 }
 
 export interface ConfigurableProvider<TConfig extends Record<string, unknown>> extends LLMProvider {

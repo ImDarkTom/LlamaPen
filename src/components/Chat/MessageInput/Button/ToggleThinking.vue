@@ -20,8 +20,7 @@ watch(selectedModelCanThink, () => {
 const selectedAlwaysReasons = computed(() => {
     return !!(
         selectedModelInfo.value.exists
-        && selectedModelInfo.value.data.info.providerMetadata?.provider === 'lpcloud'
-        && selectedModelInfo.value.data.info.providerMetadata.data.tags?.includes('alwaysReasons')
+        && selectedModelInfo.value.data.info.capabilities.includes('always-reasons')
     );
 });
 

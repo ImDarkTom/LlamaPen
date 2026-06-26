@@ -1,12 +1,9 @@
 <script setup lang="ts">
-import { useConfigStore } from '@/stores/useConfigStore';
 import { BiBrain, BiRefresh, BiShow, BiWrench } from 'vue-icons-plus/bi';
 import { useModelSelect } from '@/stores/useModelSelect';
 import { storeToRefs } from 'pinia';
 import { onBeforeUnmount, onMounted, ref } from 'vue';
 import { emitter } from '@/lib/mitt';
-
-const config = useConfigStore();
 
 const modelSelectStore = useModelSelect();
 const { filterCapabilities, direction, orderBy, filterMenuOpen } = storeToRefs(modelSelectStore);
@@ -65,7 +62,7 @@ onBeforeUnmount(() => {
             <span class="text-sm">Order</span>
             <select v-model="orderBy" ref="orderBySelect"
                 class="bg-base-600 hover:bg-base-500 p-2 rounded-md ring-inset ring-2 ring-base-500 hover:ring-base-400 focus:ring-base-300 cursor-pointer outline-0 transition-colors duration-dynamic">
-                <option value="default">Default ({{ config.cloud.enabled ? 'Creator Name' : 'Added date' }})</option>
+                <option value="default">Default (Added Date)</option>
                 <option value="alphabetically">Alphabetically</option>
                 <option value="size">Size</option>
             </select>

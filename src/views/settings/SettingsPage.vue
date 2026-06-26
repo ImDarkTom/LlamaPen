@@ -74,7 +74,6 @@ onMounted(async () => {
     transitionSpeed.value = config.transitionSpeed;
 });
 
-const inProduction = import.meta.env.VITE_PRODUCTION === 'true';
 const ollamaDefault = import.meta.env.VITE_DEFAULT_OLLAMA ?? 'http://localhost:11434';
 
 async function checkOllamaVersion() {
@@ -96,12 +95,6 @@ const selectedProvider = computed({
     set(newValue: string) {
         setActiveProvider(newValue);
 
-        if (newValue === 'lpcloud') {
-            config.cloud.enabled = true;
-        } else {
-            config.cloud.enabled = false;
-        }
-     
         // todo(qol, p=l): refresh connection status and load models instead of refreshing page
         // refreshAndLoadModels
         location.reload();
@@ -326,11 +319,6 @@ const themes = {
                 type="button"
                 :icon="BiRefresh"
                 @click="updateServiceWorker()" />
-        </SettingsOptionCategory>
-
-        <SettingsOptionCategory label="Developer" v-if="!inProduction">
-            <span class="text-danger">Do not change these settings unless you know what you're doing.</span>
-            <SettingsInputToggle v-model="config.developer.infoLogs" label="Show info logs" />
         </SettingsOptionCategory>
     </div>
 </template>

@@ -1,6 +1,5 @@
 import logger from "@/lib/logger";
 import type { LLMProvider } from "./base/ProviderInterface";
-import { LPCloudProvider } from "./lpcloud/LPCloudProvider";
 import { OllamaProvider } from "./ollama/OllamaProvider";
 
 class ProviderFactory {
@@ -35,6 +34,7 @@ class ProviderFactory {
         const provider = this.providers.get(this.selectedProvider);
         if (!provider) {
             logger.warn('ProviderFactory:getSelectedProvider', `Provider '${this.selectedProvider}' not found, falling back to ollama`);
+            this.setSelectedProvider('ollama');
             return this.providers.get('ollama')!;
         }
         return provider;
@@ -43,4 +43,3 @@ class ProviderFactory {
 
 export const providerFactory = new ProviderFactory();
 providerFactory.register('ollama', new OllamaProvider());
-providerFactory.register('lpcloud', new LPCloudProvider());

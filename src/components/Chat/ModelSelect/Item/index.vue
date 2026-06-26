@@ -1,13 +1,11 @@
 <script setup lang="ts">
 import router from '@/lib/router';
-import useCloudUserStore from '@/stores/useCloudUserStore';
 import { computed, ref } from 'vue';
 import { BiDotsHorizontalRounded, BiDotsVerticalRounded, BiHeart, BiPencil, BiSolidHeart } from 'vue-icons-plus/bi';
 import { useConfigStore } from '@/stores/useConfigStore';
 import { useModelSelect } from '@/stores/useModelSelect';
 import { useProviderManager, type ModelInfo } from '@/composables/useProviderManager';
 
-const cloudUserStore = useCloudUserStore();
 const config = useConfigStore();
 const { getModelCapabilities } = useProviderManager();
 
@@ -24,22 +22,10 @@ const props = withDefaults(defineProps<{
 
 const { setModel: setModelInfo } = useModelSelect();
 
-const providerMetadata = computed(() => props.model.info.providerMetadata);
-
 const actionMenuButton = ref<HTMLElement | null>(null);
 
 function setModel(e: MouseEvent, modelId: string) {
 	if (actionMenuButton.value && actionMenuButton.value.contains(e.target as Node)) return;
-
-	if (config.cloud.enabled && !cloudUserStore.isSignedIn) {
-		// Show toast to sign in
-		router.push('/account');
-		return;
-	} else if (providerMetadata.value?.provider === 'lpcloud' && providerMetadata.value.data.premium && !cloudUserStore.isPremium) {
-		// Show toast to check out premium
-		router.push('/account#plan');
-		return;
-	}
 
 	setModelInfo(modelId);
 }
@@ -96,8 +82,6 @@ const selectActions: MenuEntry[] = [
 		:class="{
 			'bg-base-600': selected && !isCurrentModel,
 			'bg-base-600 ring-base-300!': isCurrentModel,
-			'opacity-50': providerMetadata?.provider === 'lpcloud' 
-				&& ((providerMetadata.data.premium && !cloudUserStore.isPremium) || (config.cloud.enabled && !cloudUserStore.isSignedIn)),
 		}"
 		:aria-selected="selected"
 		@click="setModel($event, model.info.id)">
@@ -140,8 +124,6 @@ const selectActions: MenuEntry[] = [
 		:class="{
 			'bg-base-600': selected && !isCurrentModel,
 			'bg-base-600 ring-base-300!': isCurrentModel,
-			'opacity-50': providerMetadata?.provider === 'lpcloud' 
-			&& ((providerMetadata.data.premium && !cloudUserStore.isPremium) || (config.cloud.enabled && !cloudUserStore.isSignedIn)),
 		}" 
 		:aria-selected="selected"
 		@click="setModel($event, model.info.id)">

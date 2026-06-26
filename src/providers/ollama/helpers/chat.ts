@@ -45,7 +45,7 @@ async function* chatIterator(
 
     //     if (response.status === 401 && data.error.type === 'auth:not-authed') {
     //         throw { type: 'error', error: { type: 'app:not-authed', message: 'You need to be signed in to send messages.' } };
-    //     } else if (response.status === 404 && !config.cloud.enabled) {
+    //     } else if (response.status === 404) {
     //         throw { type: 'error', error: { type: 'app:model-not-found', message: data.error as unknown as string } };
     //     }
 
@@ -57,12 +57,6 @@ async function* chatIterator(
             if (abortSignal.aborted) {
                 return { type: 'done', reason: 'cancelled' };
             }
-
-            // // From llamapen cloud
-            // if ('error' in data) {
-            //     yield data;
-            //     continue;
-            // }
 
             if (chunk.done) {
                 // Process final chunk

@@ -7,7 +7,7 @@ import type { ModelAttributes } from "@/components/ModelsPage/types";
 
 export abstract class BaseProvider implements LLMProvider {
     abstract readonly name: string;
-    abstract readonly type: 'ollama' | 'lpcloud' | 'openai';
+    abstract readonly type: 'ollama' | 'openai';
     abstract readonly connectionState: ConnectionState;
 
     abstract readonly rawModels: Ref<ModelInfo[]>;

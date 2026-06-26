@@ -1,5 +1,3 @@
-import type { LpCloudPricing } from "../lpcloud/types";
-
 export type ChatIteratorChunk = {
 	type: 'error',
 	error: {
@@ -46,7 +44,6 @@ export type ChatOptions = {
 
 export type ProviderMetadata = 
 	| { provider: 'ollama', data: OllamaMetadata }
-	| { provider: 'lpcloud', data: LPCloudMetadata }
 	| { provider: 'openai', data: OpenAIMetadata }
 
 export type OllamaMetadata = {
@@ -56,13 +53,6 @@ export type OllamaMetadata = {
 	family?: string;
 	modifiedAt?: Date;
 	context_length?: number;
-}
-
-export type LPCloudMetadata = {
-	providerName: string;
-	priceTier: LpCloudPricing;
-	premium: boolean;
-	tags?: string[]
 }
 
 export type OpenAIMetadata = {
