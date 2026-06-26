@@ -10,7 +10,14 @@ import { OllamaProvider } from "@/providers/ollama/OllamaProvider";
 
 // Types
 /** App-level info */
-export type ModelCapability = ('vision' | 'reasoning' | 'tools' | ({} & string));
+export type ModelCapability = (
+    'unavailable' |
+    'vision' | 
+    'reasoning' | 
+    'always-reasons' |
+    'tools' | 
+    ({} & string)
+);
 
 export type ModelInfo = {
     displayName: string;

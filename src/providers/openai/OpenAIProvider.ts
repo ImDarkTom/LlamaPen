@@ -2,11 +2,12 @@ import type { ModelCapability, ModelInfo } from "@/composables/useProviderManage
 import { BaseProvider } from "../base/BaseProvider";
 import type { Reactive, Ref } from "vue";
 import type { ConfigurableProvider, ConnectionState } from "../base/ProviderInterface";
-import type { ChatOptions, ChatIteratorChunk } from "../base/types";
+import type { ChatOptions, ChatIteratorChunk, ProviderMetadata } from "../base/types";
 import type { ModelAttributes } from "@/components/ModelsPage/types";
 import { OpenAI } from "openai";
 import { chatHelper } from "./chatHelper";
 import logger from "@/lib/logger";
+import { CapabilityParser, NameParser, SubtitleParser } from "./nonStandardParsing";
 
 type OpenAIConfig = {
     name: string;
@@ -68,8 +69,11 @@ export class OpenAIProvider extends BaseProvider implements ConfigurableProvider
         return chatHelper(messages, abortSignal, options, this.client);
     }
 
-    public getModelCapabilities(_modelId: string): ModelCapability[] {
-        return [ 'reasoning', 'tools', 'vision' ];
+    public getModelCapabilities(modelId: string): ModelCapability[] {
+        const model = this.rawModels.value.find((model) => model.info.id === modelId);
+        if (!model?.info.providerMetadata) return [];
+
+        return CapabilityParser.attemptParseModelCapabilities(model.info.providerMetadata);
     }
 
     public async getModelAttributes(modelId: string): Promise<ModelAttributes> {
@@ -92,21 +96,24 @@ export class OpenAIProvider extends BaseProvider implements ConfigurableProvider
         const models = await this.client.models.list();
 
         return models.data.map((model) => {
+            const providerMetadata: ProviderMetadata = {
+                provider: 'openai',
+                data: {
+                    created: new Date(model.created * 1000),
+                    ownedBy: model.owned_by,
+                    allInfo: model,
+                }
+            };
+
             return {
-                displayName: model.id,
+                displayName: NameParser.getNameForModel(providerMetadata, model.id),
                 hidden: false,
                 info: {
                     capabilities: [],
                     id: model.id,
-                    name: model.id,
-                    subtitle: model.owned_by,
-                    providerMetadata: {
-                        provider: 'openai',
-                        data: {
-                            created: new Date(model.created * 1000),
-                            ownedBy: model.owned_by,
-                        }
-                    }
+                    name: NameParser.getNameForModel(providerMetadata, model.id),
+                    subtitle: SubtitleParser.getSubtitleForModel(providerMetadata),
+                    providerMetadata,
                 }
             }
         });

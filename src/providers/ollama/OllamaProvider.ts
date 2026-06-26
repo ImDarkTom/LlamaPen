@@ -1,5 +1,5 @@
 import { chat, generateChatTitle } from "./helpers";
-import type { ChatIteratorChunk, ChatOptions } from "../base/types";
+import type { ChatIteratorChunk, ChatOptions, ProviderMetadata } from "../base/types";
 import { appMesagesToOllama } from "./converters/appMessagesToOllama";
 import { ollamaWrapper } from "./OllamaWrapper";
 import { reactive, ref, type Reactive } from "vue";
@@ -8,6 +8,7 @@ import { BaseProvider } from "../base/BaseProvider";
 import { useConfigStore } from "@/stores/useConfigStore";
 import type { ModelCapability, ModelInfo } from "@/composables/useProviderManager";
 import type { ModelAttributes } from "@/components/ModelsPage/types";
+import { SubtitleParser } from "../openai/nonStandardParsing";
 
 /**
  * Interfaces with the Ollama wrapper before packaging responses into the common app standard.
@@ -82,24 +83,27 @@ export class OllamaProvider extends BaseProvider implements MemoryManagedProvide
             const displayName = configStore.chat.modelRenames[m.model] || m.name;
             const isHidden = configStore.chat.hiddenModels.includes(m.model);
 
+            const providerMetadata: ProviderMetadata = {
+                provider: 'ollama',
+                data: {
+                    size: m.size,
+                    parameterSize: m.details.parameter_size,
+                    family: m.details.family,
+                    modifiedAt: m.modified_at,
+                    quantization: m.details.quantization_level,
+                    context_length: (m.details as Record<string, any>).context_length,
+                }
+            };
+
             return {
                 displayName,
                 hidden: isHidden,
                 info: {
                     name: m.name,
                     id: m.model,
-                    subtitle: m.details.parameter_size,
+                    subtitle: SubtitleParser.getSubtitleForModel(providerMetadata),
                     capabilities: [],
-                    providerMetadata: {
-                        provider: 'ollama',
-                        data: {
-                            size: m.size,
-                            parameterSize: m.details.parameter_size,
-                            family: m.details.family,
-                            modifiedAt: m.modified_at,
-                            quantization: m.details.quantization_level,
-                        }
-                    }
+                    providerMetadata,
                 }
             }
         });

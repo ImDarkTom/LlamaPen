@@ -1,6 +1,6 @@
 <script setup lang="ts">
 import type { IconType } from 'vue-icons-plus';
-import { BiBrain, BiMicrophone, BiReflectVertical, BiShow, BiText, BiWrench } from 'vue-icons-plus/bi';
+import { BiBrain, BiLock, BiMicrophone, BiQuestionMark, BiReflectVertical, BiShow, BiText, BiWrench } from 'vue-icons-plus/bi';
 import Unknown from '@/icons/unknown.svg';
 import type { ModelCapability } from "@/composables/useProviderManager";
 
@@ -26,6 +26,12 @@ const capabilityDetails: Record<ModelCapability, { icon: IconType, color: string
     },
     'audio': { 
         icon: BiMicrophone, color: 'bg-capability-audio/40', ring: 'ring-capability-audio' 
+    },
+    'always-reasons': {
+        icon: BiLock, color: 'bg-capability-reasoning/40', ring: 'ring-capability-reasoning',
+    },
+    unavailable: {
+        icon: BiQuestionMark, color: 'bg-gray-400/40', ring: 'ring-gray-400',
     }
 };
 </script>

@@ -55,6 +55,7 @@ export type OllamaMetadata = {
 	quantization?: string;
 	family?: string;
 	modifiedAt?: Date;
+	context_length?: number;
 }
 
 export type LPCloudMetadata = {
@@ -67,4 +68,5 @@ export type LPCloudMetadata = {
 export type OpenAIMetadata = {
 	created: Date;
 	ownedBy: string;
+	allInfo?: Record<any, any>;
 }
