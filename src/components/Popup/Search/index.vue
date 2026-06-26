@@ -3,8 +3,7 @@ import { useChatSearch } from '@/composables/useChatSearch';
 import { emitter } from '@/lib/mitt';
 import router from '@/lib/router';
 import { nextTick, onBeforeUnmount, onMounted, ref } from 'vue';
-import { BiFilterAlt, BiTimeFive, BiX } from 'vue-icons-plus/bi';
-import { PiSparkleFill } from 'vue-icons-plus/pi';
+import { BiFilterAlt, BiX } from 'vue-icons-plus/bi';
 
 const {
     filteredChats,
@@ -163,6 +162,7 @@ function onInputKeyDown(e: KeyboardEvent) {
                 <ul v-if="filteredChats.length > 0" class="overflow-y-auto flex flex-col gap-2">
                     <li 
                         v-for="(chat, index) in filteredChats"
+                        :key="chat.id"
                         ref="queryItemsRef"
                         @mouseover="selectedIndex = index"
                     >
@@ -172,9 +172,10 @@ function onInputKeyDown(e: KeyboardEvent) {
                             :class="{ 'bg-base-600!': selectedIndex === index }"
                         >
                             <span class="font-semibold group-hover:text-base-100">{{ chat.title }}</span>
-                            <span class="text-sm inline-flex items-center">
-                                <BiTimeFive class="size-4 mr-1" /> {{ chat.lastestMessageDate?.toLocaleDateString() }}&nbsp;•&nbsp;
-                                <PiSparkleFill class="size-4 mr-1" /> {{ chat.createdAt.toLocaleDateString() }}
+                            <span class="text-sm">
+                                Latest message: <i>{{ chat.lastestMessageDate?.toLocaleDateString() }}</i>
+                                &nbsp;•&nbsp;
+                                Created: <i>{{ chat.createdAt.toLocaleDateString() }}</i>
                             </span>
                         </RouterLink>
                     </li>
