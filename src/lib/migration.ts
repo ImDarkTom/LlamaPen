@@ -13,13 +13,27 @@ export const migrations: Migrations[] = [
             });
         }
     },
+
+    // v1 -> v2: Remove LlamaPen Cloud config and auth leftovers
+    (store) => {
+        store.$patch((state: any) => {
+            delete state.cloud;
+            delete state.developer;
+
+            if (state.models) {
+                delete state.models.favoriteCloudModels;
+            }
+        });
+
+        localStorage.removeItem('sb-iclfocxwzrkekqubcjvo-auth-token');
+    }
 ];
 
-export function runMigrations(store: Store) {
+export function runMigrations(store: Store): boolean {
     const s = store as any;
     const currentVersion: number = s._version ?? 0;
     const targetVersion = migrations.length;
-    if (currentVersion >= targetVersion) return;
+    if (currentVersion >= targetVersion) return false;
 
     for (let i = currentVersion; i < targetVersion; i++) {
         migrations[i]!(store);
@@ -27,4 +41,5 @@ export function runMigrations(store: Store) {
 
     store.$patch({ _version: targetVersion });
     logger.info('Config Migration', `Migrated config from version ${currentVersion} to ${targetVersion} successfully.`);
+    return true;
 }

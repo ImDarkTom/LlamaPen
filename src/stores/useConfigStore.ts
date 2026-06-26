@@ -172,7 +172,9 @@ export const useConfigStore = defineStore('config', {
     persist: {
         storage: localStorage,
         afterHydrate: (ctx) => {
-            runMigrations(ctx.store);
+            if (runMigrations(ctx.store)) {
+                (ctx.store as any).$persist();
+            }
         }
     },
 })

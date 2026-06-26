@@ -34,6 +34,7 @@ class ProviderFactory {
         const provider = this.providers.get(this.selectedProvider);
         if (!provider) {
             logger.warn('ProviderFactory:getSelectedProvider', `Provider '${this.selectedProvider}' not found, falling back to ollama`);
+            this.setSelectedProvider('ollama');
             return this.providers.get('ollama')!;
         }
         return provider;
