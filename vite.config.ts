@@ -169,11 +169,6 @@ export default defineConfig({
                             priority: 20,
                         },
                         {
-                            name: 'cloud',
-                            test: /node_modules[\\/]@supabase\/supabase-js/,
-                            priority: 20,
-                        },
-                        {
                             name: 'utils',
                             test: /node_modules[\\/](mitt|mustache)/,
                             priority: 20,

@@ -13,7 +13,6 @@
     "local": "bun run build && echo \"✅ App should be running locally at http://localhost:8080\" && bunx --bun serve dist --listen 8080 --single"
   },
   "dependencies": {
-    "@supabase/supabase-js": "^2.105.4",
     "@vueuse/core": "^14.3.0",
     "dexie": "^4.4.2",
     "dompurify": "^3.4.3",

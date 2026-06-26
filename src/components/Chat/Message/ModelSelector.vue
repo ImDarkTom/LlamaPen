@@ -3,9 +3,7 @@ import logger from '@/lib/logger';
 import useMessagesStore from '@/stores/messagesStore';
 import { computed } from '@vue/reactivity';
 import { ref } from 'vue';
-import { BsCloudSlash } from 'vue-icons-plus/bs';
 import { BiError, BiRefresh } from 'vue-icons-plus/bi';
-import useCloudUserStore from '@/stores/useCloudUserStore';
 import { useProviderManager, type ModelInfo } from '@/composables/useProviderManager';
 
 const props = defineProps<{
@@ -14,12 +12,10 @@ const props = defineProps<{
 }>();
 
 const messagesStore = useMessagesStore();
-const cloudUserStore = useCloudUserStore();
 const { rawModels, getModelInfo } = useProviderManager();
 const { isLoading } = useProviderManager();
 
 const isOpened = ref<boolean>(false);
-const usedCloudForMessage = computed<boolean>(() => /\//g.test(props.message.model));
 const messageModelInfo = computed(() => getModelInfo(props.message.model));
 
 const allModels = computed<ModelInfo[]>(() => {
@@ -34,35 +30,15 @@ function regenerateMessage(model: string) {
     logger.info('Message Options Component', `Regenerating message id ${props.message.id} with different model ${model}.`);
     messagesStore.regenerateMessage(props.message.id, model);
 }
-
-const warningText = computed(() => {
-    if (usedCloudForMessage.value) {
-        return "This message was generated using LlamaPen Cloud. Regeneration may not be possible unless LlamaPen Cloud is enabled."
-    } else {
-        return "Model not found in current model list. You may not be able to regenerate this message with the same model.";
-    }
-});
-
-function isModelAvailable(model: ModelInfo): boolean {
-    if (model.info.providerMetadata?.provider === 'lpcloud') {
-        if (model.info.providerMetadata.data.premium) {
-            return cloudUserStore.isPremium;
-        }
-    }
-
-    return true;
-}
-
 </script>
 
 <template>
     <div class="relative flex flex-row items-center gap-1">
         <Tooltip
             v-if="!messageModelInfo.exists && !isLoading"
-            :text=warningText
+            text="Model not found in current model list. You may not be able to regenerate this message with the same model."
             size="small">
-            <BsCloudSlash v-if="usedCloudForMessage" class="text-warning size-5 ml-1 translate-y-0.5" />
-            <BiError v-else class="text-warning ml-1" />
+            <BiError class="text-warning ml-1" />
         </Tooltip>
         
         <FloatingMenu 
@@ -104,7 +80,6 @@ function isModelAvailable(model: ModelInfo): boolean {
                         :key="model.info.id"
                         :modelId="model.info.id"
                         :modelName="model.displayName"
-                        :modelIsAvailable="isModelAvailable(model)"
                         :regenerate-message="regenerateMessage" />
                 </div>
             </template>

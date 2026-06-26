@@ -37,11 +37,6 @@ interface Config {
             entryIcons: boolean;
         },
     },
-    cloud: {
-        enabled: boolean,
-        apiUrl: string,
-        signoutBeforeDisable: boolean,
-    },
     chat: {
         messageOptionsEnabled: boolean,
         messageOptions: {
@@ -62,10 +57,6 @@ interface Config {
     },
     models: {
         favoriteModels: string[];
-        favoriteCloudModels: string[];
-    },
-    developer: {
-        infoLogs: boolean,
     },
 };
 
@@ -119,11 +110,6 @@ export const useConfigStore = defineStore('config', {
                 entryIcons: true,
             },
         },
-        cloud: {
-            enabled: false,
-            apiUrl: import.meta.env.VITE_API_URL,
-            signoutBeforeDisable: false,
-        },
         chat: {
             messageOptionsEnabled: false,
             messageOptions: defaultMessageOptions,
@@ -140,14 +126,10 @@ export const useConfigStore = defineStore('config', {
         },
         models: {
             favoriteModels: [],
-            favoriteCloudModels: [],
-        },
-        developer: {
-            infoLogs: false,
         },
     }),
     getters: {
-        requestUrl: (state) => (path: string) => `${state.cloud.enabled ? state.cloud.apiUrl : state.ollama.url}${path}`,
+        requestUrl: (state) => (path: string) => `${state.ollama.url}${path}`,
     },
     actions: {
         setTransitionSpeed(speed: number) {

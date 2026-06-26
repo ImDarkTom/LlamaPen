@@ -3,7 +3,6 @@ import { createRouter, createWebHistory, type RouteRecordRaw } from 'vue-router'
 import ChatPage from "@/views/chat/ChatPage.vue";
 import SettingsPage from "@/views/settings/SettingsPage.vue";
 import GuidePage from "@/views/guide/GuidePage.vue";
-import AccountPage from '@/views/account/AccountPage.vue';
 import ModelsPage from '@/views/models/ModelsPage.vue';
 import ChatLayout from '@/layouts/ChatLayout.vue';
 import ToolsPage from '@/views/tools/ToolsPage.vue';
@@ -38,11 +37,6 @@ const routes: RouteRecordRaw[] = [
             { 
                 path: '/guide', 
                 component: GuidePage,
-                meta: { sidebarType: 'chats' },
-            },
-            { 
-                path: '/account',
-                component: AccountPage,
                 meta: { sidebarType: 'chats' },
             },
             { 

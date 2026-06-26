@@ -1,7 +1,6 @@
 <script setup lang="ts">
 import router from '@/lib/router';
 import { useConfigStore } from '@/stores/useConfigStore';
-import useCloudUserStore from '@/stores/useCloudUserStore';
 import { computed, ref } from 'vue';
 import type { IconType } from 'vue-icons-plus';
 import { BiCopy, BiDotsVerticalRounded, BiHide, BiLinkExternal, BiPencil, BiShow, BiTrash } from 'vue-icons-plus/bi';
@@ -15,7 +14,6 @@ import IconMemoryUnload from '@/components/Icon/MemoryUnload.vue';
 const config = useConfigStore();
 const { setModelHidden } = useUIStore();
 const { isConnected, isLoading, allModelIds, isOllama, loadedModelIds, currentProvider } = useProviderManager();
-const cloudUserStore = useCloudUserStore();
 
 const props = defineProps<{
     modelsList: ModelInfo[],
@@ -158,15 +156,9 @@ const hideAll = () => {
     refreshModelList();
 };
 
-const showProprietaryModels = computed(() => cloudUserStore.userInfo.options.showProprietaryModels);
-
 const searchQuery = ref('');
 
 const queriedModels = computed(() => props.modelsList.filter((m) => {
-    if (!showProprietaryModels.value && m.info.providerMetadata?.provider === 'lpcloud' && m.info.providerMetadata.data.tags?.includes('closedSource')) {
-        return false;
-    }
-
     return m.displayName.includes(searchQuery.value) ||
         m.info.id.includes(searchQuery.value)
 }));

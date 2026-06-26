@@ -80,13 +80,11 @@ bun run local
 
 ## LlamaPen Cloud
 
-If you are using the [official site](https://llamapen.app/) (`https://llamapen.app`), you may choose to enable LlamaPen Cloud. LlamaPen Cloud is an optional service that lets you run the most powerful versions of the latest models using a cloud provider if you are not able to run them locally. While LlamaPen is free and open-source, LlamaPen Cloud offers an optional subscription for increasing rate limits and accessing more expensive models. 
-
-For security reasons, LlamaPen Cloud is **not** open-source, however we strive to ensure your privacy (as outlined in the Cloud service [privacy policy](https://cloud.llamapen.app/privacy)), and the only time we have access to your chats is if you explicitly enable LlamaPen Cloud in the settings and send chat requests using one of the provided models. **No data is ever sent to LlamaPen Cloud if you do not enable it in the settings**.
+LlamaPen previously offered *LlamaPen Cloud*, a cloud service to run more powerful models. This has since been discontinued. For users wanting similar functionality you may use OpenRouter as custom provider in the providers section of the app, or Ollama's native cloud models. All user accounts have been deleted and any refunds issued.
 
 ## Donating
 
-Funding to help development is always appreciated, whether that is through purchasing a subscription on LlamaPen API or donating directly, I will appreciate any sponsorship you give. 
+Funding to help development is always appreciated, you can donate directly though GitHub Sponsors or buy me a coffee. I appreciate any sponsorship you give. 
 
 <a href="https://www.buymeacoffee.com/ImDarkTom" target="_blank"><img src="https://cdn.buymeacoffee.com/buttons/v2/default-yellow.png" alt="Buy Me A Coffee" height="51" width="181"></a>
 

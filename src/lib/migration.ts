@@ -12,7 +12,7 @@ export const migrations: Migrations[] = [
                 delete state.ollamaUrl;
             });
         }
-    }
+    },
 ];
 
 export function runMigrations(store: Store) {

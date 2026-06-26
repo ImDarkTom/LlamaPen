@@ -3,9 +3,7 @@ import { onMounted, onUnmounted, ref } from 'vue';
 import { emitter } from '@/lib/mitt';
 import { useCustomProvidersStore } from '@/stores/useCustomProvidersStore';
 import { useProviderManager } from '@/composables/useProviderManager';
-import { useConfigStore } from '@/stores/useConfigStore';
 
-const config = useConfigStore();
 const customProvidersStore = useCustomProvidersStore();
 const { 
     currentProviderId, 
@@ -24,12 +22,6 @@ const selectedProvider = computed({
     set(newValue: string) {
         setActiveProvider(newValue);
 
-        if (newValue === 'lpcloud') {
-            config.cloud.enabled = true;
-        } else {
-            config.cloud.enabled = false;
-        }
-     
         // todo(qol, p=l): refresh connection status and load models instead of refreshing page
         // refreshAndLoadModels
         location.reload();

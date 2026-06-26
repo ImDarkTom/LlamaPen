@@ -1,14 +1,11 @@
 import { defineStore } from "pinia";
 import { computed, ref } from "vue";
 import { useConfigStore } from "./useConfigStore";
-import type { ProviderMetadata } from "@/providers/base/types";
 import { useProviderManager, type ModelInfo } from "@/composables/useProviderManager";
-import useCloudUserStore from "./useCloudUserStore";
 
 export const useModelSelect = defineStore('modelSelect', () => {
-    const { getModelCapabilities, currentProviderId } = useProviderManager();
+    const { getModelCapabilities } = useProviderManager();
     const config = useConfigStore();
-    const cloudUserStore = useCloudUserStore();
 
     const searchQuery = ref('');
     const isMenuOpened = ref(false);
@@ -79,25 +76,7 @@ export const useModelSelect = defineStore('modelSelect', () => {
     }
 
     function sortItems(items: ModelInfo[]) {
-        items = userSort(items) || items;
-
-        if (currentProviderId.value === 'lpcloud') {
-            const lpMeta = (item: ModelInfo) => (item.info.providerMetadata as (ProviderMetadata & { provider: 'lpcloud' })).data;
-            
-            if (cloudUserStore.isPremium) {
-                // Only show premium models for users with premium
-                items = items.filter(item => lpMeta(item).premium);
-            } else {
-                // Non-premium at the top
-                items.sort((a, b) => (lpMeta(a).premium ? 1 : 0) - (lpMeta(b).premium ? 1 : 0));
-            }
-
-            if (cloudUserStore.userInfo.options.showProprietaryModels === false) {
-                items = items.filter(item => !((item.info.providerMetadata as (ProviderMetadata & { provider: 'lpcloud' })).data.tags?.includes('closedSource')));
-            }
-        }
-
-        return items;
+        return userSort(items);
     }
 
     async function setModel(newModelId: string, skipUiUpdate: boolean = false) {

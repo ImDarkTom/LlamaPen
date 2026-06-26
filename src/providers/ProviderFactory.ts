@@ -1,6 +1,5 @@
 import logger from "@/lib/logger";
 import type { LLMProvider } from "./base/ProviderInterface";
-import { LPCloudProvider } from "./lpcloud/LPCloudProvider";
 import { OllamaProvider } from "./ollama/OllamaProvider";
 
 class ProviderFactory {
@@ -43,4 +42,3 @@ class ProviderFactory {
 
 export const providerFactory = new ProviderFactory();
 providerFactory.register('ollama', new OllamaProvider());
-providerFactory.register('lpcloud', new LPCloudProvider());
