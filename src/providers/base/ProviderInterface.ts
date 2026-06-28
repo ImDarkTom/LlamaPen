@@ -17,6 +17,7 @@ export interface LLMProvider {
 
     readonly features: {
         modelMemory?: ModelMemoryFeature;
+        modelAdmin?: ModelAdminFeature;
     } 
 
     /**
@@ -86,6 +87,29 @@ export interface ModelMemoryFeature {
      * @returns If the model was successfully unloaded from memory.
      */
     unload(modelId: string): Promise<boolean>;
+}
+
+export interface ModelAdminFeature {
+    /**
+     * Copy a model under a new name
+     * @param source Model to copy.
+     * @param destination New ID to copy to.
+     * @returns Success or not.
+     */
+    copy(source: string, destination: string): Promise<boolean>;
+
+    /**
+     * Delete a model.
+     * @param modelId Model to delete.
+     * @returns Success or not.
+     */
+    delete(modelId: string): Promise<boolean>;
+
+    /**
+     * Get the info/download page of a model
+     * @param modelId Model to get URL for.
+     */
+    externalModelUrl?(modelId: string): string;
 }
 
 export interface ConfigurableProvider<TConfig extends Record<string, unknown>> extends LLMProvider {

@@ -42,6 +42,19 @@ export class OllamaProvider extends BaseProvider {
                 const loadedModels = await ollamaWrapper.ps();
                 this.loadedModelIds.value = new Set(loadedModels.map(model => model.model));
             }
+        },
+        modelAdmin: {
+            copy: (source, destination) => {
+                return ollamaWrapper.copy({ source, destination });
+            },
+
+            delete: (modelId) => {
+                return ollamaWrapper.delete({ model: modelId });
+            },
+
+            externalModelUrl: (modelId) => {
+                return `https://ollama.com/library/${modelId}`;
+            },
         }
     } satisfies LLMProvider['features'];
 

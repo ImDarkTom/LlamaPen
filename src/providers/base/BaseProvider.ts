@@ -13,7 +13,7 @@ export abstract class BaseProvider implements LLMProvider {
     abstract readonly rawModels: Ref<ModelInfo[]>;
     protected readonly fetchedCapabilities = ref<Map<string, ModelCapability[]>>(new Map());
 
-    abstract features: LLMProvider['features'];
+    abstract readonly features: LLMProvider['features'];
     
     private initialised = ref(false);
     private loadPromise: Promise<void> | null = null;
