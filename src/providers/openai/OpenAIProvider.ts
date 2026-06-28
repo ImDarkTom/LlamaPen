@@ -27,9 +27,7 @@ export class OpenAIProvider extends BaseProvider implements ConfigurableProvider
         lastChecked: undefined
     });
 
-    readonly capabilities = {
-        memoryManagement: false,
-    } as const;
+    readonly features = {};
 
     private client: OpenAI;
 

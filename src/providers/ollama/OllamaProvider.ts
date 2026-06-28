@@ -3,7 +3,7 @@ import type { ChatIteratorChunk, ChatOptions, ProviderMetadata } from "../base/t
 import { appMesagesToOllama } from "./converters/appMessagesToOllama";
 import { ollamaWrapper } from "./OllamaWrapper";
 import { reactive, ref, type Reactive } from "vue";
-import type { ConnectionState, MemoryManagedProvider } from "../base/ProviderInterface";
+import type { ConnectionState, LLMProvider } from "../base/ProviderInterface";
 import { BaseProvider } from "../base/BaseProvider";
 import { useConfigStore } from "@/stores/useConfigStore";
 import type { ModelCapability, ModelInfo } from "@/composables/useProviderManager";
@@ -13,12 +13,11 @@ import { SubtitleParser } from "../openai/nonStandardParsing";
 /**
  * Interfaces with the Ollama wrapper before packaging responses into the common app standard.
  */
-export class OllamaProvider extends BaseProvider implements MemoryManagedProvider {
+export class OllamaProvider extends BaseProvider {
     readonly name = "Ollama";
     readonly type = 'ollama';
 
     readonly rawModels = ref<ModelInfo[]>([]);
-    readonly loadedModelIds = ref<Set<string>>(new Set());
 
     readonly connectionState: Reactive<ConnectionState> = reactive({
         status: 'disconnected',
@@ -26,13 +25,29 @@ export class OllamaProvider extends BaseProvider implements MemoryManagedProvide
         lastChecked: undefined
     });
     
-    readonly capabilities = {
-        memoryManagement: true,
-    } as const;
+    private loadedModelIds = ref<Set<string>>(new Set());
+
+    readonly features = {
+        modelMemory: {
+            loadedModelIds: this.loadedModelIds,
+
+            load: async (modelId) => {
+                return ollamaWrapper.loadIntoMemory(modelId);
+            },
+            unload: async (modelId) => {
+                return ollamaWrapper.unloadFromMemory(modelId);
+            },
+
+            refreshLoadedModels: async () => {
+                const loadedModels = await ollamaWrapper.ps();
+                this.loadedModelIds.value = new Set(loadedModels.map(model => model.model));
+            }
+        }
+    } satisfies LLMProvider['features'];
 
 
     protected async onModelsLoaded(): Promise<void> {
-        await this.refreshLoadedModels();
+        await this.features.modelMemory.refreshLoadedModels();
 
         this.rawModels.value = this.rawModels.value.map(m => {
             return {
@@ -132,24 +147,6 @@ export class OllamaProvider extends BaseProvider implements MemoryManagedProvide
 
     public async generateChatTitle(messages: ChatMessage[]): Promise<string> {
         return generateChatTitle(messages);
-    }
-
-    async refreshLoadedModels(): Promise<void> {
-        const loadedModels = await ollamaWrapper.ps();
-        if (!loadedModels) {
-            this.loadedModelIds.value = new Set();
-            return;
-        }
-
-        this.loadedModelIds.value = new Set(loadedModels.map(model => model.model));
-    }
-
-    async loadModelIntoMemory(modelId: string): Promise<boolean> {
-        return await ollamaWrapper.loadIntoMemory(modelId);
-    }
-
-    async unloadModel(modelId: string): Promise<boolean> {
-        return await ollamaWrapper.unloadFromMemory(modelId);
     }
 
     private async fetchModelCapabilities(modelId: string): Promise<string[]> {

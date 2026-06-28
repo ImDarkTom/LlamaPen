@@ -15,8 +15,8 @@ export interface LLMProvider {
     readonly connectionState: Reactive<ConnectionState>;
     readonly rawModels: Ref<ModelInfo[]>;
 
-    readonly capabilities: {
-        readonly memoryManagement: boolean;
+    readonly features: {
+        modelMemory?: ModelMemoryFeature;
     } 
 
     /**
@@ -69,11 +69,7 @@ export interface LLMProvider {
     generateChatTitle(messages: ChatMessage[]): Promise<string>;
 }
 
-export interface MemoryManagedProvider extends LLMProvider {
-    readonly capabilities: {
-        readonly memoryManagement: true;
-    }
-
+export interface ModelMemoryFeature {
     readonly loadedModelIds: Ref<Set<string>>;
     refreshLoadedModels(): Promise<void>;
     
@@ -82,14 +78,14 @@ export interface MemoryManagedProvider extends LLMProvider {
      * @param modelName The name of the model to load into memory.
      * @returns If the model was successfully loaded into memory.
      */
-    loadModelIntoMemory(modelId: string): Promise<boolean>;
+    load(modelId: string): Promise<boolean>;
 
     /**
      * Unloads a model from memory.
      * @param modelName The name of the model to unload from memory.
      * @returns If the model was successfully unloaded from memory.
      */
-    unloadModel(modelId: string): Promise<boolean>;
+    unload(modelId: string): Promise<boolean>;
 }
 
 export interface ConfigurableProvider<TConfig extends Record<string, unknown>> extends LLMProvider {

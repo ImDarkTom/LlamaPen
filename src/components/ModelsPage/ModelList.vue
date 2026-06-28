@@ -10,6 +10,7 @@ import { ollamaWrapper } from '@/providers/ollama/OllamaWrapper';
 import useUIStore from '@/stores/useUiStore';
 // This has to be imported as we are using it programatically
 import IconMemoryUnload from '@/components/Icon/MemoryUnload.vue';
+import { hasModelMemoryFeature } from '@/providers/utils/ProviderCheck';
 
 const config = useConfigStore();
 const { setModelHidden } = useUIStore();
@@ -26,7 +27,7 @@ const emit = defineEmits<{
 const refreshModelList = () => emit('refreshModelList');
 
 const isHidden = (modelId: string) => config.chat.hiddenModels.includes(modelId);
-const isMemoryManaged = computed(() => currentProvider.value.capabilities.memoryManagement);
+const isMemoryManaged = computed(() => hasModelMemoryFeature(currentProvider.value));
 const isLoadedInMemory = (modelId: string) => loadedModelIds.value.has(modelId);
 
 const modelActions: MenuEntry<{ modelId: string, displayName: string }>[] = [

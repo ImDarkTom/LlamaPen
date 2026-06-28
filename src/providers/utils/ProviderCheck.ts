@@ -1,4 +1,7 @@
-import type { LLMProvider, MemoryManagedProvider } from "../base/ProviderInterface";
+import type { LLMProvider, ModelMemoryFeature } from "../base/ProviderInterface";
 
-export const isMemoryManagedProvider = (provider: LLMProvider): provider is MemoryManagedProvider => 
-    provider.capabilities.memoryManagement;
+export const hasModelMemoryFeature = (
+    provider: LLMProvider
+): provider is LLMProvider & { features: { modelMemory: ModelMemoryFeature } } => {
+    return provider.features.modelMemory !== undefined;
+}

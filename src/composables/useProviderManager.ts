@@ -3,8 +3,6 @@ import type { ProviderMetadata } from "@/providers/base/types";
 import { providerFactory } from "@/providers/ProviderFactory";
 import { computed } from "vue";
 import { useConfigStore } from "@/stores/useConfigStore";
-import logger from "@/lib/logger";
-import { isMemoryManagedProvider } from "@/providers/utils/ProviderCheck";
 
 // Types
 /** App-level info */
@@ -48,10 +46,7 @@ export function useProviderManager() {
     const currentProviderId = computed(() => providerFactory.getSelectedProviderId())
     const rawModels = currentProvider.value.rawModels;
     const loadedModelIds = computed(() => {
-        if (isMemoryManagedProvider(currentProvider.value)) {
-            return currentProvider.value.loadedModelIds.value;
-        }
-        return new Set<string>();
+        return currentProvider.value.features.modelMemory?.loadedModelIds.value ?? new Set<string>();
     });
 
     // Connection state
@@ -84,24 +79,24 @@ export function useProviderManager() {
     
     // Ollama-specific
     const loadModelIntoMemory = (modelId: string) => {
-        if (!isMemoryManagedProvider(currentProvider.value)) {
+        const feature = currentProvider.value.features.modelMemory;
+        if (!feature) {
             throw new Error(`Provider ${currentProvider.value.name} does not support memory management`);
         }
-        return currentProvider.value.loadModelIntoMemory(modelId);
+        
+        return feature.load(modelId);
     };
 
     const unloadModel = (modelId: string) => {
-        if (!isMemoryManagedProvider(currentProvider.value)) {
+        const feature = currentProvider.value.features.modelMemory;
+        if (!feature) {
             throw new Error(`Provider ${currentProvider.value.name} does not support memory management`);
         }
-        return currentProvider.value.unloadModel(modelId);
+        return feature.unload(modelId);
     };
 
     const refreshLoadedModels = () => {
-        if (isMemoryManagedProvider(currentProvider.value)) {
-            return currentProvider.value.refreshLoadedModels();
-        }
-        logger.warn(`Provider ${currentProvider.value.name} does not support memory management, skipping refreshLoadedModels`);
+        return currentProvider.value.features.modelMemory?.refreshLoadedModels();
     };
 
     const getModelAttributes = (modelId: string) => {
