@@ -10,7 +10,9 @@
     "test": "bunx --bun vitest",
     "build-only": "vite build",
     "type-check": "vue-tsc --build",
-    "local": "bun run build && echo \"✅ App should be running locally at http://localhost:8080\" && bunx --bun serve dist --listen 8080 --single"
+    "local": "bun run build && echo \"✅ App should be running locally at http://localhost:8080\" && bunx --bun serve dist --listen 8080 --single",
+    "fmt": "oxfmt",
+    "fmt:check": "oxfmt --check"
   },
   "dependencies": {
     "@vueuse/core": "^14.3.0",
@@ -52,6 +54,7 @@
     "fake-indexeddb": "^6.2.5",
     "jsdom": "^29.0.2",
     "npm-run-all2": "^8.0.4",
+    "oxfmt": "^0.56.0",
     "tailwindcss": "^4.3.1",
     "tailwindcss-motion": "^1.1.1",
     "typescript": "~6.0.3",
