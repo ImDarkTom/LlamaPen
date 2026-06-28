@@ -15,6 +15,10 @@ export interface LLMProvider {
     readonly connectionState: Reactive<ConnectionState>;
     readonly rawModels: Ref<ModelInfo[]>;
 
+    readonly capabilities: {
+        readonly memoryManagement: boolean;
+    } 
+
     /**
      * Loads models from the provider and initialises capabilities.
      * @param force When false, if models were already loaded before, ignore the reqest. 
@@ -66,6 +70,10 @@ export interface LLMProvider {
 }
 
 export interface MemoryManagedProvider extends LLMProvider {
+    readonly capabilities: {
+        readonly memoryManagement: true;
+    }
+
     readonly loadedModelIds: Ref<Set<string>>;
     refreshLoadedModels(): Promise<void>;
     

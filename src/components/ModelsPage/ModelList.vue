@@ -13,7 +13,7 @@ import IconMemoryUnload from '@/components/Icon/MemoryUnload.vue';
 
 const config = useConfigStore();
 const { setModelHidden } = useUIStore();
-const { isConnected, isLoading, allModelIds, isOllama, loadedModelIds, currentProvider } = useProviderManager();
+const { isConnected, isLoading, allModelIds, loadedModelIds, currentProvider } = useProviderManager();
 
 const props = defineProps<{
     modelsList: ModelInfo[],
@@ -26,6 +26,7 @@ const emit = defineEmits<{
 const refreshModelList = () => emit('refreshModelList');
 
 const isHidden = (modelId: string) => config.chat.hiddenModels.includes(modelId);
+const isMemoryManaged = computed(() => currentProvider.value.capabilities.memoryManagement);
 const isLoadedInMemory = (modelId: string) => loadedModelIds.value.has(modelId);
 
 const modelActions: MenuEntry<{ modelId: string, displayName: string }>[] = [
@@ -34,7 +35,7 @@ const modelActions: MenuEntry<{ modelId: string, displayName: string }>[] = [
         text: 'Open in Ollama Library',
         icon: BiLinkExternal,
         onClick: ({ modelId }) => window.open(`https://ollama.com/library/${modelId}`, '_blank'),
-        condition: isOllama.value
+        condition: isMemoryManaged.value
     },
     {
         type: 'text',
@@ -44,11 +45,11 @@ const modelActions: MenuEntry<{ modelId: string, displayName: string }>[] = [
             type: 'factory',
             func: ({ modelId }: { modelId: string }) => (isLoadedInMemory(modelId) ? IconMemoryUnload : Fa6Memory) as IconType
         },
-        condition: isOllama.value
+        condition: isMemoryManaged.value
     },
     {
         type: 'divider',
-        condition: isOllama.value,
+        condition: isMemoryManaged.value,
     },
     {
         type: 'text',
@@ -70,14 +71,14 @@ const modelActions: MenuEntry<{ modelId: string, displayName: string }>[] = [
         text: 'Duplicate model',
         icon: BiCopy,
         onClick: ({ modelId }) => copyModel(modelId),
-        condition: isOllama.value
+        condition: isMemoryManaged.value
     },
     {
         type: 'text',
         text: 'Delete model',
         icon: BiTrash,
         onClick: ({ modelId }) => deleteModel(modelId),
-        condition: isOllama.value,
+        condition: isMemoryManaged.value,
         category: 'danger'
     }
 ];

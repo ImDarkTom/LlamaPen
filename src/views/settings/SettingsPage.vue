@@ -22,7 +22,6 @@ const {
     allProviders, 
     currentProviderId, 
     setActiveProvider, 
-    isOllama,
 } = useProviderManager();
 
 const { 
@@ -168,7 +167,7 @@ const themes = {
                 @click="emitter.emit('createProviderPopup')" />
         </SettingsOptionCategory>
 
-        <SettingsOptionCategory v-if="isOllama" label="Ollama">
+        <SettingsOptionCategory v-if="currentProviderId === 'ollama'" label="Ollama">
             <SettingsInputText 
                 label="Ollama URL" 
                 v-model="config.ollama.url" 

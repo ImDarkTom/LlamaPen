@@ -20,13 +20,15 @@ export class OllamaProvider extends BaseProvider implements MemoryManagedProvide
     readonly rawModels = ref<ModelInfo[]>([]);
     readonly loadedModelIds = ref<Set<string>>(new Set());
 
-    readonly hasOllamaFeatures = true as const;
-
     readonly connectionState: Reactive<ConnectionState> = reactive({
         status: 'disconnected',
         error: undefined,
         lastChecked: undefined
     });
+    
+    readonly capabilities = {
+        memoryManagement: true,
+    } as const;
 
 
     protected async onModelsLoaded(): Promise<void> {

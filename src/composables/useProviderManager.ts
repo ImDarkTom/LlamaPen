@@ -1,10 +1,10 @@
 import { type LLMProvider } from "@/providers/base/ProviderInterface";
-import { isOllamaProvider } from "@/providers/utils/ProviderCheck";
 import type { ProviderMetadata } from "@/providers/base/types";
 import { providerFactory } from "@/providers/ProviderFactory";
 import { computed } from "vue";
 import { useConfigStore } from "@/stores/useConfigStore";
 import logger from "@/lib/logger";
+import { isMemoryManagedProvider } from "@/providers/utils/ProviderCheck";
 
 // Types
 /** App-level info */
@@ -48,13 +48,11 @@ export function useProviderManager() {
     const currentProviderId = computed(() => providerFactory.getSelectedProviderId())
     const rawModels = currentProvider.value.rawModels;
     const loadedModelIds = computed(() => {
-        if (isOllamaProvider(currentProvider.value)) {
+        if (isMemoryManagedProvider(currentProvider.value)) {
             return currentProvider.value.loadedModelIds.value;
         }
         return new Set<string>();
     });
-
-    const isOllama = computed(() => isOllamaProvider(currentProvider.value));
 
     // Connection state
     const connectionState = currentProvider.value.connectionState;
@@ -86,21 +84,21 @@ export function useProviderManager() {
     
     // Ollama-specific
     const loadModelIntoMemory = (modelId: string) => {
-        if (!isOllamaProvider(currentProvider.value)) {
+        if (!isMemoryManagedProvider(currentProvider.value)) {
             throw new Error(`Provider ${currentProvider.value.name} does not support memory management`);
         }
         return currentProvider.value.loadModelIntoMemory(modelId);
     };
 
     const unloadModel = (modelId: string) => {
-        if (!isOllamaProvider(currentProvider.value)) {
+        if (!isMemoryManagedProvider(currentProvider.value)) {
             throw new Error(`Provider ${currentProvider.value.name} does not support memory management`);
         }
         return currentProvider.value.unloadModel(modelId);
     };
 
     const refreshLoadedModels = () => {
-        if (isOllamaProvider(currentProvider.value)) {
+        if (isMemoryManagedProvider(currentProvider.value)) {
             return currentProvider.value.refreshLoadedModels();
         }
         logger.warn(`Provider ${currentProvider.value.name} does not support memory management, skipping refreshLoadedModels`);
@@ -152,8 +150,6 @@ export function useProviderManager() {
         currentProvider,
         currentProviderId,
         rawModels,
-
-        isOllama,
 
         connectionState,
         isConnected,

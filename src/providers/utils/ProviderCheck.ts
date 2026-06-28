@@ -1,5 +1,4 @@
-import type { LLMProvider } from "../base/ProviderInterface";
-import { OllamaProvider } from "../ollama/OllamaProvider";
+import type { LLMProvider, MemoryManagedProvider } from "../base/ProviderInterface";
 
-export const isOllamaProvider = (provider: LLMProvider): provider is OllamaProvider => 
-    provider instanceof OllamaProvider;
+export const isMemoryManagedProvider = (provider: LLMProvider): provider is MemoryManagedProvider => 
+    provider.capabilities.memoryManagement;
