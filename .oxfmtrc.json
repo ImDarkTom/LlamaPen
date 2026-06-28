@@ -1,0 +1,15 @@
+{
+  "$schema": "./node_modules/oxfmt/configuration_schema.json",
+  "tabWidth": 4,
+  "useTabs": false,
+  "semi": true,
+  "printWidth": 120,
+  "singleQuote": true,
+  "trailingComma": "all",
+  "bracketSpacing": true,
+  "bracketSameLine": true,
+  "arrowParens": "always",
+  "vueIndentScriptAndStyle": false,
+  "sortPackageJson": false,
+  "ignorePatterns": []
+}
