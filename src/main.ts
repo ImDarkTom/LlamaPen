@@ -10,7 +10,6 @@ import router from './lib/router';
 import clickOutside from "./directives/clickOutside";
 import { useCustomProvidersStore } from './stores/useCustomProvidersStore.ts';
 import { providerFactory } from './providers/ProviderFactory';
-import { OpenAIProvider } from './providers/openai/OpenAIProvider';
 
 const pinia = createPinia();
 pinia.use(piniaPluginPersistedstate);
@@ -21,7 +20,7 @@ app.use(pinia);
 
 const { providers: customProviders } = useCustomProvidersStore();
 for (const customProvider of customProviders) {
-    providerFactory.register(customProvider.key, new OpenAIProvider(customProvider));
+    providerFactory.register(customProvider);
 }
 
 app.directive('click-outside', clickOutside);

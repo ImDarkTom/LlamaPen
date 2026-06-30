@@ -14,7 +14,9 @@ export abstract class BaseProvider implements LLMProvider {
     protected readonly fetchedCapabilities = ref<Map<string, ModelCapability[]>>(new Map());
 
     abstract readonly features: LLMProvider['features'];
-    
+
+    abstract config: LLMProvider['config'];
+
     private initialised = ref(false);
     private loadPromise: Promise<void> | null = null;
 
@@ -29,13 +31,13 @@ export abstract class BaseProvider implements LLMProvider {
         this.loadPromise = (async () => {
             try {
                 this.rawModels.value = await this.getModels();
-                
+
                 try {
                     await this.onModelsLoaded();
                 } catch (error) {
                     logger.error('BaseProvider:loadModels', `Error running onModelsLoaded for ${this.name}:`, error);
                 }
-            }  finally {
+            } finally {
                 this.initialised.value = true;
                 this.loadPromise = null;
             }

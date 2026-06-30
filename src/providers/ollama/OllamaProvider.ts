@@ -1,9 +1,9 @@
 import { chat, generateChatTitle } from "./helpers";
 import type { ChatIteratorChunk, ChatOptions, ProviderMetadata } from "../base/types";
 import { appMesagesToOllama } from "./converters/appMessagesToOllama";
-import { ollamaWrapper } from "./OllamaWrapper";
+import { OllamaWrapper } from "./OllamaWrapper";
 import { reactive, ref, type Reactive } from "vue";
-import type { ConnectionState, LLMProvider } from "../base/ProviderInterface";
+import type { ConnectionState, LLMProvider, ModelDownloadProgress } from "../base/ProviderInterface";
 import { BaseProvider } from "../base/BaseProvider";
 import { useConfigStore } from "@/stores/useConfigStore";
 import type { ModelCapability, ModelInfo } from "@/composables/useProviderManager";
@@ -14,8 +14,9 @@ import { SubtitleParser } from "../openai/nonStandardParsing";
  * Interfaces with the Ollama wrapper before packaging responses into the common app standard.
  */
 export class OllamaProvider extends BaseProvider {
-    readonly name = "Ollama";
+    readonly name: string;
     readonly type = 'ollama';
+    config: LLMProvider['config']
 
     readonly rawModels = ref<ModelInfo[]>([]);
 
@@ -24,39 +25,109 @@ export class OllamaProvider extends BaseProvider {
         error: undefined,
         lastChecked: undefined
     });
-    
+
     private loadedModelIds = ref<Set<string>>(new Set());
+
+    private downloadProgress = ref<Record<string, ModelDownloadProgress>>({});
+    private downloadsAbortControllers = new Map<string, AbortController>();
 
     readonly features = {
         modelMemory: {
             loadedModelIds: this.loadedModelIds,
 
             load: async (modelId) => {
-                return ollamaWrapper.loadIntoMemory(modelId);
+                return this.ollamaWrapper.loadIntoMemory(modelId);
             },
             unload: async (modelId) => {
-                return ollamaWrapper.unloadFromMemory(modelId);
+                return this.ollamaWrapper.unloadFromMemory(modelId);
             },
 
             refreshLoadedModels: async () => {
-                const loadedModels = await ollamaWrapper.ps();
+                const loadedModels = await this.ollamaWrapper.ps();
                 this.loadedModelIds.value = new Set(loadedModels.map(model => model.model));
             }
         },
         modelAdmin: {
             copy: (source, destination) => {
-                return ollamaWrapper.copy({ source, destination });
+                return this.ollamaWrapper.copy({ source, destination });
             },
 
             delete: (modelId) => {
-                return ollamaWrapper.delete({ model: modelId });
+                return this.ollamaWrapper.delete({ model: modelId });
             },
 
             externalModelUrl: (modelId) => {
                 return `https://ollama.com/library/${modelId}`;
             },
+        },
+        modelDownload: {
+            progress: this.downloadProgress,
+
+            download: async (modelId) => {
+                if (this.downloadProgress.value[modelId]) {
+                    return { success: false, reason: `Already downloading '${modelId}'` };
+                }
+
+                const abortController = new AbortController();
+                this.downloadsAbortControllers.set(modelId, abortController);
+
+                const { data: stream, error } = await this.ollamaWrapper.pull({ model: modelId, stream: true }, abortController);
+
+                if (error) {
+                    this.downloadsAbortControllers.delete(modelId);
+                    return { success: false, reason: 'Failed to download model.' }; // We already log the error
+                }
+
+                try {
+                    for await (const progress of stream) {
+                        this.downloadProgress.value[modelId] = progress;
+
+                        if (progress.status === 'success') {
+                            delete this.downloadProgress.value[modelId];
+                            return { success: true }
+                        }
+                    }
+                } catch (e) {
+                    delete this.downloadProgress.value[modelId];
+
+                    if (e === 'userRequestCancel') {
+                        return { success: false };
+                    }
+
+                    return {
+                        success: false,
+                        reason: `Error while downloading: ${e instanceof Error ? e.message : String(e)}`
+                    };
+                } finally {
+                    this.downloadsAbortControllers.delete(modelId);
+                }
+
+                return { success: false, reason: 'Unknown error occurred during download.' };
+            },
+
+            cancel: (modelId) => {
+                if (!this.downloadProgress.value[modelId]) return;
+
+                this.downloadsAbortControllers
+                    .get(modelId)
+                    ?.abort('userRequestCancel');
+            },
         }
     } satisfies LLMProvider['features'];
+
+
+
+    private ollamaWrapper: OllamaWrapper;
+
+    constructor(name: string, config: LLMProvider['config']) {
+        super();
+
+        this.name = name;
+        this.config = config;
+
+        // import.meta.env.VITE_DEFAULT_OLLAMA ?? 'http://localhost:11434'
+        this.ollamaWrapper = new OllamaWrapper({ host: config.baseURL, headers: { 'Authorization': `Bearer ${config.apiKey}` } })
+    }
 
 
     protected async onModelsLoaded(): Promise<void> {
@@ -70,7 +141,7 @@ export class OllamaProvider extends BaseProvider {
         });
 
         const config = useConfigStore();
-        const shouldAutoloadCapabilities = 
+        const shouldAutoloadCapabilities =
             config.ollama.modelCapabilities.autoload && this.rawModels.value.length < 31
             || config.ollama.modelCapabilities.alwaysAutoload;
 
@@ -85,7 +156,7 @@ export class OllamaProvider extends BaseProvider {
     public async refreshConnection(): Promise<void> {
         this.connectionState.status = 'checking';
 
-        const { error } = await ollamaWrapper.version();
+        const { error } = await this.ollamaWrapper.version();
 
         if (error) {
             this.connectionState.status = 'error';
@@ -100,12 +171,12 @@ export class OllamaProvider extends BaseProvider {
 
     public async chat(messages: ChatMessage[], abortSignal: AbortSignal, options: ChatOptions): Promise<AsyncIterable<ChatIteratorChunk>> {
         const ollamaFormatMessages = await appMesagesToOllama(messages);
-        return chat(ollamaFormatMessages, abortSignal, options);
+        return chat(this.ollamaWrapper, ollamaFormatMessages, abortSignal, options);
     }
 
     public async getModels(): Promise<ModelInfo[]> {
         const configStore = useConfigStore();
-        const list = await ollamaWrapper.list();
+        const list = await this.ollamaWrapper.list();
 
         return list.map((m) => {
             const displayName = configStore.chat.modelRenames[m.model] || m.name;
@@ -142,7 +213,7 @@ export class OllamaProvider extends BaseProvider {
     }
 
     public async getModelAttributes(modelId: string): Promise<ModelAttributes> {
-        const { data: modelInfo, error } = await ollamaWrapper.show({ model: modelId });
+        const { data: modelInfo, error } = await this.ollamaWrapper.show({ model: modelId });
         if (error) throw new Error('Could not fetch model details.');
 
         if (!this.fetchedCapabilities.value.has(modelId)) {
@@ -159,7 +230,7 @@ export class OllamaProvider extends BaseProvider {
     }
 
     public async generateChatTitle(messages: ChatMessage[]): Promise<string> {
-        return generateChatTitle(messages);
+        return generateChatTitle(this.ollamaWrapper, messages);
     }
 
     private async fetchModelCapabilities(modelId: string): Promise<string[]> {
@@ -168,7 +239,7 @@ export class OllamaProvider extends BaseProvider {
             thinking: 'reasoning',
         };
 
-        const { data: modelInfo, error } = await ollamaWrapper.show({ model: modelId });
+        const { data: modelInfo, error } = await this.ollamaWrapper.show({ model: modelId });
         if (error || !modelInfo) {
             return [];
         }

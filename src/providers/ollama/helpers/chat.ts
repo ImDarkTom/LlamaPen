@@ -1,10 +1,10 @@
 import { useConfigStore } from "@/stores/useConfigStore";
 import { appToolsToOllama } from "../converters/appToolsToOllama";
 import type { ChatIteratorChunk, ChatOptions } from "@/providers/base/types";
-import { ollamaWrapper } from "../OllamaWrapper";
 import type { ChatRequest } from "ollama/browser";
 import * as Ollama from 'ollama/browser';
 import { useProviderManager } from "@/composables/useProviderManager";
+import type { OllamaWrapper } from "../OllamaWrapper";
 
 /**
  * 
@@ -14,6 +14,7 @@ import { useProviderManager } from "@/composables/useProviderManager";
  * @returns Yields chunks normally. Throws if control flow error.
  */
 async function* chatIterator(
+    ollamaWrapper: OllamaWrapper,
     messages: Ollama.Message[],
     abortSignal: AbortSignal,
     options: ChatOptions
@@ -60,16 +61,16 @@ async function* chatIterator(
 
             if (chunk.done) {
                 // Process final chunk
-                yield { 
+                yield {
                     type: 'message',
                     content: chunk.message.content,
                     thinking: chunk.message.thinking,
                     tool_calls: chunk.message.tool_calls,
                 };
 
-                yield { 
-                    type: 'done', 
-                    reason: 'completed', 
+                yield {
+                    type: 'done',
+                    reason: 'completed',
                     stats: {
                         evalCount: chunk.eval_count,
                         evalDuration: chunk.eval_duration,
@@ -82,7 +83,7 @@ async function* chatIterator(
                 continue;
             }
 
-            yield { 
+            yield {
                 type: 'message',
                 content: chunk.message.content,
                 thinking: chunk.message.thinking,
@@ -94,6 +95,6 @@ async function* chatIterator(
     }
 }
 
-export function chat(messages: Ollama.Message[], abortSignal: AbortSignal, options: ChatOptions): AsyncIterable<ChatIteratorChunk> {
-    return chatIterator(messages, abortSignal, options);
+export function chat(ollamaWrapper: OllamaWrapper, messages: Ollama.Message[], abortSignal: AbortSignal, options: ChatOptions): AsyncIterable<ChatIteratorChunk> {
+    return chatIterator(ollamaWrapper, messages, abortSignal, options);
 }

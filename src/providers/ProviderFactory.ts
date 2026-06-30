@@ -1,13 +1,26 @@
 import logger from "@/lib/logger";
 import type { LLMProvider } from "./base/ProviderInterface";
 import { OllamaProvider } from "./ollama/OllamaProvider";
+import type { KeyedCustomProvider } from "@/stores/useCustomProvidersStore";
+import { OpenAIProvider } from "./openai/OpenAIProvider";
 
 class ProviderFactory {
     private providers = new Map<string, LLMProvider>();
     private selectedProvider = localStorage.getItem('selectedProvider') || "ollama";
 
-    register(name: string, provider: LLMProvider) {
-        this.providers.set(name, provider);
+    register(provider: KeyedCustomProvider) {
+        let instance: LLMProvider;
+
+        if (provider.format === 'ollama') {
+            instance = new OllamaProvider(provider.name, provider);
+        } else if (provider.format === 'openai') {
+            instance = new OpenAIProvider(provider.name, provider);
+        } else {
+            // Legacy provider instances without a `format` property were always OpenAI
+            instance = new OpenAIProvider(provider.name, provider);
+        }
+
+        this.providers.set(provider.key, instance);
     }
 
     getProviders(): Map<string, LLMProvider> {
@@ -42,4 +55,10 @@ class ProviderFactory {
 }
 
 export const providerFactory = new ProviderFactory();
-providerFactory.register('ollama', new OllamaProvider());
+providerFactory.register({
+    key: 'ollama',
+    format: 'ollama',
+    name: 'Ollama',
+    baseURL: import.meta.env.VITE_DEFAULT_OLLAMA ?? 'http://localhost:11434',
+    apiKey: 'ollama',
+});

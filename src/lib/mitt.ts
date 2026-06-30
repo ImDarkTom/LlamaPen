@@ -1,3 +1,4 @@
+import type { KeyedCustomProvider } from "@/stores/useCustomProvidersStore";
 import mitt from "mitt";
 
 export enum PopupButtons {
@@ -21,12 +22,7 @@ type Events = {
     modelSelectFocusFilter: void,
     shortcutsPopup: void,
     createProviderPopup: void,
-    editProviderPopup: {
-        key: string;
-        name?: string;
-        baseURL?: string;
-        apiKey?: string;
-    }
+    editProviderPopup: KeyedCustomProvider,
 };
 
 export const emitter = mitt<Events>();

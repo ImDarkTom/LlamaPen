@@ -18,7 +18,13 @@ export interface LLMProvider {
     readonly features: {
         modelMemory?: ModelMemoryFeature;
         modelAdmin?: ModelAdminFeature;
-    } 
+        modelDownload?: ModelDownloadFeature;
+    };
+
+    config: {
+        apiKey: string;
+        baseURL: string;
+    };
 
     /**
      * Loads models from the provider and initialises capabilities.
@@ -31,7 +37,7 @@ export interface LLMProvider {
      * Set the connection state to loading and re-send a network request to the provider's URL
      */
     refreshConnection(): Promise<void>;
-    
+
 
     /**
      * Generates a chat response as a stream of chunks.
@@ -44,8 +50,8 @@ export interface LLMProvider {
      * @param options Client-side generation options.
      */
     chat(
-        messages: ChatMessage[], 
-        abortSignal: AbortSignal, 
+        messages: ChatMessage[],
+        abortSignal: AbortSignal,
         options: ChatOptions,
     ): Promise<AsyncIterable<ChatIteratorChunk>>;
 
@@ -73,7 +79,7 @@ export interface LLMProvider {
 export interface ModelMemoryFeature {
     readonly loadedModelIds: Ref<Set<string>>;
     refreshLoadedModels(): Promise<void>;
-    
+
     /**
      * Loads a model into memory.
      * @param modelName The name of the model to load into memory.
@@ -112,6 +118,15 @@ export interface ModelAdminFeature {
     externalModelUrl?(modelId: string): string;
 }
 
-export interface ConfigurableProvider<TConfig extends Record<string, unknown>> extends LLMProvider {
-    config: TConfig;
+export type ModelDownloadProgress = {
+    status: string;
+    digest?: string;
+    total: number;
+    completed: number;
+}
+
+export interface ModelDownloadFeature {
+    progress: Ref<Record<string, ModelDownloadProgress>>;
+    download(modelId: string): Promise<{ success: boolean, reason?: string }>;
+    cancel(modelId: string): void;
 }

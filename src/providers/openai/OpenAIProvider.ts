@@ -1,7 +1,7 @@
 import type { ModelCapability, ModelInfo } from "@/composables/useProviderManager";
 import { BaseProvider } from "../base/BaseProvider";
 import type { Reactive, Ref } from "vue";
-import type { ConfigurableProvider, ConnectionState } from "../base/ProviderInterface";
+import type { ConnectionState, LLMProvider } from "../base/ProviderInterface";
 import type { ChatOptions, ChatIteratorChunk, ProviderMetadata } from "../base/types";
 import type { ModelAttributes } from "@/components/ModelsPage/types";
 import { OpenAI } from "openai";
@@ -9,15 +9,10 @@ import { chatHelper } from "./chatHelper";
 import logger from "@/lib/logger";
 import { CapabilityParser, NameParser, SubtitleParser } from "./nonStandardParsing";
 
-type OpenAIConfig = {
-    name: string;
-    apiKey: string;
-    baseURL: string;
-}
-
-export class OpenAIProvider extends BaseProvider implements ConfigurableProvider<OpenAIConfig> {
+export class OpenAIProvider extends BaseProvider {
     readonly name: string;
     readonly type = 'openai';
+    config: LLMProvider['config'];
 
     readonly rawModels: Ref<ModelInfo[], ModelInfo[]> = ref([]);
 
@@ -29,14 +24,13 @@ export class OpenAIProvider extends BaseProvider implements ConfigurableProvider
 
     readonly features = {};
 
+
     private client: OpenAI;
 
-    config: OpenAIConfig;
-
-    constructor(config: OpenAIConfig) {
+    constructor(name: string, config: LLMProvider['config']) {
         super();
 
-        this.name = config.name;
+        this.name = name;
         this.config = config;
 
         this.client = new OpenAI({
