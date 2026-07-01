@@ -30,6 +30,7 @@ export const useCustomProvidersStore = defineStore('customProvidersStore', () =>
                 key: 'ollama',
                 seededDefault: true,
             });
+
             return;
         }
 
@@ -38,6 +39,17 @@ export const useCustomProvidersStore = defineStore('customProvidersStore', () =>
             key: 'ollama',
             seededDefault: true,
         });
+    }
+
+    function getSeededDefaultValues(): KeyedCustomProvider {
+        return {
+            key: 'ollama',
+            name: 'Ollama',
+            format: 'ollama',
+            baseURL: import.meta.env.VITE_DEFAULT_OLLAMA ?? 'http://localhost:11434',
+            apiKey: 'ollama',
+            seededDefault: true,
+        };
     }
 
     function add(provider: CustomProvider): string {
@@ -69,7 +81,20 @@ export const useCustomProvidersStore = defineStore('customProvidersStore', () =>
         if (foundIndex !== -1) providers.value.splice(foundIndex, 1);
     }
 
-    return { providers, add, update, remove, seedDefaultProvider };
+    function clearAllAdded() {
+        providers.value = [
+            {
+                key: 'ollama',
+                name: 'Ollama',
+                format: 'ollama',
+                baseURL: import.meta.env.VITE_DEFAULT_OLLAMA ?? 'http://localhost:11434',
+                apiKey: 'ollama',
+                seededDefault: true,
+            }
+        ];
+    }
+
+    return { providers, add, update, remove, seedDefaultProvider, getSeededDefaultValues, clearAllAdded };
 }, {
     persist: true,
 });

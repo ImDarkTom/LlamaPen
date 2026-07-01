@@ -4,7 +4,7 @@ import { useConfigStore } from '@/stores/useConfigStore';
 import useChatsStore from '@/stores/useChatsStore';
 import useMessagesStore from '@/stores/messagesStore';
 import setPageTitle from '@/utils/core/setPageTitle';
-import { BiLink, BiRefresh, BiTrash } from 'vue-icons-plus/bi';
+import { BiChevronDown, BiChevronUp, BiCog, BiLink, BiPencil, BiPlus, BiRefresh, BiTrash } from 'vue-icons-plus/bi';
 import { useRegisterSW } from 'virtual:pwa-register/vue';
 import { useProviderManager } from '@/composables/useProviderManager';
 import { emitter } from '@/lib/mitt';
@@ -82,6 +82,33 @@ const themes = {
         'legacy-mono-dark': 'Plain Dark (Legacy)',
     },
 };
+
+const providersActions: MenuEntry[] = [
+    {
+        text: 'Re-add default provider',
+        icon: BiRefresh,
+        type: 'text',
+        category: 'danger',
+        condition: !customProvidersStore.providers.some((p) => p.seededDefault),
+        onClick: () => {
+            customProvidersStore.seedDefaultProvider(customProvidersStore.getSeededDefaultValues());
+            location.reload();
+        },
+    },
+    {
+        text: 'Remove all custom providers',
+        icon: BiTrash,
+        type: 'text',
+        category: 'danger',
+        condition: customProvidersStore.providers.length > 0,
+        onClick: () => {
+            if (!confirm('Are you sure you want to remove all added providers?')) return;
+
+            customProvidersStore.clearAllAdded();
+            location.reload();
+        },
+    },
+];
 </script>
 
 <template>
@@ -91,12 +118,12 @@ const themes = {
         <SettingsOptionCategory label="Providers">
             <SettingsInputSelection
                 v-model="selectedProvider"
-                label="Provider"
+                label="Selected Provider"
                 :items="[...allProviders.keys()]"
                 :itemNames="[...allProviders.values()].map((p) => p.name)"
                 tooltip="The LLM provider to use. (Default: Ollama)" />
 
-            <SettingsCategoryLabel>Custom Providers</SettingsCategoryLabel>
+            <SettingsCategoryLabel>List</SettingsCategoryLabel>
 
             <div
                 v-if="customProvidersStore.providers.length > 0"
@@ -106,14 +133,23 @@ const themes = {
                     :key="customProvider.key"
                     class="flex items-center justify-between p-2 pl-4 border border-base-500 rounded-lg">
                     <div class="flex flex-col min-w-0">
-                        <span class="font-medium truncate">{{ customProvider.name }}</span>
+                        <div>
+                            <Tooltip
+                                v-if="customProvider.seededDefault"
+                                text="Pre-added app provider">
+                                <BiCog class="size-3 mr-1 text-base-300" />
+                            </Tooltip>
+                            <span class="font-medium truncate">
+                                {{ customProvider.name }}
+                            </span>
+                        </div>
                         <div class="text-sm text-base-300 truncate inline-flex items-center gap-1">
                             <BiLink class="size-3" />
                             <span class="truncate">{{ customProvider.baseURL }}</span>
                         </div>
                     </div>
                     <ButtonPrimary
-                        text="Edit"
+                        :icon="BiPencil"
                         color="primary"
                         type="button"
                         @click="emitter.emit('editProviderPopup', customProvider)" />
@@ -125,13 +161,25 @@ const themes = {
                 No custom providers added.
             </div>
 
-            <ButtonPrimary
-                text="Add Provider"
-                type="button"
-                @click="emitter.emit('createProviderPopup')" />
+            <div class="flex flex-row gap-2 min-w-full">
+                <ButtonPrimary
+                    class="grow"
+                    text="Add Provider"
+                    :icon="BiPlus"
+                    type="button"
+                    @click="emitter.emit('createProviderPopup')" />
+                <FloatingActionMenu :actions="providersActions">
+                    <template #default="{ shownListLength, isOpened }">
+                        <ButtonPrimary
+                            :disabled="shownListLength === 0"
+                            :icon="isOpened ? BiChevronUp : BiChevronDown"
+                            :color="shownListLength === 0 ? 'sunken' : 'primary'" />
+                    </template>
+                </FloatingActionMenu>
+            </div>
         </SettingsOptionCategory>
 
-        <SettingsOptionCategory label="Provider Options">
+        <SettingsOptionCategory label="Provider-specific Options">
             <SettingsCategoryLabel>Ollama</SettingsCategoryLabel>
             <SettingsInputToggle
                 v-model="config.provider.ollama.autoloadCapabilities"

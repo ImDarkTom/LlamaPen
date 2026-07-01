@@ -62,6 +62,11 @@ function removeCustomProvider() {
     customProvidersStore.$persist();
     location.reload();
 }
+
+function resetSeededToDefault() {
+    const defaultSeeded = customProvidersStore.getSeededDefaultValues();
+    editingProvider.value = defaultSeeded;
+}
 </script>
 
 <template>
@@ -101,7 +106,7 @@ function removeCustomProvider() {
             <button
                 v-if="editingProvider.seededDefault"
                 class="ml-auto"
-                @click="editProvider">
+                @click="resetSeededToDefault">
                 Reset to default
             </button>
             <button
