@@ -4,9 +4,13 @@ import { OllamaProvider } from "./ollama/OllamaProvider";
 import type { KeyedCustomProvider } from "@/stores/useCustomProvidersStore";
 import { OpenAIProvider } from "./openai/OpenAIProvider";
 
-class ProviderFactory {
+export class ProviderFactory {
     private providers = new Map<string, LLMProvider>();
-    private selectedProvider = localStorage.getItem('selectedProvider') || "ollama";
+    private selectedProvider = localStorage.getItem('selectedProvider') || this.providers.keys().next().value;
+
+    private getFallbackProviderKey() {
+        return this.providers.keys().next().value;
+    }
 
     register(provider: KeyedCustomProvider) {
         let instance: LLMProvider;
@@ -33,7 +37,13 @@ class ProviderFactory {
             this.selectedProvider = providerKey;
         } else {
             logger.error('ProviderFactory:setSelectedProvider', 'Invalid provider key', providerKey);
-            this.selectedProvider = "ollama";
+            const fallbackProviderKey = this.getFallbackProviderKey();
+            if (!fallbackProviderKey) {
+                localStorage.removeItem('selectedProvider');
+                return;
+            }
+
+            this.selectedProvider = fallbackProviderKey;
         }
 
         localStorage.setItem('selectedProvider', this.selectedProvider);
@@ -44,21 +54,19 @@ class ProviderFactory {
     }
 
     getSelectedProvider(): LLMProvider {
-        const provider = this.providers.get(this.selectedProvider);
+        const provider = this.selectedProvider ? this.providers.get(this.selectedProvider) : this.providers.values().next().value;
         if (!provider) {
-            logger.warn('ProviderFactory:getSelectedProvider', `Provider '${this.selectedProvider}' not found, falling back to ollama`);
-            this.setSelectedProvider('ollama');
-            return this.providers.get('ollama')!;
+            const fallbackProviderKey = this.getFallbackProviderKey();
+            if (!fallbackProviderKey) {
+                throw new Error('No providers registered');
+            }
+
+            logger.warn('ProviderFactory:getSelectedProvider', `Provider '${this.selectedProvider}' not found, falling back to ${fallbackProviderKey}`);
+            this.setSelectedProvider(fallbackProviderKey);
+            return this.providers.get(fallbackProviderKey)!;
         }
         return provider;
     }
 }
 
 export const providerFactory = new ProviderFactory();
-providerFactory.register({
-    key: 'ollama',
-    format: 'ollama',
-    name: 'Ollama',
-    baseURL: import.meta.env.VITE_DEFAULT_OLLAMA ?? 'http://localhost:11434',
-    apiKey: 'ollama',
-});

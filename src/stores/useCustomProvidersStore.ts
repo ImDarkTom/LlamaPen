@@ -5,12 +5,40 @@ export type CustomProvider = {
     baseURL: string;
     apiKey: string;
     format: 'ollama' | 'openai';
+    seededDefault?: true;
 };
 
 export type KeyedCustomProvider = CustomProvider & { key: string; };
 
 export const useCustomProvidersStore = defineStore('customProvidersStore', () => {
-    const providers = ref<KeyedCustomProvider[]>([]);
+    const providers = ref<KeyedCustomProvider[]>([
+        {
+            key: 'ollama',
+            name: 'Ollama',
+            format: 'ollama',
+            baseURL: import.meta.env.VITE_DEFAULT_OLLAMA ?? 'http://localhost:11434',
+            apiKey: 'ollama',
+            seededDefault: true,
+        }
+    ]);
+
+    function seedDefaultProvider(data: CustomProvider) {
+        const existingProvider = providers.value.find((p) => p.seededDefault);
+
+        if (existingProvider) {
+            Object.assign(existingProvider, data, {
+                key: 'ollama',
+                seededDefault: true,
+            });
+            return;
+        }
+
+        providers.value.unshift({
+            ...data,
+            key: 'ollama',
+            seededDefault: true,
+        });
+    }
 
     function add(provider: CustomProvider): string {
         const key = `custom-${Date.now()}`;
@@ -41,7 +69,7 @@ export const useCustomProvidersStore = defineStore('customProvidersStore', () =>
         if (foundIndex !== -1) providers.value.splice(foundIndex, 1);
     }
 
-    return { providers, add, update, remove };
+    return { providers, add, update, remove, seedDefaultProvider };
 }, {
     persist: true,
 });

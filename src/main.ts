@@ -10,6 +10,7 @@ import router from './lib/router';
 import clickOutside from "./directives/clickOutside";
 import { useCustomProvidersStore } from './stores/useCustomProvidersStore.ts';
 import { providerFactory } from './providers/ProviderFactory';
+import { useConfigStore } from "./stores/useConfigStore.ts";
 
 const pinia = createPinia();
 pinia.use(piniaPluginPersistedstate);
@@ -17,6 +18,9 @@ pinia.use(piniaPluginPersistedstate);
 const app = createApp(App);
 app.use(router);
 app.use(pinia);
+
+// Load config
+useConfigStore();
 
 const { providers: customProviders } = useCustomProvidersStore();
 for (const customProvider of customProviders) {

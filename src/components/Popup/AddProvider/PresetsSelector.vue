@@ -9,7 +9,7 @@ const emit = defineEmits<{
 const presets: Record<string, CustomProvider> = {
     ollama: {
         name: 'Ollama',
-        baseURL: 'http://localhost:11434',
+        baseURL: import.meta.env.VITE_DEFAULT_OLLAMA ?? 'http://localhost:11434',
         apiKey: 'unusedkey',
         format: 'ollama',
     },

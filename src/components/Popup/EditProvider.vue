@@ -94,14 +94,20 @@ function removeCustomProvider() {
         </template>
         <template #buttons>
             <button
-                :disabled="customProvidersStore.providers.length === 1"
-                @click="removeCustomProvider">
-                Remove
-            </button>
-            <button
                 class="ml-auto"
                 @click="editProvider">
                 Save
+            </button>
+            <button
+                v-if="editingProvider.seededDefault"
+                class="ml-auto"
+                @click="editProvider">
+                Reset to default
+            </button>
+            <button
+                :disabled="customProvidersStore.providers.length === 1"
+                @click="removeCustomProvider">
+                Remove
             </button>
         </template>
     </PopupBase>

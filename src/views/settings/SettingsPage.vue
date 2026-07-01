@@ -131,18 +131,19 @@ const themes = {
                 @click="emitter.emit('createProviderPopup')" />
         </SettingsOptionCategory>
 
-        <SettingsOptionCategory label="Ollama">
+        <SettingsOptionCategory label="Provider Options">
+            <SettingsCategoryLabel>Ollama</SettingsCategoryLabel>
             <SettingsInputToggle
-                v-model="config.ollama.modelCapabilities.autoload"
+                v-model="config.provider.ollama.autoloadCapabilities"
                 label="Autoload model capabilities"
-                tooltip="Load model capabilities on connect. By default only loads if 30 models or less. (Default: Enabled)" />
+                tooltip="Load model capabilities on connect. By default only loads when <=30 models. (Default: Enabled)" />
             <div
-                v-if="config.ollama.modelCapabilities.autoload"
+                v-if="config.provider.ollama.autoloadCapabilities"
                 class="border-l border-base-400 pl-3 ml-3">
                 <SettingsInputToggle
-                    v-model="config.ollama.modelCapabilities.alwaysAutoload"
+                    v-model="config.provider.ollama.alwaysAutoloadCapabilities"
                     label="Always autoload model capabilities"
-                    tooltip="Loads model capabilities regardless of no. of models. (Default: Disabled)" />
+                    tooltip="Loads model capabilities regardless of no. of models. May impact performance. (Default: Disabled)" />
             </div>
         </SettingsOptionCategory>
 

@@ -125,7 +125,6 @@ export class OllamaProvider extends BaseProvider {
         this.name = name;
         this.config = config;
 
-        // import.meta.env.VITE_DEFAULT_OLLAMA ?? 'http://localhost:11434'
         this.ollamaWrapper = new OllamaWrapper({ host: config.baseURL, headers: { 'Authorization': `Bearer ${config.apiKey}` } })
     }
 
@@ -142,8 +141,8 @@ export class OllamaProvider extends BaseProvider {
 
         const config = useConfigStore();
         const shouldAutoloadCapabilities =
-            config.ollama.modelCapabilities.autoload && this.rawModels.value.length < 31
-            || config.ollama.modelCapabilities.alwaysAutoload;
+            config.provider.ollama.autoloadCapabilities && this.rawModels.value.length < 31
+            || config.provider.ollama.alwaysAutoloadCapabilities;
 
         if (shouldAutoloadCapabilities) {
             for (const model of this.rawModels.value) {
