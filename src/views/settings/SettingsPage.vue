@@ -9,6 +9,7 @@ import { useRegisterSW } from 'virtual:pwa-register/vue';
 import { useProviderManager } from '@/composables/useProviderManager';
 import { emitter } from '@/lib/mitt';
 import { useCustomProvidersStore } from '@/stores/useCustomProvidersStore';
+import { VueDraggable } from 'vue-draggable-plus';
 
 const config = useConfigStore();
 
@@ -125,14 +126,22 @@ const providersActions: MenuEntry[] = [
 
             <SettingsCategoryLabel>List</SettingsCategoryLabel>
 
-            <div
-                v-if="customProvidersStore.providers.length > 0"
+            <VueDraggable
+                v-model="customProvidersStore.providers"
+                tag="ul"
+                :handle="'.provider-drag-handle'"
+                :draggable="'.provider-list-item'"
                 class="flex flex-col gap-2 w-full">
-                <div
+                <li
                     v-for="customProvider in customProvidersStore.providers"
                     :key="customProvider.key"
-                    class="flex items-center justify-between p-2 pl-4 border border-base-500 rounded-lg">
-                    <div class="flex flex-col min-w-0">
+                    class="provider-list-item flex items-center justify-between p-2 pl-4 border border-base-500 rounded-lg">
+                    <button
+                        class="provider-drag-handle cursor-grab pr-2"
+                        aria-label="Reorder">
+                        ⠿
+                    </button>
+                    <div class="flex flex-col min-w-0 border-base-500 border-l mr-auto pl-2">
                         <div>
                             <Tooltip
                                 v-if="customProvider.seededDefault"
@@ -153,13 +162,8 @@ const providersActions: MenuEntry[] = [
                         color="primary"
                         type="button"
                         @click="emitter.emit('editProviderPopup', customProvider)" />
-                </div>
-            </div>
-            <div
-                v-else
-                class="text-sm text-base-300">
-                No custom providers added.
-            </div>
+                </li>
+            </VueDraggable>
 
             <div class="flex flex-row gap-2 min-w-full">
                 <ButtonPrimary

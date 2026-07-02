@@ -28,12 +28,12 @@ export default defineConfig({
         __APP_VERSION__: JSON.stringify(process.env.npm_package_version),
     },
     plugins: [
-        vue(), 
-        tailwindcss(), 
+        vue(),
+        tailwindcss(),
         svgLoader(),
         Components({
             dts: '.vite/components.d.ts',
-            dirs: [ 'src/components', 'src/views/**/components' ],
+            dirs: ['src/components', 'src/views/**/components'],
             directoryAsNamespace: true,
         }),
         AutoImport({
@@ -44,7 +44,7 @@ export default defineConfig({
                 '@vueuse/core'
             ],
         }),
-        VitePWA({ 
+        VitePWA({
             manifest: {
                 name: 'LlamaPen',
                 short_name: 'LlamaPen',
@@ -128,9 +128,9 @@ export default defineConfig({
         }),
         process.env.NODE_ENV == 'production'
             ? removeAttribute({
-                    extensions: [ 'vue' ],
-                    attributes: [ 'data-testid' ]
-                })
+                extensions: ['vue'],
+                attributes: ['data-testid']
+            })
             : null,
     ],
     resolve: {
@@ -145,7 +145,7 @@ export default defineConfig({
                     groups: [
                         {
                             name: 'vue-vendor',
-                            test: /node_modules[\\/](vue|vue-router|pinia|pinia-plugin-persistedstate)/,
+                            test: /node_modules[\\/](vue|vue-router|pinia|pinia-plugin-persistedstate|vue-draggable-plus)/,
                             priority: 20,
                         },
                         {
