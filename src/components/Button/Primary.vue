@@ -5,38 +5,52 @@ import type IconMemoryUnload from '../Icon/MemoryUnload.vue';
 
 type ComponentTypes = 'link' | 'button' | 'external-link';
 
-defineProps<{
-	text: string;
-	type?: ComponentTypes;
-	icon?: IconType | string | typeof IconMemoryUnload;
-	singleLine?: boolean;
-	color?: 'primary' | 'danger' | 'sunken';
-}>();
+defineProps<
+    | {
+          text?: string;
+          type?: ComponentTypes;
+          icon: IconType | string | typeof IconMemoryUnload;
+          singleLine?: boolean;
+          color?: 'primary' | 'danger' | 'sunken';
+      }
+    | {
+          text: string;
+          type?: ComponentTypes;
+          icon?: IconType | string | typeof IconMemoryUnload;
+          singleLine?: boolean;
+          color?: 'primary' | 'danger' | 'sunken';
+      }
+>();
 
 const componentTypes: Record<ComponentTypes, unknown> = {
-	link: RouterLink,
-	button: 'button',
-	"external-link": 'a'
-}
+    link: RouterLink,
+    button: 'button',
+    'external-link': 'a',
+};
 </script>
 
 <template>
-	<component 
-		:is="componentTypes[type ?? 'button']" 
-		class="text-base-900 p-3 md:p-4 rounded-lg cursor-pointer transition-quick shrink-0 text-center"
-		:class="{
-			'whitespace-nowrap': singleLine,
-			'bg-primary! hover:bg-secondary!': color === 'primary' || !color,
-			'bg-danger! hover:saturate-200 hover:bg-danger!': color === 'danger',
-			'bg-base-500 text-base-200': color === 'sunken',
-		}"
-		v-bind="type === 'external-link' ? { target: '_blank', rel: 'noopener noreferrer' } : {}"
-	>
-		<span>
-			<component v-if="icon" :is="icon" class="size-6 inline mr-2 align-middle" />
-			<span class="align-middle">
-				{{ text }}
-			</span>
-		</span>
-	</component>
+    <component
+        :is="componentTypes[type ?? 'button']"
+        class="text-base-900 p-3 md:p-4 rounded-lg cursor-pointer transition-quick shrink-0 text-center"
+        :class="{
+            'whitespace-nowrap': singleLine,
+            'bg-primary! hover:bg-secondary!': color === 'primary' || !color,
+            'bg-danger! hover:saturate-200 hover:bg-danger!': color === 'danger',
+            'bg-base-500 text-base-200': color === 'sunken',
+        }"
+        v-bind="type === 'external-link' ? { target: '_blank', rel: 'noopener noreferrer' } : {}">
+        <span>
+            <component
+                v-if="icon"
+                :is="icon"
+                class="size-6 inline align-middle"
+                :class="{ 'mr-2': text }" />
+            <span
+                v-if="text"
+                class="align-middle">
+                {{ text }}
+            </span>
+        </span>
+    </component>
 </template>

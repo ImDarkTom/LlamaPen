@@ -8,12 +8,11 @@ interface Config {
     showSidebar: boolean,
     transitionSpeed: number,
     closeSidebarOnNavMobile: boolean,
-    ollama: {
-        url: string;
-        modelCapabilities: {
-            autoload: boolean,
-            alwaysAutoload: boolean,
-        }
+    provider: {
+        ollama: {
+            autoloadCapabilities: boolean,
+            alwaysAutoloadCapabilities: boolean,
+        },
     },
     ui: {
         modelList: {
@@ -81,11 +80,10 @@ export const useConfigStore = defineStore('config', {
         showSidebar: true,
         transitionSpeed: 0.125,
         closeSidebarOnNavMobile: true,
-        ollama: {
-            url: import.meta.env.VITE_DEFAULT_OLLAMA ?? 'http://localhost:11434',
-            modelCapabilities: {
-                autoload: true,
-                alwaysAutoload: false
+        provider: {
+            ollama: {
+                autoloadCapabilities: true,
+                alwaysAutoloadCapabilities: false,
             }
         },
         ui: {
@@ -128,9 +126,6 @@ export const useConfigStore = defineStore('config', {
             favoriteModels: [],
         },
     }),
-    getters: {
-        requestUrl: (state) => (path: string) => `${state.ollama.url}${path}`,
-    },
     actions: {
         setTransitionSpeed(speed: number) {
             if (speed > 1 || speed < 0) {

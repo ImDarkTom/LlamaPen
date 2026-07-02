@@ -17,7 +17,7 @@ const downloadCount = computed<string | undefined>(() => {
     return downloads === 0 ? undefined : String(downloads);
 });
 
-const currentProviderOllama = computed(() => providerStore.currentProviderId.value === 'ollama');
+const canDownloadModels = computed(() => providerStore.currentProvider.value.features.modelDownload !== undefined);
 </script>
 
 <template>
@@ -25,12 +25,12 @@ const currentProviderOllama = computed(() => providerStore.currentProviderId.val
         <SidebarStateBackHeader />
 
         <SidebarMenuLink
-            :text="currentProviderOllama ? 'Installed' : 'Available'"
-            :icon="currentProviderOllama ? BiData : BiCheck"
+            :text="canDownloadModels ? 'Installed' : 'Available'"
+            :icon="canDownloadModels ? BiData : BiCheck"
             :to="{ path: '/models/installed' }"
             :badge="installedCount"/>
 
-        <template v-if="currentProviderOllama">
+        <template v-if="canDownloadModels">
             <SidebarMenuLink
                 text="Browse"
                 :icon="BiCloud"

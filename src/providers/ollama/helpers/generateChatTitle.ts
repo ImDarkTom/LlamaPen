@@ -2,11 +2,11 @@ import db from "@/lib/db";
 import logger from "@/lib/logger";
 import { useConfigStore } from "@/stores/useConfigStore";
 import { tryCatch } from "@/utils/core/tryCatch";
-import { ollamaWrapper } from "../OllamaWrapper";
+import { OllamaWrapper } from "../OllamaWrapper";
 
 const chatTitleExamples = `\nExamples of titles:\n📉 Stock Market Trends\n🍪 Perfect Chocolate Chip Recipe\nEvolution of Music Streaming\nRemote Work Productivity Tips\nArtificial Intelligence in Healthcare\n🎮 Video Game Development Insights`;
 
-export async function generateChatTitle(messages: ChatMessage[]): Promise<string> {
+export async function generateChatTitle(ollamaWrapper: OllamaWrapper, messages: ChatMessage[]): Promise<string> {
     const messagesFormatted = await Promise.all(
         messages.map(async (message) => {
             if (message.type === 'tool') {
@@ -21,9 +21,9 @@ export async function generateChatTitle(messages: ChatMessage[]): Promise<string
                 .equals(message.id)
                 .count()) > 0;
 
-            
+
             let content = message.content;
-            
+
             if (hasAttachments) {
                 content += '\n<Attachment(s)>';
             }

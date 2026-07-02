@@ -1,9 +1,9 @@
 <script setup lang="ts">
 import { useProviderManager } from '@/composables/useProviderManager';
 import logger from '@/lib/logger';
+import type { ModelDownloadProgress } from '@/providers/base/ProviderInterface';
 import useDownloadsStore from '@/stores/useDownloadsStore';
 import useOllamaModelLibraryStore from '@/stores/useOllamaModelLibrary';
-import type { ProgressResponse } from 'ollama';
 import { storeToRefs } from 'pinia';
 import { BiCloudDownload, BiStopCircle } from 'vue-icons-plus/bi';
 import { ref, computed } from "vue";
@@ -35,7 +35,7 @@ async function downloadModel() {
     await loadModels(true)
 }
 
-const getStatusText = (status: ProgressResponse) => 
+const getStatusText = (status: ModelDownloadProgress) => 
     status.completed 
         ? `${(status.completed / 1024 / 1024).toFixed(2)}MB / ${((status.total ?? 0) / 1024 / 1024).toFixed(2)}MB` 
         : 'Waiting...';

@@ -15,6 +15,17 @@ export interface LLMProvider {
     readonly connectionState: Reactive<ConnectionState>;
     readonly rawModels: Ref<ModelInfo[]>;
 
+    readonly features: {
+        modelMemory?: ModelMemoryFeature;
+        modelAdmin?: ModelAdminFeature;
+        modelDownload?: ModelDownloadFeature;
+    };
+
+    config: {
+        apiKey: string;
+        baseURL: string;
+    };
+
     /**
      * Loads models from the provider and initialises capabilities.
      * @param force When false, if models were already loaded before, ignore the reqest. 
@@ -26,7 +37,7 @@ export interface LLMProvider {
      * Set the connection state to loading and re-send a network request to the provider's URL
      */
     refreshConnection(): Promise<void>;
-    
+
 
     /**
      * Generates a chat response as a stream of chunks.
@@ -39,8 +50,8 @@ export interface LLMProvider {
      * @param options Client-side generation options.
      */
     chat(
-        messages: ChatMessage[], 
-        abortSignal: AbortSignal, 
+        messages: ChatMessage[],
+        abortSignal: AbortSignal,
         options: ChatOptions,
     ): Promise<AsyncIterable<ChatIteratorChunk>>;
 
@@ -65,25 +76,57 @@ export interface LLMProvider {
     generateChatTitle(messages: ChatMessage[]): Promise<string>;
 }
 
-export interface MemoryManagedProvider extends LLMProvider {
+export interface ModelMemoryFeature {
     readonly loadedModelIds: Ref<Set<string>>;
     refreshLoadedModels(): Promise<void>;
-    
+
     /**
      * Loads a model into memory.
      * @param modelName The name of the model to load into memory.
      * @returns If the model was successfully loaded into memory.
      */
-    loadModelIntoMemory(modelId: string): Promise<boolean>;
+    load(modelId: string): Promise<boolean>;
 
     /**
      * Unloads a model from memory.
      * @param modelName The name of the model to unload from memory.
      * @returns If the model was successfully unloaded from memory.
      */
-    unloadModel(modelId: string): Promise<boolean>;
+    unload(modelId: string): Promise<boolean>;
 }
 
-export interface ConfigurableProvider<TConfig extends Record<string, unknown>> extends LLMProvider {
-    config: TConfig;
+export interface ModelAdminFeature {
+    /**
+     * Copy a model under a new name
+     * @param source Model to copy.
+     * @param destination New ID to copy to.
+     * @returns Success or not.
+     */
+    copy(source: string, destination: string): Promise<boolean>;
+
+    /**
+     * Delete a model.
+     * @param modelId Model to delete.
+     * @returns Success or not.
+     */
+    delete(modelId: string): Promise<boolean>;
+
+    /**
+     * Get the info/download page of a model
+     * @param modelId Model to get URL for.
+     */
+    externalModelUrl?(modelId: string): string;
+}
+
+export type ModelDownloadProgress = {
+    status: string;
+    digest?: string;
+    total: number;
+    completed: number;
+}
+
+export interface ModelDownloadFeature {
+    progress: Ref<Record<string, ModelDownloadProgress>>;
+    download(modelId: string): Promise<{ success: boolean, reason?: string }>;
+    cancel(modelId: string): void;
 }

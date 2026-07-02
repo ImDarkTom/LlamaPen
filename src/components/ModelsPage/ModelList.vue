@@ -6,14 +6,13 @@ import type { IconType } from 'vue-icons-plus';
 import { BiCopy, BiDotsVerticalRounded, BiHide, BiLinkExternal, BiPencil, BiShow, BiTrash } from 'vue-icons-plus/bi';
 import { Fa6Memory } from 'vue-icons-plus/fa6';
 import { useProviderManager, type ModelInfo } from '@/composables/useProviderManager';
-import { ollamaWrapper } from '@/providers/ollama/OllamaWrapper';
 import useUIStore from '@/stores/useUiStore';
 // This has to be imported as we are using it programatically
 import IconMemoryUnload from '@/components/Icon/MemoryUnload.vue';
 
 const config = useConfigStore();
 const { setModelHidden } = useUIStore();
-const { isConnected, isLoading, allModelIds, isOllama, loadedModelIds, currentProvider } = useProviderManager();
+const { isConnected, isLoading, allModelIds, loadedModelIds, currentProvider } = useProviderManager();
 
 const props = defineProps<{
     modelsList: ModelInfo[],
@@ -28,59 +27,64 @@ const refreshModelList = () => emit('refreshModelList');
 const isHidden = (modelId: string) => config.chat.hiddenModels.includes(modelId);
 const isLoadedInMemory = (modelId: string) => loadedModelIds.value.has(modelId);
 
-const modelActions: MenuEntry<{ modelId: string, displayName: string }>[] = [
-    {
-        type: 'text',
-        text: 'Open in Ollama Library',
-        icon: BiLinkExternal,
-        onClick: ({ modelId }) => window.open(`https://ollama.com/library/${modelId}`, '_blank'),
-        condition: isOllama.value
-    },
-    {
-        type: 'text',
-        text: ({ modelId }) => isLoadedInMemory(modelId) ? 'Unload from memory' : 'Load into memory',
-        onClick: ({ modelId }) => toggleModelLoaded(modelId),
-        icon: {
-            type: 'factory',
-            func: ({ modelId }: { modelId: string }) => (isLoadedInMemory(modelId) ? IconMemoryUnload : Fa6Memory) as IconType
+const modelActions = computed<MenuEntry<{ modelId: string, displayName: string }>[]>(() => {
+    const modelMemory = currentProvider.value.features.modelMemory;
+    const modelAdmin = currentProvider.value.features.modelAdmin;
+
+    return [
+        {
+            type: 'text',
+            text: 'Open in model library',
+            icon: BiLinkExternal,
+            onClick: ({ modelId }) => openExternalModelUrl(modelId),
+            condition: modelAdmin?.externalModelUrl !== undefined,
         },
-        condition: isOllama.value
-    },
-    {
-        type: 'divider',
-        condition: isOllama.value,
-    },
-    {
-        type: 'text',
-        text: ({ modelId }) => isHidden(modelId) ? 'Unhide model' : 'Hide model',
-        onClick: ({ modelId }) => setModelHidden(modelId, isHidden(modelId)),
-        icon: {
-            type: 'factory',
-            func: ({ modelId }: { modelId: string }) => isHidden(modelId) ? BiShow : BiHide
+        {
+            type: 'text',
+            text: ({ modelId }) => isLoadedInMemory(modelId) ? 'Unload from memory' : 'Load into memory',
+            onClick: ({ modelId }) => toggleModelLoaded(modelId),
+            icon: {
+                type: 'factory',
+                func: ({ modelId }: { modelId: string }) => (isLoadedInMemory(modelId) ? IconMemoryUnload : Fa6Memory) as IconType
+            },
+            condition: modelMemory !== undefined,
         },
-    },
-    {
-        type: 'text',
-        text: 'Rename',
-        icon: BiPencil,
-        onClick: ({ modelId, displayName }) => renameModel(modelId, displayName),
-    },
-    {
-        type: 'text',
-        text: 'Duplicate model',
-        icon: BiCopy,
-        onClick: ({ modelId }) => copyModel(modelId),
-        condition: isOllama.value
-    },
-    {
-        type: 'text',
-        text: 'Delete model',
-        icon: BiTrash,
-        onClick: ({ modelId }) => deleteModel(modelId),
-        condition: isOllama.value,
-        category: 'danger'
-    }
-];
+        {
+            type: 'divider',
+            condition: modelMemory !== undefined || modelAdmin !== undefined,
+        },
+        {
+            type: 'text',
+            text: ({ modelId }) => isHidden(modelId) ? 'Unhide model' : 'Hide model',
+            onClick: ({ modelId }) => setModelHidden(modelId, isHidden(modelId)),
+            icon: {
+                type: 'factory',
+                func: ({ modelId }: { modelId: string }) => isHidden(modelId) ? BiShow : BiHide
+            },
+        },
+        {
+            type: 'text',
+            text: 'Rename',
+            icon: BiPencil,
+            onClick: ({ modelId, displayName }) => renameModel(modelId, displayName),
+        },
+        {
+            type: 'text',
+            text: 'Duplicate model',
+            icon: BiCopy,
+            onClick: ({ modelId }) => copyModel(modelId),
+            condition: modelAdmin !== undefined,
+        },
+        {
+            type: 'text',
+            text: 'Delete model',
+            icon: BiTrash,
+            onClick: ({ modelId }) => deleteModel(modelId),
+            condition: modelAdmin !== undefined,
+            category: 'danger',
+        },
+    ];
+});
 
 async function toggleModelLoaded(modelName: string) {
     if (isLoadedInMemory(modelName)) {
@@ -109,6 +113,12 @@ async function renameModel(modelId: string, displayName: string) {
 }
 
 async function copyModel(model: string) {
+    const modelAdmin = currentProvider.value.features.modelAdmin;
+    if (!modelAdmin) {
+        alert(`Provider "${currentProvider.value.name}" does not support model duplication.`);
+        return;
+    }
+
     const destination = prompt('Enter name for the new model copy:', `${model}-copy`);
 
     if (!destination || destination.trim() === '') {
@@ -116,10 +126,7 @@ async function copyModel(model: string) {
         return;
     }
 
-    const success = ollamaWrapper.copy({
-        source: model,
-        destination,
-    });
+    const success = await modelAdmin.copy(model, destination);
 
     if (!success) {
         alert('Failed to copy model.');
@@ -130,13 +137,17 @@ async function copyModel(model: string) {
 }
 
 async function deleteModel(model: string) {
+    const modelAdmin = currentProvider.value.features.modelAdmin;
+    if (!modelAdmin) {
+        alert(`Provider "${currentProvider.value.name}" does not support model deletion.`);
+        return;
+    }
+
     if (!confirm(`Are you sure you want to delete the model "${model}"? This action cannot be undone.`)) {
         return;
     }
 
-    const success = await ollamaWrapper.delete({
-        model,
-    });
+    const success = await modelAdmin.delete(model);
 
     if (!success) {
         alert('Failed to delete model.');
@@ -145,6 +156,13 @@ async function deleteModel(model: string) {
 
     router.push('/models');
     refreshModelList();
+}
+
+function openExternalModelUrl(model: string) {
+    const url = currentProvider.value.features.modelAdmin?.externalModelUrl?.(model);
+    if (!url) return;
+
+    window.open(url, '_blank');
 }
 
 const showAll = () => {

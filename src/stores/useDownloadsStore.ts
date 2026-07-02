@@ -1,8 +1,6 @@
-import logger from '@/lib/logger';
-import { ollamaWrapper } from '@/providers/ollama/OllamaWrapper';
-import type { ProgressResponse } from 'ollama';
+import { useProviderManager } from '@/composables/useProviderManager';
 import { defineStore } from 'pinia';
-import { ref } from 'vue';
+import { computed, ref } from 'vue';
 
 // example chunk:
 // {
@@ -16,52 +14,22 @@ import { ref } from 'vue';
 
 const useDownloadsStore = defineStore('downloads', () => {
     const inputValue = ref('');
+    const progressChunks = computed(() => {
+        return useProviderManager().currentProvider.value.features.modelDownload?.progress.value ?? {};
+    });
 
-    const abortControllerMap: Map<string, AbortController> = new Map();
-    const progressChunks = ref<Record<string, ProgressResponse>>({});
-    
     async function downloadModel(modelId: string): Promise<{ success: boolean, reason?: string }> {
-        if (progressChunks.value[modelId]) return { success: false, reason: `Already downloading '${modelId}'` };
+        const feature = useProviderManager().currentProvider.value.features.modelDownload;
 
-        const abortController = new AbortController();
-        abortControllerMap.set(modelId, abortController);
-        
-        const { data: stream, error } = await ollamaWrapper.pull({ model: modelId, stream: true }, abortController);
-        
-        if (error) {
-            abortControllerMap.delete(modelId);
-            return { success: false, reason: 'Failed to download model.' }; // We already log the error
+        if (!feature) {
+            return { success: false, reason: 'Current provider does not support model downloading.' };
         }
 
-        try {
-            for await (const progress of stream) {
-                progressChunks.value[modelId] = progress;
-
-                if (progress.status === 'success') {
-                    logger.info('Download Manager', `Model ${modelId} downloaded successfully.`);
-                    delete progressChunks.value[modelId];
-                    return { success: true }
-                }
-            }
-        } catch (e) {
-            delete progressChunks.value[modelId];
-            if (e === 'userRequestCancel') {
-                return { success: false };
-            }
-
-            return { success: false, reason: `Error while downloading: ${e instanceof Error ? e.message : String(e)}` };
-        } finally {
-            abortControllerMap.delete(modelId);
-        }
-        
-        return { success: false, reason: 'Unknown error occurred during download.' };
+        return feature.download(modelId);
     }
 
-    function cancelDownload(model: string) {
-        if (!progressChunks.value[model]) return;
-
-        const abortController = abortControllerMap.get(model);
-        abortController?.abort('userRequestCancel');
+    function cancelDownload(modelId: string) {
+        useProviderManager().currentProvider.value.features.modelDownload?.cancel(modelId);
     }
 
     return {

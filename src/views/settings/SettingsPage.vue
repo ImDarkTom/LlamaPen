@@ -4,32 +4,21 @@ import { useConfigStore } from '@/stores/useConfigStore';
 import useChatsStore from '@/stores/useChatsStore';
 import useMessagesStore from '@/stores/messagesStore';
 import setPageTitle from '@/utils/core/setPageTitle';
-import { BiInfoCircle, BiLink, BiRefresh, BiTrash } from 'vue-icons-plus/bi';
+import { BiChevronDown, BiChevronUp, BiCog, BiLink, BiPencil, BiPlus, BiRefresh, BiTrash } from 'vue-icons-plus/bi';
 import { useRegisterSW } from 'virtual:pwa-register/vue';
-import { ollamaWrapper } from '@/providers/ollama/OllamaWrapper';
 import { useProviderManager } from '@/composables/useProviderManager';
 import { emitter } from '@/lib/mitt';
 import { useCustomProvidersStore } from '@/stores/useCustomProvidersStore';
+import { VueDraggable } from 'vue-draggable-plus';
 
 const config = useConfigStore();
 
 const chatsStore = useChatsStore();
 const messagesStore = useMessagesStore();
 
-const { 
-    isConnected, 
-    isLoading, 
-    allProviders, 
-    currentProviderId, 
-    setActiveProvider, 
-    isOllama,
-} = useProviderManager();
+const { allProviders, currentProviderId, setActiveProvider } = useProviderManager();
 
-const { 
-    offlineReady,
-    needRefresh,
-    updateServiceWorker
-} = useRegisterSW();
+const { offlineReady, needRefresh, updateServiceWorker } = useRegisterSW();
 
 // transition speed
 const transitionSpeed = ref(0.125);
@@ -49,17 +38,6 @@ function updateTransitionSpeed() {
     config.setTransitionSpeed(newSpeed);
 }
 
-function ollamaUrlCheck(url: string): string {
-    if (url.length === 0 || url === "") {
-        url = ollamaDefault;
-    }
-
-    config.ollama.url = url;
-    location.reload();
-
-    return url;
-}
-
 // clear chats
 function clearChats() {
     if (!confirm('Are you sure you want to clear all chats?')) return;
@@ -74,19 +52,6 @@ onMounted(async () => {
     transitionSpeed.value = config.transitionSpeed;
 });
 
-const ollamaDefault = import.meta.env.VITE_DEFAULT_OLLAMA ?? 'http://localhost:11434';
-
-async function checkOllamaVersion() {
-    const version = await ollamaWrapper.version();
-
-    if (version.error) {
-        alert(`❌ Error fetching Ollama version, ${version.error.message}`);
-        return;
-    }
-
-    alert(`✅ Ollama Version: ${version.data.version}`);
-}
-
 const selectedProvider = computed({
     get() {
         return currentProviderId.value;
@@ -98,163 +63,204 @@ const selectedProvider = computed({
         // todo(qol, p=l): refresh connection status and load models instead of refreshing page
         // refreshAndLoadModels
         location.reload();
-    }
+    },
 });
 
 const customProvidersStore = useCustomProvidersStore();
 
 const themes = {
-    'Auto': { 'auto': 'System Default' },
-    'Light': {
-        'light': 'Light',
+    Auto: { auto: 'System Default' },
+    Light: {
+        light: 'Light',
         'mono-light': 'Plain Light',
         'legacy-light': 'Plain Light (Legacy)',
     },
-    'Dark': {
-        'dark': 'Dark',
+    Dark: {
+        dark: 'Dark',
         'mono-dark': 'Plain Dark',
-        'amoled': 'AMOLED',
+        amoled: 'AMOLED',
         'legacy-dark': 'Dark (Legacy)',
         'legacy-mono-dark': 'Plain Dark (Legacy)',
     },
 };
+
+const providersActions: MenuEntry[] = [
+    {
+        text: 'Re-add default provider',
+        icon: BiRefresh,
+        type: 'text',
+        category: 'danger',
+        condition: !customProvidersStore.providers.some((p) => p.seededDefault),
+        onClick: () => {
+            customProvidersStore.seedDefaultProvider(customProvidersStore.getSeededDefaultValues());
+            location.reload();
+        },
+    },
+    {
+        text: 'Remove all custom providers',
+        icon: BiTrash,
+        type: 'text',
+        category: 'danger',
+        condition: customProvidersStore.providers.length > 0,
+        onClick: () => {
+            if (!confirm('Are you sure you want to remove all added providers?')) return;
+
+            customProvidersStore.clearAllAdded();
+            location.reload();
+        },
+    },
+];
 </script>
 
 <template>
-    <div 
-        class="w-full h-full flex flex-col items-center py-4 box-border overflow-y-auto gap-4
-        *:mx-auto *:max-w-prose">
+    <div class="w-full h-full flex flex-col items-center py-4 box-border overflow-y-auto gap-4 *:mx-auto *:max-w-prose">
         <UIPageHeader text="Settings" />
 
         <SettingsOptionCategory label="Providers">
-            <SettingsInputSelection 
-                v-model="selectedProvider" 
-                label="Provider" 
-                :items="[...allProviders.keys()]" 
-                :itemNames="[...allProviders.values()].map(p => p.name)"
-                tooltip="The LLM provider to use. (Default: Ollama)"
-            />
+            <SettingsInputSelection
+                v-model="selectedProvider"
+                label="Selected Provider"
+                :items="[...allProviders.keys()]"
+                :itemNames="[...allProviders.values()].map((p) => p.name)"
+                tooltip="The LLM provider to use. (Default: Ollama)" />
 
-            <SettingsCategoryLabel>Custom Providers</SettingsCategoryLabel>
+            <SettingsCategoryLabel>List</SettingsCategoryLabel>
 
-            <div 
-                v-if="customProvidersStore.providers.length > 0" 
+            <VueDraggable
+                v-model="customProvidersStore.providers"
+                tag="ul"
+                :handle="'.provider-drag-handle'"
+                :draggable="'.provider-list-item'"
                 class="flex flex-col gap-2 w-full">
-                <div
+                <li
                     v-for="customProvider in customProvidersStore.providers"
                     :key="customProvider.key"
-                    class="flex items-center justify-between p-2 pl-4 border border-base-500 rounded-lg">
-                    <div class="flex flex-col min-w-0">
-                        <span class="font-medium truncate">{{ customProvider.name }}</span>
+                    class="provider-list-item flex items-center justify-between p-2 pl-4 border border-base-500 rounded-lg">
+                    <button
+                        class="provider-drag-handle cursor-grab pr-2"
+                        aria-label="Reorder">
+                        ⠿
+                    </button>
+                    <div class="flex flex-col min-w-0 border-base-500 border-l mr-auto pl-2">
+                        <div>
+                            <Tooltip
+                                v-if="customProvider.seededDefault"
+                                text="Pre-added app provider">
+                                <BiCog class="size-3 mr-1 text-base-300" />
+                            </Tooltip>
+                            <span class="font-medium truncate">
+                                {{ customProvider.name }}
+                            </span>
+                        </div>
                         <div class="text-sm text-base-300 truncate inline-flex items-center gap-1">
-                            <BiLink class="size-3"/>
+                            <BiLink class="size-3" />
                             <span class="truncate">{{ customProvider.baseURL }}</span>
                         </div>
                     </div>
-                    <ButtonPrimary 
-                        text="Edit"
-                        color="primary" 
-                        type="button" 
+                    <ButtonPrimary
+                        :icon="BiPencil"
+                        color="primary"
+                        type="button"
                         @click="emitter.emit('editProviderPopup', customProvider)" />
-                </div>
-            </div>
-            <div v-else class="text-sm text-base-300">
-                No custom providers added.
-            </div>
+                </li>
+            </VueDraggable>
 
-            <ButtonPrimary 
-                text="Add Provider" 
-                type="button" 
-                @click="emitter.emit('createProviderPopup')" />
+            <div class="flex flex-row gap-2 min-w-full">
+                <ButtonPrimary
+                    class="grow"
+                    text="Add Provider"
+                    :icon="BiPlus"
+                    type="button"
+                    @click="emitter.emit('createProviderPopup')" />
+                <FloatingActionMenu :actions="providersActions">
+                    <template #default="{ shownListLength, isOpened }">
+                        <ButtonPrimary
+                            :disabled="shownListLength === 0"
+                            :icon="isOpened ? BiChevronUp : BiChevronDown"
+                            :color="shownListLength === 0 ? 'sunken' : 'primary'" />
+                    </template>
+                </FloatingActionMenu>
+            </div>
         </SettingsOptionCategory>
 
-        <SettingsOptionCategory v-if="isOllama" label="Ollama">
-            <SettingsInputText 
-                label="Ollama URL" 
-                v-model="config.ollama.url" 
-                :default="ollamaDefault"
-                :check="ollamaUrlCheck"
-                :tooltip="`The URL to connect to Ollama on. (Default: ${ollamaDefault})`" />
-            <span class="text-sm" v-if="!isConnected && !isLoading">
-                Can't connect? Checkout the
-                <RouterLink to="/guide" class="text-base-100 underline">setup guide</RouterLink>.
-            </span>
-
+        <SettingsOptionCategory label="Provider-specific Options">
+            <SettingsCategoryLabel>Ollama</SettingsCategoryLabel>
             <SettingsInputToggle
-                v-model="config.ollama.modelCapabilities.autoload"
+                v-model="config.provider.ollama.autoloadCapabilities"
                 label="Autoload model capabilities"
-                tooltip="Load model capabilities on connect. By default only loads if 30 models or less. (Default: Enabled)" />
-            <div v-if="config.ollama.modelCapabilities.autoload" class="border-l border-base-400 pl-3 ml-3">
-                <SettingsInputToggle 
-                    v-model="config.ollama.modelCapabilities.alwaysAutoload" 
+                tooltip="Load model capabilities on connect. By default only loads when <=30 models. (Default: Enabled)" />
+            <div
+                v-if="config.provider.ollama.autoloadCapabilities"
+                class="border-l border-base-400 pl-3 ml-3">
+                <SettingsInputToggle
+                    v-model="config.provider.ollama.alwaysAutoloadCapabilities"
                     label="Always autoload model capabilities"
-                    tooltip="Loads model capabilities regardless of no. of models. (Default: Disabled)" />
-            </div>
-
-            <div class="flex items-center justify-center">
-                <ButtonPrimary
-                    text="Check Ollama version"
-                    type="button"
-                    @click="checkOllamaVersion"
-                    :icon="BiInfoCircle" />
+                    tooltip="Loads model capabilities regardless of no. of models. May impact performance. (Default: Disabled)" />
             </div>
         </SettingsOptionCategory>
 
         <SettingsOptionCategory label="Appearance">
-            <SettingsInputSelection 
-                v-model="config.ui.theme" 
-                label="Theme" 
+            <SettingsInputSelection
+                v-model="config.ui.theme"
+                label="Theme"
                 :items="themes"
                 :itemNames="[]"
-                @update:model-value="config.loadTheme()" 
-                tooltip="The theme for the app. (Default: System default (dark/light))"
-            />
-            <SettingsInputToggle 
-                v-model="config.ui.nativeScrollbar" 
-                label="Native scrollbar" 
+                @update:model-value="config.loadTheme()"
+                tooltip="The theme for the app. (Default: System default (dark/light))" />
+            <SettingsInputToggle
+                v-model="config.ui.nativeScrollbar"
+                label="Native scrollbar"
                 tooltip="Use the browser's default scrollbar styling. (Default: Disabled)"
-                @update:model-value="config.loadScrollbarSetting()"
-            />
-            <SettingsInputToggle 
-                v-model="config.ui.messageInput.sendButtonAltIcon" 
-                label="Alternate send button icon" 
-                tooltip="Use a paper-plane icon instead of an up arrow. (Default: Disabled)"
-            />
-            <SettingsInputToggle 
-                v-model="config.ui.messageInput.hideUnusedButtons" 
-                label="Hide unused message input buttons" 
-                tooltip="Hide buttons that rely on specific capabilities when the current model doesn't support them, such as the 'Think' button. (Default: Enabled)"
-            />
+                @update:model-value="config.loadScrollbarSetting()" />
+            <SettingsInputToggle
+                v-model="config.ui.messageInput.sendButtonAltIcon"
+                label="Alternate send button icon"
+                tooltip="Use a paper-plane icon instead of an up arrow. (Default: Disabled)" />
+            <SettingsInputToggle
+                v-model="config.ui.messageInput.hideUnusedButtons"
+                label="Hide unused message input buttons"
+                tooltip="Hide buttons that rely on specific capabilities when the current model doesn't support them, such as the 'Think' button. (Default: Enabled)" />
             <div class="flex flex-col gap-2 w-full">
-                <SettingsOptionText label="Animation Duration" tooltip="The length of animations/transitions throughout the UI. (Default: 125ms)" />
-                <input class="accent-primary w-full" @change="updateTransitionSpeed" v-model="transitionSpeed"
-                    type="range" min="0" max="1" step="0.025" />
+                <SettingsOptionText
+                    label="Animation Duration"
+                    tooltip="The length of animations/transitions throughout the UI. (Default: 125ms)" />
+                <input
+                    class="accent-primary w-full"
+                    @change="updateTransitionSpeed"
+                    v-model="transitionSpeed"
+                    type="range"
+                    min="0"
+                    max="1"
+                    step="0.025" />
                 <span class="py-2">
                     <span class="border-2 border-base-500 w-fit p-2 rounded-lg cursor-default box-border">{{
-                        transitionSpeedText }}</span>
+                        transitionSpeedText
+                    }}</span>
                     <span class="pl-2">{{ transitionSpeed == 0.125 ? '(Default)' : '' }}</span>
                 </span>
             </div>
             <SettingsCategoryLabel>Model Icons</SettingsCategoryLabel>
-            <SettingsInputToggle 
-                v-model="config.ui.modelIcons.monochrome" 
+            <SettingsInputToggle
+                v-model="config.ui.modelIcons.monochrome"
                 label="Monochrome model icons"
                 tooltip="Use single-color variants of model icons. (Default: Enabled)" />
-            <SettingsInputToggle 
-                v-model="config.ui.modelIcons.background" 
+            <SettingsInputToggle
+                v-model="config.ui.modelIcons.background"
                 label="Model icons background"
                 tooltip="Add a background to model icons throughout the app. (Default: Disabled)" />
-            <div v-if="config.ui.modelIcons.background" class="border-l border-base-100 pl-3 ml-3">
-                <SettingsInputToggle 
-                    v-model="config.ui.modelIcons.backgroundDark" 
+            <div
+                v-if="config.ui.modelIcons.background"
+                class="border-l border-base-100 pl-3 ml-3">
+                <SettingsInputToggle
+                    v-model="config.ui.modelIcons.backgroundDark"
                     label="Dark icon background"
                     tooltip="Make the icon background darker. (Default: Disabled)" />
             </div>
             <SettingsCategoryLabel>Tooltip</SettingsCategoryLabel>
             <SettingsInputNumber
-                v-model="config.ui.tooltip.waitTimeoutMs" 
-                :default="100" 
-                :min="0" 
+                v-model="config.ui.tooltip.waitTimeoutMs"
+                :default="100"
+                :min="0"
                 :max="1000"
                 label="Hover delay (ms)"
                 tooltip="How long to mouse over an element before it's tooltip appears. (Default: 100)" />
@@ -263,25 +269,24 @@ const themes = {
                 v-model="config.ui.sidebar.entryIcons"
                 label="Sidebar chat icons"
                 tooltip="Whether or not to show icons next to chat names in the sidebar (Default: Enabled)" />
-            <SettingsInputToggle 
-                v-model="config.closeSidebarOnNavMobile" 
+            <SettingsInputToggle
+                v-model="config.closeSidebarOnNavMobile"
                 label="Mobile: Hide sidebar on navigate"
                 tooltip="Hide the sidebar after navigating to a different page on mobile. (Default: Enabled)" />
         </SettingsOptionCategory>
 
         <SettingsOptionCategory label="Chat">
-            <SettingsInputSelection 
-                v-model="config.chat.titleGenerationStyle" 
-                label="Title generation style" 
-                :items="['dynamic', 'firstMessage', 'generate', 'chatId']" 
+            <SettingsInputSelection
+                v-model="config.chat.titleGenerationStyle"
+                label="Title generation style"
+                :items="['dynamic', 'firstMessage', 'generate', 'chatId']"
                 :itemNames="['Dynamic (default)', 'Use first message', 'Generate with current model', 'Use chat ID']"
-                tooltip="Dynamic: First message if question, otherwise generate. (Default: Dynamic)"
-            />
-            <SettingsInputToggle 
+                tooltip="Dynamic: First message if question, otherwise generate. (Default: Dynamic)" />
+            <SettingsInputToggle
                 v-model="config.chat.thinking.infoOpenByDefault"
                 label="Reasoning text open by default"
                 tooltip="Have reasoning/thinking text open by default for each message. (Default: Disabled)" />
-            <SettingsInputToggle 
+            <SettingsInputToggle
                 v-model="config.chat.hideTPSInfoText"
                 label="Hide tokens/sec in message footer"
                 tooltip="Hide the <num>tok/s text in the message footer/controls for model messages. (Default: Disabled)" />
