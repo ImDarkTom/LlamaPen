@@ -1,5 +1,5 @@
-@import "normalize.css";
-@import "tailwindcss";
+@import 'normalize.css';
+@import 'tailwindcss';
 @plugin "tailwindcss-motion";
 @plugin "@tailwindcss/typography";
 @config "@/../tailwind.config.js";
@@ -14,7 +14,14 @@ z-99 - z-100: Popup
 
 /* Global Styles */
 :root {
-    font-family: Nebula Sans, Inter, system-ui, Avenir, Helvetica, Arial, sans-serif;
+    font-family:
+        Nebula Sans,
+        Inter,
+        system-ui,
+        Avenir,
+        Helvetica,
+        Arial,
+        sans-serif;
     line-height: 1.5;
     font-weight: 400;
 
@@ -28,7 +35,6 @@ z-99 - z-100: Popup
     -moz-osx-font-smoothing: grayscale;
 
     --transition-duration: 0.125s;
-
 
     --light-primary: oklch(0.76 0.13 266);
     --light-secondary: oklch(0.76 0.13 86);
@@ -146,7 +152,6 @@ body:not([data-native-scrollbar]) {
         --color-info: var(--light-info);
     }
 
-
     html[theme='legacy-dark'] {
         --color-base-950: oklch(0.1 0.065 266);
         --color-base-900: oklch(0.15 0.065 266);
@@ -239,29 +244,24 @@ body:not([data-native-scrollbar]) {
     --animate-blink: blink 1s ease-in-out infinite;
 
     /* base */
-    --shadow-elevation-1: 
-        0 0.25rem 1.25rem rgba(0, 0, 0, 0.05), 
-        0 0 0 0.5px oklch(from var(--color-base-300) l c h / 0.15);
-        
+    --shadow-elevation-1:
+        0 0.25rem 1.25rem rgba(0, 0, 0, 0.05), 0 0 0 0.5px oklch(from var(--color-base-300) l c h / 0.15);
+
     /* hovered items */
-    --shadow-elevation-2: 
-        0 0.25rem 1.25rem rgba(0, 0, 0, 0.05), 
-        0 0 0 0.5px oklch(from var(--color-base-300) l c h / 0.3);
+    --shadow-elevation-2:
+        0 0.25rem 1.25rem rgba(0, 0, 0, 0.05), 0 0 0 0.5px oklch(from var(--color-base-300) l c h / 0.3);
 
     /* focused items */
-    --shadow-elevation-3: 
-        0 0.25rem 1.25rem rgba(0, 0, 0, 0.1), 
-        0 0 0 0.5px oklch(from var(--color-base-300) l c h / 0.3);
+    --shadow-elevation-3:
+        0 0.25rem 1.25rem rgba(0, 0, 0, 0.1), 0 0 0 0.5px oklch(from var(--color-base-300) l c h / 0.3);
 
     /* popup menus */
-    --shadow-elevation-4: 
-        0 0.25rem 1.25rem rgba(0, 0, 0, 0.2), 
-        0 0 0 0.5px oklch(from var(--color-base-300) l c h / 0.7);
+    --shadow-elevation-4:
+        0 0.25rem 1.25rem rgba(0, 0, 0, 0.2), 0 0 0 0.5px oklch(from var(--color-base-300) l c h / 0.7);
 
     /* large popups */
-    --shadow-elevation-5: 
-        0 0.25rem 1.25rem rgba(0, 0, 0, 0.3), 
-        0 0 0 0.75px oklch(from var(--color-base-300) l c h / 0.9);
+    --shadow-elevation-5:
+        0 0.25rem 1.25rem rgba(0, 0, 0, 0.3), 0 0 0 0.75px oklch(from var(--color-base-300) l c h / 0.9);
 
     @keyframes breathe {
         0%,
@@ -273,7 +273,7 @@ body:not([data-native-scrollbar]) {
             transform: scale(1);
         }
     }
-    
+
     @keyframes blink {
         0%,
         100% {
@@ -295,10 +295,6 @@ body:not([data-native-scrollbar]) {
     @apply transition-all duration-dynamic hover:duration-0;
 }
 
-@utility btn-primary {
-    @apply bg-primary hover:bg-secondary text-base-800 rounded-lg transition-colors duration-dynamic cursor-pointer;
-}
-
 @utility btn-ghost {
     @apply bg-base-700 group-[.active]:bg-base-600 hover:bg-base-600 group-[.active]:text-base-100 p-2 rounded-md cursor-pointer;
 }
@@ -306,7 +302,6 @@ body:not([data-native-scrollbar]) {
 @utility tools-input {
     @apply bg-base-700 rounded-md focus:ring-1 ring-base-300 ring-inset outline-none;
 }
-
 
 /* Custom slider styling */
 .slider::-webkit-slider-thumb {

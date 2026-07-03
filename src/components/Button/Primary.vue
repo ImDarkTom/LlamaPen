@@ -3,43 +3,37 @@ import type { IconType } from 'vue-icons-plus';
 import { RouterLink } from 'vue-router';
 import type IconMemoryUnload from '../Icon/MemoryUnload.vue';
 
-type ComponentTypes = 'link' | 'button' | 'external-link';
+type ComponentTypes = 'link' | 'button';
 
-defineProps<
+const props = defineProps<
     | {
           text?: string;
           type?: ComponentTypes;
           icon: IconType | string | typeof IconMemoryUnload;
-          singleLine?: boolean;
-          color?: 'primary' | 'danger' | 'sunken';
+          color?: 'primary' | 'danger';
       }
     | {
           text: string;
           type?: ComponentTypes;
           icon?: IconType | string | typeof IconMemoryUnload;
-          singleLine?: boolean;
-          color?: 'primary' | 'danger' | 'sunken';
+          color?: 'primary' | 'danger';
       }
 >();
 
 const componentTypes: Record<ComponentTypes, unknown> = {
     link: RouterLink,
     button: 'button',
-    'external-link': 'a',
 };
 </script>
 
 <template>
     <component
         :is="componentTypes[type ?? 'button']"
-        class="text-base-900 p-3 md:p-4 rounded-lg cursor-pointer transition-quick shrink-0 text-center"
+        class="text-base-900 p-3 md:p-4 shrink-0 text-center rounded-lg not-disabled:cursor-pointer disabled:cursor-not-allowed disabled:opacity-70 transition-colors duration-dynamic"
         :class="{
-            'whitespace-nowrap': singleLine,
-            'bg-primary! hover:bg-secondary!': color === 'primary' || !color,
+            'bg-primary! not-disabled:hover:bg-secondary!': color === 'primary' || !color,
             'bg-danger! hover:saturate-200 hover:bg-danger!': color === 'danger',
-            'bg-base-500 text-base-200': color === 'sunken',
-        }"
-        v-bind="type === 'external-link' ? { target: '_blank', rel: 'noopener noreferrer' } : {}">
+        }">
         <span>
             <component
                 v-if="icon"
