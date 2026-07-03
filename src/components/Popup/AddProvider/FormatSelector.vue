@@ -8,7 +8,7 @@ const id = useId();
 </script>
 
 <template>
-    <div class="mt-2">
+    <div>
         <Label :for="id">API Format</Label>
         <select
             class="w-full bg-base-800 px-6 py-4 rounded-md outline-none ring ring-inset ring-base-600 focus:ring-base-300"

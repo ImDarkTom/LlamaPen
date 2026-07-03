@@ -44,6 +44,7 @@ export const migrations: Migrations[] = [
             };
 
             delete state.ollama;
+            state.flags.onboardingComplete = true;
         });
     }
 ];

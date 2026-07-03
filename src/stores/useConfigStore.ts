@@ -8,6 +8,9 @@ interface Config {
     showSidebar: boolean,
     transitionSpeed: number,
     closeSidebarOnNavMobile: boolean,
+    flags: {
+        onboardingComplete: boolean;
+    },
     provider: {
         ollama: {
             autoloadCapabilities: boolean,
@@ -80,6 +83,9 @@ export const useConfigStore = defineStore('config', {
         showSidebar: true,
         transitionSpeed: 0.125,
         closeSidebarOnNavMobile: true,
+        flags: {
+            onboardingComplete: false,
+        },
         provider: {
             ollama: {
                 autoloadCapabilities: true,

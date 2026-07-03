@@ -76,7 +76,7 @@ function resetSeededToDefault() {
         @close="hide">
         <template #title> Editing {{ editingProvider.name }} </template>
         <template #body>
-            <div class="flex flex-col mb-8">
+            <div class="flex flex-col gap-2 mb-8">
                 <PopupAddProviderFormatSelector v-model="editingProvider.format" />
                 <hr class="text-base-300 mt-2" />
                 <UIFormField
