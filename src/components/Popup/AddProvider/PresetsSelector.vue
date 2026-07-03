@@ -19,9 +19,9 @@ const presets: Record<string, CustomProvider> = {
         apiKey: 'unusedkey',
         format: 'openai',
     },
-    lmstudio: {
-        name: 'LM Studio',
-        baseURL: 'http://localhost:1234/v1',
+    jan: {
+        name: 'Jan',
+        baseURL: 'http://127.0.0.1:1337',
         apiKey: 'unusedkey',
         format: 'openai',
     },
@@ -31,7 +31,19 @@ const presets: Record<string, CustomProvider> = {
         apiKey: 'vllm-key',
         format: 'openai',
     },
+    lmstudio: {
+        name: 'LM Studio',
+        baseURL: 'http://localhost:1234/v1',
+        apiKey: 'unusedkey',
+        format: 'openai',
+    },
 
+    openrouter: {
+        name: 'OpenRouter',
+        baseURL: 'https://openrouter.ai/api/v1',
+        apiKey: '',
+        format: 'openai',
+    },
     openai: {
         name: 'OpenAI',
         baseURL: 'https://api.openai.com/v1',
@@ -43,12 +55,6 @@ const presets: Record<string, CustomProvider> = {
         baseURL: 'https://ollama.com',
         apiKey: '',
         format: 'ollama',
-    },
-    openrouter: {
-        name: 'OpenRouter',
-        baseURL: 'https://openrouter.ai/api/v1',
-        apiKey: '',
-        format: 'openai',
     },
     groq: {
         name: 'Groq',
@@ -99,19 +105,20 @@ const id = useId();
             </option>
 
             <optgroup label="Self-hosted">
-                <option value="ollama">Ollama</option>
+                <option value="ollama">Ollama (Local)</option>
                 <option value="llamacpp">llama.cpp</option>
-                <option value="lmstudio">LM Studio</option>
+                <option value="jan">Jan</option>
                 <option value="vllm">vLLM</option>
+                <option value="lmstudio">LM Studio</option>
             </optgroup>
 
             <optgroup label="Cloud">
-                <option value="openai">OpenAI</option>
-                <option value="ollama-cloud">Ollama Cloud (ollama.com)</option>
-                <option value="openrouter">OpenRouter</option>
-                <option value="groq">Groq</option>
-                <option value="together">Together AI</option>
-                <option value="deepseek">DeepSeek</option>
+                <option value="openrouter">OpenRouter [openrouter.ai]</option>
+                <option value="openai">OpenAI [api.openai.com]</option>
+                <option value="ollama-cloud">Ollama (Cloud) [ollama.com]</option>
+                <option value="groq">Groq [api.groq.com]</option>
+                <option value="together">Together AI [api.together.ai]</option>
+                <option value="deepseek">DeepSeek [api.deepseek.com]</option>
             </optgroup>
 
             <option value="custom">Custom</option>
