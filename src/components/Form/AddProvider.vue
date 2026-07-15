@@ -42,7 +42,7 @@ const applyingPreset = ref(false);
 
 function onSelectPreset(preset: CustomProvider) {
     applyingPreset.value = true;
-    newProvider.value = preset;
+    newProvider.value = { ...preset };
 
     nextTick(() => {
         applyingPreset.value = false;
@@ -65,7 +65,7 @@ const showFooterButtons = computed(() => selectedPreset.value || !!slots.default
 
 <template>
     <div class="flex flex-col gap-2">
-        <PopupAddProviderPresetsSelector
+        <FormProviderPresetSelector
             v-model:selected-preset="selectedPreset"
             @select-preset="onSelectPreset" />
 
