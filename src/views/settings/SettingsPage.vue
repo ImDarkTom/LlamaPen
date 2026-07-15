@@ -158,9 +158,9 @@ const providersActions: MenuEntry[] = [
                         </div>
                     </div>
                     <ButtonPrimary
+                        text="Edit"
                         :icon="BiPencil"
-                        color="primary"
-                        type="button"
+                        :hide-text="true"
                         @click="emitter.emit('editProviderPopup', customProvider)" />
                 </li>
             </VueDraggable>
@@ -174,6 +174,8 @@ const providersActions: MenuEntry[] = [
                 <FloatingActionMenu :actions="providersActions">
                     <template #default="{ shownListLength, isOpened }">
                         <ButtonPrimary
+                            text="More options"
+                            :hide-text="true"
                             :disabled="shownListLength === 0"
                             :icon="isOpened ? BiChevronUp : BiChevronDown" />
                     </template>

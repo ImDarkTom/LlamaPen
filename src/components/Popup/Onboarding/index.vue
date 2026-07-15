@@ -3,7 +3,7 @@ import { useProviderManager } from '@/composables/useProviderManager';
 import { useConfigStore } from '@/stores/useConfigStore';
 import { useCustomProvidersStore, type CustomProvider } from '@/stores/useCustomProvidersStore';
 import { onMounted, onUnmounted, ref } from 'vue';
-import { BiArrowBack } from 'vue-icons-plus/bi';
+import { BiArrowBack, BiChevronRight } from 'vue-icons-plus/bi';
 
 const config = useConfigStore();
 const customProvidersStore = useCustomProvidersStore();
@@ -72,6 +72,10 @@ function onFinish(provider: CustomProvider) {
             <div
                 v-if="step === 1"
                 class="text-base-300">
+                <img
+                    src="/favicon.svg"
+                    alt="LlamaPen Logo"
+                    class="size-16 mx-auto mb-6" />
                 <p>
                     LlamaPen is an
                     <a
@@ -88,9 +92,11 @@ function onFinish(provider: CustomProvider) {
                     always add/change providers in the settings later.
                 </p>
 
-                <div class="pt-8 pb-4 flex flex-col gap-8 items-center justify-center">
+                <div class="pt-8 pb-4 flex flex-col gap-4 items-center justify-center">
                     <ButtonPrimary
-                        text="Setup Provider ->"
+                        text="Setup Provider"
+                        :icon="BiChevronRight"
+                        icon-pos="right"
                         @click="step = 2" />
 
                     <UITextDivider text="or" />
