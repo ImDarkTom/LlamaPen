@@ -58,6 +58,7 @@ function hide() {
 <template>
     <PopupBase
         :showing
+        :close-button="true"
         @close="hide">
         <template #title>
             <BiSolidErrorCircle class="h-full w-auto" />
@@ -95,12 +96,10 @@ function hide() {
             </div>
         </template>
         <template #buttons>
-            <button
+            <ButtonPrimary
                 v-if="currentProvider.type === 'ollama'"
-                @click="openGuide">
-                Guide
-            </button>
-            <button @click="hide">Close</button>
+                text="Setup Guide"
+                @click="openGuide" />
         </template>
     </PopupBase>
 </template>

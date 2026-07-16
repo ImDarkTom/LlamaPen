@@ -117,6 +117,5 @@ function onFinish(provider: CustomProvider) {
                 </FormAddProvider>
             </div>
         </template>
-        <template #buttons> </template>
     </PopupBase>
 </template>

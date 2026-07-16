@@ -36,7 +36,7 @@ function addCustomProvider(provider: CustomProvider) {
 
 <template>
     <PopupBase
-        :showing="isShowing"
+        v-model:showing="isShowing"
         :close-button="true"
         @close="onClose">
         <template #title> Add a provider </template>
@@ -47,6 +47,5 @@ function addCustomProvider(provider: CustomProvider) {
                 <FormAddProvider @submit="addCustomProvider" />
             </div>
         </template>
-        <template #buttons> </template>
     </PopupBase>
 </template>

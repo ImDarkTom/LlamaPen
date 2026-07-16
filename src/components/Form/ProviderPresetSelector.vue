@@ -139,6 +139,8 @@ function getPresetLabel(value: unknown) {
 const selectedPreset = defineModel<string>('selected-preset');
 
 const id = useId();
+
+const open = ref(false);
 </script>
 
 <template>
@@ -146,6 +148,7 @@ const id = useId();
         <Label :for="id">Preset</Label>
         <SelectRoot
             v-model="selectedPreset"
+            v-model:open="open"
             :id
             @update:model-value="onSelect">
             <SelectTrigger
@@ -163,7 +166,8 @@ const id = useId();
                     position="popper"
                     side="bottom"
                     :side-offset="4"
-                    :collision-padding="32">
+                    :collision-padding="32"
+                    @escape-key-down="open = false">
                     <SelectScrollUpButton class="w-full flex items-center justify-center">
                         <BiChevronUp />
                     </SelectScrollUpButton>
