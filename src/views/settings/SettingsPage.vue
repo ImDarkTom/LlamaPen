@@ -158,9 +158,9 @@ const providersActions: MenuEntry[] = [
                         </div>
                     </div>
                     <ButtonPrimary
+                        text="Edit"
                         :icon="BiPencil"
-                        color="primary"
-                        type="button"
+                        :hide-text="true"
                         @click="emitter.emit('editProviderPopup', customProvider)" />
                 </li>
             </VueDraggable>
@@ -170,14 +170,14 @@ const providersActions: MenuEntry[] = [
                     class="grow"
                     text="Add Provider"
                     :icon="BiPlus"
-                    type="button"
                     @click="emitter.emit('createProviderPopup')" />
                 <FloatingActionMenu :actions="providersActions">
                     <template #default="{ shownListLength, isOpened }">
                         <ButtonPrimary
+                            text="More options"
+                            :hide-text="true"
                             :disabled="shownListLength === 0"
-                            :icon="isOpened ? BiChevronUp : BiChevronDown"
-                            :color="shownListLength === 0 ? 'sunken' : 'primary'" />
+                            :icon="isOpened ? BiChevronUp : BiChevronDown" />
                     </template>
                 </FloatingActionMenu>
             </div>
@@ -309,8 +309,6 @@ const providersActions: MenuEntry[] = [
         <SettingsOptionCategory label="Keyboard Shortcuts">
             <ButtonPrimary
                 text="View shortcuts"
-                type="button"
-                color="primary"
                 @click="emitter.emit('shortcutsPopup')" />
         </SettingsOptionCategory>
 

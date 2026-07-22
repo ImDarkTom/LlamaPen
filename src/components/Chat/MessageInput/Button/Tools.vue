@@ -65,13 +65,11 @@ const isOpened = ref(false);
                         placeholder="Search tools..."
                         v-model="searchQuery"
                         @keydown="onKeyDown">
-                    <RouterLink
+                    <ButtonPrimary
+                        class="p-3!"
+                        type="link"
                         to="/tools"
-                        class="p-3 btn-primary!">
-                        <span class="align-middle">
-                            Manage
-                        </span>
-                    </RouterLink>
+                        text="Manage"/>
                 </div>
                 <div 
                     v-for="[toolName, tool] in searchedTools" 

@@ -3,15 +3,18 @@ import { useFloatingMenu } from '@/composables/useFloatingMenu';
 import { useConfigStore } from '@/stores/useConfigStore';
 import { onUnmounted, ref } from 'vue';
 
-const props = withDefaults(defineProps<{
-    text: string;
-    kbdShortcut?: Hotkey;
-    disabled?: boolean;
-    size? : 'tiny' | 'small' | 'medium' | 'large';
-}>(), {
-    disabled: false,
-    size: 'medium',
-});
+const props = withDefaults(
+    defineProps<{
+        text: string;
+        kbdShortcut?: Hotkey;
+        disabled?: boolean;
+        size?: 'tiny' | 'small' | 'medium' | 'large';
+    }>(),
+    {
+        disabled: false,
+        size: 'medium',
+    },
+);
 
 const config = useConfigStore();
 
@@ -28,7 +31,7 @@ const { menuPosition } = useFloatingMenu({
     menuRef,
     anchored: 'center',
     paddingPx: 8,
-    prefferedPosition: 'bottom'
+    prefferedPosition: 'bottom',
 });
 
 function showTooltip() {
@@ -55,18 +58,23 @@ onUnmounted(() => {
 </script>
 
 <template>
-    <div class="inline-block" @mouseenter="showTooltip" @mouseleave="hideTooltip">
+    <div
+        class="inline-block"
+        @mouseenter="showTooltip"
+        @mouseleave="hideTooltip">
         <div ref="buttonRef">
             <slot />
         </div>
-        <Teleport to="body" v-if="isVisible">
-            <div 
+        <Teleport
+            to="body"
+            v-if="isVisible">
+            <div
                 ref="menuRef"
-                class="absolute z-105"
+                class="absolute z-300"
                 :style="menuPosition">
                 <div
                     class="flex flex-col items-center bg-base-700 ring-base-600 ring-1 max-w-prose w-max p-2 rounded-lg shadow-md"
-                    :class="{ 
+                    :class="{
                         'text-xs font-medium px-1.5! py-0.5!': size === 'tiny',
                         'text-sm font-medium p-1.5!': size === 'small',
                         'text-md': size === 'medium',
@@ -75,9 +83,9 @@ onUnmounted(() => {
                     <span data-testid="tooltip-text">
                         {{ text }}
                     </span>
-                    
-                    <UIKeyboardShortcutRenderer 
-                        v-if="kbdShortcut" 
+
+                    <UIKeyboardShortcutRenderer
+                        v-if="kbdShortcut"
                         :hotkey="kbdShortcut" />
                 </div>
             </div>

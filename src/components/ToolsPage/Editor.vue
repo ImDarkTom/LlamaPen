@@ -96,11 +96,10 @@ const timeoutValue = computed({
             label="Query URL" 
             placeholder="https://example.com/?param={{query}}&other={{param}}" />
 
-        <button
-            class="btn-primary w-full p-3 my-2!"
-            @click="reqOptionsOpened = !reqOptionsOpened">
-            More options
-        </button>
+        <ButtonPrimary
+            class="p-3 my-2!"
+            text="More options"
+            @click="reqOptionsOpened = !reqOptionsOpened" />
         <ToolsPageToolRequestOptions 
             v-if="reqOptionsOpened" 
             :toolName="props.tool" 
@@ -149,9 +148,9 @@ const timeoutValue = computed({
                         @input="updateEnums(param, ($event.target as HTMLInputElement).value)">
                 </label>
             </div>
-            <button class="btn-primary text-center p-4" @click="addParameter">
-                Add parameter
-            </button>
+            <ButtonPrimary 
+                text="Add parameter"
+                @click="addParameter" />
         </div>
         <UITextDivider class="mt-2" text="Response" />
         <ToolsPageInputNumber

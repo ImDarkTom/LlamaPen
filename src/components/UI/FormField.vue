@@ -2,17 +2,20 @@
 import { Label } from 'reka-ui';
 import { BiHelpCircle, BiHide, BiShow } from 'vue-icons-plus/bi';
 
-withDefaults(defineProps<{
-    label: string;
-    type?: HTMLInputElement['type'];
-    tooltip?: string;
-    placeholder?: string;
-    required?: HTMLInputElement['required'];
-    list?: string;
-    disabled?: boolean;
-}>(), {
-    type: 'text',
-});
+withDefaults(
+    defineProps<{
+        label: string;
+        type?: HTMLInputElement['type'];
+        tooltip?: string;
+        placeholder?: string;
+        required?: HTMLInputElement['required'];
+        list?: string;
+        disabled?: boolean;
+    }>(),
+    {
+        type: 'text',
+    },
+);
 
 const value = defineModel();
 const id = useId();
@@ -21,7 +24,7 @@ const showingPassword = ref(false);
 </script>
 
 <template>
-    <div class="mt-2">
+    <div>
         <div class="inline-flex items-center gap-1">
             <Label :for="id">{{ label }}</Label>
             <Tooltip
@@ -32,7 +35,7 @@ const showingPassword = ref(false);
             </Tooltip>
         </div>
         <div class="flex flex-row gap-2">
-            <UIInput 
+            <UIInput
                 :type="showingPassword ? 'text' : type"
                 :placeholder
                 v-model="value"

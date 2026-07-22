@@ -4,6 +4,9 @@ import { onMounted, onUnmounted, ref } from 'vue';
 import { emitter } from '../../lib/mitt';
 import { useRouter } from 'vue-router';
 import { useProviderManager } from '@/composables/useProviderManager';
+import { useConfigStore } from '@/stores/useConfigStore';
+
+const config = useConfigStore();
 
 const { currentProvider, connectionState } = useProviderManager();
 
@@ -17,9 +20,12 @@ const currentProviderURL = computed(() => currentProvider.value.config.baseURL);
 
 onMounted(() => {
     emitter.on('openNotConnectedPopup', () => {
-        const shouldHide = localStorage.getItem('hideConnectionWarning') || 'false';
+        const shouldHide =
+            localStorage.getItem('hideConnectionWarning') === 'true' ||
+            config.flags.onboardingComplete === false ||
+            false;
 
-        if (shouldHide === 'true') {
+        if (shouldHide) {
             return;
         }
 
@@ -52,6 +58,7 @@ function hide() {
 <template>
     <PopupBase
         :showing
+        :close-button="true"
         @close="hide">
         <template #title>
             <BiSolidErrorCircle class="h-full w-auto" />
@@ -89,12 +96,10 @@ function hide() {
             </div>
         </template>
         <template #buttons>
-            <button
+            <ButtonPrimary
                 v-if="currentProvider.type === 'ollama'"
-                @click="openGuide">
-                Guide
-            </button>
-            <button @click="hide">Close</button>
+                text="Setup Guide"
+                @click="openGuide" />
         </template>
     </PopupBase>
 </template>

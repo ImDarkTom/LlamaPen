@@ -3,6 +3,7 @@ import { onMounted, onUnmounted, ref } from 'vue';
 import { emitter } from '@/lib/mitt';
 import { useCustomProvidersStore, type KeyedCustomProvider } from '@/stores/useCustomProvidersStore';
 import { useProviderManager } from '@/composables/useProviderManager';
+import { BiRefresh, BiSave, BiTrash } from 'vue-icons-plus/bi';
 
 const customProvidersStore = useCustomProvidersStore();
 const { currentProviderId, setActiveProvider } = useProviderManager();
@@ -76,7 +77,7 @@ function resetSeededToDefault() {
         @close="hide">
         <template #title> Editing {{ editingProvider.name }} </template>
         <template #body>
-            <div class="flex flex-col mb-8">
+            <div class="flex flex-col gap-2 mb-8">
                 <PopupAddProviderFormatSelector v-model="editingProvider.format" />
                 <hr class="text-base-300 mt-2" />
                 <UIFormField
@@ -98,22 +99,21 @@ function resetSeededToDefault() {
             </div>
         </template>
         <template #buttons>
-            <button
-                class="ml-auto"
-                @click="editProvider">
-                Save
-            </button>
-            <button
+            <ButtonPrimary
+                text="Save"
+                :icon="BiSave"
+                @click="editProvider" />
+            <ButtonPrimary
                 v-if="editingProvider.seededDefault"
-                class="ml-auto"
-                @click="resetSeededToDefault">
-                Reset to default
-            </button>
-            <button
+                text="Reset to default"
+                :icon="BiRefresh"
+                @click="resetSeededToDefault" />
+            <ButtonPrimary
+                text="Remove"
+                :icon="BiTrash"
+                color="danger"
                 :disabled="customProvidersStore.providers.length === 1"
-                @click="removeCustomProvider">
-                Remove
-            </button>
+                @click="removeCustomProvider" />
         </template>
     </PopupBase>
 </template>
