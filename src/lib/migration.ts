@@ -8,6 +8,11 @@ export const migrations: Migrations[] = [
     // v0 -> v1: Move ollamaUrl to ollama.url
     (store) => {
         store.$patch((state: any) => {
+            state.ollama ??= {};
+            state.ollama.modelCapabilities ??= {
+                autoload: true,
+                alwaysAutoload: false,
+            };
             state.ollama.url = state.ollamaUrl;
             delete state.ollamaUrl;
         });

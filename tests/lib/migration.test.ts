@@ -83,6 +83,31 @@ describe('migration tests', () => {
         });
     });
 
+    it('migrates v0 config without nested ollama config', () => {
+        localStorage.setItem('config', JSON.stringify({
+            ollamaUrl: 'http://v0-ollama-url.test:11434',
+        }));
+
+        const config = useConfigStore();
+        const providerStore = useCustomProvidersStore();
+
+        expect(config._version).toBe(3);
+        expect((config as any).ollamaUrl).toBeUndefined();
+
+        expect(config.provider.ollama).toEqual({
+            autoloadCapabilities: true,
+            alwaysAutoloadCapabilities: false,
+        });
+
+        expect(providerStore.providers.find((p: KeyedCustomProvider) => p.key === 'ollama')).toMatchObject({
+            name: 'Ollama',
+            apiKey: 'ollama',
+            format: 'ollama',
+            baseURL: 'http://v0-ollama-url.test:11434',
+            seededDefault: true,
+        });
+    });
+
     it('preserves existing providers when seeding ollama', () => {
         localStorage.setItem('customProvidersStore', JSON.stringify({
             providers: [
