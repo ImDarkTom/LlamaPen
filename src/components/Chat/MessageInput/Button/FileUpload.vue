@@ -10,7 +10,11 @@ defineProps<{
 }>();
 
 const selectedModelHasVision = computed(() => {
-    return selectedModelCapabilities.value.includes('vision')
+    return selectedModelCapabilities.value.includes('vision') || selectedModelCapabilities.value.includes('unavailable');
+});
+
+const selectedModelCapabilitiesUnavailable = computed(() => {
+    return selectedModelCapabilities.value.includes('unavailable');
 });
 
 function onClick(e: MouseEvent) {
@@ -27,7 +31,7 @@ function onClick(e: MouseEvent) {
         :class="{ 
             'opacity-50 cursor-not-allowed': !selectedModelHasVision,
         }"
-        :title="selectedModelHasVision ? 'Upload file(s)' : 'Selected model does not have vision capabilities'"
+        :title="selectedModelCapabilitiesUnavailable ? 'Upload file(s) - model capabilities unknown' : selectedModelHasVision ? 'Upload file(s)' : 'Selected model does not have vision capabilities'"
     >
         <label 
             for="file-upload" 

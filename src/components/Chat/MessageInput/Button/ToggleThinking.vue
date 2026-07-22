@@ -9,7 +9,13 @@ const config = useConfigStore();
 
 const model = defineModel()
 
-const selectedModelCanThink = computed(() => selectedModelCapabilities.value.includes('reasoning'));
+const selectedModelCanThink = computed(() => {
+    return selectedModelCapabilities.value.includes('reasoning') || selectedModelCapabilities.value.includes('unavailable');
+});
+
+const selectedModelCapabilitiesUnavailable = computed(() => {
+    return selectedModelCapabilities.value.includes('unavailable');
+});
 
 watch(selectedModelCanThink, () => {
     if (selectedModelCanThink.value === false) {
@@ -31,8 +37,9 @@ watch(selectedAlwaysReasons, () => {
 });
 
 const buttonHoverText = computed<string>(() => {
-    if (!selectedModelCanThink.value) return 'Selected model does not have thinking capabilities.';
-    else if (selectedAlwaysReasons.value) return 'Thinking cannot be disabled for his model.';
+    if (selectedModelCapabilitiesUnavailable.value) return 'Model capabilities unknown.';
+    else if (!selectedModelCanThink.value) return 'Selected model does not have thinking capabilities.';
+    else if (selectedAlwaysReasons.value) return 'Thinking cannot be disabled for this model.';
     else return 'Enable thinking.'
 });
 
