@@ -108,7 +108,7 @@ function onFinish(provider: CustomProvider) {
             </div>
             <div v-else>
                 <FormAddProvider
-                    add-button-text="Finish"
+                    add-button-text="Finish (reloads page)"
                     @submit="onFinish">
                     <ButtonPrimary
                         text="Back"
