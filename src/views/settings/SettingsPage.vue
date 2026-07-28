@@ -148,6 +148,7 @@ const providersActions: MenuEntry[] = [
                     </div>
                     <ButtonPrimary
                         text="Edit"
+                        class="p-2"
                         :icon="BiPencil"
                         :hide-text="true"
                         @click="emitter.emit('editProviderPopup', customProvider)" />
@@ -156,7 +157,7 @@ const providersActions: MenuEntry[] = [
 
             <div class="flex flex-row gap-2 min-w-full">
                 <ButtonPrimary
-                    class="grow"
+                    class="grow p-2"
                     text="Add Provider"
                     :icon="BiPlus"
                     @click="emitter.emit('createProviderPopup')" />
@@ -164,6 +165,7 @@ const providersActions: MenuEntry[] = [
                     <template #default="{ shownListLength, isOpened }">
                         <ButtonPrimary
                             text="More options"
+                            class="p-2"
                             :hide-text="true"
                             :disabled="shownListLength === 0"
                             :icon="isOpened ? BiChevronUp : BiChevronDown" />
@@ -280,13 +282,14 @@ const providersActions: MenuEntry[] = [
         <SettingsOptionCategory label="Keyboard Shortcuts">
             <ButtonPrimary
                 text="View shortcuts"
+                class="p-2"
                 @click="emitter.emit('shortcutsPopup')" />
         </SettingsOptionCategory>
 
         <SettingsOptionCategory label="Data">
             <ButtonPrimary
                 text="Clear all chats"
-                type="button"
+                class="p-2"
                 color="danger"
                 :icon="BiTrash"
                 @click="clearChats" />
@@ -299,7 +302,7 @@ const providersActions: MenuEntry[] = [
             <ButtonPrimary
                 v-if="needRefresh"
                 text="Reload"
-                type="button"
+                class="p-2"
                 :icon="BiRefresh"
                 @click="updateServiceWorker()" />
         </SettingsOptionCategory>

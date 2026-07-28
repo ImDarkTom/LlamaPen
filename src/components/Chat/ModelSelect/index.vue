@@ -10,6 +10,7 @@ import { emitter } from '@/lib/mitt';
 import { useProviderManager, type ModelInfo } from '@/composables/useProviderManager';
 import useUIStore from '@/stores/useUiStore';
 import { useConfigStore } from '@/stores/useConfigStore';
+import ExternalLink from '@/components/ToolsPage/ExternalLink.vue';
 
 const config = useConfigStore();
 
@@ -201,9 +202,10 @@ const searchInputId = useId();
                 role="listbox">
                 <!-- Search bar -->
                 <div
-                    class="flex flex-row w-full h-10 rounded-lg overflow-hidden bg-base-600 focus-within:ring ring-base-500 shadow-elevation-1">
+                    class="flex flex-row w-full h-10 rounded-sm overflow-hidden bg-base-600 focus-within:ring ring-base-500 shadow-elevation-1">
                     <label :for="searchInputId">
                         <BiSearch class="h-full ml-3 size-4" />
+                        <span class="sr-only">Search for a model</span>
                     </label>
                     <input
                         v-model="searchQuery"
@@ -211,7 +213,6 @@ const searchInputId = useId();
                         ref="searchBarRef"
                         type="search"
                         placeholder="Search for a model..."
-                        aria-label="Search for a model..."
                         aria-controls="model-list"
                         :id="searchInputId"
                         :class="{ 'cursor-not-allowed': !isConnected }"
@@ -245,6 +246,7 @@ const searchInputId = useId();
                     </span>
                     <ButtonPrimary
                         text="Retry"
+                        class="p-2"
                         :icon="BiRefresh"
                         @click="refreshAndLoadModels" />
                 </div>
@@ -257,13 +259,11 @@ const searchInputId = useId();
                     v-else-if="queriedModelList.length === 0 && searchQuery === ''"
                     class="flex flex-col w-full p-4 justify-center items-center">
                     <span>No models found.</span>
-                    <a
+                    <ExternalLink
                         v-if="currentProvider.type === 'ollama'"
-                        href="https://ollama.com/search"
-                        target="_blank"
-                        class="text-secondary hover:underline">
+                        href="https://ollama.com/search">
                         Find on Ollama Library
-                    </a>
+                    </ExternalLink>
                 </div>
                 <div
                     v-else-if="sortedItems.length === 0"

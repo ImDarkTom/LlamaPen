@@ -1,5 +1,5 @@
 <script setup lang="ts">
-import { BiDotsHorizontalRounded, BiSolidWrench, BiWrench } from 'vue-icons-plus/bi';
+import { BiPencil, BiSolidWrench, BiWrench } from 'vue-icons-plus/bi';
 import useToolsStore from '@/stores/useToolsStore';
 import { computed, ref } from 'vue';
 import { useConfigStore } from '@/stores/useConfigStore';
@@ -64,37 +64,40 @@ const isOpened = ref(false);
             <div class="flex flex-col">
                 <div class="flex flex-row gap-2 mb-2">
                     <input
-                        class="border-2 border-primary focus:border-base-400 w-full rounded-lg h-6 box-content p-3 outline-0" 
+                        class="border-2 border-primary focus:border-base-400 w-full rounded-md box-content p-2 outline-0" 
                         type="text" 
                         placeholder="Search tools..."
                         v-model="searchQuery"
                         @keydown="onKeyDown">
                     <ButtonPrimary
-                        class="p-3!"
                         type="link"
                         to="/tools"
+                        class="p-2"
                         text="Manage"/>
                 </div>
                 <div 
                     v-for="[toolName, tool] in searchedTools" 
                     :key="toolName"
-                    class="hover:bg-base-600 transition-quick rounded-md">
+                    class="hover:bg-base-600 rounded-md">
                     <label class="cursor-pointer">
-                        <div class="flex flex-row items-center ml-3 select-none ">
+                        <div class="flex flex-row gap-3 items-center ml-3 select-none p-1">
                             <input
-                                class="size-5 shrink-0 accent-primary hover:accent-secondary transition-quick"
+                                class="size-5 shrink-0 accent-primary hover:accent-primary-hover active:accent-primary-active"
                                 type="checkbox" 
                                 :checked="toolsStore.toggled.includes(toolName)" 
                                 @change="toggleSelection(toolName)">
-                            <div class="flex flex-col ml-3">
-                                <span class="text-base-100 font-medium">{{ toolName }}</span>
-                                <span>{{ tool.description || '<blank description>' }}</span>
+                            <div class="flex flex-col">
+                                <span class="text-base-100 text-sm font-medium">{{ toolName }}</span>
+                                <span class="text-xs text-base-300">{{ tool.description || '<blank description>' }}</span>
                             </div>
-                            <RouterLink :to="`/tools/${toolName}`" class="ml-auto">
-                                <div class="ring-base-400 hover:ring-primary ring-1 p-2 rounded-md transition-quick ">
-                                    <BiDotsHorizontalRounded />
-                                </div>
-                            </RouterLink>
+                            <ButtonPrimary
+                                type="link"
+                                color="ghost"
+                                class="ml-auto p-2"
+                                text="Edit"
+                                :hide-text="true"
+                                :to="`/tools/${toolName}`"
+                                :icon="BiPencil" />
                         </div>
                     </label>
                 </div>

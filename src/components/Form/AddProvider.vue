@@ -98,8 +98,8 @@ const showFooterButtons = computed(() => selectedPreset.value || !!slots.default
 
             <div class="ml-auto">
                 <ButtonPrimary
+                    class="w-fit p-3"
                     :text="addButtonText"
-                    class="w-fit"
                     :icon="BiPlus"
                     :disabled="!newProvider.name.trim() || !newProvider.baseURL.trim() || !newProvider.apiKey.trim()"
                     @click="addCustomProvider" />

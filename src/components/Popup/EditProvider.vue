@@ -101,17 +101,20 @@ function resetSeededToDefault() {
         <template #buttons>
             <ButtonPrimary
                 text="Save"
+                class="p-3"
                 :icon="BiSave"
                 @click="editProvider" />
             <ButtonPrimary
                 v-if="editingProvider.seededDefault"
                 text="Reset to default"
+                class="p-3"
                 :icon="BiRefresh"
                 @click="resetSeededToDefault" />
             <ButtonPrimary
                 text="Remove"
-                :icon="BiTrash"
                 color="danger"
+                class="p-3"
+                :icon="BiTrash"
                 :disabled="customProvidersStore.providers.length === 1"
                 @click="removeCustomProvider" />
         </template>

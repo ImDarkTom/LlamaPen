@@ -36,16 +36,16 @@ z-99 - z-100: Popup
 
     --transition-duration: 0.125s;
 
-    --light-primary: oklch(0.76 0.13 266);
-    --light-secondary: oklch(0.76 0.13 86);
+    --light-primary-hover: oklch(0.83 0.13 266);
+    --light-primary-active: oklch(0.9 0.13 266);
 
     --light-danger: oklch(0.7 0.13 30);
     --light-warning: oklch(0.7 0.13 100);
     --light-success: oklch(0.7 0.13 160);
     --light-info: oklch(0.7 0.13 260);
 
-    --dark-primary: oklch(0.4 0.13 266);
-    --dark-secondary: oklch(0.4 0.13 86);
+    --dark-primary-hover: oklch(0.69 0.13 266);
+    --dark-primary-active: oklch(0.62 0.13 266);
 
     --dark-danger: oklch(0.5 0.13 30);
     --dark-warning: oklch(0.5 0.13 100);
@@ -72,6 +72,32 @@ body:not([data-native-scrollbar]) {
 
 /* Themes */
 @layer base {
+    html[theme='light'],
+    html[theme='mono-light'],
+    html[theme='legacy-light'] {
+        --color-primary-hover: var(--dark-primary-hover);
+        --color-primary-active: var(--dark-primary-active);
+
+        --color-danger: var(--dark-danger);
+        --color-warning: var(--dark-warning);
+        --color-success: var(--dark-success);
+        --color-info: var(--dark-info);
+    }
+
+    html[theme='mono-dark'],
+    html[theme='mono-dark'],
+    html[theme='amoled'],
+    html[theme='legacy-dark'],
+    html[theme='legacy-mono-dark'] {
+        --color-primary-hover: var(--light-primary-hover);
+        --color-primary-active: var(--light-primary-active);
+
+        --color-danger: var(--light-danger);
+        --color-warning: var(--light-warning);
+        --color-success: var(--light-success);
+        --color-info: var(--light-info);
+    }
+
     html[theme='light'] {
         --color-base-600: #ffffff;
         --color-base-700: #fcfcfc;
@@ -83,13 +109,6 @@ body:not([data-native-scrollbar]) {
         --color-base-300: oklch(0.469 0.096 268.61);
         --color-base-200: oklch(0.391 0.09 267.52);
         --color-base-100: oklch(0.191 0.038 268.72);
-
-        --color-primary: var(--dark-primary);
-        --color-secondary: var(--dark-secondary);
-        --color-danger: var(--dark-danger);
-        --color-warning: var(--dark-warning);
-        --color-success: var(--dark-success);
-        --color-info: var(--dark-info);
     }
 
     html[theme='mono-dark'] {
@@ -103,13 +122,6 @@ body:not([data-native-scrollbar]) {
         --color-base-300: var(--color-neutral-300);
         --color-base-200: var(--color-neutral-200);
         --color-base-100: var(--color-neutral-100);
-
-        --color-primary: var(--light-primary);
-        --color-secondary: var(--light-secondary);
-        --color-danger: var(--light-danger);
-        --color-warning: var(--light-warning);
-        --color-success: var(--light-success);
-        --color-info: var(--light-info);
     }
 
     html[theme='mono-light'] {
@@ -123,13 +135,6 @@ body:not([data-native-scrollbar]) {
         --color-base-300: var(--color-neutral-700);
         --color-base-200: var(--color-neutral-800);
         --color-base-100: var(--color-neutral-900);
-
-        --color-primary: var(--dark-primary);
-        --color-secondary: var(--dark-secondary);
-        --color-danger: var(--dark-danger);
-        --color-warning: var(--dark-warning);
-        --color-success: var(--dark-success);
-        --color-info: var(--dark-info);
     }
 
     html[theme='amoled'] {
@@ -143,13 +148,6 @@ body:not([data-native-scrollbar]) {
         --color-base-300: oklch(0.5 0.01 266);
         --color-base-400: oklch(0.4 0.01 266);
         --color-base-500: oklch(0.3 0.01 266);
-
-        --color-primary: var(--light-primary);
-        --color-secondary: var(--light-secondary);
-        --color-danger: var(--light-danger);
-        --color-warning: var(--light-warning);
-        --color-success: var(--light-success);
-        --color-info: var(--light-info);
     }
 
     html[theme='legacy-dark'] {
@@ -163,13 +161,6 @@ body:not([data-native-scrollbar]) {
         --color-base-300: oklch(0.5 0.13 266);
         --color-base-400: oklch(0.4 0.13 266);
         --color-base-500: oklch(0.3 0.13 266);
-
-        --color-primary: var(--light-primary);
-        --color-secondary: var(--light-secondary);
-        --color-danger: var(--light-danger);
-        --color-warning: var(--light-warning);
-        --color-success: var(--light-success);
-        --color-info: var(--light-info);
     }
 
     html[theme='legacy-mono-dark'] {
@@ -183,13 +174,6 @@ body:not([data-native-scrollbar]) {
         --color-base-300: oklch(0.5 0.01 266);
         --color-base-200: oklch(0.76 0.01 266);
         --color-base-100: oklch(0.96 0.01 266);
-
-        --color-primary: var(--light-primary);
-        --color-secondary: var(--light-secondary);
-        --color-danger: var(--light-danger);
-        --color-warning: var(--light-warning);
-        --color-success: var(--light-success);
-        --color-info: var(--light-info);
     }
 
     html[theme='legacy-light'] {
@@ -203,13 +187,6 @@ body:not([data-native-scrollbar]) {
         --color-base-300: oklch(0.5 0.13 266);
         --color-base-400: oklch(0.6 0.13 266);
         --color-base-500: oklch(0.7 0.13 266);
-
-        --color-primary: var(--dark-primary);
-        --color-secondary: var(--dark-secondary);
-        --color-danger: var(--dark-danger);
-        --color-warning: var(--dark-warning);
-        --color-success: var(--dark-success);
-        --color-info: var(--dark-info);
     }
 }
 
@@ -227,8 +204,14 @@ body:not([data-native-scrollbar]) {
     --color-base-900: oklch(0.205 0.038 267.11);
     --color-base-950: oklch(0.145 0.033 264.72);
 
-    --color-primary: var(--light-primary);
-    --color-secondary: var(--light-secondary);
+    --color-links: oklch(0.76 0.13 86);
+
+    --color-primary: oklch(0.76 0.13 266);
+    --color-on-primary: oklch(0.269 0.048 264.71);
+
+    --color-primary-hover: var(--light-primary-hover);
+    --color-primary-active: var(--light-primary-active);
+
     --color-danger: var(--light-danger);
     --color-warning: var(--light-warning);
     --color-success: var(--light-success);
@@ -289,14 +272,6 @@ body:not([data-native-scrollbar]) {
 /* Utilities */
 @utility duration-dynamic {
     transition-duration: var(--transition-duration);
-}
-
-@utility transition-quick {
-    @apply transition-all duration-dynamic hover:duration-0;
-}
-
-@utility btn-ghost {
-    @apply bg-base-700 group-[.active]:bg-base-600 hover:bg-base-600 group-[.active]:text-base-100 p-2 rounded-md cursor-pointer;
 }
 
 @utility tools-input {

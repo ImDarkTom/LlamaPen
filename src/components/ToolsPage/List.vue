@@ -1,7 +1,15 @@
 <script setup lang="ts">
 import router from '@/lib/router';
 import useToolsStore from '@/stores/useToolsStore';
-import { BiCheckCircle, BiDotsVerticalRounded, BiMinusCircle, BiPencil, BiPlus, BiRefresh, BiTrash } from 'vue-icons-plus/bi';
+import {
+    BiCheckCircle,
+    BiDotsVerticalRounded,
+    BiMinusCircle,
+    BiPencil,
+    BiPlus,
+    BiRefresh,
+    BiTrash,
+} from 'vue-icons-plus/bi';
 import { RouterLink } from 'vue-router';
 
 const toolsStore = useToolsStore();
@@ -9,10 +17,8 @@ const toolsStore = useToolsStore();
 function newTool() {
     let newToolName = prompt('Enter new tool name: (lowercase & no spaces): ');
     if (!newToolName) return;
-    
-    newToolName = newToolName
-        .toLowerCase()
-        .replace(/ /g, '_');
+
+    newToolName = newToolName.toLowerCase().replace(/ /g, '_');
 
     toolsStore.tools[newToolName] = {
         description: '',
@@ -25,8 +31,8 @@ function newTool() {
             accept: '*/*',
             contentType: 'application/json',
             userAgent: 'LlamaPen/1.0 (user tool call)',
-        }
-    }
+        },
+    };
 
     router.push(`/tools/${newToolName}`);
 }
@@ -34,10 +40,10 @@ function newTool() {
 const toolsActions: MenuEntry[] = [
     {
         type: 'text',
-        text: () => toolsStore.toggled.length > 0 ? 'Disable all' : 'Enable all',
+        text: () => (toolsStore.toggled.length > 0 ? 'Disable all' : 'Enable all'),
         onClick: toggleAll,
         icon: BiRefresh,
-        category: 'general'
+        category: 'general',
     },
     {
         type: 'divider',
@@ -47,8 +53,8 @@ const toolsActions: MenuEntry[] = [
         text: 'Reset to default',
         onClick: resetToDefault,
         icon: BiTrash,
-        category: 'danger'
-    }
+        category: 'danger',
+    },
 ];
 
 function toggleAll() {
@@ -60,7 +66,7 @@ function toggleAll() {
 }
 
 function resetToDefault() {
-    if (!confirm("Are you sure you want to delete all custom tools (page will refresh)?")) return;
+    if (!confirm('Are you sure you want to delete all custom tools (page will refresh)?')) return;
     toolsStore.resetToDefault();
     location.reload();
 }
@@ -76,20 +82,20 @@ const itemActions: MenuEntry<string>[] = [
         type: 'text',
         text: 'Rename',
         onClick: renameItem,
-        icon: BiPencil
+        icon: BiPencil,
     },
     {
         type: 'text',
         text: 'Delete',
         onClick: deleteItem,
         icon: BiTrash,
-        category: 'danger'
-    }
+        category: 'danger',
+    },
 ];
 
 function toggleTool(toolName: string) {
     if (toolsStore.toggled.includes(toolName)) {
-        toolsStore.toggled = toolsStore.toggled.filter(tool => tool !== toolName);
+        toolsStore.toggled = toolsStore.toggled.filter((tool) => tool !== toolName);
     } else {
         toolsStore.toggled.push(toolName);
     }
@@ -105,10 +111,8 @@ function deleteItem(toolName: string) {
 function renameItem(toolName: string) {
     let newToolName = prompt('Rename tool to (lowercase & no spaces): ', toolName);
     if (!newToolName) return;
-    
-    newToolName = newToolName
-        .toLowerCase()
-        .replace(/ /g, '_');
+
+    newToolName = newToolName.toLowerCase().replace(/ /g, '_');
 
     const allTools = toolsStore.tools;
     const oldTool = allTools[toolName];
@@ -119,33 +123,36 @@ function renameItem(toolName: string) {
     delete toolsStore.tools[toolName];
 
     if (toolsStore.toggled.includes(toolName)) {
-        toolsStore.toggled = toolsStore.toggled.map(tool => tool === toolName ? newToolName : tool);
+        toolsStore.toggled = toolsStore.toggled.map((tool) => (tool === toolName ? newToolName : tool));
     }
 
     router.push(`/tools/${newToolName}`);
 }
-
 </script>
 
 <template>
     <div class="h-4/12 md:h-full w-full md:w-96 flex flex-col gap-2 p-2 relative overflow-y-auto">
-
         <div class="flex flex-row gap-2 justify-between text-base-300 *:hover:text-base-100">
-            <button 
-                class="bg-base-700 p-2 rounded-md cursor-pointer grow shrink" 
-                @click="newTool">
-                <BiPlus class="inline mr-1" />
-                <span class="align-middle">New Tool</span>
-            </button>
-            <FloatingActionMenu :actions="toolsActions" anchored="left">
-                <button class="btn-ghost">
-                    <BiDotsVerticalRounded />
-                </button>
+            <ButtonPrimary
+                class="grow shrink"
+                color="tertiary"
+                text="New Tool"
+                :icon="BiPlus"
+                @click="newTool" />
+            <FloatingActionMenu
+                :actions="toolsActions"
+                anchored="left">
+                <ButtonPrimary
+                    color="tertiary"
+                    text="More"
+                    class="p-2"
+                    :hideText="true"
+                    :icon="BiDotsVerticalRounded" />
             </FloatingActionMenu>
         </div>
 
         <UITextDivider text="Added Tools" />
-        <RouterLink 
+        <RouterLink
             v-for="toolName in Object.keys(toolsStore.tools)"
             :to="`/tools/${toolName}`"
             exactActiveClass="*:bg-base-950! [&_span]:text-base-100">
@@ -157,8 +164,13 @@ function renameItem(toolName: string) {
                     <BiMinusCircle v-else />
                     <span class="text-sm font-medium">{{ toolName }}</span>
                 </div>
-                <FloatingActionMenu :passArgs="toolName" :actions="itemActions" anchored="left">
-                    <button @click.prevent class="hover:bg-base-600 group-[.active]:bg-base-600 group-[.active]:text-base-100 p-1.5 rounded-sm cursor-pointer">
+                <FloatingActionMenu
+                    :passArgs="toolName"
+                    :actions="itemActions"
+                    anchored="left">
+                    <button
+                        @click.prevent
+                        class="hover:bg-base-600 group-[.active]:bg-base-600 group-[.active]:text-base-100 p-1.5 rounded-sm cursor-pointer">
                         <BiDotsVerticalRounded />
                     </button>
                 </FloatingActionMenu>

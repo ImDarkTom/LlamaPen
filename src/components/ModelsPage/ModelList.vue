@@ -15,7 +15,7 @@ const { setModelHidden } = useUIStore();
 const { isConnected, isLoading, allModelIds, loadedModelIds, currentProvider } = useProviderManager();
 
 const props = defineProps<{
-    modelsList: ModelInfo[],
+    modelsList: ModelInfo[];
 }>();
 
 const emit = defineEmits<{
@@ -27,7 +27,7 @@ const refreshModelList = () => emit('refreshModelList');
 const isHidden = (modelId: string) => config.chat.hiddenModels.includes(modelId);
 const isLoadedInMemory = (modelId: string) => loadedModelIds.value.has(modelId);
 
-const modelActions = computed<MenuEntry<{ modelId: string, displayName: string }>[]>(() => {
+const modelActions = computed<MenuEntry<{ modelId: string; displayName: string }>[]>(() => {
     const modelMemory = currentProvider.value.features.modelMemory;
     const modelAdmin = currentProvider.value.features.modelAdmin;
 
@@ -41,11 +41,12 @@ const modelActions = computed<MenuEntry<{ modelId: string, displayName: string }
         },
         {
             type: 'text',
-            text: ({ modelId }) => isLoadedInMemory(modelId) ? 'Unload from memory' : 'Load into memory',
+            text: ({ modelId }) => (isLoadedInMemory(modelId) ? 'Unload from memory' : 'Load into memory'),
             onClick: ({ modelId }) => toggleModelLoaded(modelId),
             icon: {
                 type: 'factory',
-                func: ({ modelId }: { modelId: string }) => (isLoadedInMemory(modelId) ? IconMemoryUnload : Fa6Memory) as IconType
+                func: ({ modelId }: { modelId: string }) =>
+                    (isLoadedInMemory(modelId) ? IconMemoryUnload : Fa6Memory) as IconType,
             },
             condition: modelMemory !== undefined,
         },
@@ -55,11 +56,11 @@ const modelActions = computed<MenuEntry<{ modelId: string, displayName: string }
         },
         {
             type: 'text',
-            text: ({ modelId }) => isHidden(modelId) ? 'Unhide model' : 'Hide model',
+            text: ({ modelId }) => (isHidden(modelId) ? 'Unhide model' : 'Hide model'),
             onClick: ({ modelId }) => setModelHidden(modelId, isHidden(modelId)),
             icon: {
                 type: 'factory',
-                func: ({ modelId }: { modelId: string }) => isHidden(modelId) ? BiShow : BiHide
+                func: ({ modelId }: { modelId: string }) => (isHidden(modelId) ? BiShow : BiHide),
             },
         },
         {
@@ -176,17 +177,18 @@ const hideAll = () => {
 
 const searchQuery = ref('');
 
-const queriedModels = computed(() => props.modelsList.filter((m) => {
-    return m.displayName.includes(searchQuery.value) ||
-        m.info.id.includes(searchQuery.value)
-}));
+const queriedModels = computed(() =>
+    props.modelsList.filter((m) => {
+        return m.displayName.includes(searchQuery.value) || m.info.id.includes(searchQuery.value);
+    }),
+);
 
 const batchActions: MenuEntry[] = [
     {
         type: 'text',
         text: 'Hide all',
         icon: BiHide,
-        onClick: hideAll
+        onClick: hideAll,
     },
     {
         type: 'text',
@@ -200,60 +202,64 @@ const batchActions: MenuEntry[] = [
 <template>
     <div class="h-4/12 md:h-full w-full md:md:w-96 rounded-lg md:rounded-r-none flex flex-col gap-2 p-2 relative">
         <div class="flex flex-col gap-2 overflow-y-auto md:pr-3">
-            <div class="flex flex-row gap-2" :class="{ 'pointer-events-none': !isConnected }">
-                <input 
-                    type="text" 
-                    v-model="searchQuery" 
-                    placeholder="Search..." 
+            <div
+                class="flex flex-row gap-2"
+                :class="{ 'pointer-events-none': !isConnected }">
+                <input
+                    type="text"
+                    v-model="searchQuery"
+                    placeholder="Search..."
                     :disabled="!isConnected"
-                    class="bg-base-800 p-2 rounded-md outline-none focus:ring-1 ring-base-300 ring-inset w-full">
+                    class="bg-base-800 hover:bg-base-700 p-2 rounded-md outline-none focus:ring-1 ring-inset ring-base-500 w-full" />
                 <FloatingActionMenu :actions="batchActions">
-                    <button class="btn-ghost">
-                        <BiDotsVerticalRounded />
-                    </button>
+                    <ButtonPrimary
+                        text="More"
+                        color="tertiary"
+                        class="p-2"
+                        :hideText="true"
+                        :icon="BiDotsVerticalRounded">
+                    </ButtonPrimary>
                 </FloatingActionMenu>
             </div>
 
-            <div v-if="!isConnected && !isLoading">
-                Not connected to '{{ currentProvider.name }}'
-            </div>
-            <div v-else-if="modelsList.length === 0">
-                No models found
-            </div>
-            <div v-else-if="queriedModels.length === 0">
-                No models match search
-            </div>
-            <RouterLink 
+            <div v-if="!isConnected && !isLoading">Not connected to '{{ currentProvider.name }}'</div>
+            <div v-else-if="modelsList.length === 0">No models found</div>
+            <div v-else-if="queriedModels.length === 0">No models match search</div>
+            <RouterLink
                 v-for="{ info: { id: modelId }, hidden, displayName } in queriedModels"
-                exactActiveClass="router-link-exact-active"
-                :to="`/models/installed/${modelId}`"
                 class="group"
+                exactActiveClass="router-link-exact-active"
+                :key="modelId"
+                :to="`/models/installed/${modelId}`"
                 :class="{ 'opacity-75': hidden }">
-                <div 
-                    class="group-[.router-link-exact-active]:bg-base-950! flex flex-row items-center gap-2 p-2 rounded-md hover:bg-base-800">
-                    <IconModel :name="modelId ?? 'Unknown'" class="size-6" />
+                <div
+                    class="group-[.router-link-exact-active]:bg-base-800! flex flex-row items-center gap-2 p-2 rounded-md hover:bg-base-900 active:scale-98 transition-discrete duration-dynamic">
+                    <IconModel
+                        :name="modelId ?? 'Unknown'"
+                        class="size-6" />
                     <span class="text-sm font-medium">
                         {{ displayName }}
                     </span>
-                    
+
                     <div class="grow"></div>
-                    <Tooltip 
-                        v-if="hidden" 
-                        text="Hidden" 
+                    <Tooltip
+                        v-if="hidden"
+                        text="Hidden"
                         class="flex items-center justify-center">
                         <BiHide class="h-full" />
                     </Tooltip>
-                    <Tooltip 
-                        v-if="isLoadedInMemory(modelId)" 
-                        text="Loaded in memory" 
+                    <Tooltip
+                        v-if="isLoadedInMemory(modelId)"
+                        text="Loaded in memory"
                         class="flex items-center justify-center">
                         <IconMemoryLoad class="h-full" />
                     </Tooltip>
-                    <FloatingActionMenu 
+                    <FloatingActionMenu
                         anchored="left"
-                        :passArgs="{ modelId, displayName }" 
+                        :passArgs="{ modelId, displayName }"
                         :actions="modelActions">
-                        <button @click.prevent
+                        <button
+                            @click.prevent
                             class="hover:bg-base-700 group-[.active]:bg-base-600 group-[.active]:text-base-100 p-1.5 rounded-sm cursor-pointer">
                             <BiDotsVerticalRounded />
                         </button>

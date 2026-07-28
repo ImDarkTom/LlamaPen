@@ -1,8 +1,9 @@
 <script setup lang="ts">
 import useToolsStore from '@/stores/useToolsStore';
 import { computed } from 'vue';
-import { BiError, BiLinkExternal, BiTrash } from 'vue-icons-plus/bi';
+import { BiError, BiTrash } from 'vue-icons-plus/bi';
 import { ref } from 'vue';
+import ExternalLink from './ExternalLink.vue';
 
 const props = defineProps<{
     tool: string;
@@ -87,7 +88,7 @@ const timeoutValue = computed({
             <input 
                 type="checkbox" 
                 v-model="selectedTool.userConfirmation"
-                class="accent-secondary">
+                class="accent-primary hover:accent-primary-hover active:accent-primary-active">
             <span class="ml-2">Require user confirmation?</span>
         </label>
 
@@ -127,11 +128,13 @@ const timeoutValue = computed({
                         v-model="param.name" 
                         placeholder="Parameter name (e.g. page)" 
                         class="w-full font-medium" />
-                    <button 
-                        class="bg-danger text-base-800 p-2 cursor-pointer aspect-square rounded-md hover hover:saturate-200 transition-quick"
-                        @click="deleteParam(param.name)">
-                        <BiTrash class="mx-auto" />
-                    </button>
+                    <ButtonPrimary
+                        color="danger"
+                        text="Delete"
+                        class="p-3"
+                        :hideText="true"
+                        :icon="BiTrash"
+                        @click="deleteParam(param.name)" />
                 </div>
                 <div class="flex flex-row gap-2 w-full">
                     <select class="p-4 tools-input" v-model="param.type">
@@ -150,6 +153,7 @@ const timeoutValue = computed({
             </div>
             <ButtonPrimary 
                 text="Add parameter"
+                class="p-2"
                 @click="addParameter" />
         </div>
         <UITextDivider class="mt-2" text="Response" />
@@ -160,10 +164,9 @@ const timeoutValue = computed({
         <h2 class="mt-2">Formatting</h2>
         <p class="mb-2 text-sm">
             If the response comes as JSON, you may choose to format it before returning it to the LLM. If not leaving it blank will return the raw response.
-            <a href="https://mustache.github.io/mustache.5.html" target="_blank" class="text-secondary underline w-fit">
-                <span class="items-center">Full formatting guide</span>
-                <BiLinkExternal class="inline size-3 ml-0.5" />
-            </a>.
+            <ExternalLink href="https://mustache.github.io/mustache.5.html">
+                Full formatting guide
+            </ExternalLink>.
         </p>
         <textarea
             class="p-4 min-h-64 tools-input resize-y"

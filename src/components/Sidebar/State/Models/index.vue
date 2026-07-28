@@ -2,7 +2,7 @@
 import { useProviderManager } from '@/composables/useProviderManager';
 import useDownloadsStore from '@/stores/useDownloadsStore';
 import { BiCheck, BiCloud, BiData, BiDownload } from 'vue-icons-plus/bi';
-import { computed } from "vue";
+import { computed } from 'vue';
 
 const providerStore = useProviderManager();
 const downloadStore = useDownloadsStore();
@@ -28,14 +28,14 @@ const canDownloadModels = computed(() => providerStore.currentProvider.value.fea
             :text="canDownloadModels ? 'Installed' : 'Available'"
             :icon="canDownloadModels ? BiData : BiCheck"
             :to="{ path: '/models/installed' }"
-            :badge="installedCount"/>
+            :badge="installedCount" />
 
         <template v-if="canDownloadModels">
             <SidebarMenuLink
                 text="Browse"
                 :icon="BiCloud"
-                :to="{ path: '/models/browse' }"/>
-            
+                :to="{ path: '/models/browse' }" />
+
             <SidebarMenuLink
                 text="Downloads"
                 :icon="BiDownload"

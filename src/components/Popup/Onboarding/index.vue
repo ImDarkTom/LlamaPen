@@ -1,9 +1,10 @@
 <script setup lang="ts">
+import ExternalLink from '@/components/ToolsPage/ExternalLink.vue';
 import { useProviderManager } from '@/composables/useProviderManager';
 import { useConfigStore } from '@/stores/useConfigStore';
 import { useCustomProvidersStore, type CustomProvider } from '@/stores/useCustomProvidersStore';
 import { onMounted, onUnmounted, ref } from 'vue';
-import { BiArrowBack, BiChevronRight } from 'vue-icons-plus/bi';
+import { BiArrowBack, BiChevronRight, BiSkipNext } from 'vue-icons-plus/bi';
 
 const config = useConfigStore();
 const customProvidersStore = useCustomProvidersStore();
@@ -78,13 +79,8 @@ function onFinish(provider: CustomProvider) {
                     class="size-16 mx-auto mb-6" />
                 <p>
                     LlamaPen is an
-                    <a
-                        href="https://github.com/ImDarkTom/LlamaPen"
-                        class="text-secondary underline"
-                        target="_blank"
-                        rel="noopener noreferrer"
-                        >open-source</a
-                    >, no-install-needed WebUI for local (and cloud!) LLM providers.
+                    <ExternalLink href="https://github.com/ImDarkTom/LlamaPen">open-source </ExternalLink>,
+                    no-install-needed WebUI for local (and cloud!) LLM providers.
                 </p>
 
                 <p class="mt-4">
@@ -95,14 +91,18 @@ function onFinish(provider: CustomProvider) {
                 <div class="pt-8 pb-4 flex flex-col gap-4 items-center justify-center">
                     <ButtonPrimary
                         text="Setup Provider"
-                        :icon="BiChevronRight"
+                        class="p-3"
                         icon-pos="right"
+                        :icon="BiChevronRight"
                         @click="step = 2" />
 
                     <UITextDivider text="or" />
 
                     <ButtonPrimary
-                        text="Use Local Ollama (skip)"
+                        text="Use Local Ollama "
+                        class="p-3"
+                        icon-pos="right"
+                        :icon="BiSkipNext"
                         @click="onSkip" />
                 </div>
             </div>
@@ -112,6 +112,7 @@ function onFinish(provider: CustomProvider) {
                     @submit="onFinish">
                     <ButtonPrimary
                         text="Back"
+                        class="p-3"
                         :icon="BiArrowBack"
                         @click="step = 1" />
                 </FormAddProvider>

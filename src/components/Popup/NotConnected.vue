@@ -90,7 +90,7 @@ function hide() {
                         id="notconnected-dnsa"
                         type="checkbox"
                         ref="dnsaCheckbox"
-                        class="accent-secondary" />
+                        class="accent-primary hover:accent-primary-hover active:accent-primary-active" />
                     <label for="notconnected-dnsa">Do not show again</label>
                 </div>
             </div>
@@ -99,6 +99,7 @@ function hide() {
             <ButtonPrimary
                 v-if="currentProvider.type === 'ollama'"
                 text="Setup Guide"
+                class="p-3"
                 @click="openGuide" />
         </template>
     </PopupBase>
