@@ -1,12 +1,10 @@
 <script setup lang="ts">
-import { Label } from 'reka-ui';
-
 const emit = defineEmits(['update:modelValue']);
 
 const props = defineProps<{
     modelValue: boolean;
     label: string;
-    tooltip?: string;
+    tooltip: string;
 }>();
 
 const updateValue = () => {
@@ -18,11 +16,10 @@ const id = useId();
 
 <template>
     <div class="group relative w-full flex flex-row justify-between items-center transition-all duration-dynamic">
-        <Label :for="id">
-            <SettingsOptionText
-                :label
-                :tooltip />
-        </Label>
+        <SettingsOptionText
+            :label
+            :for="id"
+            :tooltip />
 
         <input
             type="checkbox"
@@ -33,7 +30,7 @@ const id = useId();
             @change="updateValue" />
 
         <label
-            class="w-12 h-6 flex items-center bg-base-950 group-hover:bg-base-900 rounded-full p-0.5 cursor-pointer"
+            class="w-12 h-6 flex items-center bg-base-700 group-hover:bg-base-600 rounded-full p-0.5 cursor-pointer"
             role="switch"
             tabindex="0"
             :class="{ 'bg-primary group-hover:bg-secondary': modelValue }"

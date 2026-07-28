@@ -1,5 +1,5 @@
 <script setup lang="ts">
-import { computed, onMounted, ref } from 'vue';
+import { computed, onMounted, ref, watch } from 'vue';
 import { useConfigStore } from '@/stores/useConfigStore';
 import useChatsStore from '@/stores/useChatsStore';
 import useMessagesStore from '@/stores/messagesStore';
@@ -22,21 +22,10 @@ const { offlineReady, needRefresh, updateServiceWorker } = useRegisterSW();
 
 // transition speed
 const transitionSpeed = ref(0.125);
-const transitionSpeedText = computed(() => {
-    const speed = transitionSpeed.value;
 
-    if (speed == 0) {
-        return 'Disabled';
-    } else {
-        return `${speed * 1000}ms`;
-    }
+watch(transitionSpeed, (newValue) => {
+    config.setTransitionSpeed(newValue);
 });
-
-function updateTransitionSpeed() {
-    const newSpeed = transitionSpeed.value;
-
-    config.setTransitionSpeed(newSpeed);
-}
 
 // clear chats
 function clearChats() {
@@ -135,7 +124,7 @@ const providersActions: MenuEntry[] = [
                 <li
                     v-for="customProvider in customProvidersStore.providers"
                     :key="customProvider.key"
-                    class="provider-list-item flex items-center justify-between p-2 pl-4 border border-base-500 rounded-lg">
+                    class="provider-list-item flex items-center justify-between bg-base-700 p-2 pl-4 rounded-lg">
                     <button
                         class="provider-drag-handle cursor-grab pr-2"
                         aria-label="Reorder">
@@ -220,25 +209,13 @@ const providersActions: MenuEntry[] = [
                 v-model="config.ui.messageInput.hideUnusedButtons"
                 label="Hide unused message input buttons"
                 tooltip="Hide buttons that rely on specific capabilities when the current model doesn't support them, such as the 'Think' button. (Default: Enabled)" />
-            <div class="flex flex-col gap-2 w-full">
-                <SettingsOptionText
-                    label="Animation Duration"
-                    tooltip="The length of animations/transitions throughout the UI. (Default: 125ms)" />
-                <input
-                    class="accent-primary w-full"
-                    @change="updateTransitionSpeed"
-                    v-model="transitionSpeed"
-                    type="range"
-                    min="0"
-                    max="1"
-                    step="0.025" />
-                <span class="py-2">
-                    <span class="border-2 border-base-500 w-fit p-2 rounded-lg cursor-default box-border">{{
-                        transitionSpeedText
-                    }}</span>
-                    <span class="pl-2">{{ transitionSpeed == 0.125 ? '(Default)' : '' }}</span>
-                </span>
-            </div>
+
+            <SettingsInputSelection
+                v-model="transitionSpeed"
+                label="Animation duration"
+                :items="[0.0, 0.075, 0.125, 0.25, 0.5, 0.75]"
+                :itemNames="['Instant', 'Fast', 'Default', 'Relaxed', 'Slow', 'Very Slow']"
+                tooltip="The length of animations/transitions throughout the UI. (Default: Default (125ms))" />
             <SettingsCategoryLabel>Model Icons</SettingsCategoryLabel>
             <SettingsInputToggle
                 v-model="config.ui.modelIcons.monochrome"
@@ -298,18 +275,21 @@ const providersActions: MenuEntry[] = [
                 label="Save message every x tokens"
                 tooltip="Save the message into local DB every x tokens. Lower values lead to worse performance.
                     Higher values may cause the end of the message to not save if an error occurs. (Default: 5)" />
-            <ButtonPrimary
-                text="Clear all chats"
-                type="button"
-                color="danger"
-                :icon="BiTrash"
-                @click="clearChats" />
         </SettingsOptionCategory>
 
         <SettingsOptionCategory label="Keyboard Shortcuts">
             <ButtonPrimary
                 text="View shortcuts"
                 @click="emitter.emit('shortcutsPopup')" />
+        </SettingsOptionCategory>
+
+        <SettingsOptionCategory label="Data">
+            <ButtonPrimary
+                text="Clear all chats"
+                type="button"
+                color="danger"
+                :icon="BiTrash"
+                @click="clearChats" />
         </SettingsOptionCategory>
 
         <SettingsOptionCategory label="PWA">
