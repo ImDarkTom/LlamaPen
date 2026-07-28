@@ -1,7 +1,5 @@
 <script setup lang="ts">
 import { BiCog, BiHelpCircle, BiLogoGithub } from 'vue-icons-plus/bi';
-
-const buttonClasses = 'w-full border-none p-1.5 m-0 box-border rounded-lg h-8 bg-base-800 cursor-pointer transition-all duration-dynamic hover:ring ring-primary';
 </script>
 
 <template>
@@ -9,15 +7,18 @@ const buttonClasses = 'w-full border-none p-1.5 m-0 box-border rounded-lg h-8 bg
         <SidebarFooterStatusBanner />
 
         <div class="flex flex-row gap-2">
-            <SidebarRouterLink to="/guide" class="grow">
-                <BiHelpCircle :class="buttonClasses" />
-            </SidebarRouterLink>
-            <a href="https://github.com/ImDarkTom/LlamaPen" target="_blank" class="grow">
-                <BiLogoGithub :class="buttonClasses" />
-            </a>
-            <SidebarRouterLink to="/settings" class="grow">
-                <BiCog :class="buttonClasses" />
-            </SidebarRouterLink>
+            <SidebarStateChatsFooterButton to="/guide">
+                <BiHelpCircle class="size-5" />
+            </SidebarStateChatsFooterButton>
+            <SidebarStateChatsFooterButton
+                component="a"
+                href="https://github.com/ImDarkTom/LlamaPen"
+                target="_blank">
+                <BiLogoGithub class="size-5" />
+            </SidebarStateChatsFooterButton>
+            <SidebarStateChatsFooterButton to="/settings">
+                <BiCog class="size-5" />
+            </SidebarStateChatsFooterButton>
         </div>
     </div>
 </template>

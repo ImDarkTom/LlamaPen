@@ -13,47 +13,55 @@ const alwaysReasons = computed(() => props.capabilities.includes('always-reasons
 </script>
 
 <template>
-    <div
-        class="flex flex-row gap-2 shrink-0 min-w-fit">
+    <div class="flex flex-row gap-2 shrink-0 min-w-fit">
         <!-- Favorited badge -->
-        <div 
+        <Tooltip
             v-if="isFavorited"
-            class="bg-red-400/25 rounded-sm ring-1 ring-red-400 p-0.5"
-            title="Favorited model">
+            class="bg-red-400/25 rounded-sm p-0.5"
+            text="Favorite model"
+            size="tiny">
             <BiHeart class="text-red-400 size-4" />
-        </div>
+        </Tooltip>
 
         <!-- Capability badges -->
-        <div
+        <Tooltip
             v-if="capabilities.includes('unavailable')"
-            class="bg-slate-400/25 rounded-sm ring-1 ring-slate-400 p-0.5"
-            title="Capabilities unknown - Provider has not listed capabilities for this model">
+            class="bg-slate-400/25 rounded-sm p-0.5"
+            text="Capabilities unknown - Provider has not listed capabilities for this model"
+            size="tiny">
             <BiQuestionMark class="text-slate-400 size-4" />
-        </div>
+        </Tooltip>
         <template v-else>
-            <div 
+            <Tooltip
                 v-if="capabilities.includes('vision')"
-                class="bg-capability-vision/25 rounded-sm ring-1 ring-capability-vision p-0.5"
-                title="Vision - can process images">
+                class="bg-capability-vision/25 rounded-sm p-0.5"
+                text="Vision - can process images"
+                size="tiny">
                 <BiShow class="text-capability-vision size-4" />
-            </div>
-            <div 
+            </Tooltip>
+            <Tooltip
                 v-if="capabilities.includes('reasoning')"
-                class="bg-capability-reasoning/25 rounded-sm ring-1 ring-capability-reasoning p-0.5 flex flex-row"
-                :title="alwaysReasons 
-                    ? 'Locked reasoning - always uses reasoning capabilities' 
-                    : 'Thinking - toggleable enhanced reasoning capabilities'" >
-                <BiBrain class="text-capability-reasoning size-4" />
-                <BiLock 
-                    v-if="alwaysReasons" 
-                    class="text-capability-reasoning size-4" />
-            </div>
-            <div 
+                class="bg-capability-reasoning/25 rounded-sm p-0.5"
+                size="tiny"
+                :text="
+                    alwaysReasons
+                        ? 'Locked reasoning - always uses reasoning capabilities'
+                        : 'Thinking - toggleable enhanced reasoning capabilities'
+                ">
+                <div class="flex flex-row">
+                    <BiBrain class="text-capability-reasoning size-4" />
+                    <BiLock
+                        v-if="alwaysReasons"
+                        class="text-capability-reasoning size-4" />
+                </div>
+            </Tooltip>
+            <Tooltip
                 v-if="capabilities.includes('tools')"
-                class="bg-capability-tools/25 rounded-sm ring-1 ring-capability-tools p-0.5"
-                title="Tools - can use external tools">
+                class="bg-capability-tools/25 rounded-sm p-0.5"
+                text="Tools - can use external tools"
+                size="tiny">
                 <BiWrench class="text-capability-tools size-4" />
-            </div>
+            </Tooltip>
         </template>
     </div>
 </template>

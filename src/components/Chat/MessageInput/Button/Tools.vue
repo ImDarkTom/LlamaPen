@@ -1,5 +1,5 @@
 <script setup lang="ts">
-import { BiDotsHorizontalRounded, BiWrench } from 'vue-icons-plus/bi';
+import { BiDotsHorizontalRounded, BiSolidWrench, BiWrench } from 'vue-icons-plus/bi';
 import useToolsStore from '@/stores/useToolsStore';
 import { computed, ref } from 'vue';
 import { useConfigStore } from '@/stores/useConfigStore';
@@ -54,8 +54,10 @@ const isOpened = ref(false);
         title="Toggle available tools">
         <template #button>
             <span>
-                <BiWrench class="p-1 inline" />
-                <span class="align-middle">Tools ({{ toolsStore.toggled.length }})</span>
+                <component
+                    :is="toolsStore.toggled.length > 0 ? BiSolidWrench : BiWrench"
+                    class="p-1 inline" />
+                <span class="align-middle tabular-nums">Tools {{ toolsStore.toggled.length ? `(${toolsStore.toggled.length})` : '' }}</span>
             </span>
         </template>
         <template #menu>

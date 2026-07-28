@@ -27,7 +27,7 @@ z-99 - z-100: Popup
 
     color-scheme: light dark;
     color: var(--color-base-200);
-    background-color: var(--color-base-900);
+    background-color: var(--color-base-950);
 
     font-synthesis: none;
     text-rendering: optimizeLegibility;

@@ -18,9 +18,6 @@ interface Config {
         },
     },
     ui: {
-        modelList: {
-            useGridView: boolean;
-        }
         modelIcons: {
             monochrome: boolean,
             background: boolean,
@@ -93,9 +90,6 @@ export const useConfigStore = defineStore('config', {
             }
         },
         ui: {
-            modelList: {
-                useGridView: false,
-            },
             modelIcons: {
                 monochrome: true,
                 background: false,

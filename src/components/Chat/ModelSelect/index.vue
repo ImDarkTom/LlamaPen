@@ -3,7 +3,7 @@ import { computed, nextTick, onBeforeUnmount, onMounted, ref, type ComponentPubl
 import { VscDebugDisconnect } from 'vue-icons-plus/vsc';
 import logger from '@/lib/logger';
 import isOnMobile from '@/utils/core/isOnMobile';
-import { BiExpand, BiFilterAlt, BiLoaderAlt, BiRefresh, BiSearch } from 'vue-icons-plus/bi';
+import { BiFilterAlt, BiLoaderAlt, BiRefresh, BiSearch } from 'vue-icons-plus/bi';
 import { storeToRefs } from 'pinia';
 import { useModelSelect } from '@/stores/useModelSelect';
 import { emitter } from '@/lib/mitt';
@@ -161,16 +161,14 @@ const modelName = computed(() => {
     return selectedModelInfo.value.data.displayName;
 });
 
-const menuWidth = computed(() => (config.ui.modelList.useGridView ? 'sm:w-xl' : 'sm:w-96'));
-const useGridView = computed(() => config.ui.modelList.useGridView);
+const searchInputId = useId();
 </script>
 
 <template>
     <FloatingMenu
         v-model:is-opened="isOpened"
         @toggled="onToggled"
-        preffered-position="top"
-        :menu-width="menuWidth">
+        preffered-position="top">
         <template #button>
             <span
                 v-if="isLoading"
@@ -184,7 +182,7 @@ const useGridView = computed(() => config.ui.modelList.useGridView);
                 class="flex flex-row gap-2 items-center">
                 <IconModel
                     :name="selectedModelInfo.data.info.id"
-                    class="size-6" />
+                    class="size-4" />
                 {{ modelName }}
             </span>
 
@@ -203,33 +201,29 @@ const useGridView = computed(() => config.ui.modelList.useGridView);
                 role="listbox">
                 <!-- Search bar -->
                 <div
-                    class="flex flex-row w-full h-12 rounded-lg overflow-hidden ring-inset ring-[0.5px] ring-base-400 focus-within:ring-base-300 shadow-elevation-1 bg-base-600">
-                    <BiSearch class="h-full ml-3" />
+                    class="flex flex-row w-full h-10 rounded-lg overflow-hidden bg-base-600 focus-within:ring ring-base-500 shadow-elevation-1">
+                    <label :for="searchInputId">
+                        <BiSearch class="h-full ml-3 size-4" />
+                    </label>
                     <input
+                        v-model="searchQuery"
                         class="px-2 w-full h-full box-content outline-0"
-                        :class="{ 'cursor-not-allowed': !isConnected }"
                         ref="searchBarRef"
                         type="search"
                         placeholder="Search for a model..."
-                        :disabled="!isConnected"
-                        v-model="searchQuery"
-                        @keydown="searchKeyDown"
                         aria-label="Search for a model..."
-                        aria-controls="model-list" />
+                        aria-controls="model-list"
+                        :id="searchInputId"
+                        :class="{ 'cursor-not-allowed': !isConnected }"
+                        :disabled="!isConnected"
+                        @keydown="searchKeyDown" />
                     <button
                         @click="filterMenuOpen = !filterMenuOpen"
                         :class="{ 'bg-base-500!': filterMenuOpen }"
-                        class="hover:text-primary cursor-pointer transition-colors duration-dynamic">
-                        <BiFilterAlt class="size-5 mx-2.5" />
+                        class="hover:text-primary cursor-pointer transition-colors duration-dynamic rounded-lg">
+                        <BiFilterAlt class="size-4 mx-3" />
                     </button>
                 </div>
-
-                <button
-                    @click="config.ui.modelList.useGridView = !config.ui.modelList.useGridView"
-                    :class="{ 'bg-base-400!': useGridView }"
-                    class="size-12 min-w-12 flex items-center justify-center relative text-base-900 bg-primary hover:bg-base-300 cursor-pointer transition-colors duration-dynamic rounded-lg">
-                    <BiExpand />
-                </button>
             </div>
 
             <ChatModelSelectFilterMenu />
@@ -277,18 +271,10 @@ const useGridView = computed(() => config.ui.modelList.useGridView);
                     <span>No models matched filter.</span>
                 </div>
                 <template v-else-if="queriedModelList.filter((item) => !item.hidden).length > 0">
-                    <component
-                        :is="useGridView ? 'div' : 'ul'"
-                        :class="
-                            useGridView
-                                ? ' grid grid-cols-2 sm:grid-cols-3 md:grid-cols-5 gap-2 m-2'
-                                : '*:not-last:mb-1'
-                        "
-                        :role="useGridView ? undefined : 'list'">
+                    <ul class="flex flex-col gap-1">
                         <ChatModelSelectItem
                             v-for="(model, index) in sortedItems"
                             :key="model.info.id"
-                            :layout="useGridView ? 'grid' : 'row'"
                             :index
                             :model
                             :isCurrentModel="model.info.id === selectedModelInfo.data?.info.id"
@@ -296,7 +282,7 @@ const useGridView = computed(() => config.ui.modelList.useGridView);
                             :renameModel="() => promptRenameModel(model)"
                             @mouseover="setFocused(index)"
                             ref="listItemsRef" />
-                    </component>
+                    </ul>
                 </template>
                 <li
                     v-else

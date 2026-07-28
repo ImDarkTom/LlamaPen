@@ -7,31 +7,46 @@ const { pinnedChats, hasPinnedChats, unpinnedChatsByRecent } = storeToRefs(chats
 </script>
 
 <template>
-	<div class="grow overflow-y-auto px-2 [scrollbar-width:thin]">
-		<UITextDivider
-			v-if="hasPinnedChats"
-			text="Pinned" />
-		<div class="grow" role="list" aria-labelledby="pinnedChatsSection">
-			<h3 id="pinnedChatsSection" class="sr-only">Pinned Chats</h3>
-			<SidebarStateChatsListEntry 
-				v-for="chat of pinnedChats" 
-				:key="chat.id" 
-				:chat />
-		</div>
+    <div class="grow overflow-y-auto px-2 scrollbar-thin">
+        <UITextDivider
+            v-if="hasPinnedChats"
+            text="Pinned" />
+        <div
+            class="grow"
+            role="list"
+            aria-labelledby="pinnedChatsSection">
+            <h3
+                id="pinnedChatsSection"
+                class="sr-only">
+                Pinned Chats
+            </h3>
+            <SidebarStateChatsListEntry
+                v-for="chat of pinnedChats"
+                :key="chat.id"
+                :chat />
+        </div>
 
-		<UITextDivider 
-			text="Chats" />
+        <UITextDivider text="Chats" />
 
-		<div class="grow flex flex-col gap-px" role="list" aria-labelledby="unpinnedChatsSection">
-			<h3 id="unpinnedChatsSection" class="sr-only">Unpinned Chats</h3>
-			<SidebarStateChatsListEntry 
-				v-for="chat of unpinnedChatsByRecent" 
-				:key="chat.id" 
-				:chat />
-		</div>
+        <div
+            class="grow flex flex-col gap-px"
+            role="list"
+            aria-labelledby="unpinnedChatsSection">
+            <h3
+                id="unpinnedChatsSection"
+                class="sr-only">
+                Unpinned Chats
+            </h3>
+            <SidebarStateChatsListEntry
+                v-for="chat of unpinnedChatsByRecent"
+                :key="chat.id"
+                :chat />
+        </div>
 
-		<div v-if="unpinnedChatsByRecent?.length === 0 && !hasPinnedChats" class="flex h-full items-center justify-center">
-			No chats yet...
-		</div>
-	</div>
+        <div
+            v-if="unpinnedChatsByRecent?.length === 0 && !hasPinnedChats"
+            class="flex h-full items-center justify-center">
+            No chats yet...
+        </div>
+    </div>
 </template>

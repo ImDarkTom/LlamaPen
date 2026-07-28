@@ -1,16 +1,18 @@
 <script setup lang="ts">
 import { computed, watch } from 'vue';
-import { BiBrain } from 'vue-icons-plus/bi';
+import { BiBrain, BiSolidBrain } from 'vue-icons-plus/bi';
 import { useConfigStore } from '@/stores/useConfigStore';
 import { useProviderManager } from '@/composables/useProviderManager';
 
 const { isLoading, selectedModelCapabilities, selectedModelInfo } = useProviderManager();
 const config = useConfigStore();
 
-const model = defineModel()
+const model = defineModel();
 
 const selectedModelCanThink = computed(() => {
-    return selectedModelCapabilities.value.includes('reasoning') || selectedModelCapabilities.value.includes('unavailable');
+    return (
+        selectedModelCapabilities.value.includes('reasoning') || selectedModelCapabilities.value.includes('unavailable')
+    );
 });
 
 const selectedModelCapabilitiesUnavailable = computed(() => {
@@ -25,8 +27,7 @@ watch(selectedModelCanThink, () => {
 
 const selectedAlwaysReasons = computed(() => {
     return !!(
-        selectedModelInfo.value.exists
-        && selectedModelInfo.value.data.info.capabilities.includes('always-reasons')
+        selectedModelInfo.value.exists && selectedModelInfo.value.data.info.capabilities.includes('always-reasons')
     );
 });
 
@@ -40,32 +41,34 @@ const buttonHoverText = computed<string>(() => {
     if (selectedModelCapabilitiesUnavailable.value) return 'Model capabilities unknown.';
     else if (!selectedModelCanThink.value) return 'Selected model does not have thinking capabilities.';
     else if (selectedAlwaysReasons.value) return 'Thinking cannot be disabled for this model.';
-    else return 'Enable thinking.'
+    else return 'Enable thinking.';
 });
 
-function toggleCheck(e: Event) {
-    if (
-        !selectedModelCanThink.value ||
-        selectedAlwaysReasons.value
-    ) return;
-    model.value = (e.target as HTMLInputElement).checked;
+function toggleCheck() {
+    if (!selectedModelCanThink.value || selectedAlwaysReasons.value) return;
+    model.value = !model.value;
 }
 </script>
 
 <template>
     <ChatMessageInputButtonBase
-        :class="{ 
-            'bg-primary ring-base-900! text-base-900!': modelValue,
+        class="cursor-pointer flex flex-row gap-2 items-center"
+        :class="{
+            'bg-base-600!': modelValue,
             'opacity-50': selectedAlwaysReasons || isLoading,
-            'hidden': (config.ui.messageInput.hideUnusedButtons && !selectedModelCanThink) && !isLoading
+            hidden: config.ui.messageInput.hideUnusedButtons && !selectedModelCanThink && !isLoading,
         }"
         :title="buttonHoverText"
-    >
-        <label for="thinking-toggle" class="cursor-pointer size-full flex flex-row gap-2 items-center justify-center">
-            <BiBrain />
-            <span>Think</span>
-        </label>
-        <input type="checkbox" id="thinking-toggle" class="hidden" :value="modelValue"
+        @click="toggleCheck">
+        <component
+            :is="modelValue ? BiSolidBrain : BiBrain"
+            class="size-4" />
+        <span>Think</span>
+        <input
+            type="checkbox"
+            id="thinking-toggle"
+            class="hidden"
+            :value="modelValue"
             @input="toggleCheck" />
     </ChatMessageInputButtonBase>
 </template>

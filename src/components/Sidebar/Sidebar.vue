@@ -14,7 +14,7 @@ const chatsStore = useChatsStore();
 
 const toggleSidebar = () => {
     useConfig.showSidebar = !useConfig.showSidebar;
-}
+};
 
 function handlePointerDown(e: MouseEvent) {
     if (e.button !== 0) {
@@ -33,7 +33,7 @@ function shortcutListener(e: KeyboardEvent) {
         const openedChatId = messagesStore.openedChatId;
         if (!openedChatId) return;
 
-        const isPinned = chatsStore.pinnedChats.some(c => c.id === openedChatId);
+        const isPinned = chatsStore.pinnedChats.some((c) => c.id === openedChatId);
         chatsStore.setPinned(openedChatId, !isPinned);
     }
 }
@@ -59,31 +59,31 @@ const { sidebarMode } = storeToRefs(sidebarState);
 <template>
     <!-- note: removing the wrapper breaks this -->
     <div class="flex">
-        <aside 
-            class="flex flex-col fixed top-0 left-0 h-full w-72 z-29 bg-base-950 box-border transition-all duration-dynamic overflow-hidden"
-            :class="{ 
-                '-translate-x-full': !useConfig.showSidebar, 
-                'translate-x-0': useConfig.showSidebar
-            }" >
+        <aside
+            class="flex flex-col fixed top-0 left-0 h-full w-72 z-29 bg-base-950 border-r border-base-700 box-border transition-all duration-dynamic overflow-hidden"
+            :class="{
+                '-translate-x-full': !useConfig.showSidebar,
+                'translate-x-0': useConfig.showSidebar,
+            }">
             <Transition name="sidebar-switch">
                 <SidebarStateChats v-if="sidebarMode == 'chats'" />
                 <SidebarStateModels v-else-if="sidebarMode === 'models'" />
             </Transition>
         </aside>
         <div class="absolute top-0 left-0 h-12 w-12 p-2 z-30">
-            <Tooltip 
-                text="Toggle Sidebar" 
+            <Tooltip
+                text="Toggle Sidebar"
                 size="tiny"
                 :kbd-shortcut="{
                     key: 's',
                     ctrl: true,
                     shift: true,
                 }">
-                <div 
+                <div
                     class="size-10 p-1.5 cursor-pointer rounded-lg text-base-100 hover:bg-base-700 hover:shadow-md shadow-base-950 transition-all duration-dynamic"
                     :class="{ 'bg-base-800': !useConfig.showSidebar }"
-                    @pointerdown="handlePointerDown" 
-                    aria-label="Toggle Sidebar" >
+                    @pointerdown="handlePointerDown"
+                    aria-label="Toggle Sidebar">
                     <TbLayoutSidebarFilled class="size-full" />
                 </div>
             </Tooltip>
