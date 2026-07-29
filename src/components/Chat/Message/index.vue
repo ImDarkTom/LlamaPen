@@ -14,8 +14,6 @@ const props = defineProps<{
     message: ChatMessage;
 }>();
 
-const messageTextContainer = ref<HTMLDivElement | null>(null);
-
 // === State ===
 const editing = ref<boolean>(false);
 const messageEditorRef = ref<InstanceType<typeof Editor> | null>(null);
@@ -29,19 +27,6 @@ onMounted(async () => {
             blobSrc: URL.createObjectURL(attachment),
             file: attachment,
         };
-    });
-
-    messageTextContainer.value?.addEventListener('click', (e) => {
-        const target = e.target as HTMLElement;
-        if (target.classList.contains('copy-code-button')) {
-            const code = decodeURIComponent(target.dataset.code || '');
-            navigator.clipboard.writeText(code);
-
-            target.textContent = 'Copied!';
-            setTimeout(() => {
-                target.textContent = 'Copy';
-            }, 1000);
-        }
     });
 });
 
@@ -103,10 +88,9 @@ function renderText(text: string) {
         :message="message as ToolChatMessage" />
     <div
         v-else
-        class="group/message m-2 mb-0 flex flex-col"
-        ref="messageTextContainer">
+        class="group/message m-2 mb-0 flex flex-col">
         <div
-            class="box-border p-4 flex flex-col"
+            class="box-border p-3 flex flex-col"
             :class="{
                 'ml-auto rounded-2xl bg-base-800 max-w-[70%] shadow-md shadow-base-950/50': isUserMessage && !editing,
                 'w-full max-w-[calc(100dvw-1rem)] box-border p-2! pb-1! m-0!': isModelMessage || editing,

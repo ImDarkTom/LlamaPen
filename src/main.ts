@@ -11,6 +11,7 @@ import clickOutside from "./directives/clickOutside";
 import { useCustomProvidersStore } from './stores/useCustomProvidersStore.ts';
 import { providerFactory } from './providers/ProviderFactory';
 import { useConfigStore } from "./stores/useConfigStore.ts";
+import './registerCodeBlockHeader';
 
 const pinia = createPinia();
 pinia.use(piniaPluginPersistedstate);

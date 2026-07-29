@@ -1,0 +1,139 @@
+:root {
+    --code-block-background: var(--color-base-900);
+    --code-block-foreground: #c9d1d9;
+    --code-block-muted: #8b949e;
+    --code-block-keyword: #ff7b72;
+    --code-block-title: #d2a8ff;
+    --code-block-constant: #79c0ff;
+    --code-block-string: #a5d6ff;
+    --code-block-built-in: #ffa657;
+    --code-block-tag: #7ee787;
+    --code-block-section: #1f6feb;
+    --code-block-bullet: #f2cc60;
+    --code-block-addition: #aff5b4;
+    --code-block-addition-background: #033a16;
+    --code-block-deletion: #ffdcd7;
+    --code-block-deletion-background: #67060c;
+}
+
+html[theme='light'],
+html[theme='mono-light'],
+html[theme='legacy-light'] {
+    --code-block-background: var(--color-base-900);
+    --code-block-foreground: #24292e;
+    --code-block-muted: #6a737d;
+    --code-block-keyword: #d73a49;
+    --code-block-title: #6f42c1;
+    --code-block-constant: #005cc5;
+    --code-block-string: #032f62;
+    --code-block-built-in: #e36209;
+    --code-block-tag: #22863a;
+    --code-block-section: #005cc5;
+    --code-block-bullet: #735c0f;
+    --code-block-addition: #22863a;
+    --code-block-addition-background: #f0fff4;
+    --code-block-deletion: #b31d28;
+    --code-block-deletion-background: #ffeef0;
+}
+
+pre code.hljs {
+    display: block;
+    overflow-x: auto;
+    padding: 1em;
+}
+
+code.hljs {
+    padding: 3px 5px;
+}
+
+.hljs {
+    color: var(--code-block-foreground);
+    background: var(--code-block-background);
+}
+
+.hljs-doctag,
+.hljs-keyword,
+.hljs-meta .hljs-keyword,
+.hljs-template-tag,
+.hljs-template-variable,
+.hljs-type,
+.hljs-variable.language_ {
+    color: var(--code-block-keyword);
+}
+
+.hljs-title,
+.hljs-title.class_,
+.hljs-title.class_.inherited__,
+.hljs-title.function_ {
+    color: var(--code-block-title);
+}
+
+.hljs-attr,
+.hljs-attribute,
+.hljs-literal,
+.hljs-meta,
+.hljs-number,
+.hljs-operator,
+.hljs-variable,
+.hljs-selector-attr,
+.hljs-selector-class,
+.hljs-selector-id {
+    color: var(--code-block-constant);
+}
+
+.hljs-regexp,
+.hljs-string,
+.hljs-meta .hljs-string {
+    color: var(--code-block-string);
+}
+
+.hljs-built_in,
+.hljs-symbol {
+    color: var(--code-block-built-in);
+}
+
+.hljs-comment,
+.hljs-code,
+.hljs-formula {
+    color: var(--code-block-muted);
+}
+
+.hljs-name,
+.hljs-quote,
+.hljs-selector-tag,
+.hljs-selector-pseudo {
+    color: var(--code-block-tag);
+}
+
+.hljs-subst {
+    color: var(--code-block-foreground);
+}
+
+.hljs-section {
+    color: var(--code-block-section);
+    font-weight: bold;
+}
+
+.hljs-bullet {
+    color: var(--code-block-bullet);
+}
+
+.hljs-emphasis {
+    color: var(--code-block-foreground);
+    font-style: italic;
+}
+
+.hljs-strong {
+    color: var(--code-block-foreground);
+    font-weight: bold;
+}
+
+.hljs-addition {
+    color: var(--code-block-addition);
+    background-color: var(--code-block-addition-background);
+}
+
+.hljs-deletion {
+    color: var(--code-block-deletion);
+    background-color: var(--code-block-deletion-background);
+}
