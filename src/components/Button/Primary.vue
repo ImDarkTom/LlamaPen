@@ -3,7 +3,7 @@ import type { IconType } from 'vue-icons-plus';
 import { RouterLink } from 'vue-router';
 import type IconMemoryUnload from '../Icon/MemoryUnload.vue';
 
-type ComponentTypes = 'link' | 'button';
+type ComponentTypes = 'link' | 'button' | 'link-external';
 
 const props = withDefaults(
     defineProps<{
@@ -24,6 +24,7 @@ const props = withDefaults(
 
 const componentTypes: Record<ComponentTypes, unknown> = {
     link: RouterLink,
+    'link-external': 'a',
     button: 'button',
 };
 </script>
@@ -31,7 +32,7 @@ const componentTypes: Record<ComponentTypes, unknown> = {
 <template>
     <component
         :is="componentTypes[type]"
-        class="shrink-0 text-center rounded-lg not-disabled:cursor-pointer disabled:cursor-not-allowed disabled:opacity-70 transition-colors duration-dynamic active:scale-98"
+        class="shrink-0 text-center rounded-lg not-disabled:cursor-pointer disabled:cursor-not-allowed disabled:opacity-70 active:scale-98 transition-all duration-dynamic"
         :class="{
             'bg-primary! text-on-primary! not-disabled:hover:bg-primary-hover! not-disabled:active:bg-primary-active!':
                 color === 'primary',

@@ -68,6 +68,8 @@ const { sidebarMode } = storeToRefs(sidebarState);
             <Transition name="sidebar-switch">
                 <SidebarStateChats v-if="sidebarMode == 'chats'" />
                 <SidebarStateModels v-else-if="sidebarMode === 'models'" />
+                <SidebarStateTools v-else-if="sidebarMode === 'tools'" />
+                <SidebarStateSettings v-else-if="sidebarMode === 'settings'" />
             </Transition>
         </aside>
         <div class="absolute top-0 left-0 h-12 w-12 p-2 z-30">

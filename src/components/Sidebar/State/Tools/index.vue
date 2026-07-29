@@ -131,7 +131,9 @@ function renameItem(toolName: string) {
 </script>
 
 <template>
-    <div class="h-4/12 md:h-full w-full md:w-96 flex flex-col gap-2 p-2 relative overflow-y-auto">
+    <div class="flex flex-col p-2 gap-px w-full">
+        <SidebarStateBackHeader />
+
         <div class="flex flex-row gap-2 justify-between text-base-300 *:hover:text-base-100">
             <ButtonPrimary
                 class="grow shrink"
@@ -154,25 +156,32 @@ function renameItem(toolName: string) {
         <UITextDivider text="Added Tools" />
         <RouterLink
             v-for="toolName in Object.keys(toolsStore.tools)"
+            :key="toolName"
             :to="`/tools/${toolName}`"
-            exactActiveClass="*:bg-base-950! [&_span]:text-base-100">
+            exactActiveClass="*:bg-base-700!">
             <div
-                class="flex flex-row justify-between items-center hover:bg-base-800 p-1.5 pl-2 rounded-md transition-colors duration-dynamic"
+                class="flex flex-row justify-between items-center hover:bg-base-900 p-1.5 pl-2 rounded-md transition-colors duration-dynamic"
                 :class="{ 'opacity-75': !toolsStore.toggled.includes(toolName) }">
-                <div class="flex flex-row gap-2 items-center">
+                <div class="flex flex-row gap-2 items-center overflow-hidden">
                     <BiCheckCircle v-if="toolsStore.toggled.includes(toolName)" />
                     <BiMinusCircle v-else />
-                    <span class="text-sm font-medium">{{ toolName }}</span>
+                    <span
+                        class="text-sm font-medium overflow-hidden text-ellipsis"
+                        :title="toolName"
+                        >{{ toolName }}</span
+                    >
                 </div>
                 <FloatingActionMenu
                     :passArgs="toolName"
                     :actions="itemActions"
                     anchored="left">
-                    <button
-                        @click.prevent
-                        class="hover:bg-base-600 group-[.active]:bg-base-600 group-[.active]:text-base-100 p-1.5 rounded-sm cursor-pointer">
-                        <BiDotsVerticalRounded />
-                    </button>
+                    <ButtonPrimary
+                        text="More Options"
+                        color="ghost"
+                        class="p-1"
+                        :hide-text="true"
+                        :icon="BiDotsVerticalRounded"
+                        @click.prevent />
                 </FloatingActionMenu>
             </div>
         </RouterLink>

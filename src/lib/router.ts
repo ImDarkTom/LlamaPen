@@ -16,56 +16,56 @@ const routes: RouteRecordRaw[] = [
         path: "/",
         component: ChatLayout,
         children: [
-            { 
-                path: "/", 
+            {
+                path: "/",
                 component: ChatPage,
                 meta: { sidebarType: 'chats' },
             },
-            { 
-                path: "/chat", 
+            {
+                path: "/chat",
                 component: ChatPage,
                 meta: { sidebarType: 'chats' },
                 children: [
                     { path: "/chat/:id", component: ChatPage }
                 ],
             },
-            { 
+            {
                 path: '/settings',
                 component: SettingsPage,
-                meta: { sidebarType: 'chats' },
+                meta: { sidebarType: 'settings' },
             },
-            { 
-                path: '/guide', 
+            {
+                path: '/guide',
                 component: GuidePage,
                 meta: { sidebarType: 'chats' },
             },
-            { 
+            {
                 path: '/models',
                 redirect: '/models/installed',
                 meta: { sidebarType: 'models' },
                 children: [
-                    { 
-                        path: '/models/installed', 
+                    {
+                        path: '/models/installed',
                         component: ModelsPage
                     },
-                    { 
-                        path: '/models/installed/:model(.*)', 
+                    {
+                        path: '/models/installed/:model(.*)',
                         component: ModelsPage
                     },
-                    { 
-                        path: '/models/browse', 
+                    {
+                        path: '/models/browse',
                         component: BrowsePage
                     },
-                    { 
-                        path: '/models/downloads', 
+                    {
+                        path: '/models/downloads',
                         component: DownloadsPage
                     },
                 ]
             },
-            { 
-                path: '/tools', 
+            {
+                path: '/tools',
                 component: ToolsPage,
-                meta: { sidebarType: 'chats' },
+                meta: { sidebarType: 'tools' },
                 children: [
                     { path: '/tools/:tool(.*)', component: ToolsPage }
                 ]

@@ -99,11 +99,11 @@ body:not([data-native-scrollbar]) {
     }
 
     html[theme='light'] {
-        --color-base-600: #ffffff;
-        --color-base-700: #fcfcfc;
-        --color-base-800: oklch(0.914 0.008 278.74);
-        --color-base-900: oklch(0.844 0.021 276.94);
-        --color-base-950: oklch(0.768 0.04 275.87);
+        --color-base-950: oklch(0.9 0.02 275.87);
+        --color-base-900: oklch(0.94 0.01 276.94);
+        --color-base-800: oklch(0.965 0.008 278.74);
+        --color-base-700: oklch(0.985 0.006 278.74);
+        --color-base-600: oklch(1 0 0);
         --color-base-500: oklch(0.615 0.092 271.88);
         --color-base-400: oklch(0.537 0.102 270.02);
         --color-base-300: oklch(0.469 0.096 268.61);

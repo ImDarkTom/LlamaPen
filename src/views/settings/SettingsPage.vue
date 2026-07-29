@@ -102,10 +102,12 @@ const providersActions: MenuEntry[] = [
 </script>
 
 <template>
-    <div class="w-full h-full flex flex-col items-center py-4 box-border overflow-y-auto gap-4 *:mx-auto *:max-w-prose">
-        <UIPageHeader text="Settings" />
-
-        <SettingsOptionCategory label="Providers">
+    <div
+        data-settings-scroll
+        class="w-full h-full flex flex-col items-center py-4 box-border overflow-y-auto gap-4 *:mx-auto *:max-w-prose">
+        <SettingsOptionCategory
+            label="Providers"
+            id="providers">
             <SettingsInputSelection
                 v-model="selectedProvider"
                 label="Selected Provider"
@@ -174,7 +176,9 @@ const providersActions: MenuEntry[] = [
             </div>
         </SettingsOptionCategory>
 
-        <SettingsOptionCategory label="Provider-specific Options">
+        <SettingsOptionCategory
+            label="Provider-specific Options"
+            id="provider-options">
             <SettingsCategoryLabel>Ollama</SettingsCategoryLabel>
             <SettingsInputToggle
                 v-model="config.provider.ollama.autoloadCapabilities"
@@ -190,7 +194,9 @@ const providersActions: MenuEntry[] = [
             </div>
         </SettingsOptionCategory>
 
-        <SettingsOptionCategory label="Appearance">
+        <SettingsOptionCategory
+            label="Appearance"
+            id="appearance">
             <SettingsInputSelection
                 v-model="config.ui.theme"
                 label="Theme"
@@ -254,7 +260,9 @@ const providersActions: MenuEntry[] = [
                 tooltip="Hide the sidebar after navigating to a different page on mobile. (Default: Enabled)" />
         </SettingsOptionCategory>
 
-        <SettingsOptionCategory label="Chat">
+        <SettingsOptionCategory
+            label="Chat"
+            id="chat">
             <SettingsInputSelection
                 v-model="config.chat.titleGenerationStyle"
                 label="Title generation style"
@@ -279,14 +287,18 @@ const providersActions: MenuEntry[] = [
                     Higher values may cause the end of the message to not save if an error occurs. (Default: 5)" />
         </SettingsOptionCategory>
 
-        <SettingsOptionCategory label="Keyboard Shortcuts">
+        <SettingsOptionCategory
+            label="Keyboard Shortcuts"
+            id="kbd-shortcuts">
             <ButtonPrimary
                 text="View shortcuts"
                 class="p-2"
                 @click="emitter.emit('shortcutsPopup')" />
         </SettingsOptionCategory>
 
-        <SettingsOptionCategory label="Data">
+        <SettingsOptionCategory
+            label="Data"
+            id="data">
             <ButtonPrimary
                 text="Clear all chats"
                 class="p-2"
@@ -295,7 +307,10 @@ const providersActions: MenuEntry[] = [
                 @click="clearChats" />
         </SettingsOptionCategory>
 
-        <SettingsOptionCategory label="PWA">
+        <SettingsOptionCategory
+            label="PWA"
+            id="pwa"
+            class="mb-[86vh]">
             <span v-if="offlineReady">App is ready to work offline.</span>
             <span v-else>Caching app...</span>
             <span v-if="needRefresh">A new version is available, reload to update.</span>
