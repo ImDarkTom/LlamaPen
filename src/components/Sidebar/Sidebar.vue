@@ -70,6 +70,7 @@ const { sidebarMode } = storeToRefs(sidebarState);
                 <SidebarStateModels v-else-if="sidebarMode === 'models'" />
                 <SidebarStateTools v-else-if="sidebarMode === 'tools'" />
                 <SidebarStateSettings v-else-if="sidebarMode === 'settings'" />
+                <SidebarStateGuides v-else-if="sidebarMode === 'guides'" />
             </Transition>
         </aside>
         <div class="absolute top-0 left-0 h-12 w-12 p-2 z-30">

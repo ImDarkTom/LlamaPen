@@ -38,7 +38,7 @@ const componentTypes: Record<ComponentTypes, unknown> = {
                 color === 'primary',
             'bg-danger! text-on-primary! not-disabled:hover:saturate-200 not-disabled:hover:bg-danger!':
                 color === 'danger',
-            'bg-transparent text-base-200! not-disabled:hover:bg-base-800! group-[.active]:bg-base-700!':
+            'bg-transparent text-base-200! not-disabled:hover:bg-base-800! group-[.active]:bg-base-700! [&.router-link-exact-active]:bg-base-700!':
                 color === 'ghost',
             'bg-base-800! text-base-200! not-disabled:hover:bg-base-700! group-[.active]:bg-base-600!':
                 color === 'tertiary',

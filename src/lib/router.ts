@@ -10,6 +10,9 @@ import NotFoundPage from '@/views/404.vue';
 import useSidebarStore, { type SidebarMode } from '@/stores/useSidebarStore';
 import DownloadsPage from '@/views/models/DownloadsPage.vue';
 import BrowsePage from '@/views/models/BrowsePage.vue';
+import OllamaSetup from '@/views/guide/ollama/OllamaSetup.vue';
+import OllamaTroubleshooting from '@/views/guide/ollama/OllamaTroubleshooting.vue';
+import OpenrouterFree from '@/views/guide/openrouter/OpenrouterFree.vue';
 
 const routes: RouteRecordRaw[] = [
     {
@@ -36,8 +39,27 @@ const routes: RouteRecordRaw[] = [
             },
             {
                 path: '/guide',
-                component: GuidePage,
-                meta: { sidebarType: 'chats' },
+                meta: { sidebarType: 'guides' },
+                children: [
+                    {
+                        path: '/guide',
+                        component: GuidePage,
+                    },
+
+                    {
+                        path: '/guide/ollama/setup',
+                        component: OllamaSetup,
+                    },
+                    {
+                        path: '/guide/ollama/troubleshooting',
+                        component: OllamaTroubleshooting,
+                    },
+
+                    {
+                        path: '/guide/openrouter/free-cloud-models',
+                        component: OpenrouterFree,
+                    },
+                ]
             },
             {
                 path: '/models',
