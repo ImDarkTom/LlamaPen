@@ -146,7 +146,7 @@ function setFocused(index: number) {
 }
 
 function promptRenameModel(model: ModelInfo) {
-    const displayName = model.displayName;
+    const displayName = model.app.displayName;
 
     let newName = prompt(`Enter a new name for '${displayName}' (app cosmetic only): '`, displayName);
     if (newName === '' || !newName) {
@@ -159,7 +159,7 @@ function promptRenameModel(model: ModelInfo) {
 const modelName = computed(() => {
     if (!selectedModelInfo.value.exists) return 'No model selected.';
 
-    return selectedModelInfo.value.data.displayName;
+    return selectedModelInfo.value.data.app.displayName;
 });
 
 const searchInputId = useId();
@@ -270,7 +270,7 @@ const searchInputId = useId();
                     class="flex flex-col w-full p-4 justify-center items-center">
                     <span>No models matched filter.</span>
                 </div>
-                <template v-else-if="queriedModelList.filter((item) => !item.hidden).length > 0">
+                <template v-else-if="queriedModelList.filter((item) => !item.app.hidden).length > 0">
                     <ul class="flex flex-col gap-1">
                         <ChatModelSelectItem
                             v-for="(model, index) in sortedItems"

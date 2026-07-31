@@ -1,9 +1,11 @@
 import { ref, type Ref } from "vue";
 import type { ConnectionState, LLMProvider } from "./ProviderInterface";
 import type { ChatIteratorChunk, ChatOptions } from "./types";
-import type { ModelCapability, ModelInfo } from "@/composables/useProviderManager";
+import type { ModelCapability, ModelInfo, ProviderModelInfo } from "@/composables/useProviderManager";
 import logger from "@/lib/logger";
 import type { ModelAttributes } from "@/components/ModelsPage/types";
+import { NameParser, SubtitleParser } from "../openai/nonStandardParsing";
+import { useConfigStore } from "@/stores/useConfigStore";
 
 export abstract class BaseProvider implements LLMProvider {
     abstract readonly name: string;
@@ -30,7 +32,24 @@ export abstract class BaseProvider implements LLMProvider {
 
         this.loadPromise = (async () => {
             try {
-                this.rawModels.value = await this.getModels();
+                const configStore = useConfigStore();
+
+                const providerInfoList: ProviderModelInfo[] = await this.getModels();
+
+                const modelList: ModelInfo[] = providerInfoList.map((modelProvInfo) => {
+                    const appRename = configStore.chat.modelRenames[modelProvInfo.id];
+
+                    return {
+                        info: modelProvInfo,
+                        app: {
+                            displayName: appRename ?? NameParser.getNameForModel(modelProvInfo.providerMetadata, modelProvInfo.id),
+                            hidden: configStore.chat.hiddenModels.includes(modelProvInfo.id),
+                            subtitle: SubtitleParser.getSubtitleForModel(modelProvInfo.providerMetadata),
+                        }
+                    }
+                })
+
+                this.rawModels.value = modelList;
 
                 try {
                     await this.onModelsLoaded();
@@ -90,5 +109,5 @@ export abstract class BaseProvider implements LLMProvider {
      * Internal method to fetch models from provider and transform them info a
      * common format.
      */
-    protected abstract getModels(): Promise<ModelInfo[]>;
+    protected abstract getModels(): Promise<ProviderModelInfo[]>;
 }

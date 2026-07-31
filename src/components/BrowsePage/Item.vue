@@ -3,21 +3,20 @@ import type { ModelLibraryResponse } from '@/stores/useOllamaModelLibrary';
 import { BiCloudDownload, BiDownload, BiLinkExternal, BiListPlus, BiPlus, BiPurchaseTagAlt } from 'vue-icons-plus/bi';
 
 defineProps<{
-    model: ModelLibraryResponse[number],
+    model: ModelLibraryResponse[number];
 }>();
 
 const emit = defineEmits<{
-    selectModel: [ string ];
+    selectModel: [string];
 }>();
 
 const selectModel = (modelVariant: string) => emit('selectModel', modelVariant);
-
 </script>
 
 <template>
     <li class="py-4 flex flex-row gap-2 not-last:border-b border-base-500">
         <div class="flex flex-col">
-            <IconModel 
+            <IconModel
                 :name="model.model"
                 class="size-8" />
         </div>
@@ -49,13 +48,15 @@ const selectModel = (modelVariant: string) => emit('selectModel', modelVariant);
             </div>
             <div class="flex flex-row gap-2 mt-2">
                 <span
-                    v-for="capability in model.capabilities" 
+                    v-for="capability in model.capabilities"
                     :key="capability"
                     class="capitalize text-xs font-medium flex flex-row items-center gap-1 ring-inset ring-1 py-0.5 px-2 rounded-full"
                     :class="{
                         'bg-capability-audio/40 ring-capability-audio text-cyan-200': capability === 'audio',
-                        'bg-capability-completion/40 ring-capability-completion text-teal-200': capability === 'completion',
-                        'bg-capability-reasoning/40 ring-capability-reasoning text-violet-200': capability === 'thinking',
+                        'bg-capability-completion/40 ring-capability-completion text-teal-200':
+                            capability === 'completion',
+                        'bg-capability-reasoning/40 ring-capability-reasoning text-violet-200':
+                            capability === 'thinking',
                         'bg-capability-tools/40 ring-capability-tools text-blue-200': capability === 'tools',
                         'bg-capability-vision/40 ring-capability-vision text-green-200': capability === 'vision',
                     }">

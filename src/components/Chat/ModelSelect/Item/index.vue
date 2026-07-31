@@ -95,7 +95,7 @@ const selectActions: MenuEntry[] = [
                 <span
                     class="text-sm font-medium text-ellipsis whitespace-nowrap overflow-hidden text-base-100"
                     :title="model.info.id">
-                    {{ model.displayName }}
+                    {{ model.app.displayName }}
                 </span>
                 <ChatModelSelectItemBadges
                     class="ml-2"
@@ -106,9 +106,9 @@ const selectActions: MenuEntry[] = [
             <span
                 class="text-xs text-base-300"
                 :class="{
-                    'text-base-400': model.info.subtitle.length === 0,
+                    'text-base-400': model.app.subtitle.length === 0,
                 }"
-                >{{ model.info.subtitle.length > 0 ? model.info.subtitle : 'Info Unavailable' }}</span
+                >{{ model.app.subtitle.length > 0 ? model.app.subtitle : 'Info Unavailable' }}</span
             >
             <div class="absolute flex items-center justify-center right-0 top-0 h-full w-16">
                 <FloatingActionMenu :actions="selectActions">

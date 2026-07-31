@@ -57,7 +57,9 @@ export class CapabilityParser {
 }
 
 export class SubtitleParser {
-    public static getSubtitleForModel(providerMetadata: ProviderMetadata): string {
+    public static getSubtitleForModel(providerMetadata?: ProviderMetadata): string {
+        if (!providerMetadata) return 'No info';
+
         if (isOpenAIMetadata(providerMetadata)) {
             // Try parse as OpenRouter
             const subtitleFromOpenRouter = SubtitleParser.attemptParseOpenRouter(providerMetadata);
@@ -66,16 +68,16 @@ export class SubtitleParser {
             return `Owner: ${providerMetadata.data.ownedBy}`;
         } else if (isOllamaMetadata(providerMetadata)) {
             return [
-                providerMetadata.data.context_length 
-                    ? `${numberToNumeral(providerMetadata.data.context_length, 0)} ctx` 
+                providerMetadata.data.context_length
+                    ? `${numberToNumeral(providerMetadata.data.context_length, 0)} ctx`
                     : null,
                 providerMetadata.data.parameterSize,
-                providerMetadata.data.quantization ]
-                    .filter(Boolean)
-                    .join(' ⸱ ');
+                providerMetadata.data.quantization]
+                .filter(Boolean)
+                .join(' ⸱ ');
         }
 
-        return '';
+        return 'No info';
     }
 
     private static attemptParseOpenRouter(providerMetadata: OpenAIProviderMetadata): string | null {
@@ -101,8 +103,8 @@ export class SubtitleParser {
 }
 
 export class NameParser {
-    public static getNameForModel(providerMetadata: ProviderMetadata, fallback: string): string {
-        if (!isOpenAIMetadata(providerMetadata)) return '';
+    public static getNameForModel(providerMetadata: ProviderMetadata | undefined, fallback: string): string {
+        if (!providerMetadata || !isOpenAIMetadata(providerMetadata)) return fallback;
 
         // Try parse as OpenRouter
         const nameFromOpenRouter = NameParser.attemptParseOpenRouter(providerMetadata);
@@ -124,6 +126,29 @@ export class NameParser {
         }
 
         return null;
+    }
+}
+
+export class OpenRouterParser {
+    public static getExternalLink(providerMetadata: ProviderMetadata | undefined): string | null {
+        if (!providerMetadata || !isOpenAIMetadata(providerMetadata)) return null;
+
+        const huggingFaceId = providerMetadata.data.allInfo?.hugging_face_id;
+
+        if (huggingFaceId) return `https://huggingface.co/${huggingFaceId}`;
+        else return null;
+    }
+
+    public static getDescription(providerMetadata: ProviderMetadata | undefined): string | null {
+        if (!providerMetadata || !isOpenAIMetadata(providerMetadata)) return null;
+
+        return providerMetadata.data.allInfo?.description ?? null;
+    }
+
+    public static getContextLength(providerMetadata: ProviderMetadata | undefined): number | null {
+        if (!providerMetadata || !isOpenAIMetadata(providerMetadata)) return null;
+
+        return providerMetadata.data.allInfo?.context_length ?? null;
     }
 }
 

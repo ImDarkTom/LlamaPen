@@ -16,7 +16,7 @@ onBeforeMount(() => {
 
 <template>
     <router-view v-slot="{ Component, route }">
-        <component 
+        <component
             :is="Component"
             :key="route.meta.layout || 'default'"
             class="absolute inset-0 w-full h-full" />

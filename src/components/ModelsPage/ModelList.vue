@@ -179,7 +179,7 @@ const searchQuery = ref('');
 
 const queriedModels = computed(() =>
     props.modelsList.filter((m) => {
-        return m.displayName.includes(searchQuery.value) || m.info.id.includes(searchQuery.value);
+        return m.app.displayName.includes(searchQuery.value) || m.info.id.includes(searchQuery.value);
     }),
 );
 
@@ -226,7 +226,7 @@ const batchActions: MenuEntry[] = [
             <div v-else-if="modelsList.length === 0">No models found</div>
             <div v-else-if="queriedModels.length === 0">No models match search</div>
             <RouterLink
-                v-for="{ info: { id: modelId }, hidden, displayName } in queriedModels"
+                v-for="{ info: { id: modelId }, app: { hidden, displayName } } in queriedModels"
                 class="group"
                 exactActiveClass="router-link-exact-active"
                 :key="modelId"

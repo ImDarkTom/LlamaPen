@@ -1,4 +1,4 @@
-import type { ModelCapability, ModelInfo } from "@/composables/useProviderManager";
+import type { ModelCapability, ModelInfo, ProviderModelInfo } from "@/composables/useProviderManager";
 import { BaseProvider } from "../base/BaseProvider";
 import type { Reactive, Ref } from "vue";
 import type { ConnectionState, LLMProvider } from "../base/ProviderInterface";
@@ -7,7 +7,7 @@ import type { ModelAttributes } from "@/components/ModelsPage/types";
 import { OpenAI } from "openai";
 import { chatHelper } from "./chatHelper";
 import logger from "@/lib/logger";
-import { CapabilityParser, NameParser, SubtitleParser } from "./nonStandardParsing";
+import { CapabilityParser, NameParser, OpenRouterParser } from "./nonStandardParsing";
 
 export class OpenAIProvider extends BaseProvider {
     readonly name: string;
@@ -88,7 +88,7 @@ export class OpenAIProvider extends BaseProvider {
         return messages[0].content.slice(0, 20) + (messages[0].content.length > 20 ? '...' : '');
     }
 
-    protected async getModels(): Promise<ModelInfo[]> {
+    protected async getModels(): Promise<ProviderModelInfo[]> {
         const models = await this.client.models.list();
 
         return models.data.map((model) => {
@@ -102,15 +102,14 @@ export class OpenAIProvider extends BaseProvider {
             };
 
             return {
-                displayName: NameParser.getNameForModel(providerMetadata, model.id),
-                hidden: false,
-                info: {
-                    capabilities: [],
-                    id: model.id,
-                    name: NameParser.getNameForModel(providerMetadata, model.id),
-                    subtitle: SubtitleParser.getSubtitleForModel(providerMetadata),
-                    providerMetadata,
-                }
+                capabilities: [],
+                id: model.id,
+                external_link: OpenRouterParser.getExternalLink(providerMetadata),
+                created: model.created,
+                description: OpenRouterParser.getDescription(providerMetadata),
+                context_length: OpenRouterParser.getContextLength(providerMetadata),
+                name: NameParser.getNameForModel(providerMetadata, model.id),
+                providerMetadata,
             }
         });
     }

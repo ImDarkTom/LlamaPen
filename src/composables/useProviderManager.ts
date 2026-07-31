@@ -8,28 +8,90 @@ import { useConfigStore } from "@/stores/useConfigStore";
 /** App-level info */
 export type ModelCapability = (
     'unavailable' |
-    'vision' | 
-    'reasoning' | 
+    'vision' |
+    'reasoning' |
     'always-reasons' |
-    'tools' | 
+    'tools' |
     ({} & string)
 );
 
-export type ModelInfo = {
-    displayName: string;
-    hidden: boolean;
-    /** Provider-level info */
-    info: { 
-        name: string; // Pretty name
-        id: string;
-        subtitle: string;
-        capabilities: ModelCapability[];
-        providerMetadata?: ProviderMetadata;
+type ModelParameters =
+    'max_tokens' |
+    'reasoning' |
+    'include_reasoning' |
+    'tool_choice' |
+    'tools' |
+    'temperature' |
+    // 'response_format' | - todo - add later
+    'stop' |
+    'seed' |
+    'top_p' |
+    'presence_penalty' |
+    'frequency_penalty' |
+    'repetition_penalty' |
+    'top_k' |
+    'min_p';
+
+type ModelReasoningEffort =
+    'max' |
+    'xhigh' |
+    'high' |
+    'medium' |
+    'low' |
+    'minimal' |
+    'none';
+
+type ModelInfoNew = {
+    architecture: {
+        input_modalities: ('text' | 'image' | 'video' | 'file' | 'audio')[];
+        output_modalities: ('text' | 'image')[]
     };
+    pricing: {
+        prompt: number;
+        completion: number;
+    } | null;
+    top_provider: {
+        context_length: number;
+        is_moderated: boolean;
+        max_completion_tokens: number | null;
+    };
+    // https://openrouter.ai/docs/api_reference/parameters
+    supported_parameters: ModelParameters[];
+    default_parameters: Record<ModelParameters, unknown | null>;
+    knowledge_cutoff: string | null; // date
+    reasoning?: {
+        supported_efforts?: ModelReasoningEffort[];
+        default_effort?: ModelReasoningEffort
+        default_enabled: boolean;
+        supports_max_tokens?: boolean;
+        mandatory?: boolean;
+    }
 }
 
-type ModelInfoResult = 
-    | { exists: true, data: ModelInfo } 
+export type ProviderModelInfo = {
+    name: string; // Pretty name
+    id: string;
+    external_link: string | null;
+    created: number
+    description: string | null;
+    context_length: number | null;
+    capabilities: ModelCapability[];
+    providerMetadata?: ProviderMetadata;
+};
+
+export type AppModelInfo = {
+    displayName: string;
+    hidden: boolean;
+    subtitle: string;
+};
+
+export type ModelInfo = {
+    app: AppModelInfo;
+    info: ProviderModelInfo;
+}
+
+type ModelInfoResult =
+    | { exists: true, data: ModelInfo }
     | { exists: false, data: null };
 
 
@@ -53,7 +115,7 @@ export function useProviderManager() {
     const connectionState = currentProvider.value.connectionState;
     const isConnected = computed(() => connectionState.status === 'connected');
     const isLoading = computed(() => connectionState.status === 'checking');
-    const isDisconnected = computed(() => 
+    const isDisconnected = computed(() =>
         connectionState.status === 'error' || connectionState.status === 'disconnected'
     );
 
@@ -71,19 +133,19 @@ export function useProviderManager() {
         currentProvider.value.chat(...args)) as LLMProvider['chat'];
 
     const getModelCapabilities = ((...args: Parameters<LLMProvider['getModelCapabilities']>) =>
-            currentProvider.value.getModelCapabilities(...args)) as LLMProvider['getModelCapabilities'];
+        currentProvider.value.getModelCapabilities(...args)) as LLMProvider['getModelCapabilities'];
 
     const generateChatTitle = ((...args: Parameters<LLMProvider['generateChatTitle']>) =>
-            currentProvider.value.generateChatTitle(...args)) as LLMProvider['generateChatTitle'];
+        currentProvider.value.generateChatTitle(...args)) as LLMProvider['generateChatTitle'];
 
-    
+
     // Ollama-specific
     const loadModelIntoMemory = (modelId: string) => {
         const feature = currentProvider.value.features.modelMemory;
         if (!feature) {
             throw new Error(`Provider ${currentProvider.value.name} does not support memory management`);
         }
-        
+
         return feature.load(modelId);
     };
 
@@ -104,8 +166,7 @@ export function useProviderManager() {
     };
 
     // Model Info utils
-    function getModelInfo(modelId: string): 
-        { exists: true, data: ModelInfo } | { exists: false, data: null } {
+    function getModelInfo(modelId: string): { exists: true, data: ModelInfo } | { exists: false, data: null } {
         const selected = rawModels.value
             .find(modelItem => modelItem.info.id === modelId);
 
@@ -121,15 +182,15 @@ export function useProviderManager() {
 
     // Selected model
     const selectedModelInfo = computed<ModelInfoResult>(() => {
-            const selected = rawModels.value
-                .find(modelItem => modelItem.info.id === useConfigStore().selectedModel);
-    
-            if (selected) {
-                return { exists: true, data: selected };
-            } else {
-                return { exists: false, data: null };
-            }
-        });
+        const selected = rawModels.value
+            .find(modelItem => modelItem.info.id === useConfigStore().selectedModel);
+
+        if (selected) {
+            return { exists: true, data: selected };
+        } else {
+            return { exists: false, data: null };
+        }
+    });
 
     // https://stackoverflow.com/a/79910618/17727765
     const selectedModelCapabilities = computed(() => {

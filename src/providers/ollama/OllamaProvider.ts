@@ -6,9 +6,8 @@ import { reactive, ref, type Reactive } from "vue";
 import type { ConnectionState, LLMProvider, ModelDownloadProgress } from "../base/ProviderInterface";
 import { BaseProvider } from "../base/BaseProvider";
 import { useConfigStore } from "@/stores/useConfigStore";
-import type { ModelCapability, ModelInfo } from "@/composables/useProviderManager";
+import type { ModelCapability, ModelInfo, ProviderModelInfo } from "@/composables/useProviderManager";
 import type { ModelAttributes } from "@/components/ModelsPage/types";
-import { SubtitleParser } from "../openai/nonStandardParsing";
 
 /**
  * Interfaces with the Ollama wrapper before packaging responses into the common app standard.
@@ -173,14 +172,10 @@ export class OllamaProvider extends BaseProvider {
         return chat(this.ollamaWrapper, ollamaFormatMessages, abortSignal, options);
     }
 
-    public async getModels(): Promise<ModelInfo[]> {
-        const configStore = useConfigStore();
+    public async getModels(): Promise<ProviderModelInfo[]> {
         const list = await this.ollamaWrapper.list();
 
         return list.map((m) => {
-            const displayName = configStore.chat.modelRenames[m.model] || m.name;
-            const isHidden = configStore.chat.hiddenModels.includes(m.model);
-
             const providerMetadata: ProviderMetadata = {
                 provider: 'ollama',
                 data: {
@@ -194,15 +189,14 @@ export class OllamaProvider extends BaseProvider {
             };
 
             return {
-                displayName,
-                hidden: isHidden,
-                info: {
-                    name: m.name,
-                    id: m.model,
-                    subtitle: SubtitleParser.getSubtitleForModel(providerMetadata),
-                    capabilities: [],
-                    providerMetadata,
-                }
+                name: m.name,
+                id: m.model,
+                external_link: `https://ollama.com/library/${m.model}`,
+                created: new Date(m.modified_at.toTimeString as unknown as string).getTime() ?? null,
+                description: null, // todo: supplement on 
+                context_length: null,
+                capabilities: [],
+                providerMetadata,
             }
         });
     }
