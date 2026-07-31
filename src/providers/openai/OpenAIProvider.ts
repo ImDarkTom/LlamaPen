@@ -65,13 +65,6 @@ export class OpenAIProvider extends BaseProvider {
         return chatHelper(messages, abortSignal, options, this.client);
     }
 
-    public getModelCapabilities(modelId: string): ModelCapability[] {
-        const model = this.rawModels.value.find((model) => model.info.id === modelId);
-        if (!model?.info.providerMetadata) return [];
-
-        return CapabilityParser.attemptParseModelCapabilities(model.info.providerMetadata);
-    }
-
     public async getModelAttributes(modelId: string): Promise<ModelAttributes> {
         const model = this.rawModels.value.find(m => m.info.id === modelId);
         if (!model || model.info.providerMetadata?.provider !== 'openai') return {};
@@ -102,7 +95,7 @@ export class OpenAIProvider extends BaseProvider {
             };
 
             return {
-                capabilities: [],
+                capabilities: CapabilityParser.attemptParseModelCapabilities(providerMetadata),
                 id: model.id,
                 external_link: OpenRouterParser.getExternalLink(providerMetadata),
                 created: model.created,
@@ -110,6 +103,7 @@ export class OpenAIProvider extends BaseProvider {
                 context_length: OpenRouterParser.getContextLength(providerMetadata),
                 name: NameParser.getNameForModel(providerMetadata, model.id),
                 providerMetadata,
+                ...(OpenRouterParser.getReasoning(providerMetadata))
             }
         });
     }

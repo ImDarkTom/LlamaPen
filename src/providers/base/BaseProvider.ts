@@ -13,7 +13,6 @@ export abstract class BaseProvider implements LLMProvider {
     abstract readonly connectionState: ConnectionState;
 
     abstract readonly rawModels: Ref<ModelInfo[]>;
-    protected readonly fetchedCapabilities = ref<Map<string, ModelCapability[]>>(new Map());
 
     abstract readonly features: LLMProvider['features'];
 
@@ -83,12 +82,6 @@ export abstract class BaseProvider implements LLMProvider {
         options: ChatOptions
     ): Promise<AsyncIterable<ChatIteratorChunk>>;
 
-    /**
-     * Get the capabilities for a specific model.
-     * @param modelId Model ID to check capabilities for. E.g. `gemma4:e4b`
-     */
-    public abstract getModelCapabilities(modelId: string): ModelCapability[];
-
     public abstract getModelAttributes(modelId: string): Promise<ModelAttributes>;
 
     /**
@@ -110,4 +103,22 @@ export abstract class BaseProvider implements LLMProvider {
      * common format.
      */
     protected abstract getModels(): Promise<ProviderModelInfo[]>;
+
+    // Connection state
+    public isConnected() {
+        return this.connectionState.status === 'connected';
+    }
+
+    public isLoading() {
+        return this.connectionState.status === 'checking';
+    }
+
+    public isDisconnected() {
+        return this.connectionState.status === 'error' || this.connectionState.status === 'disconnected'
+    }
+
+
+    public getAllModelIds() {
+        return this.rawModels.value.map((model) => model.info.id);
+    }
 }

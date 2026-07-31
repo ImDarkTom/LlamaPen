@@ -14,13 +14,13 @@ import { useProviderManager } from '@/composables/useProviderManager';
 const messagesStore = useMessagesStore();
 const chatsStore = useChatsStore();
 const config = useConfigStore();
-const { isConnected } = useProviderManager();
+const { currentProvider } = useProviderManager();
 
 const messageInputRef = ref<HTMLTextAreaElement | null>(null);
 const messageInputValue = ref('');
 
 const canGenerate = computed<boolean>(() => {
-    return messageInputValue.value.trim() !== '' && isConnected.value;
+    return messageInputValue.value.trim() !== '' && currentProvider.value.isConnected();
 });
 
 const focusInput = () => {

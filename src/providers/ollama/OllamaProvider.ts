@@ -146,7 +146,8 @@ export class OllamaProvider extends BaseProvider {
         if (shouldAutoloadCapabilities) {
             for (const model of this.rawModels.value) {
                 const capabilities = await this.fetchModelCapabilities(model.info.id);
-                this.fetchedCapabilities.value.set(model.info.id, capabilities);
+
+                model.info.capabilities = capabilities;
             }
         }
     }
@@ -201,16 +202,15 @@ export class OllamaProvider extends BaseProvider {
         });
     }
 
-    public getModelCapabilities(modelId: string): string[] {
-        return this.fetchedCapabilities.value.get(modelId) ?? [];
-    }
-
     public async getModelAttributes(modelId: string): Promise<ModelAttributes> {
+        const model = this.rawModels.value.find((model) => model.info.id === modelId);
+        if (!model) return {};
+
         const { data: modelInfo, error } = await this.ollamaWrapper.show({ model: modelId });
         if (error) throw new Error('Could not fetch model details.');
 
-        if (!this.fetchedCapabilities.value.has(modelId)) {
-            this.fetchedCapabilities.value.set(modelId, modelInfo.capabilities);
+        if (!model.info.capabilities) {
+            model.info.capabilities = modelInfo.capabilities;
         }
 
         return {

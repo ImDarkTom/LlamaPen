@@ -8,7 +8,7 @@ import { useConfigStore } from '@/stores/useConfigStore';
 
 const config = useConfigStore();
 
-const { currentProvider, connectionState } = useProviderManager();
+const { currentProvider } = useProviderManager();
 
 const router = useRouter();
 
@@ -83,7 +83,7 @@ function hide() {
                 </p>
                 <span class="font-medium text-base pt-8">Error:</span>
                 <code class="bg-base-800 rounded-lg p-1 text-sm! text-base-300">
-                    {{ connectionState.error }}
+                    {{ currentProvider.connectionState.error }}
                 </code>
                 <div class="pb-4 mt-2 flex flex-row items-center gap-2">
                     <input

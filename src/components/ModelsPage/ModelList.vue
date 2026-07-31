@@ -12,7 +12,7 @@ import IconMemoryUnload from '@/components/Icon/MemoryUnload.vue';
 
 const config = useConfigStore();
 const { setModelHidden } = useUIStore();
-const { isConnected, isLoading, allModelIds, loadedModelIds, currentProvider } = useProviderManager();
+const { loadedModelIds, currentProvider } = useProviderManager();
 
 const props = defineProps<{
     modelsList: ModelInfo[];
@@ -89,10 +89,10 @@ const modelActions = computed<MenuEntry<{ modelId: string; displayName: string }
 
 async function toggleModelLoaded(modelName: string) {
     if (isLoadedInMemory(modelName)) {
-        await useProviderManager().unloadModel(modelName);
+        await useProviderManager().getModel(modelName).unloadFromMemory();
         refreshModelList();
     } else {
-        const success = await useProviderManager().loadModelIntoMemory(modelName);
+        const success = await useProviderManager().getModel(modelName).loadIntoMemory();
 
         if (!success) {
             alert(`Failed to load model "${modelName}".`);
@@ -171,7 +171,7 @@ const showAll = () => {
     refreshModelList();
 };
 const hideAll = () => {
-    config.chat.hiddenModels = allModelIds.value;
+    config.chat.hiddenModels = currentProvider.value.getAllModelIds();
     refreshModelList();
 };
 
@@ -204,12 +204,12 @@ const batchActions: MenuEntry[] = [
         <div class="flex flex-col gap-2 overflow-y-auto md:pr-3">
             <div
                 class="flex flex-row gap-2"
-                :class="{ 'pointer-events-none': !isConnected }">
+                :class="{ 'pointer-events-none': !currentProvider.isConnected() }">
                 <input
                     type="text"
                     v-model="searchQuery"
                     placeholder="Search..."
-                    :disabled="!isConnected"
+                    :disabled="!currentProvider.isConnected()"
                     class="bg-base-800 hover:bg-base-700 p-2 rounded-md outline-none focus:ring-1 ring-inset ring-base-500 w-full" />
                 <FloatingActionMenu :actions="batchActions">
                     <ButtonPrimary
@@ -222,7 +222,9 @@ const batchActions: MenuEntry[] = [
                 </FloatingActionMenu>
             </div>
 
-            <div v-if="!isConnected && !isLoading">Not connected to '{{ currentProvider.name }}'</div>
+            <div v-if="!currentProvider.isConnected() && !currentProvider.isLoading()">
+                Not connected to '{{ currentProvider.name }}'
+            </div>
             <div v-else-if="modelsList.length === 0">No models found</div>
             <div v-else-if="queriedModels.length === 0">No models match search</div>
             <RouterLink

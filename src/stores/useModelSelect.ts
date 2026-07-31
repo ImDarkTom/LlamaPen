@@ -4,7 +4,7 @@ import { useConfigStore } from "./useConfigStore";
 import { useProviderManager, type ModelInfo } from "@/composables/useProviderManager";
 
 export const useModelSelect = defineStore('modelSelect', () => {
-    const { getModelCapabilities } = useProviderManager();
+    const { getModel } = useProviderManager();
     const config = useConfigStore();
 
     const searchQuery = ref('');
@@ -23,7 +23,7 @@ export const useModelSelect = defineStore('modelSelect', () => {
 
                 return (
                     model.info.name.toLowerCase().includes(query) ||
-                    model.displayName.toLowerCase().includes(query) ||
+                    model.app.displayName.toLowerCase().includes(query) ||
                     model.info.id.toLowerCase().includes(query)
                 );
             });
@@ -36,7 +36,7 @@ export const useModelSelect = defineStore('modelSelect', () => {
 
         const filter = filterCapabilities.value;
         const filteredItems = items.filter(model => {
-            const capabilities = getModelCapabilities(model.info.id)
+            const capabilities = getModel(model.info.id).getCapabilities();
 
             return filter.every(filterItem => capabilities.includes(filterItem));
         });
@@ -94,7 +94,7 @@ export const useModelSelect = defineStore('modelSelect', () => {
         focusedItemIndex.value = 0;
     }
 
-    const sortedItems = computed(() => sortItems(queriedModelList.value.filter((item) => !item.hidden)));
+    const sortedItems = computed(() => sortItems(queriedModelList.value.filter((item) => !item.app.hidden)));
 
     function resetFilters() {
         filterCapabilities.value = [];

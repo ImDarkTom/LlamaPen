@@ -14,7 +14,7 @@ import { useModelSelect } from '@/stores/useModelSelect';
 import { useProviderManager, type ModelInfo } from '@/composables/useProviderManager';
 
 const config = useConfigStore();
-const { getModelCapabilities } = useProviderManager();
+const { getModel } = useProviderManager();
 
 const props = defineProps<{
     model: ModelInfo;
@@ -41,7 +41,7 @@ defineExpose({
 
 const isFavorited = () => config.models.favoriteModels.includes(props.model.info.id);
 
-const modelCapabilities = computed(() => getModelCapabilities(props.model.info.id));
+const modelCapabilities = computed(() => getModel(props.model.info.id).getCapabilities());
 
 const favoriteModel = () => {
     const modelId = props.model.info.id;

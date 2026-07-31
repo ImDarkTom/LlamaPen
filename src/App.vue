@@ -4,13 +4,13 @@ import { useConfigStore } from './stores/useConfigStore';
 import { useProviderManager } from './composables/useProviderManager';
 
 const config = useConfigStore();
-const { refreshConnection } = useProviderManager();
+const { currentProvider } = useProviderManager();
 
 onBeforeMount(() => {
     config.loadTheme();
     config.loadTransitionSpeed();
     config.loadScrollbarSetting();
-    refreshConnection();
+    currentProvider.value.refreshConnection();
 });
 </script>
 

@@ -19,7 +19,7 @@ async function* chatIterator(
     abortSignal: AbortSignal,
     options: ChatOptions
 ): AsyncGenerator<ChatIteratorChunk, ChatIteratorChunk | undefined, unknown> {
-    const { selectedModelCapabilities } = useProviderManager();
+    const { getSelectedModel } = useProviderManager();
     const config = useConfigStore();
 
     const chatOptions: ChatRequest = {
@@ -30,7 +30,7 @@ async function* chatIterator(
         options: config.chat.messageOptionsEnabled ? config.chat.messageOptions : undefined,
     };
 
-    if (selectedModelCapabilities.value.includes('tools')) {
+    if (getSelectedModel().getCapabilities().includes('tools')) {
         chatOptions['tools'] = appToolsToOllama();
     }
 

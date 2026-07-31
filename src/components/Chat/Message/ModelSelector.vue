@@ -12,11 +12,11 @@ const props = defineProps<{
 }>();
 
 const messagesStore = useMessagesStore();
-const { rawModels, getModelInfo } = useProviderManager();
-const { isLoading } = useProviderManager();
+const { rawModels, getModel } = useProviderManager();
+const { currentProvider } = useProviderManager();
 
 const isOpened = ref<boolean>(false);
-const messageModelInfo = computed(() => getModelInfo(props.message.model));
+const messageModelDisplayName = computed(() => getModel(props.message.model).getDisplayName());
 
 const allModels = computed<ModelInfo[]>(() => {
     return rawModels.value.filter((model) => {
@@ -38,7 +38,7 @@ function regenerateMessage(model: string) {
 <template>
     <div class="relative flex flex-row items-center gap-1">
         <Tooltip
-            v-if="!messageModelInfo.exists && !isLoading"
+            v-if="!messageModelDisplayName && !currentProvider.isLoading()"
             text="Model not found in current model list. You may not be able to regenerate this message with the same model."
             size="small">
             <BiError class="text-warning ml-1" />
@@ -58,8 +58,8 @@ function regenerateMessage(model: string) {
                     }">
                     <span
                         class="font-medium pl-1 select-none"
-                        :class="{ 'font-semibold': messageModelInfo.exists }">
-                        {{ messageModelInfo.exists ? messageModelInfo.data.app.displayName : message.model }}
+                        :class="{ 'font-semibold': messageModelDisplayName }">
+                        {{ messageModelDisplayName ?? message.model }}
                     </span>
                     <Tooltip
                         text="Regenerate"
@@ -77,7 +77,7 @@ function regenerateMessage(model: string) {
                     <div class="w-full min-h-0.5 bg-base-400"></div>
                     <ChatMessageModelSelectorItem
                         :modelId="message.model"
-                        :modelName="messageModelInfo.exists ? messageModelInfo.data.app.displayName : message.model"
+                        :modelName="messageModelDisplayName ?? message.model"
                         :modelIsAvailable="true"
                         :regenerate-message="regenerateMessage" />
                     <div class="w-full min-h-0.5 bg-base-400"></div>

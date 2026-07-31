@@ -1,4 +1,3 @@
-import { type LLMProvider } from "@/providers/base/ProviderInterface";
 import type { ProviderMetadata } from "@/providers/base/types";
 import { providerFactory } from "@/providers/ProviderFactory";
 import { computed } from "vue";
@@ -9,7 +8,6 @@ import { useConfigStore } from "@/stores/useConfigStore";
 export type ModelCapability = (
     'unavailable' |
     'vision' |
-    'reasoning' |
     'always-reasons' |
     'tools' |
     ({} & string)
@@ -68,6 +66,14 @@ type ModelInfoNew = {
     }
 }
 
+export type ModelReasoningOptions = {
+    supported_efforts?: ModelReasoningEffort[];
+    default_effort?: ModelReasoningEffort
+    default_enabled: boolean;
+    supports_max_tokens?: boolean;
+    mandatory?: boolean;
+}
+
 export type ProviderModelInfo = {
     name: string; // Pretty name
     id: string;
@@ -77,6 +83,7 @@ export type ProviderModelInfo = {
     context_length: number | null;
     capabilities: ModelCapability[];
     providerMetadata?: ProviderMetadata;
+    reasoning?: ModelReasoningOptions;
 };
 
 export type AppModelInfo = {
@@ -89,11 +96,6 @@ export type ModelInfo = {
     app: AppModelInfo;
     info: ProviderModelInfo;
 }
-
-type ModelInfoResult =
-    | { exists: true, data: ModelInfo }
-    | { exists: false, data: null };
-
 
 // Composable
 export function useProviderManager() {
@@ -111,127 +113,84 @@ export function useProviderManager() {
         return currentProvider.value.features.modelMemory?.loadedModelIds.value ?? new Set<string>();
     });
 
-    // Connection state
-    const connectionState = currentProvider.value.connectionState;
-    const isConnected = computed(() => connectionState.status === 'connected');
-    const isLoading = computed(() => connectionState.status === 'checking');
-    const isDisconnected = computed(() =>
-        connectionState.status === 'error' || connectionState.status === 'disconnected'
-    );
+    const getModel = (modelId: string) => {
+        const loadIntoMemory = () => {
+            const feature = currentProvider.value.features.modelMemory;
+            if (!feature) {
+                throw new Error(`Provider ${currentProvider.value.name} does not support memory management`);
+            }
 
+            return feature.load(modelId);
+        };
 
-    // Base methods
-    const refreshConnection = () => currentProvider.value.refreshConnection();
-    const loadModels = (force: boolean) => currentProvider.value.loadModels(force);
+        const unloadFromMemory = () => {
+            const feature = currentProvider.value.features.modelMemory;
+            if (!feature) {
+                throw new Error(`Provider ${currentProvider.value.name} does not support memory management`);
+            }
+            return feature.unload(modelId);
+        };
 
-    const refreshAndLoadModels = () => {
-        currentProvider.value.refreshConnection();
-        currentProvider.value.loadModels(true);
+        const getAttributes = () => {
+            return currentProvider.value.getModelAttributes(modelId);
+        };
+
+        const getDisplayName = (): string | null => {
+            const found = rawModels.value
+                .find(modelItem => modelItem.info.id === modelId);
+
+            if (found) {
+                return found.app.displayName;
+            } else {
+                return null;
+            }
+        }
+
+        const getCapabilities = () => {
+            const found = rawModels.value
+                .find(modelItem => modelItem.info.id === modelId);
+
+            if (found) {
+                return found.info.capabilities;
+            } else {
+                return [];
+            }
+        }
+
+        return { loadIntoMemory, unloadFromMemory, getAttributes, getDisplayName, getCapabilities };
     }
 
-    const chat = ((...args: Parameters<LLMProvider['chat']>) =>
-        currentProvider.value.chat(...args)) as LLMProvider['chat'];
-
-    const getModelCapabilities = ((...args: Parameters<LLMProvider['getModelCapabilities']>) =>
-        currentProvider.value.getModelCapabilities(...args)) as LLMProvider['getModelCapabilities'];
-
-    const generateChatTitle = ((...args: Parameters<LLMProvider['generateChatTitle']>) =>
-        currentProvider.value.generateChatTitle(...args)) as LLMProvider['generateChatTitle'];
-
-
-    // Ollama-specific
-    const loadModelIntoMemory = (modelId: string) => {
-        const feature = currentProvider.value.features.modelMemory;
-        if (!feature) {
-            throw new Error(`Provider ${currentProvider.value.name} does not support memory management`);
-        }
-
-        return feature.load(modelId);
-    };
-
-    const unloadModel = (modelId: string) => {
-        const feature = currentProvider.value.features.modelMemory;
-        if (!feature) {
-            throw new Error(`Provider ${currentProvider.value.name} does not support memory management`);
-        }
-        return feature.unload(modelId);
-    };
-
-    const refreshLoadedModels = () => {
-        return currentProvider.value.features.modelMemory?.refreshLoadedModels();
-    };
-
-    const getModelAttributes = (modelId: string) => {
-        return currentProvider.value.getModelAttributes(modelId);
-    };
-
-    // Model Info utils
-    function getModelInfo(modelId: string): { exists: true, data: ModelInfo } | { exists: false, data: null } {
-        const selected = rawModels.value
-            .find(modelItem => modelItem.info.id === modelId);
-
-        if (selected) {
-            return { exists: true, data: selected };
-        } else {
-            return { exists: false, data: null };
-        }
-    }
-
-    const allModelIds = computed(() => rawModels.value.map((item) => item.info.id));
-
-
-    // Selected model
-    const selectedModelInfo = computed<ModelInfoResult>(() => {
+    const getSelectedModel = () => {
         const selected = rawModels.value
             .find(modelItem => modelItem.info.id === useConfigStore().selectedModel);
 
-        if (selected) {
-            return { exists: true, data: selected };
-        } else {
-            return { exists: false, data: null };
+        const getCapabilities = () => {
+            return selected?.info.capabilities ?? [];
         }
-    });
 
-    // https://stackoverflow.com/a/79910618/17727765
-    const selectedModelCapabilities = computed(() => {
-        if (!selectedModelInfo.value.exists) return [];
-
-        return getModelCapabilities(selectedModelInfo.value.data.info.id);
-    });
+        return {
+            getCapabilities,
+            id: selected?.info.id,
+            displayName: selected?.app.displayName,
+            reasoning: selected?.info.reasoning,
+        };
+    }
 
     return {
+        // All providers
         allProviders,
         setActiveProvider,
 
+        // Current provider
         currentProvider,
         currentProviderId,
         rawModels,
 
-        connectionState,
-        isConnected,
-        isLoading,
-        isDisconnected,
-        refreshConnection,
-
-        refreshAndLoadModels,
-
-        // Base
-        loadModels,
-        chat,
-        getModelCapabilities,
-        generateChatTitle,
-        getModelAttributes,
+        // Current provider models
+        getModel,
+        getSelectedModel,
 
         // Ollama-specific
         loadedModelIds,
-        loadModelIntoMemory,
-        unloadModel,
-        refreshLoadedModels,
-
-        // Get model info
-        getModelInfo,
-        allModelIds,
-        selectedModelInfo,
-        selectedModelCapabilities
     }
 }

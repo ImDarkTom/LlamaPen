@@ -1,4 +1,4 @@
-import type { ModelCapability } from "@/composables/useProviderManager";
+import type { ModelCapability, ModelReasoningOptions } from "@/composables/useProviderManager";
 import type { ProviderMetadata } from "../base/types";
 import { numberToNumeral } from "@/utils/core/numberToNumeral";
 
@@ -149,6 +149,13 @@ export class OpenRouterParser {
         if (!providerMetadata || !isOpenAIMetadata(providerMetadata)) return null;
 
         return providerMetadata.data.allInfo?.context_length ?? null;
+    }
+
+    public static getReasoning(providerMetadata: ProviderMetadata | undefined): { reasoning: ModelReasoningOptions } | undefined {
+        if (!providerMetadata || !isOpenAIMetadata(providerMetadata)) return undefined;
+
+
+        return { reasoning: providerMetadata.data.allInfo?.reasoning };
     }
 }
 
