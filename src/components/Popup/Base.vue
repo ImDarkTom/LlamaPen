@@ -6,10 +6,14 @@ const props = withDefaults(
     defineProps<{
         closeButton?: boolean;
         dismissable?: boolean;
+        popupSize?: 'default' | 'large';
+        fullHeight?: boolean;
     }>(),
     {
         closeButton: false,
         dismissable: true,
+        popupSize: 'default',
+        fullHeight: false,
     },
 );
 
@@ -44,7 +48,14 @@ function onInteractOutside(e: Event) {
             <DialogOverlay
                 class="bg-black/50 fixed inset-0 z-99 data-[state=open]:motion-opacity-in-[0%] motion-duration-(--transition-duration)" />
             <DialogContent
-                class="flex flex-col w-[calc(100%-1rem)] sm:w-xl lg:w-2xl h-fit max-h-[calc(100%-1rem)] min-h-fit rounded-xl p-6 box-border bg-base-700 absolute top-1/2 left-1/2 -translate-1/2 shadow-elevation-5 z-100 motion-scale-in-75 motion-opacity-in-[75%] motion-duration-100"
+                class="w-full max-w-[calc(100%-1rem)] max-h-[calc(100%-1rem)] flex flex-col rounded-xl p-6 box-border bg-base-700 absolute top-1/2 left-1/2 -translate-1/2 shadow-elevation-5 z-100 motion-scale-in-75 motion-opacity-in-[75%] motion-duration-100"
+                :class="{
+                    'sm:w-xl lg:w-2xl h-fit min-h-fit': popupSize === 'default' && !fullHeight,
+                    'sm:w-xl lg:w-6xl h-fit min-h-fit': popupSize === 'large' && !fullHeight,
+                    'sm:w-xl lg:w-2xl': popupSize === 'default' && fullHeight,
+                    'sm:w-xl lg:w-6xl': popupSize === 'large' && fullHeight,
+                    'h-[calc(100%-1rem)]': fullHeight,
+                }"
                 @escape-key-down="onEscapeKeyDown"
                 @interact-outside="onInteractOutside">
                 <div
@@ -59,7 +70,7 @@ function onInteractOutside(e: Event) {
                 <DialogTitle class="text-2xl font-bold flex flex-row items-center gap-2">
                     <slot name="title">Popup</slot>
                 </DialogTitle>
-                <div class="mt-4 grow line-space overflow-hidden">
+                <div class="mt-4 grow min-h-0 line-space overflow-hidden">
                     <slot name="body"></slot>
                 </div>
                 <div class="flex flex-row gap-6">

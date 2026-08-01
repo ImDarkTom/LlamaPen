@@ -1,6 +1,6 @@
 import type { ChatIteratorChunk, ChatOptions } from "./types";
 import type { Reactive, Ref } from "vue";
-import type { ModelCapability, ModelInfo } from "@/composables/useProviderManager";
+import type { ModelInfo } from "@/composables/useProviderManager";
 import type { ModelAttributes } from "@/components/ModelsPage/types";
 
 export type ConnectionState = {

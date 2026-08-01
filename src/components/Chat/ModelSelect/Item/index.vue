@@ -6,12 +6,14 @@ import {
     BiDotsHorizontalRounded,
     BiDotsVerticalRounded,
     BiHeart,
+    BiInfoCircle,
     BiPencil,
     BiSolidHeart,
 } from 'vue-icons-plus/bi';
 import { useConfigStore } from '@/stores/useConfigStore';
 import { useModelSelect } from '@/stores/useModelSelect';
 import { useProviderManager, type ModelInfo } from '@/composables/useProviderManager';
+import { emitter } from '@/lib/mitt';
 
 const config = useConfigStore();
 const { getModel } = useProviderManager();
@@ -52,7 +54,17 @@ const favoriteModel = () => {
     }
 };
 
+function openInfoPopup() {
+    emitter.emit('showModelInfo', props.model);
+}
+
 const selectActions: MenuEntry[] = [
+    {
+        type: 'text',
+        text: 'Info',
+        icon: BiInfoCircle,
+        onClick: () => openInfoPopup(),
+    },
     {
         type: 'text',
         text: () => (isFavorited() ? 'Unfavorite' : 'Favorite'),
@@ -99,7 +111,7 @@ const selectActions: MenuEntry[] = [
                 </span>
                 <ChatModelSelectItemBadges
                     class="ml-2"
-                    :provider-metadata="model.info.providerMetadata"
+                    :model="model"
                     :capabilities="modelCapabilities"
                     :is-favorited="isFavorited()" />
             </div>

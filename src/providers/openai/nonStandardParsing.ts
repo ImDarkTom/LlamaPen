@@ -1,4 +1,4 @@
-import type { ModelCapability, ModelReasoningOptions } from "@/composables/useProviderManager";
+import type { ModelCapability, ModelInputModalities, ModelOutputModalities, ModelParameters, ModelReasoningOptions } from "@/composables/useProviderManager";
 import type { ProviderMetadata } from "../base/types";
 import { numberToNumeral } from "@/utils/core/numberToNumeral";
 
@@ -156,6 +156,60 @@ export class OpenRouterParser {
 
 
         return { reasoning: providerMetadata.data.allInfo?.reasoning };
+    }
+
+    public static getKnowledgeCutoff(providerMetadata: ProviderMetadata | undefined): string | null {
+        if (!providerMetadata || !isOpenAIMetadata(providerMetadata)) return null;
+
+        return providerMetadata.data.allInfo?.knowledge_cutoff;
+    }
+
+    public static getModerationStatus(providerMetadata: ProviderMetadata | undefined): boolean | null {
+        if (!providerMetadata || !isOpenAIMetadata(providerMetadata)) return null;
+
+        return providerMetadata.data.allInfo?.top_provider.is_moderated;
+    }
+
+    public static getTopProviderMaxCompletionTokens(providerMetadata: ProviderMetadata | undefined): number | null {
+        if (!providerMetadata || !isOpenAIMetadata(providerMetadata)) return null;
+
+        return providerMetadata.data.allInfo?.top_provider.max_completion_tokens;
+    }
+
+    public static getPromptPricing(providerMetadata: ProviderMetadata | undefined): number {
+        if (!providerMetadata || !isOpenAIMetadata(providerMetadata)) return -1;
+
+        return providerMetadata.data.allInfo?.pricing.prompt;
+    }
+
+    public static getCompletionPricing(providerMetadata: ProviderMetadata | undefined): number {
+        if (!providerMetadata || !isOpenAIMetadata(providerMetadata)) return -1;
+
+        return providerMetadata.data.allInfo?.pricing.completion;
+    }
+
+    public static getInputModalities(providerMetadata: ProviderMetadata | undefined): ModelInputModalities[] {
+        if (!providerMetadata || !isOpenAIMetadata(providerMetadata)) return ['unknown-modalities'];
+
+        return providerMetadata.data.allInfo?.architecture.input_modalities;
+    }
+
+    public static getOutputModalities(providerMetadata: ProviderMetadata | undefined): ModelOutputModalities[] {
+        if (!providerMetadata || !isOpenAIMetadata(providerMetadata)) return ['unknown-modalities'];
+
+        return providerMetadata.data.allInfo?.architecture.output_modalities;
+    }
+
+    public static getSupportedParameters(providerMetadata: ProviderMetadata | undefined): ModelParameters[] {
+        if (!providerMetadata || !isOpenAIMetadata(providerMetadata)) return [];
+
+        return providerMetadata.data.allInfo?.supported_parameters;
+    }
+
+    public static getDefaultParameters(providerMetadata: ProviderMetadata | undefined): Partial<Record<ModelParameters, unknown | null>> {
+        if (!providerMetadata || !isOpenAIMetadata(providerMetadata)) return {};
+
+        return providerMetadata.data.allInfo?.default_parameters;
     }
 }
 

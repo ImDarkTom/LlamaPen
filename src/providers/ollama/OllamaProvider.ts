@@ -6,7 +6,7 @@ import { reactive, ref, type Reactive } from "vue";
 import type { ConnectionState, LLMProvider, ModelDownloadProgress } from "../base/ProviderInterface";
 import { BaseProvider } from "../base/BaseProvider";
 import { useConfigStore } from "@/stores/useConfigStore";
-import type { ModelCapability, ModelInfo, ProviderModelInfo } from "@/composables/useProviderManager";
+import type { ModelInfo, ProviderModelInfo } from "@/composables/useProviderManager";
 import type { ModelAttributes } from "@/components/ModelsPage/types";
 
 /**
@@ -145,8 +145,53 @@ export class OllamaProvider extends BaseProvider {
 
         if (shouldAutoloadCapabilities) {
             for (const model of this.rawModels.value) {
-                const capabilities = await this.fetchModelCapabilities(model.info.id);
+                // 'completion' | 'tools' | 'thinking' | 'vision' | 'insert' | 'embedding' | 'search'
+                const { data: showResponse, error } = await this.ollamaWrapper.show({ model: model.info.id });
+                if (error || !showResponse) {
+                    continue;
+                }
 
+                const { capabilities } = showResponse;
+                console.log(capabilities);
+
+                if (
+                    capabilities.includes('thinking') &&
+                    !model.info.supported_parameters.includes('reasoning')
+                ) {
+                    model.info.reasoning = {
+                        default_enabled: true,
+                    };
+
+                    model.info.supported_parameters.push('reasoning');
+                }
+
+                if (capabilities.includes('vision')) {
+                    model.info.architecture.input_modalities = ['text', 'image'];
+                }
+
+                if (
+                    capabilities.includes('tools') &&
+                    !model.info.supported_parameters.includes('tools')
+                ) {
+                    model.info.supported_parameters.push('tools', 'tool_choice');
+                }
+
+                const contextLength = (() => {
+                    // Ollama has yet to fix this type
+                    const modelInfo = showResponse.model_info as unknown as Record<string, any>;
+                    const architecture = modelInfo['general.architecture'];
+
+                    if (!architecture) return null;
+
+                    const contextLength = modelInfo[`${architecture}.context_length`];
+                    if (typeof contextLength === 'number') {
+                        return contextLength;
+                    }
+
+                    return null;
+                })();
+
+                model.info.context_length = contextLength;
                 model.info.capabilities = capabilities;
             }
         }
@@ -188,15 +233,29 @@ export class OllamaProvider extends BaseProvider {
                     context_length: (m.details as Record<string, any>).context_length,
                 }
             };
-
             return {
                 name: m.name,
                 id: m.model,
                 external_link: `https://ollama.com/library/${m.model}`,
-                created: new Date(m.modified_at.toTimeString as unknown as string).getTime() ?? null,
+                created: null,
                 description: null, // todo: supplement on 
                 context_length: null,
-                capabilities: [],
+                capabilities: [], // todo: remove
+                architecture: {
+                    input_modalities: ['text'],
+                    output_modalities: ['text'],
+                },
+                supported_parameters: [
+                    'repetition_penalty', // repeat_penalty
+                    'temperature',
+                    'seed',
+                    'stop',
+                    'top_k',
+                    'top_p',
+                    'min_p',
+                ],
+                default_parameters: {},
+                knowledge_cutoff: null,
                 providerMetadata,
             }
         });
@@ -224,19 +283,5 @@ export class OllamaProvider extends BaseProvider {
 
     public async generateChatTitle(messages: ChatMessage[]): Promise<string> {
         return generateChatTitle(this.ollamaWrapper, messages);
-    }
-
-    private async fetchModelCapabilities(modelId: string): Promise<string[]> {
-        // 'completion' | 'tools' | 'thinking' | 'vision' | 'insert' | 'embedding' | 'search'
-        const CAPABILITY_MAP: Record<string, ModelCapability> = {
-            thinking: 'reasoning',
-        };
-
-        const { data: modelInfo, error } = await this.ollamaWrapper.show({ model: modelId });
-        if (error || !modelInfo) {
-            return [];
-        }
-
-        return modelInfo.capabilities.map((c) => CAPABILITY_MAP[c] ?? c);
     }
 }

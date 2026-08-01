@@ -8,12 +8,13 @@ import { useConfigStore } from "@/stores/useConfigStore";
 export type ModelCapability = (
     'unavailable' |
     'vision' |
+    'reasoning' |
     'always-reasons' |
     'tools' |
     ({} & string)
 );
 
-type ModelParameters =
+export type ModelParameters =
     'max_tokens' |
     'reasoning' |
     'include_reasoning' |
@@ -39,33 +40,6 @@ type ModelReasoningEffort =
     'minimal' |
     'none';
 
-type ModelInfoNew = {
-    architecture: {
-        input_modalities: ('text' | 'image' | 'video' | 'file' | 'audio')[];
-        output_modalities: ('text' | 'image')[]
-    };
-    pricing: {
-        prompt: number;
-        completion: number;
-    } | null;
-    top_provider: {
-        context_length: number;
-        is_moderated: boolean;
-        max_completion_tokens: number | null;
-    };
-    // https://openrouter.ai/docs/api_reference/parameters
-    supported_parameters: ModelParameters[];
-    default_parameters: Record<ModelParameters, unknown | null>;
-    knowledge_cutoff: string | null; // date
-    reasoning?: {
-        supported_efforts?: ModelReasoningEffort[];
-        default_effort?: ModelReasoningEffort
-        default_enabled: boolean;
-        supports_max_tokens?: boolean;
-        mandatory?: boolean;
-    }
-}
-
 export type ModelReasoningOptions = {
     supported_efforts?: ModelReasoningEffort[];
     default_effort?: ModelReasoningEffort
@@ -74,16 +48,36 @@ export type ModelReasoningOptions = {
     mandatory?: boolean;
 }
 
+export type ModelInputModalities = 'text' | 'image' | 'video' | 'file' | 'audio' | 'unknown-modalities';
+export type ModelOutputModalities = 'text' | 'image' | 'unknown-modalities';
+
 export type ProviderModelInfo = {
     name: string; // Pretty name
     id: string;
     external_link: string | null;
-    created: number
+    created: number | null;
     description: string | null;
     context_length: number | null;
     capabilities: ModelCapability[];
-    providerMetadata?: ProviderMetadata;
+    architecture: {
+        input_modalities: ModelInputModalities[];
+        output_modalities: ModelOutputModalities[]
+    };
+    supported_parameters: ModelParameters[];
+    default_parameters: Partial<Record<ModelParameters, unknown | null>>;
+    knowledge_cutoff: string | null; // date
+    top_provider?: {
+        context_length: number | null;
+        is_moderated: boolean | null;
+        max_completion_tokens: number | null;
+    };
+    pricing?: {
+        prompt: number;
+        completion: number;
+    };
     reasoning?: ModelReasoningOptions;
+
+    providerMetadata?: ProviderMetadata;
 };
 
 export type AppModelInfo = {
@@ -157,7 +151,18 @@ export function useProviderManager() {
             }
         }
 
-        return { loadIntoMemory, unloadFromMemory, getAttributes, getDisplayName, getCapabilities };
+        const supportsParameter = (parameter: ModelParameters) => {
+            const found = rawModels.value
+                .find(modelItem => modelItem.info.id === modelId);
+
+            if (found) {
+                return found.info.supported_parameters.includes(parameter);
+            } else {
+                return false;
+            }
+        }
+
+        return { loadIntoMemory, unloadFromMemory, getAttributes, getDisplayName, getCapabilities, supportsParameter };
     }
 
     const getSelectedModel = () => {

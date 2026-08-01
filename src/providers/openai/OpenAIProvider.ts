@@ -98,12 +98,28 @@ export class OpenAIProvider extends BaseProvider {
                 capabilities: CapabilityParser.attemptParseModelCapabilities(providerMetadata),
                 id: model.id,
                 external_link: OpenRouterParser.getExternalLink(providerMetadata),
-                created: model.created,
+                created: model.created * 1_000,
                 description: OpenRouterParser.getDescription(providerMetadata),
                 context_length: OpenRouterParser.getContextLength(providerMetadata),
                 name: NameParser.getNameForModel(providerMetadata, model.id),
+                knowledge_cutoff: OpenRouterParser.getKnowledgeCutoff(providerMetadata),
+                top_provider: {
+                    context_length: OpenRouterParser.getContextLength(providerMetadata),
+                    is_moderated: OpenRouterParser.getModerationStatus(providerMetadata),
+                    max_completion_tokens: OpenRouterParser.getTopProviderMaxCompletionTokens(providerMetadata),
+                },
+                pricing: {
+                    completion: OpenRouterParser.getCompletionPricing(providerMetadata),
+                    prompt: OpenRouterParser.getPromptPricing(providerMetadata)
+                },
+                architecture: {
+                    input_modalities: OpenRouterParser.getInputModalities(providerMetadata),
+                    output_modalities: OpenRouterParser.getOutputModalities(providerMetadata),
+                },
+                supported_parameters: OpenRouterParser.getSupportedParameters(providerMetadata),
+                default_parameters: OpenRouterParser.getDefaultParameters(providerMetadata),
                 providerMetadata,
-                ...(OpenRouterParser.getReasoning(providerMetadata))
+                ...(OpenRouterParser.getReasoning(providerMetadata)),
             }
         });
     }
