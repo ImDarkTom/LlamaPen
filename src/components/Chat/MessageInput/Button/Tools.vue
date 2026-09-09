@@ -88,7 +88,7 @@ const isOpened = ref(false);
                                 @change="toggleSelection(toolName)">
                             <div class="flex flex-col">
                                 <span class="text-base-100 text-sm font-medium">{{ toolName }}</span>
-                                <span class="text-xs text-base-300">{{ tool.description || '<blank description>' }}</span>
+                                <span class="text-xs text-base-300">{{ tool.description || '\<blank description\>' }}</span>
                             </div>
                             <ButtonPrimary
                                 type="link"

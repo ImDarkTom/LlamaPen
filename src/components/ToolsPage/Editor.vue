@@ -109,7 +109,7 @@ const timeoutValue = computed({
             <BiError class="inline" />
             <span class="align-middle">Params not found in query URL: </span>
             <ul>
-                <li v-for="param in missingParams"><span class="select-none">• </span>{{ `\{\{${param || '<blank>'}\}\}` }}</li>
+                <li v-for="param in missingParams"><span class="select-none">• </span>{{ `\{\{${param || '\<blank\>'}\}\}` }}</li>
             </ul>
         </div>
         <UITextDivider class="mt-2" text="Model-facing" />
