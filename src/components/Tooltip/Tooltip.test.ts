@@ -3,7 +3,7 @@ import { mount } from "@vue/test-utils";
 import Tooltip from "./index.vue";
 import { nextTick } from "vue";
 
-vi.mock('@/stores/config', () => {
+vi.mock('@/stores/useConfigStore', () => {
     return {
         useConfigStore: () => ({
             ui: {

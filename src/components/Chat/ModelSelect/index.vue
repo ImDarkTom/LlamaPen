@@ -15,16 +15,7 @@ import ExternalLink from '@/components/ToolsPage/ExternalLink.vue';
 const config = useConfigStore();
 
 // State
-const {
-    isConnected,
-    isLoading,
-    rawModels,
-    loadModels,
-    refreshAndLoadModels,
-    selectedModelInfo,
-    allModelIds,
-    currentProvider,
-} = useProviderManager();
+const { rawModels, currentProvider, getSelectedModel } = useProviderManager();
 
 const {
     isMenuOpened: isOpened,
@@ -43,17 +34,21 @@ const { renameModel } = useUIStore();
 const searchBarRef = ref<HTMLInputElement | null>(null);
 const listItemsRef = ref<Array<ComponentPublicInstance<{ listItemRef: HTMLLIElement | null }>>>([]);
 
+const selectedModelId = computed(() => getSelectedModel().id);
+
 // Lifecycle hooks
 onMounted(async () => {
     logger.info('Model Select Component', 'Selected model is', config.selectedModel);
 
-    await loadModels(false);
-    if (selectedModelInfo.value.exists) {
-        setModel(selectedModelInfo.value.data.info.id, true);
+    await currentProvider.value.loadModels(false);
+    if (selectedModelId.value) {
+        setModel(selectedModelId.value, true);
     } else {
-        if (allModelIds.value.length > 0) {
-            if (allModelIds.value[0] !== undefined && rawModels.value[0] !== undefined) {
-                config.selectedModel = allModelIds.value[0];
+        const allModelIds = currentProvider.value.getAllModelIds();
+
+        if (allModelIds.length > 0) {
+            if (allModelIds[0] !== undefined && rawModels.value[0] !== undefined) {
+                config.selectedModel = allModelIds[0];
                 setModel(rawModels.value[0].info.id, true);
             }
         }
@@ -146,7 +141,7 @@ function setFocused(index: number) {
 }
 
 function promptRenameModel(model: ModelInfo) {
-    const displayName = model.displayName;
+    const displayName = model.app.displayName;
 
     let newName = prompt(`Enter a new name for '${displayName}' (app cosmetic only): '`, displayName);
     if (newName === '' || !newName) {
@@ -157,12 +152,17 @@ function promptRenameModel(model: ModelInfo) {
 }
 
 const modelName = computed(() => {
-    if (!selectedModelInfo.value.exists) return 'No model selected.';
+    if (!selectedModelId.value) return 'No model selected.';
 
-    return selectedModelInfo.value.data.displayName;
+    return getSelectedModel().displayName;
 });
 
 const searchInputId = useId();
+
+function refreshAndLoadModels() {
+    currentProvider.value.refreshConnection();
+    currentProvider.value.loadModels(true);
+}
 </script>
 
 <template>
@@ -172,22 +172,22 @@ const searchInputId = useId();
         preffered-position="top">
         <template #button>
             <span
-                v-if="isLoading"
+                v-if="currentProvider.isLoading()"
                 class="flex flex-row gap-2 items-center text-base-200/75">
                 <BiLoaderAlt class="animate-spin size-6 inline" />
                 Loading models...
             </span>
 
             <span
-                v-else-if="isConnected && selectedModelInfo.exists"
+                v-else-if="currentProvider.isConnected() && selectedModelId"
                 class="flex flex-row gap-2 items-center">
                 <IconModel
-                    :name="selectedModelInfo.data.info.id"
+                    :name="selectedModelId"
                     class="size-4" />
                 {{ modelName }}
             </span>
 
-            <span v-else-if="isConnected"> No model selected </span>
+            <span v-else-if="currentProvider.isConnected()"> No model selected </span>
 
             <span
                 v-else
@@ -215,8 +215,8 @@ const searchInputId = useId();
                         placeholder="Search for a model..."
                         aria-controls="model-list"
                         :id="searchInputId"
-                        :class="{ 'cursor-not-allowed': !isConnected }"
-                        :disabled="!isConnected"
+                        :class="{ 'cursor-not-allowed': !currentProvider.isConnected() }"
+                        :disabled="!currentProvider.isConnected()"
                         @keydown="searchKeyDown" />
                     <button
                         @click="filterMenuOpen = !filterMenuOpen"
@@ -233,12 +233,12 @@ const searchInputId = useId();
                 class="h-80 overflow-y-auto scrollbar-thin"
                 :class="{ 'h-62!': filterMenuOpen }">
                 <div
-                    v-if="isLoading"
+                    v-if="currentProvider.isLoading()"
                     class="h-24 flex justify-center items-center">
                     <BiLoaderAlt class="animate-spin size-6" />
                 </div>
                 <div
-                    v-else-if="!isConnected"
+                    v-else-if="!currentProvider.isConnected()"
                     class="h-24 flex flex-col px-3 py-2 justify-center items-center gap-2">
                     <span class="flex flex-row gap-1 items-center">
                         <VscDebugDisconnect class="size-5" />
@@ -270,14 +270,14 @@ const searchInputId = useId();
                     class="flex flex-col w-full p-4 justify-center items-center">
                     <span>No models matched filter.</span>
                 </div>
-                <template v-else-if="queriedModelList.filter((item) => !item.hidden).length > 0">
+                <template v-else-if="queriedModelList.filter((item) => !item.app.hidden).length > 0">
                     <ul class="flex flex-col gap-1">
                         <ChatModelSelectItem
                             v-for="(model, index) in sortedItems"
                             :key="model.info.id"
                             :index
                             :model
-                            :isCurrentModel="model.info.id === selectedModelInfo.data?.info.id"
+                            :isCurrentModel="model.info.id === selectedModelId"
                             :selected="index === focusedItemIndex"
                             :renameModel="() => promptRenameModel(model)"
                             @mouseover="setFocused(index)"

@@ -112,7 +112,7 @@ onBeforeUnmount(() => {
             <slot name="button" />
             <BiChevronUp
                 v-if="!unstyledButton"
-                class="transition-transform"
+                class="transition-transform size-5"
                 :class="{ 'rotate-180': isOpened }" />
         </div>
         <Teleport to="body">

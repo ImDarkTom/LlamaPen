@@ -13,12 +13,14 @@ const props = withDefaults(
         color?: 'primary' | 'danger' | 'tertiary' | 'ghost';
         iconPos?: 'left' | 'right';
         hideText?: boolean;
+        disabled?: boolean;
     }>(),
     {
         type: 'button',
         color: 'primary',
         hideText: false,
         iconPos: 'left',
+        disabled: false,
     },
 );
 
@@ -43,7 +45,8 @@ const componentTypes: Record<ComponentTypes, unknown> = {
             'bg-base-800! text-base-200! not-disabled:hover:bg-base-700! group-[.active]:bg-base-600!':
                 color === 'tertiary',
         }"
-        :title="hideText ? text : undefined">
+        :title="hideText ? text : undefined"
+        :disabled="disabled">
         <span>
             <component
                 v-if="icon && iconPos === 'left'"

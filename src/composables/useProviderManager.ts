@@ -1,37 +1,95 @@
-import { type LLMProvider } from "@/providers/base/ProviderInterface";
 import type { ProviderMetadata } from "@/providers/base/types";
 import { providerFactory } from "@/providers/ProviderFactory";
 import { computed } from "vue";
-import { useConfigStore } from "@/stores/useConfigStore";
+import { useConfigStore, type defaultMessageOptions } from "@/stores/useConfigStore";
 
 // Types
 /** App-level info */
 export type ModelCapability = (
     'unavailable' |
-    'vision' | 
-    'reasoning' | 
+    'vision' |
+    'reasoning' |
     'always-reasons' |
-    'tools' | 
+    'tools' |
     ({} & string)
 );
 
-export type ModelInfo = {
-    displayName: string;
-    hidden: boolean;
-    /** Provider-level info */
-    info: { 
-        name: string; // Pretty name
-        id: string;
-        subtitle: string;
-        capabilities: ModelCapability[];
-        providerMetadata?: ProviderMetadata;
-    };
+export type ModelParameters =
+    'max_tokens' |
+    'reasoning' |
+    'include_reasoning' |
+    'tool_choice' |
+    'tools' |
+    'temperature' |
+    // 'response_format' | - todo - add later
+    'stop' |
+    'seed' |
+    'top_p' |
+    'presence_penalty' |
+    'frequency_penalty' |
+    'repetition_penalty' |
+    'top_k' |
+    'min_p';
+
+export type ModelReasoningEffort =
+    'max' |
+    'xhigh' |
+    'high' |
+    'medium' |
+    'low' |
+    'minimal' |
+    'none';
+
+export type ModelReasoningOptions = {
+    supported_efforts?: ModelReasoningEffort[];
+    default_effort?: ModelReasoningEffort
+    default_enabled: boolean;
+    supports_max_tokens?: boolean;
+    mandatory?: boolean;
 }
 
-type ModelInfoResult = 
-    | { exists: true, data: ModelInfo } 
-    | { exists: false, data: null };
+export type ModelInputModalities = 'text' | 'image' | 'video' | 'file' | 'audio' | 'unknown-modalities';
+export type ModelOutputModalities = 'text' | 'image' | 'unknown-modalities';
 
+export type ProviderModelInfo = {
+    name: string; // Pretty name
+    id: string;
+    external_link: string | null;
+    created: number | null;
+    description: string | null;
+    context_length: number | null;
+    capabilities: ModelCapability[];
+    architecture: {
+        input_modalities: ModelInputModalities[];
+        output_modalities: ModelOutputModalities[]
+    };
+    supported_parameters: ModelParameters[];
+    default_parameters: Partial<Record<ModelParameters, unknown | null>>;
+    knowledge_cutoff: string | null; // date
+    top_provider?: {
+        context_length: number | null;
+        is_moderated: boolean | null;
+        max_completion_tokens: number | null;
+    };
+    pricing?: {
+        prompt: number;
+        completion: number;
+    };
+    reasoning?: ModelReasoningOptions;
+
+    providerMetadata?: ProviderMetadata;
+};
+
+export type AppModelInfo = {
+    displayName: string;
+    hidden: boolean;
+    subtitle: string;
+};
+
+export type ModelInfo = {
+    app: AppModelInfo;
+    info: ProviderModelInfo;
+}
 
 // Composable
 export function useProviderManager() {
@@ -49,128 +107,138 @@ export function useProviderManager() {
         return currentProvider.value.features.modelMemory?.loadedModelIds.value ?? new Set<string>();
     });
 
-    // Connection state
-    const connectionState = currentProvider.value.connectionState;
-    const isConnected = computed(() => connectionState.status === 'connected');
-    const isLoading = computed(() => connectionState.status === 'checking');
-    const isDisconnected = computed(() => 
-        connectionState.status === 'error' || connectionState.status === 'disconnected'
-    );
-
-
-    // Base methods
-    const refreshConnection = () => currentProvider.value.refreshConnection();
-    const loadModels = (force: boolean) => currentProvider.value.loadModels(force);
-
-    const refreshAndLoadModels = () => {
-        currentProvider.value.refreshConnection();
-        currentProvider.value.loadModels(true);
-    }
-
-    const chat = ((...args: Parameters<LLMProvider['chat']>) =>
-        currentProvider.value.chat(...args)) as LLMProvider['chat'];
-
-    const getModelCapabilities = ((...args: Parameters<LLMProvider['getModelCapabilities']>) =>
-            currentProvider.value.getModelCapabilities(...args)) as LLMProvider['getModelCapabilities'];
-
-    const generateChatTitle = ((...args: Parameters<LLMProvider['generateChatTitle']>) =>
-            currentProvider.value.generateChatTitle(...args)) as LLMProvider['generateChatTitle'];
-
-    
-    // Ollama-specific
-    const loadModelIntoMemory = (modelId: string) => {
-        const feature = currentProvider.value.features.modelMemory;
-        if (!feature) {
-            throw new Error(`Provider ${currentProvider.value.name} does not support memory management`);
-        }
-        
-        return feature.load(modelId);
-    };
-
-    const unloadModel = (modelId: string) => {
-        const feature = currentProvider.value.features.modelMemory;
-        if (!feature) {
-            throw new Error(`Provider ${currentProvider.value.name} does not support memory management`);
-        }
-        return feature.unload(modelId);
-    };
-
-    const refreshLoadedModels = () => {
-        return currentProvider.value.features.modelMemory?.refreshLoadedModels();
-    };
-
-    const getModelAttributes = (modelId: string) => {
-        return currentProvider.value.getModelAttributes(modelId);
-    };
-
-    // Model Info utils
-    function getModelInfo(modelId: string): 
-        { exists: true, data: ModelInfo } | { exists: false, data: null } {
-        const selected = rawModels.value
-            .find(modelItem => modelItem.info.id === modelId);
-
-        if (selected) {
-            return { exists: true, data: selected };
-        } else {
-            return { exists: false, data: null };
-        }
-    }
-
-    const allModelIds = computed(() => rawModels.value.map((item) => item.info.id));
-
-
-    // Selected model
-    const selectedModelInfo = computed<ModelInfoResult>(() => {
-            const selected = rawModels.value
-                .find(modelItem => modelItem.info.id === useConfigStore().selectedModel);
-    
-            if (selected) {
-                return { exists: true, data: selected };
-            } else {
-                return { exists: false, data: null };
+    const getModel = (modelId: string) => {
+        const loadIntoMemory = () => {
+            const feature = currentProvider.value.features.modelMemory;
+            if (!feature) {
+                throw new Error(`Provider ${currentProvider.value.name} does not support memory management`);
             }
-        });
 
-    // https://stackoverflow.com/a/79910618/17727765
-    const selectedModelCapabilities = computed(() => {
-        if (!selectedModelInfo.value.exists) return [];
+            return feature.load(modelId);
+        };
 
-        return getModelCapabilities(selectedModelInfo.value.data.info.id);
-    });
+        const unloadFromMemory = () => {
+            const feature = currentProvider.value.features.modelMemory;
+            if (!feature) {
+                throw new Error(`Provider ${currentProvider.value.name} does not support memory management`);
+            }
+            return feature.unload(modelId);
+        };
+
+        const getAttributes = () => {
+            return currentProvider.value.getModelAttributes(modelId);
+        };
+
+        const getDisplayName = (): string | null => {
+            const found = rawModels.value
+                .find(modelItem => modelItem.info.id === modelId);
+
+            if (found) {
+                return found.app.displayName;
+            } else {
+                return null;
+            }
+        }
+
+        const getCapabilities = () => {
+            const found = rawModels.value
+                .find(modelItem => modelItem.info.id === modelId);
+
+            if (found) {
+                return found.info.capabilities;
+            } else {
+                return [];
+            }
+        }
+
+        const supportsParameter = (parameter: ModelParameters) => {
+            const found = rawModels.value
+                .find(modelItem => modelItem.info.id === modelId);
+
+            if (found) {
+                return found.info.supported_parameters.includes(parameter);
+            } else {
+                return false;
+            }
+        }
+
+        return { loadIntoMemory, unloadFromMemory, getAttributes, getDisplayName, getCapabilities, supportsParameter };
+    }
+
+    const getSelectedModel = () => {
+        const selected = rawModels.value
+            .find(modelItem => modelItem.info.id === useConfigStore().selectedModel);
+
+        const getCapabilities = () => {
+            return selected?.info.capabilities ?? [];
+        }
+
+        const supportsParameter = (parameter: ModelParameters) => {
+            return selected?.info.supported_parameters.includes(parameter) ?? false;
+        }
+
+        /** Generation parameters the selected model accepts, or undefined when the user has them turned off. */
+        const getGenerationParams = (): Partial<typeof defaultMessageOptions> | undefined => {
+            const config = useConfigStore();
+            if (!config.chat.messageOptionsEnabled) return undefined;
+
+            return Object.fromEntries(
+                Object.entries(config.chat.messageOptions)
+                    .filter(([parameter]) => supportsParameter(parameter as ModelParameters)),
+            );
+        }
+
+        /** Undefined when the model has no reasoning support, so providers can omit the field entirely. */
+        const getReasoningEnabled = (): boolean | undefined => {
+            if (!supportsParameter('reasoning')) return undefined;
+
+            return useConfigStore().chat.thinking.enabled;
+        }
+
+        /** Configured effort, dropped if the selected model does not list it as supported. */
+        const getReasoningEffort = (): ModelReasoningEffort | undefined => {
+            const effort = useConfigStore().chat.thinking.effort;
+            if (!effort) return undefined;
+
+            return selected?.info.reasoning?.supported_efforts?.includes(effort) ? effort : undefined;
+        }
+
+        const getReasoningMaxTokens = (): number | undefined => {
+            const maxTokens = useConfigStore().chat.thinking.maxTokens;
+            if (!maxTokens || !selected?.info.reasoning?.supports_max_tokens) return undefined;
+
+            return maxTokens;
+        }
+
+        return {
+            getCapabilities,
+            supportsParameter,
+            getGenerationParams,
+            getReasoningEnabled,
+            getReasoningEffort,
+            getReasoningMaxTokens,
+            id: selected?.info.id,
+            displayName: selected?.app.displayName,
+            defaultParameters: selected?.info.default_parameters,
+            reasoning: selected?.info.reasoning,
+        };
+    }
 
     return {
+        // All providers
         allProviders,
         setActiveProvider,
 
+        // Current provider
         currentProvider,
         currentProviderId,
         rawModels,
 
-        connectionState,
-        isConnected,
-        isLoading,
-        isDisconnected,
-        refreshConnection,
-
-        refreshAndLoadModels,
-
-        // Base
-        loadModels,
-        chat,
-        getModelCapabilities,
-        generateChatTitle,
-        getModelAttributes,
+        // Current provider models
+        getModel,
+        getSelectedModel,
 
         // Ollama-specific
         loadedModelIds,
-        loadModelIntoMemory,
-        unloadModel,
-        refreshLoadedModels,
-
-        // Get model info
-        getModelInfo,
-        allModelIds,
-        selectedModelInfo,
-        selectedModelCapabilities
     }
 }

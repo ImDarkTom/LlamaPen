@@ -5,14 +5,14 @@ import { BiCheck, BiChevronUp, BiError, BiLoaderAlt } from 'vue-icons-plus/bi';
 import { useProviderManager } from '@/composables/useProviderManager';
 import logger from '@/lib/logger';
 
-const { isConnected, isLoading, connectionState, currentProvider } = useProviderManager();
+const { currentProvider } = useProviderManager();
 
 const statusMessageText = ref('Waiting for Ollama...');
 const moreInfoText = ref('Attempting to connect to Ollama...');
 const expanded = ref(false);
 
 watch(
-    connectionState,
+    currentProvider.value.connectionState,
     (newState) => {
         logger.info('StausText Component', 'New provider connection status:', newState.status);
 
@@ -50,23 +50,23 @@ watch(
     <div
         class="overflow-hidden text-ellipsis rounded-md"
         :class="{
-            'text-warning bg-warning/25': isLoading,
-            'text-success bg-success/25': isConnected && !isLoading,
-            'text-danger bg-danger/25': !isConnected && !isLoading,
+            'text-warning bg-warning/25': currentProvider.isLoading(),
+            'text-success bg-success/25': currentProvider.isConnected() && !currentProvider.isLoading(),
+            'text-danger bg-danger/25': !currentProvider.isConnected() && !currentProvider.isLoading(),
         }">
         <div
             class="flex flex-row gap-2 p-1 cursor-pointer rounded-md select-none"
             :class="{
-                'hover:bg-warning/35': isLoading,
-                'hover:bg-success/35': isConnected && !isLoading,
-                'hover:bg-danger/35': !isConnected && !isLoading,
+                'hover:bg-warning/35': currentProvider.isLoading(),
+                'hover:bg-success/35': currentProvider.isConnected() && !currentProvider.isLoading(),
+                'hover:bg-danger/35': !currentProvider.isConnected() && !currentProvider.isLoading(),
             }"
             @click="expanded = !expanded">
             <BiLoaderAlt
-                v-if="isLoading"
+                v-if="currentProvider.isLoading()"
                 class="animate-spin size-6" />
             <BiError
-                v-else-if="!isConnected && !isLoading"
+                v-else-if="!currentProvider.isConnected() && !currentProvider.isLoading()"
                 class="size-6" />
             <IconOllama
                 v-else-if="currentProvider.type === 'ollama'"
@@ -76,7 +76,7 @@ watch(
                 class="size-6" />
             <span
                 class="font-medium"
-                :class="{ 'animate-pulse': isLoading }"
+                :class="{ 'animate-pulse': currentProvider.isLoading() }"
                 :title="statusMessageText">
                 {{ statusMessageText }}
             </span>

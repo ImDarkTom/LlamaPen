@@ -1,3 +1,6 @@
+import type { ModelReasoningEffort } from "@/composables/useProviderManager";
+import type { defaultMessageOptions } from "@/stores/useConfigStore";
+
 export type ChatIteratorChunk = {
 	type: 'error',
 	error: {
@@ -40,6 +43,9 @@ export type ProviderMessage = {
 export type ChatOptions = {
 	model: string;
 	reasoningEnabled?: boolean;
+	reasoningEffort?: ModelReasoningEffort;
+	reasoningMaxTokens?: number;
+	params?: Partial<typeof defaultMessageOptions>;
 }
 
 export type ProviderMetadata = 

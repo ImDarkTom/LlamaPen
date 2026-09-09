@@ -8,7 +8,7 @@ import { storeToRefs } from 'pinia';
 import { BiCloudDownload, BiStopCircle } from 'vue-icons-plus/bi';
 import { ref, computed } from 'vue';
 
-const { loadModels } = useProviderManager();
+const { currentProvider } = useProviderManager();
 
 const downloadsStore = useDownloadsStore();
 const { progressChunks, inputValue } = storeToRefs(downloadsStore);
@@ -32,7 +32,7 @@ async function downloadModel() {
 
     // !success with no reason means the user cancelled, so we're ok
 
-    await loadModels(true);
+    await currentProvider.value.loadModels(true);
 }
 
 const getStatusText = (status: ModelDownloadProgress) =>

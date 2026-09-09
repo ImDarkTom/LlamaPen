@@ -8,4 +8,5 @@
     <PopupAddProvider />
     <PopupEditProvider />
     <PopupOnboarding />
+    <PopupModelInfo />
 </template>

@@ -1,13 +1,16 @@
 <script setup lang="ts">
-import { type ModelCapability } from '@/composables/useProviderManager';
-import type { ProviderMetadata } from '@/providers/base/types';
+import { useProviderManager, type ModelCapability, type ModelInfo } from '@/composables/useProviderManager';
 import { BiBrain, BiHeart, BiLock, BiQuestionMark, BiShow, BiWrench } from 'vue-icons-plus/bi';
 
 const props = defineProps<{
-    providerMetadata?: ProviderMetadata;
+    model: ModelInfo;
     capabilities: ModelCapability[];
     isFavorited: boolean;
 }>();
+
+const { getModel } = useProviderManager();
+
+const hasReasoning = computed(() => getModel(props.model.info.id).supportsParameter('reasoning'));
 
 const alwaysReasons = computed(() => props.capabilities.includes('always-reasons') ?? false);
 </script>
@@ -40,7 +43,7 @@ const alwaysReasons = computed(() => props.capabilities.includes('always-reasons
                 <BiShow class="text-capability-vision size-4" />
             </Tooltip>
             <Tooltip
-                v-if="capabilities.includes('reasoning')"
+                v-if="hasReasoning"
                 class="bg-capability-reasoning/25 rounded-sm p-0.5"
                 size="tiny"
                 :text="

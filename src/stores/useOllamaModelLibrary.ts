@@ -33,7 +33,7 @@ const useOllamaModelLibraryStore = defineStore('ollamaModelLibrary', () => {
             if (err && err instanceof Error) {
                 error.value = err.message;
             } else {
-                error.value === 'Unknown error.'
+                error.value = 'Unknown error.';
             }
 
             status.value = 'error';
