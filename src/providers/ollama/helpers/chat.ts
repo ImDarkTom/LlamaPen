@@ -1,4 +1,3 @@
-import { useConfigStore } from "@/stores/useConfigStore";
 import { appToolsToOllama } from "../converters/appToolsToOllama";
 import type { ChatIteratorChunk, ChatOptions } from "@/providers/base/types";
 import type { ChatRequest } from "ollama/browser";
@@ -20,14 +19,13 @@ async function* chatIterator(
     options: ChatOptions
 ): AsyncGenerator<ChatIteratorChunk, ChatIteratorChunk | undefined, unknown> {
     const { getSelectedModel } = useProviderManager();
-    const config = useConfigStore();
 
     const chatOptions: ChatRequest = {
         model: options.model,
         messages,
         think: options.reasoningEnabled || false,
         stream: true,
-        options: config.chat.messageOptionsEnabled ? config.chat.messageOptions : undefined,
+        options: options.params,
     };
 
     if (getSelectedModel().getCapabilities().includes('tools')) {

@@ -1,14 +1,23 @@
 <script setup lang="ts">
-import { useConfigStore } from '@/stores/useConfigStore';
+import { defaultMessageOptions, useConfigStore } from '@/stores/useConfigStore';
 import { BiSlider } from 'vue-icons-plus/bi';
 import { ref } from 'vue';
+import { useProviderManager, type ModelParameters } from '@/composables/useProviderManager';
 
 const config = useConfigStore();
+const { getSelectedModel } = useProviderManager();
+
+const supportsParameter = (parameter: ModelParameters) => getSelectedModel().supportsParameter(parameter);
 
 function reset() {
-    config.chat.messageOptions.temperature = 0.8;
-    config.chat.messageOptions.top_k = 40;
-    config.chat.messageOptions.top_p = 0.9;
+    const modelDefaults = getSelectedModel().defaultParameters ?? {};
+
+    for (const parameter of Object.keys(defaultMessageOptions) as (keyof typeof defaultMessageOptions)[]) {
+        const modelDefault = modelDefaults[parameter];
+
+        config.chat.messageOptions[parameter] =
+            typeof modelDefault === 'number' ? modelDefault : defaultMessageOptions[parameter];
+    }
 }
 
 const tooltips = {
@@ -52,6 +61,7 @@ const isOpened = ref(false);
                     class="flex flex-col"
                     :class="{ 'opacity-50 pointer-events-none': !config.chat.messageOptionsEnabled }">
                     <ChatMessageInputGenerationOptionsOption
+                        v-if="supportsParameter('temperature')"
                         label="Temperature"
                         :tooltip="tooltips['temperature']"
                         v-model="config.chat.messageOptions.temperature"
@@ -59,6 +69,7 @@ const isOpened = ref(false);
                         :max="1"
                         :step="0.05" />
                     <ChatMessageInputGenerationOptionsOption
+                        v-if="supportsParameter('top_k')"
                         label="Top K"
                         :tooltip="tooltips['top_k']"
                         v-model="config.chat.messageOptions.top_k"
@@ -66,6 +77,7 @@ const isOpened = ref(false);
                         :max="200"
                         :step="1" />
                     <ChatMessageInputGenerationOptionsOption
+                        v-if="supportsParameter('top_p')"
                         label="Top P"
                         :tooltip="tooltips['top_p']"
                         v-model="config.chat.messageOptions.top_p"
@@ -73,6 +85,7 @@ const isOpened = ref(false);
                         :max="1"
                         :step="0.05" />
                     <ChatMessageInputGenerationOptionsOption
+                        v-if="supportsParameter('min_p')"
                         label="Min P"
                         :tooltip="tooltips['min_p']"
                         v-model="config.chat.messageOptions.min_p"

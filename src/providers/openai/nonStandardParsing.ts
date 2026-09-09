@@ -11,6 +11,17 @@ const isOpenAIMetadata = (providerMetadata: ProviderMetadata): providerMetadata 
 const isOllamaMetadata = (providerMetadata: ProviderMetadata): providerMetadata is OllamaProviderMetadata =>
     providerMetadata.provider === 'ollama';
 
+/** Fallback for providers that don't advertise their parameters, so only spec-standard fields get sent. */
+const OPENAI_SPEC_PARAMETERS: ModelParameters[] = [
+    'temperature',
+    'top_p',
+    'max_tokens',
+    'stop',
+    'seed',
+    'presence_penalty',
+    'frequency_penalty',
+];
+
 export class CapabilityParser {
     public static attemptParseModelCapabilities(providerMetadata: ProviderMetadata): ModelCapability[] {
         if (!isOpenAIMetadata(providerMetadata)) return [];
@@ -203,7 +214,7 @@ export class OpenRouterParser {
     public static getSupportedParameters(providerMetadata: ProviderMetadata | undefined): ModelParameters[] {
         if (!providerMetadata || !isOpenAIMetadata(providerMetadata)) return [];
 
-        return providerMetadata.data.allInfo?.supported_parameters ?? [];
+        return providerMetadata.data.allInfo?.supported_parameters ?? OPENAI_SPEC_PARAMETERS;
     }
 
     public static getDefaultParameters(providerMetadata: ProviderMetadata | undefined): Partial<Record<ModelParameters, unknown | null>> {

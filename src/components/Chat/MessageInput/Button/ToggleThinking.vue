@@ -60,14 +60,38 @@ function toggleCheck() {
     model.value = !model.value;
 }
 
+const reasoningEffort = computed({
+    get: () => {
+        const stored = config.chat.thinking.effort;
+        const supported = selectedModelReasoning.value?.supported_efforts;
+
+        return stored && supported?.includes(stored) ? stored : (selectedModelReasoning.value?.default_effort ?? null);
+    },
+    set: (value) => {
+        config.chat.thinking.effort = value;
+    },
+});
+
+const hasReasoningOptions = computed(() => {
+    const reasoning = selectedModelReasoning.value;
+
+    return Boolean(reasoning?.supported_efforts?.length || reasoning?.supports_max_tokens);
+});
+
+function setMaxTokens(event: Event) {
+    const value = (event.target as HTMLInputElement).valueAsNumber;
+    config.chat.thinking.maxTokens = Number.isFinite(value) && value > 0 ? value : null;
+}
+
 const isOpened = ref(false);
 </script>
 
 <template>
     <div class="group flex flex-row">
         <ChatMessageInputButtonBase
-            class="cursor-pointer flex flex-row gap-2 items-center rounded-r-none!"
+            class="cursor-pointer flex flex-row gap-2 items-center"
             :class="{
+                'rounded-r-none!': hasReasoningOptions,
                 'bg-base-600!': modelValue,
                 'opacity-50': selectedModelReasoning?.mandatory || currentProvider.isLoading(),
                 hidden:
@@ -88,6 +112,7 @@ const isOpened = ref(false);
                 @input="toggleCheck" />
         </ChatMessageInputButtonBase>
         <FloatingMenu
+            v-if="hasReasoningOptions"
             v-model:is-opened="isOpened"
             preffered-position="top"
             :unstyled-button="true">
@@ -103,7 +128,9 @@ const isOpened = ref(false);
                 </button>
             </template>
             <template #menu>
-                <fieldset class="flex flex-col h-full">
+                <fieldset
+                    v-if="selectedModelReasoning?.supported_efforts?.length"
+                    class="flex flex-col h-full">
                     <legend>Reasoning Effort</legend>
                     <div
                         v-for="effort in selectedModelReasoning?.supported_efforts"
@@ -114,7 +141,7 @@ const isOpened = ref(false);
                             name="reasoning-effort"
                             class="accent-primary hover:accent-primary-hover active:accent-primary-active"
                             :value="effort"
-                            :checked="effort === selectedModelReasoning?.default_effort"
+                            v-model="reasoningEffort"
                             :id="`reasoning-effort-${effort}`" />
                         <label
                             class="text-sm font-medium p-2 w-full"
@@ -137,7 +164,9 @@ const isOpened = ref(false);
                         name="reasoning-max-tokens"
                         id="reasoning-max-tokens"
                         step="1"
-                        min="0" />
+                        min="0"
+                        :value="config.chat.thinking.maxTokens ?? ''"
+                        @input="setMaxTokens" />
                 </div>
             </template>
         </FloatingMenu>

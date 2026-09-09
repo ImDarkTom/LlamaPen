@@ -1,7 +1,7 @@
 import type { ProviderMetadata } from "@/providers/base/types";
 import { providerFactory } from "@/providers/ProviderFactory";
 import { computed } from "vue";
-import { useConfigStore } from "@/stores/useConfigStore";
+import { useConfigStore, type defaultMessageOptions } from "@/stores/useConfigStore";
 
 // Types
 /** App-level info */
@@ -31,7 +31,7 @@ export type ModelParameters =
     'top_k' |
     'min_p';
 
-type ModelReasoningEffort =
+export type ModelReasoningEffort =
     'max' |
     'xhigh' |
     'high' |
@@ -173,10 +173,53 @@ export function useProviderManager() {
             return selected?.info.capabilities ?? [];
         }
 
+        const supportsParameter = (parameter: ModelParameters) => {
+            return selected?.info.supported_parameters.includes(parameter) ?? false;
+        }
+
+        /** Generation parameters the selected model accepts, or undefined when the user has them turned off. */
+        const getGenerationParams = (): Partial<typeof defaultMessageOptions> | undefined => {
+            const config = useConfigStore();
+            if (!config.chat.messageOptionsEnabled) return undefined;
+
+            return Object.fromEntries(
+                Object.entries(config.chat.messageOptions)
+                    .filter(([parameter]) => supportsParameter(parameter as ModelParameters)),
+            );
+        }
+
+        /** Undefined when the model has no reasoning support, so providers can omit the field entirely. */
+        const getReasoningEnabled = (): boolean | undefined => {
+            if (!supportsParameter('reasoning')) return undefined;
+
+            return useConfigStore().chat.thinking.enabled;
+        }
+
+        /** Configured effort, dropped if the selected model does not list it as supported. */
+        const getReasoningEffort = (): ModelReasoningEffort | undefined => {
+            const effort = useConfigStore().chat.thinking.effort;
+            if (!effort) return undefined;
+
+            return selected?.info.reasoning?.supported_efforts?.includes(effort) ? effort : undefined;
+        }
+
+        const getReasoningMaxTokens = (): number | undefined => {
+            const maxTokens = useConfigStore().chat.thinking.maxTokens;
+            if (!maxTokens || !selected?.info.reasoning?.supports_max_tokens) return undefined;
+
+            return maxTokens;
+        }
+
         return {
             getCapabilities,
+            supportsParameter,
+            getGenerationParams,
+            getReasoningEnabled,
+            getReasoningEffort,
+            getReasoningMaxTokens,
             id: selected?.info.id,
             displayName: selected?.app.displayName,
+            defaultParameters: selected?.info.default_parameters,
             reasoning: selected?.info.reasoning,
         };
     }

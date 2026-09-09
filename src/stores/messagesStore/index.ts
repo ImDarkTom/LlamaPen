@@ -295,9 +295,14 @@ const useMessagesStore = defineStore('messages', () => {
 		let hasAbortTrigger = false;
 		let messageSaveCounter = 0;
 		const messagesForProvider = openedChatMessages.value.filter(m => m.id !== ollamaMessageId);
-		const chatIterator = await useProviderManager().currentProvider.value.chat(messagesForProvider, abortController.signal, {
+		const providerManager = useProviderManager();
+		const selectedModelInfo = providerManager.getSelectedModel();
+		const chatIterator = await providerManager.currentProvider.value.chat(messagesForProvider, abortController.signal, {
 			model: selectedModel,
-			reasoningEnabled: config.chat.thinking.enabled,
+			reasoningEnabled: selectedModelInfo.getReasoningEnabled(),
+			reasoningEffort: selectedModelInfo.getReasoningEffort(),
+			reasoningMaxTokens: selectedModelInfo.getReasoningMaxTokens(),
+			params: selectedModelInfo.getGenerationParams(),
 		});
 
 		try {
