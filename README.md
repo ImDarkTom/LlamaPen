@@ -2,7 +2,7 @@
 
 A no-install needed GUI for Ollama and other local LLM providers.
 
-![App Preview](https://github.com/user-attachments/assets/f16f82f4-9759-4b7d-8b8a-1abe64407c9f)
+![App Preview](https://github.com/user-attachments/assets/d563f615-e1c9-4b41-92df-f46204f1a1ff)
 
 ## Features
 
