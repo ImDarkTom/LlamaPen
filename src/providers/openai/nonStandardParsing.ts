@@ -167,49 +167,49 @@ export class OpenRouterParser {
     public static getModerationStatus(providerMetadata: ProviderMetadata | undefined): boolean | null {
         if (!providerMetadata || !isOpenAIMetadata(providerMetadata)) return null;
 
-        return providerMetadata.data.allInfo?.top_provider.is_moderated;
+        return providerMetadata.data.allInfo?.top_provider?.is_moderated ?? null;
     }
 
     public static getTopProviderMaxCompletionTokens(providerMetadata: ProviderMetadata | undefined): number | null {
         if (!providerMetadata || !isOpenAIMetadata(providerMetadata)) return null;
 
-        return providerMetadata.data.allInfo?.top_provider.max_completion_tokens;
+        return providerMetadata.data.allInfo?.top_provider?.max_completion_tokens ?? null;
     }
 
     public static getPromptPricing(providerMetadata: ProviderMetadata | undefined): number {
         if (!providerMetadata || !isOpenAIMetadata(providerMetadata)) return -1;
 
-        return providerMetadata.data.allInfo?.pricing.prompt;
+        return providerMetadata.data.allInfo?.pricing?.prompt ?? -1;
     }
 
     public static getCompletionPricing(providerMetadata: ProviderMetadata | undefined): number {
         if (!providerMetadata || !isOpenAIMetadata(providerMetadata)) return -1;
 
-        return providerMetadata.data.allInfo?.pricing.completion;
+        return providerMetadata.data.allInfo?.pricing?.completion ?? -1;
     }
 
     public static getInputModalities(providerMetadata: ProviderMetadata | undefined): ModelInputModalities[] {
         if (!providerMetadata || !isOpenAIMetadata(providerMetadata)) return ['unknown-modalities'];
 
-        return providerMetadata.data.allInfo?.architecture.input_modalities;
+        return providerMetadata.data.allInfo?.architecture?.input_modalities ?? ['unknown-modalities'];
     }
 
     public static getOutputModalities(providerMetadata: ProviderMetadata | undefined): ModelOutputModalities[] {
         if (!providerMetadata || !isOpenAIMetadata(providerMetadata)) return ['unknown-modalities'];
 
-        return providerMetadata.data.allInfo?.architecture.output_modalities;
+        return providerMetadata.data.allInfo?.architecture?.output_modalities ?? ['unknown-modalities'];
     }
 
     public static getSupportedParameters(providerMetadata: ProviderMetadata | undefined): ModelParameters[] {
         if (!providerMetadata || !isOpenAIMetadata(providerMetadata)) return [];
 
-        return providerMetadata.data.allInfo?.supported_parameters;
+        return providerMetadata.data.allInfo?.supported_parameters ?? [];
     }
 
     public static getDefaultParameters(providerMetadata: ProviderMetadata | undefined): Partial<Record<ModelParameters, unknown | null>> {
         if (!providerMetadata || !isOpenAIMetadata(providerMetadata)) return {};
 
-        return providerMetadata.data.allInfo?.default_parameters;
+        return providerMetadata.data.allInfo?.default_parameters ?? {};
     }
 }
 
