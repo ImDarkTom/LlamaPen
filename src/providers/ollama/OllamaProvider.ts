@@ -131,13 +131,6 @@ export class OllamaProvider extends BaseProvider {
     protected async onModelsLoaded(): Promise<void> {
         await this.features.modelMemory.refreshLoadedModels();
 
-        this.rawModels.value = this.rawModels.value.map(m => {
-            return {
-                ...m,
-                subtitle: m.info.id,
-            };
-        });
-
         const config = useConfigStore();
         const shouldAutoloadCapabilities =
             config.provider.ollama.autoloadCapabilities && this.rawModels.value.length < 31
@@ -152,7 +145,6 @@ export class OllamaProvider extends BaseProvider {
                 }
 
                 const { capabilities } = showResponse;
-                console.log(capabilities);
 
                 if (
                     capabilities.includes('thinking') &&
