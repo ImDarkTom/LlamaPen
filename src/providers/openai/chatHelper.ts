@@ -64,6 +64,13 @@ class ToolCallProcessor {
     }
 }
 
+/** Reasoning deltas are non-standard: OpenRouter sends `reasoning`, DeepSeek-style servers `reasoning_content`. */
+function reasoningFromDelta(delta: OpenAI.Chat.Completions.ChatCompletionChunk.Choice.Delta): string {
+    const { reasoning, reasoning_content } = delta as { reasoning?: string; reasoning_content?: string; };
+
+    return reasoning ?? reasoning_content ?? '';
+}
+
 /**
  * 
  * @param messages Messages to use as context.
@@ -84,10 +91,21 @@ export async function* chatHelper(
         model: options.model,
         messages: convertMessagesToOpenAI(messages),
         stream: true,
+        ...options.params,
+        // OpenRouter's shape, the only source the app gets reasoning info from.
+        // It rejects effort and max_tokens together, and the UI offers max tokens as the override.
+        ...(options.reasoningEnabled !== undefined && {
+            reasoning: {
+                enabled: options.reasoningEnabled,
+                ...(options.reasoningMaxTokens
+                    ? { max_tokens: options.reasoningMaxTokens }
+                    : options.reasoningEffort && { effort: options.reasoningEffort }),
+            },
+        }),
         ...(toolsStore.toggled.length > 0 &&
             { tools: convertToolsToOpenAI(toolsStore.tools, toolsStore.toggled) }
         ),
-    }, {
+    } as OpenAI.Chat.Completions.ChatCompletionCreateParamsStreaming, {
         signal: abortSignal,
     });
 
@@ -116,10 +134,10 @@ export async function* chatHelper(
                 continue;
             }
 
-            yield { 
+            yield {
                 type: 'message',
                 content: chunk.choices[0].delta.content || '',
-                thinking: '',
+                thinking: reasoningFromDelta(chunk.choices[0].delta),
             };
 
             yield {
@@ -139,7 +157,7 @@ export async function* chatHelper(
         yield {
             type: 'message',
             content: chunk.choices[0].delta.content || '',
-            thinking: '',
+            thinking: reasoningFromDelta(chunk.choices[0].delta),
         };
     }
 }

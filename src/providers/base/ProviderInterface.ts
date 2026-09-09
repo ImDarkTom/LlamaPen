@@ -1,6 +1,6 @@
 import type { ChatIteratorChunk, ChatOptions } from "./types";
 import type { Reactive, Ref } from "vue";
-import type { ModelCapability, ModelInfo } from "@/composables/useProviderManager";
+import type { ModelInfo } from "@/composables/useProviderManager";
 import type { ModelAttributes } from "@/components/ModelsPage/types";
 
 export type ConnectionState = {
@@ -11,9 +11,20 @@ export type ConnectionState = {
 
 export interface LLMProvider {
     readonly name: string;
-    readonly type: 'ollama' | 'lpcloud' | 'openai';
+    readonly type: 'ollama' | 'openai';
     readonly connectionState: Reactive<ConnectionState>;
     readonly rawModels: Ref<ModelInfo[]>;
+
+    readonly features: {
+        modelMemory?: ModelMemoryFeature;
+        modelAdmin?: ModelAdminFeature;
+        modelDownload?: ModelDownloadFeature;
+    };
+
+    config: {
+        apiKey: string;
+        baseURL: string;
+    };
 
     /**
      * Loads models from the provider and initialises capabilities.
@@ -26,7 +37,7 @@ export interface LLMProvider {
      * Set the connection state to loading and re-send a network request to the provider's URL
      */
     refreshConnection(): Promise<void>;
-    
+
 
     /**
      * Generates a chat response as a stream of chunks.
@@ -39,16 +50,10 @@ export interface LLMProvider {
      * @param options Client-side generation options.
      */
     chat(
-        messages: ChatMessage[], 
-        abortSignal: AbortSignal, 
+        messages: ChatMessage[],
+        abortSignal: AbortSignal,
         options: ChatOptions,
     ): Promise<AsyncIterable<ChatIteratorChunk>>;
-
-    /**
-     * Get the model 'capabilities', e.g. image inputs, thinking/reasoning, etc.
-     * @param modelId Model to get capabilities for.
-     */
-    getModelCapabilities(modelId: string): ModelCapability[];
 
     /**
      * Get the attributes of a model. E.g. license, modelfile, etc.
@@ -63,31 +68,65 @@ export interface LLMProvider {
      * @param messages Chat messages to generate a title for
      */
     generateChatTitle(messages: ChatMessage[]): Promise<string>;
+
+    isConnected(): boolean;
+    isLoading(): boolean;
+    isDisconnected(): boolean;
+
+    getAllModelIds(): string[];
 }
 
-export interface MemoryManagedProvider extends LLMProvider {
+export interface ModelMemoryFeature {
     readonly loadedModelIds: Ref<Set<string>>;
     refreshLoadedModels(): Promise<void>;
-    
+
     /**
      * Loads a model into memory.
      * @param modelName The name of the model to load into memory.
      * @returns If the model was successfully loaded into memory.
      */
-    loadModelIntoMemory(modelId: string): Promise<boolean>;
+    load(modelId: string): Promise<boolean>;
 
     /**
      * Unloads a model from memory.
      * @param modelName The name of the model to unload from memory.
      * @returns If the model was successfully unloaded from memory.
      */
-    unloadModel(modelId: string): Promise<boolean>;
+    unload(modelId: string): Promise<boolean>;
 }
 
-export interface LPCloudLLMProvider extends LLMProvider {
-    isSignedIn: boolean;
+export interface ModelAdminFeature {
+    /**
+     * Copy a model under a new name
+     * @param source Model to copy.
+     * @param destination New ID to copy to.
+     * @returns Success or not.
+     */
+    copy(source: string, destination: string): Promise<boolean>;
+
+    /**
+     * Delete a model.
+     * @param modelId Model to delete.
+     * @returns Success or not.
+     */
+    delete(modelId: string): Promise<boolean>;
+
+    /**
+     * Get the info/download page of a model
+     * @param modelId Model to get URL for.
+     */
+    externalModelUrl?(modelId: string): string;
 }
 
-export interface ConfigurableProvider<TConfig extends Record<string, unknown>> extends LLMProvider {
-    config: TConfig;
+export type ModelDownloadProgress = {
+    status: string;
+    digest?: string;
+    total: number;
+    completed: number;
+}
+
+export interface ModelDownloadFeature {
+    progress: Ref<Record<string, ModelDownloadProgress>>;
+    download(modelId: string): Promise<{ success: boolean, reason?: string }>;
+    cancel(modelId: string): void;
 }

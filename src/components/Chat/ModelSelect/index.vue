@@ -3,27 +3,19 @@ import { computed, nextTick, onBeforeUnmount, onMounted, ref, type ComponentPubl
 import { VscDebugDisconnect } from 'vue-icons-plus/vsc';
 import logger from '@/lib/logger';
 import isOnMobile from '@/utils/core/isOnMobile';
-import { BiExpand, BiFilterAlt, BiLoaderAlt, BiRefresh, BiSearch } from 'vue-icons-plus/bi';
+import { BiFilterAlt, BiLoaderAlt, BiRefresh, BiSearch } from 'vue-icons-plus/bi';
 import { storeToRefs } from 'pinia';
 import { useModelSelect } from '@/stores/useModelSelect';
 import { emitter } from '@/lib/mitt';
 import { useProviderManager, type ModelInfo } from '@/composables/useProviderManager';
 import useUIStore from '@/stores/useUiStore';
 import { useConfigStore } from '@/stores/useConfigStore';
+import ExternalLink from '@/components/ToolsPage/ExternalLink.vue';
 
 const config = useConfigStore();
 
 // State
-const {
-    isConnected,
-    isLoading,
-    rawModels,
-    loadModels,
-    refreshAndLoadModels,
-    selectedModelInfo,
-    allModelIds,
-    currentProvider,
-} = useProviderManager();
+const { rawModels, currentProvider, getSelectedModel } = useProviderManager();
 
 const {
     isMenuOpened: isOpened,
@@ -31,13 +23,10 @@ const {
     queriedModelList,
     focusedItemIndex,
     filterMenuOpen,
-    sortedItems
+    sortedItems,
 } = storeToRefs(useModelSelect());
 
-const {
-    setModel,
-    resetState
-} = useModelSelect();
+const { setModel, resetState } = useModelSelect();
 
 const { renameModel } = useUIStore();
 
@@ -45,26 +34,27 @@ const { renameModel } = useUIStore();
 const searchBarRef = ref<HTMLInputElement | null>(null);
 const listItemsRef = ref<Array<ComponentPublicInstance<{ listItemRef: HTMLLIElement | null }>>>([]);
 
+const selectedModelId = computed(() => getSelectedModel().id);
+
 // Lifecycle hooks
 onMounted(async () => {
     logger.info('Model Select Component', 'Selected model is', config.selectedModel);
 
-    await loadModels(false);
-    if (selectedModelInfo.value.exists) {
-        setModel(selectedModelInfo.value.data.info.id, true);
+    await currentProvider.value.loadModels(false);
+    if (selectedModelId.value) {
+        setModel(selectedModelId.value, true);
     } else {
-        if (allModelIds.value.length > 0) {
-            if (
-                allModelIds.value[0] !== undefined &&
-                rawModels.value[0] !== undefined
-            ) {
-                config.selectedModel = allModelIds.value[0];
+        const allModelIds = currentProvider.value.getAllModelIds();
+
+        if (allModelIds.length > 0) {
+            if (allModelIds[0] !== undefined && rawModels.value[0] !== undefined) {
+                config.selectedModel = allModelIds[0];
                 setModel(rawModels.value[0].info.id, true);
             }
         }
     }
 
-    document.addEventListener('keydown', handleKeyboardShortcuts)
+    document.addEventListener('keydown', handleKeyboardShortcuts);
 });
 
 onBeforeUnmount(() => {
@@ -73,7 +63,7 @@ onBeforeUnmount(() => {
 
 // Functions
 function handleKeyboardShortcuts(e: KeyboardEvent) {
-    if (e.key === "M" && e.ctrlKey && e.shiftKey) {
+    if (e.key === 'M' && e.ctrlKey && e.shiftKey) {
         e.preventDefault();
 
         isOpened.value = !isOpened.value;
@@ -100,37 +90,37 @@ function onToggled(opened: boolean) {
 function searchKeyDown(e: KeyboardEvent) {
     let scrollDown = false;
     switch (e.key) {
-        case "Enter":
+        case 'Enter':
             const selectedItem = sortedItems.value[focusedItemIndex.value];
-            
+
             if (selectedItem !== undefined) {
                 setModel(selectedItem.info.id);
             }
 
             break;
 
-        case "Escape":
+        case 'Escape':
             resetState();
             break;
 
-        case "ArrowUp":
+        case 'ArrowUp':
             focusedItemIndex.value = Math.max(focusedItemIndex.value - 1, 0); // back 1 index or keep at 0
             scrollDown = true;
             break;
 
-        case "ArrowDown":
+        case 'ArrowDown':
             focusedItemIndex.value = Math.min(focusedItemIndex.value + 1, queriedModelList.value.length - 1); // up 1 index or keep at max
             scrollDown = true;
             break;
-        
-        case "/":
+
+        case '/':
             e.preventDefault();
             filterMenuOpen.value = true;
 
             nextTick(() => {
                 emitter.emit('modelSelectFocusFilter');
             });
-            
+
             break;
 
         default:
@@ -151,8 +141,8 @@ function setFocused(index: number) {
 }
 
 function promptRenameModel(model: ModelInfo) {
-    const displayName = model.displayName;
-    
+    const displayName = model.app.displayName;
+
     let newName = prompt(`Enter a new name for '${displayName}' (app cosmetic only): '`, displayName);
     if (newName === '' || !newName) {
         newName = displayName;
@@ -161,134 +151,142 @@ function promptRenameModel(model: ModelInfo) {
     renameModel(model.info.id, newName);
 }
 
-
 const modelName = computed(() => {
-    if (!selectedModelInfo.value.exists) return "No model selected.";
-    
-    return selectedModelInfo.value.data.displayName;
+    if (!selectedModelId.value) return 'No model selected.';
+
+    return getSelectedModel().displayName;
 });
 
-const menuWidth = computed(() => config.ui.modelList.useGridView ? 'sm:w-xl': 'sm:w-96');
-const useGridView = computed(() => config.ui.modelList.useGridView);
+const searchInputId = useId();
+
+function refreshAndLoadModels() {
+    currentProvider.value.refreshConnection();
+    currentProvider.value.loadModels(true);
+}
 </script>
 
 <template>
-    <FloatingMenu v-model:is-opened="isOpened" @toggled="onToggled" preffered-position="top" :menu-width="menuWidth" >
+    <FloatingMenu
+        v-model:is-opened="isOpened"
+        @toggled="onToggled"
+        preffered-position="top">
         <template #button>
-            <span v-if="isLoading" class="flex flex-row gap-2 items-center text-base-200/75">
+            <span
+                v-if="currentProvider.isLoading()"
+                class="flex flex-row gap-2 items-center text-base-200/75">
                 <BiLoaderAlt class="animate-spin size-6 inline" />
                 Loading models...
             </span>
 
-            <span v-else-if="isConnected && selectedModelInfo.exists" class="flex flex-row gap-2 items-center">
-                <IconModel :name="selectedModelInfo.data.info.id" class="size-6" />
+            <span
+                v-else-if="currentProvider.isConnected() && selectedModelId"
+                class="flex flex-row gap-2 items-center">
+                <IconModel
+                    :name="selectedModelId"
+                    class="size-4" />
                 {{ modelName }}
             </span>
 
-            <span v-else-if="isConnected">
-                No model selected
-            </span>
+            <span v-else-if="currentProvider.isConnected()"> No model selected </span>
 
-            <span v-else class="flex flex-row gap-2 items-center text-base-200/75">
+            <span
+                v-else
+                class="flex flex-row gap-2 items-center text-base-200/75">
                 <VscDebugDisconnect />
                 Disconnected
             </span>
         </template>
         <template #menu>
-            <div 
-                class="flex flex-row gap-2 items-center justify-center" 
+            <div
+                class="flex flex-row gap-2 items-center justify-center"
                 role="listbox">
                 <!-- Search bar -->
-                <div 
-                    class="flex flex-row w-full h-12 rounded-lg overflow-hidden ring-inset ring-[0.5px] ring-base-400 focus-within:ring-base-300 shadow-elevation-1 bg-base-600">
-                    <BiSearch class="h-full ml-3" />
-                    <input 
+                <div
+                    class="flex flex-row w-full h-10 rounded-sm overflow-hidden bg-base-600 focus-within:ring ring-base-500 shadow-elevation-1">
+                    <label :for="searchInputId">
+                        <BiSearch class="h-full ml-3 size-4" />
+                        <span class="sr-only">Search for a model</span>
+                    </label>
+                    <input
+                        v-model="searchQuery"
                         class="px-2 w-full h-full box-content outline-0"
-                        :class="{ 'cursor-not-allowed': !isConnected }" 
-                        ref="searchBarRef" 
+                        ref="searchBarRef"
                         type="search"
                         placeholder="Search for a model..."
-                        :disabled="!isConnected"
-                        v-model="searchQuery" 
-                        @keydown="searchKeyDown" 
-                        aria-label="Search for a model..."
-                        aria-controls="model-list" >
+                        aria-controls="model-list"
+                        :id="searchInputId"
+                        :class="{ 'cursor-not-allowed': !currentProvider.isConnected() }"
+                        :disabled="!currentProvider.isConnected()"
+                        @keydown="searchKeyDown" />
                     <button
                         @click="filterMenuOpen = !filterMenuOpen"
                         :class="{ 'bg-base-500!': filterMenuOpen }"
-                        class="hover:text-primary cursor-pointer transition-colors duration-dynamic">
-                        <BiFilterAlt class="size-5 mx-2.5" />
+                        class="hover:text-primary cursor-pointer transition-colors duration-dynamic rounded-lg">
+                        <BiFilterAlt class="size-4 mx-3" />
                     </button>
                 </div>
-
-                <button
-                    @click="config.ui.modelList.useGridView = !config.ui.modelList.useGridView"
-                    :class="{ 'bg-base-400!': useGridView }"
-                    class="size-12 min-w-12 flex items-center justify-center relative text-base-900 bg-primary hover:bg-base-300 cursor-pointer transition-colors duration-dynamic rounded-lg">
-                    <BiExpand />
-                </button>
             </div>
 
             <ChatModelSelectFilterMenu />
 
-            <div 
+            <div
                 class="h-80 overflow-y-auto scrollbar-thin"
                 :class="{ 'h-62!': filterMenuOpen }">
-                <div v-if="isLoading" class="h-24 flex justify-center items-center">
+                <div
+                    v-if="currentProvider.isLoading()"
+                    class="h-24 flex justify-center items-center">
                     <BiLoaderAlt class="animate-spin size-6" />
                 </div>
-                <div v-else-if="!isConnected" class="h-24 flex flex-col px-3 py-2 justify-center items-center gap-2">
+                <div
+                    v-else-if="!currentProvider.isConnected()"
+                    class="h-24 flex flex-col px-3 py-2 justify-center items-center gap-2">
                     <span class="flex flex-row gap-1 items-center">
                         <VscDebugDisconnect class="size-5" />
                         Not connected to '{{ currentProvider.name }}'
                     </span>
                     <ButtonPrimary
-                        type="button"
-                        color="primary"
                         text="Retry"
+                        class="p-2"
                         :icon="BiRefresh"
                         @click="refreshAndLoadModels" />
                 </div>
-                <div v-else-if="queriedModelList.length === 0 && searchQuery !== ''"
+                <div
+                    v-else-if="queriedModelList.length === 0 && searchQuery !== ''"
                     class="flex w-full p-4 justify-center items-center">
                     No results.
                 </div>
-                <div v-else-if="queriedModelList.length === 0 && searchQuery === ''"
+                <div
+                    v-else-if="queriedModelList.length === 0 && searchQuery === ''"
                     class="flex flex-col w-full p-4 justify-center items-center">
                     <span>No models found.</span>
-                    <a 
+                    <ExternalLink
                         v-if="currentProvider.type === 'ollama'"
-                        href="https://ollama.com/search" 
-                        target="_blank" 
-                        class="text-secondary hover:underline">
+                        href="https://ollama.com/search">
                         Find on Ollama Library
-                    </a>
+                    </ExternalLink>
                 </div>
-                <div v-else-if="sortedItems.length === 0" 
+                <div
+                    v-else-if="sortedItems.length === 0"
                     class="flex flex-col w-full p-4 justify-center items-center">
                     <span>No models matched filter.</span>
                 </div>
-                <template v-else-if="queriedModelList.filter((item) => !item.hidden).length > 0">
-                    <component
-                        :is="useGridView ? 'div' : 'ul'"
-                        :class="useGridView
-                            ? ' grid grid-cols-2 sm:grid-cols-3 md:grid-cols-5 gap-2 m-2'
-                            : '*:not-last:mb-1'"
-                        :role="useGridView ? undefined : 'list'">
-                        <ChatModelSelectItem 
-                            v-for="(model, index) in sortedItems" 
-                            :key="model.info.id" 
-                            :layout="useGridView ? 'grid': 'row'"
+                <template v-else-if="queriedModelList.filter((item) => !item.app.hidden).length > 0">
+                    <ul class="flex flex-col gap-1">
+                        <ChatModelSelectItem
+                            v-for="(model, index) in sortedItems"
+                            :key="model.info.id"
                             :index
-                            :model 
-                            :isCurrentModel="model.info.id === selectedModelInfo.data?.info.id" 
+                            :model
+                            :isCurrentModel="model.info.id === selectedModelId"
                             :selected="index === focusedItemIndex"
                             :renameModel="() => promptRenameModel(model)"
                             @mouseover="setFocused(index)"
                             ref="listItemsRef" />
-                    </component>
+                    </ul>
                 </template>
-                <li v-else class="flex flex-col w-full p-4 justify-center items-center">
+                <li
+                    v-else
+                    class="flex flex-col w-full p-4 justify-center items-center">
                     <span>No unhidden models found. </span>
                 </li>
             </div>

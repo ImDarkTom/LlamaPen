@@ -21,7 +21,7 @@ module.exports = {
                         '--tw-prose-body': 'var(--color-base-200)',
                         '--tw-prose-headings': 'var(--color-base-100)',
                         '--tw-prose-lead': 'var(--color-base-100)',
-                        '--tw-prose-links': 'var(--color-secondary)',
+                        '--tw-prose-links': 'var(--color-links)',
                         '--tw-prose-bold': 'var(--color-base-200)',
                         '--tw-prose-counters': 'var(--color-primary)',
                         '--tw-prose-bullets': 'var(--color-primary)',

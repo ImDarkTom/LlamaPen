@@ -14,48 +14,32 @@ const props = defineProps<{
     message: ChatMessage;
 }>();
 
-const messageTextContainer = ref<HTMLDivElement | null>(null);
-
 // === State ===
 const editing = ref<boolean>(false);
 const messageEditorRef = ref<InstanceType<typeof Editor> | null>(null);
 const images = ref<{ id: string; blobSrc: string; file: Blob }[]>([]);
 
 onMounted(async () => {
-    const messageAttachments = (await getMessageAttachments(props.message.id)).map(item => item.content);
+    const messageAttachments = (await getMessageAttachments(props.message.id)).map((item) => item.content);
     images.value = messageAttachments.map((attachment) => {
         return {
             id: nanoid(),
             blobSrc: URL.createObjectURL(attachment),
             file: attachment,
-        }
+        };
     });
-
-    messageTextContainer.value?.addEventListener('click', (e) => {
-        const target = e.target as HTMLElement;
-        if (target.classList.contains('copy-code-button')) {
-            const code = decodeURIComponent(target.dataset.code || "");
-            navigator.clipboard.writeText(code);
-
-            target.textContent = 'Copied!'
-            setTimeout(() => {
-                target.textContent = 'Copy';
-            }, 1000);
-        }
-    })
-})
+});
 
 // === Computed ===
 const isUserMessage = computed(() => props.message.type === 'user');
 const isModelMessage = computed(() => props.message.type === 'model');
 const messageState = computed(() => isMessageGenerating(props.message));
-const modelMessageNotGenerating = computed(() => 
-    props.message.type === 'model' 
-    && (
-        props.message.status === 'finished'
-        || props.message.status === 'cancelled'
-        || (props.message.status === 'inProgress' && !messageState.value.generating)
-    )
+const modelMessageNotGenerating = computed(
+    () =>
+        props.message.type === 'model' &&
+        (props.message.status === 'finished' ||
+            props.message.status === 'cancelled' ||
+            (props.message.status === 'inProgress' && !messageState.value.generating)),
 );
 
 // === Functions ===
@@ -96,52 +80,63 @@ function renderText(text: string) {
 
     return renderMarkdown(allAfterThinkBlock);
 }
-
 </script>
 
 <template>
-    <ChatMessageToolCall 
-        v-if="props.message.type === 'tool'" 
+    <ChatMessageToolCall
+        v-if="props.message.type === 'tool'"
         :message="message as ToolChatMessage" />
-    <div 
-        v-else 
-        class="group/message m-2 mb-0 flex flex-col" 
-        ref="messageTextContainer">
-        <div class="box-border p-4 flex flex-col" :class="{
-            'ml-auto rounded-2xl bg-base-800 max-w-[70%] shadow-md shadow-base-950/50': isUserMessage && !editing,
-            'w-full max-w-[calc(100dvw-1rem)] box-border p-2! pb-1! m-0!': isModelMessage || editing,
-        }">
-            <ChatMessageModelMessageHeader v-if="message.type === 'model'" :message :modelMessageDone="modelMessageNotGenerating" />
-            <img 
-                v-for="image of images" 
-                :key="image.id" 
+    <div
+        v-else
+        class="group/message m-2 mb-0 flex flex-col">
+        <div
+            class="box-border p-3 flex flex-col"
+            :class="{
+                'ml-auto rounded-2xl bg-base-800 max-w-[70%] shadow-md shadow-base-950/50': isUserMessage && !editing,
+                'w-full max-w-[calc(100dvw-1rem)] box-border p-2! pb-1! m-0!': isModelMessage || editing,
+            }">
+            <ChatMessageModelMessageHeader
+                v-if="message.type === 'model'"
+                :message
+                :modelMessageDone="modelMessageNotGenerating" />
+            <img
+                v-for="image of images"
+                :key="image.id"
                 :src="image.blobSrc"
                 class="rounded-xl max-w-64 max-h-full cursor-pointer mb-2"
-                @click="emitter.emit('openLightbox', { image: image.file })" alt="Message attached media" />
+                @click="emitter.emit('openLightbox', { image: image.file })"
+                alt="Message attached media" />
 
             <ChatMessageEditor
-                v-if="editing" 
-                ref="messageEditorRef" 
+                v-if="editing"
+                ref="messageEditorRef"
                 :message
-                @onCancelEdit="cancelEditing" 
+                @onCancelEdit="cancelEditing"
                 @onFinishEditing="finishEdit"
                 @onFinishAndContinue="finishAndContinue" />
 
-            <div class="relative" v-else>
-                <div v-if="message.errorText" class="italic bg-danger/25 p-2 rounded-lg ring-1 ring-danger/50 text-danger">
+            <div
+                class="relative"
+                v-else>
+                <div
+                    v-if="message.errorText"
+                    class="italic bg-danger/25 p-2 rounded-lg ring-1 ring-danger/50 text-danger">
                     <BiError class="inline mr-1 pb-0.5" />
                     <span class="text-center">{{ message.errorText }}</span>
                 </div>
-                <article 
-                    v-if="message.type === 'user'" 
-                    class="max-w-none prose prose-app! dark:prose-invert" >
+                <article
+                    v-if="message.type === 'user'"
+                    class="max-w-none prose prose-app! dark:prose-invert">
                     {{ message.content }}
                 </article>
-                <div 
-                    v-else-if="message.type === 'model'" >
-                    <ChatMessageThinkBlock :message="(message as ModelChatMessage)" :messageState />
-                    <article class="max-w-none prose prose-app! dark:prose-invert" v-html="renderText(message.content)"></article>
-                    <ChatMessageModelToolCalls :message="(message as ModelChatMessage)" />
+                <div v-else-if="message.type === 'model'">
+                    <ChatMessageThinkBlock
+                        :message="message as ModelChatMessage"
+                        :messageState />
+                    <article
+                        class="max-w-none prose prose-app! dark:prose-invert"
+                        v-html="renderText(message.content)"></article>
+                    <ChatMessageModelToolCalls :message="message as ModelChatMessage" />
                     <div
                         v-if="messageState.generating"
                         class="animate-breathe rounded-full bg-base-100 inline-block"
@@ -154,9 +149,9 @@ function renderText(text: string) {
                         <div>
                             <div class="w-full h-px bg-base-200/50 my-2"></div>
                             <span class="text-base-200/75 italic mr-2">Generation interrupted.</span>
-                            <button 
+                            <button
                                 class="bg-base-800 p-2 ring-1 ring-base-400 rounded-md cursor-pointer outline-0 hover:outline-2 outline-base-300 transition-all duration-dynamic"
-                                @click="editMessage(message.id, message.content, message.type, true);">
+                                @click="editMessage(message.id, message.content, message.type, true)">
                                 <BiRefresh class="inline mr-1" />
                                 <span>Continue</span>
                             </button>
@@ -168,11 +163,11 @@ function renderText(text: string) {
         <ChatMessageInteractions
             class="transition-opacity duration-dynamic hover:duration-0"
             :class="{
-                'group-hover/message:opacity-100 md:opacity-0': message.type === 'user'
+                'group-hover/message:opacity-100 md:opacity-0': message.type === 'user',
             }"
-            v-if="!editing" 
-            :message 
-            :done="modelMessageNotGenerating" 
+            v-if="!editing"
+            :message
+            :done="modelMessageNotGenerating"
             @editMessage="handleEditBtnClick" />
     </div>
 </template>

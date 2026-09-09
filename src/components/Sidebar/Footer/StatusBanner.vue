@@ -5,85 +5,89 @@ import { BiCheck, BiChevronUp, BiError, BiLoaderAlt } from 'vue-icons-plus/bi';
 import { useProviderManager } from '@/composables/useProviderManager';
 import logger from '@/lib/logger';
 
-const { isConnected, isLoading, connectionState, currentProvider } = useProviderManager();
+const { currentProvider } = useProviderManager();
 
-const statusMessageText = ref("Waiting for Ollama...");
+const statusMessageText = ref('Waiting for Ollama...');
 const moreInfoText = ref('Attempting to connect to Ollama...');
 const expanded = ref(false);
 
-watch(connectionState, (newState) => {
-    logger.info('StausText Component', 'New provider connection status:', newState.status);
+watch(
+    currentProvider.value.connectionState,
+    (newState) => {
+        logger.info('StausText Component', 'New provider connection status:', newState.status);
 
-    switch (newState.status) {
-        case 'checking':
-            statusMessageText.value = 'Checking connection...';
-            moreInfoText.value = `Checking connection to '${currentProvider.value.name}'...`;
-            break;
-        case 'connected':
-            statusMessageText.value = "Connected!";
-            moreInfoText.value = `Connected to '${currentProvider.value.name}'!`;
-            break;
-        case 'error':
-            if (newState.error === "NetworkError when attempting to fetch resource.") {
-                statusMessageText.value = "Disconnected";
-                moreInfoText.value = "Network error, is Ollama running?";
-            } else {
-                statusMessageText.value = "Connection Error";
-                moreInfoText.value = newState.error || 'Unknown Error';
-            }
+        switch (newState.status) {
+            case 'checking':
+                statusMessageText.value = 'Checking connection...';
+                moreInfoText.value = `Checking connection to '${currentProvider.value.name}'...`;
+                break;
+            case 'connected':
+                statusMessageText.value = 'Connected!';
+                moreInfoText.value = `Connected to '${currentProvider.value.name}'!`;
+                break;
+            case 'error':
+                if (newState.error === 'NetworkError when attempting to fetch resource.') {
+                    statusMessageText.value = 'Disconnected';
+                    moreInfoText.value = 'Network error, is Ollama running?';
+                } else {
+                    statusMessageText.value = 'Connection Error';
+                    moreInfoText.value = newState.error || 'Unknown Error';
+                }
 
-            emitter.emit('openNotConnectedPopup');
-            break;
-        case 'disconnected':
-        default:
-            statusMessageText.value = `Waiting for ${currentProvider.value.name}...`;
-            moreInfoText.value = `Attempting to connect to '${currentProvider.value.name}'...`;
-    }
-}, { immediate: true });
+                emitter.emit('openNotConnectedPopup');
+                break;
+            case 'disconnected':
+            default:
+                statusMessageText.value = `Waiting for ${currentProvider.value.name}...`;
+                moreInfoText.value = `Attempting to connect to '${currentProvider.value.name}'...`;
+        }
+    },
+    { immediate: true },
+);
 </script>
 
 <template>
-    <div 
+    <div
         class="overflow-hidden text-ellipsis rounded-md"
-        :class="{ 
-            'text-warning bg-warning/25': isLoading,
-            'text-success bg-success/25': isConnected && !isLoading, 
-            'text-danger bg-danger/25': !isConnected && !isLoading
+        :class="{
+            'text-warning bg-warning/25': currentProvider.isLoading(),
+            'text-success bg-success/25': currentProvider.isConnected() && !currentProvider.isLoading(),
+            'text-danger bg-danger/25': !currentProvider.isConnected() && !currentProvider.isLoading(),
         }">
-        <div 
-            class="flex flex-row gap-2 p-1 cursor-pointer ring ring-inset rounded-md select-none"
-            :class="{ 
-                'hover:bg-warning/35 ring-warning/50': isLoading,
-                'hover:bg-success/35 ring-success/50': isConnected && !isLoading, 
-                'hover:bg-danger/35 ring-danger/50': !isConnected && !isLoading
+        <div
+            class="flex flex-row gap-2 p-1 cursor-pointer rounded-md select-none"
+            :class="{
+                'hover:bg-warning/35': currentProvider.isLoading(),
+                'hover:bg-success/35': currentProvider.isConnected() && !currentProvider.isLoading(),
+                'hover:bg-danger/35': !currentProvider.isConnected() && !currentProvider.isLoading(),
             }"
             @click="expanded = !expanded">
-            <BiLoaderAlt 
-                v-if="isLoading"
+            <BiLoaderAlt
+                v-if="currentProvider.isLoading()"
                 class="animate-spin size-6" />
             <BiError
-                v-else-if="!isConnected && !isLoading"
+                v-else-if="!currentProvider.isConnected() && !currentProvider.isLoading()"
                 class="size-6" />
-            <IconOllama 
-                v-else-if="currentProvider.type === 'ollama'" 
+            <IconOllama
+                v-else-if="currentProvider.type === 'ollama'"
                 class="size-6" />
-            <BiCheck 
+            <BiCheck
                 v-else
                 class="size-6" />
-            <span 
-                class="font-medium" 
-                :class="{ 'animate-pulse': isLoading }"
-                :title="statusMessageText" >
+            <span
+                class="font-medium"
+                :class="{ 'animate-pulse': currentProvider.isLoading() }"
+                :title="statusMessageText">
                 {{ statusMessageText }}
             </span>
-            <BiChevronUp 
-                class="inline ml-auto transition-transform duration-dynamic" 
-                :class="{ 
-                    'rotate-180': expanded
+            <BiChevronUp
+                class="inline ml-auto transition-transform duration-dynamic"
+                :class="{
+                    'rotate-180': expanded,
                 }" />
         </div>
-        <div 
-            v-if="expanded" 
+        <div
+            v-if="expanded"
             class="p-1 text-sm">
             {{ moreInfoText }}
         </div>

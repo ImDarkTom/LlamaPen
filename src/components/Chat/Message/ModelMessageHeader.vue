@@ -2,22 +2,22 @@
 import { BiTimeFive } from 'vue-icons-plus/bi';
 
 defineProps<{
-    message: ModelChatMessage
+    message: ModelChatMessage;
     modelMessageDone: boolean;
 }>();
 </script>
 
 <template>
     <div class="group/msg-header flex flex-row items-center gap-2 mb-2">
-        <IconModel 
-            class="size-10 p-2 bg-base-500 rounded-full ring-1 ring-base-400" 
+        <IconModel
+            class="size-10 p-2 bg-base-500 rounded-full ring-1 ring-base-400"
             :name="message.model"
             :ignore-styling="true" />
 
-        <ChatMessageModelSelector 
+        <ChatMessageModelSelector
             :message
             :modelMessageDone />
-            
+
         <div class="grow"></div>
 
         <div

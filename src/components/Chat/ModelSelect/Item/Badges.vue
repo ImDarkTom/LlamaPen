@@ -1,118 +1,70 @@
 <script setup lang="ts">
-import { useProviderManager, type ModelCapability } from '@/composables/useProviderManager';
-import type { ProviderMetadata } from '@/providers/base/types';
-import type { LpCloudPricing } from '@/providers/lpcloud/types';
-import useCloudUserStore from '@/stores/useCloudUserStore';
-import { BiBox, BiBrain, BiHeart, BiLock, BiQuestionMark, BiShow, BiStar, BiWrench } from 'vue-icons-plus/bi';
-
-const cloudUserStore = useCloudUserStore();
+import { useProviderManager, type ModelCapability, type ModelInfo } from '@/composables/useProviderManager';
+import { BiBrain, BiHeart, BiLock, BiQuestionMark, BiShow, BiWrench } from 'vue-icons-plus/bi';
 
 const props = defineProps<{
-    providerMetadata?: ProviderMetadata;
+    model: ModelInfo;
     capabilities: ModelCapability[];
     isFavorited: boolean;
 }>();
 
-const { currentProvider } = useProviderManager();
+const { getModel } = useProviderManager();
 
-const lpCloudMetadata = computed(() => props.providerMetadata?.provider === 'lpcloud' ? props.providerMetadata : null);
+const hasReasoning = computed(() => getModel(props.model.info.id).supportsParameter('reasoning'));
 
-const lpCloudPriceTier = computed<LpCloudPricing | null>(() => lpCloudMetadata.value?.data.priceTier ?? null);
-
-const alwaysReasons = computed(() => lpCloudMetadata.value?.data.tags?.includes('alwaysReasons') ?? false);
-
-const lpCloudPricingMap: Record<LpCloudPricing, string> = {
-	"0": '¢',
-	"1": "$",
-	"2": "$$",
-	"3": "$$$",
-	"4": "$$$+",
-};
-
-const lpCloudPricingMapNames: Record<LpCloudPricing, string> = {
-	"0": 'Very low cost',
-	"1": "Low cost",
-	"2": "Medium cost",
-	"3": "High cost",
-	"4": "Very high cost",
-};
+const alwaysReasons = computed(() => props.capabilities.includes('always-reasons') ?? false);
 </script>
 
 <template>
-    <div 
-        v-if="currentProvider.type === 'openai'">
-        <div 
-            class="bg-slate-400/25 rounded-sm ring-1 ring-slate-400 p-0.5"
-            title="Capabilities unknown - OpenAI-style APIs do not expose model capabilities">
-            <BiQuestionMark class="text-slate-400 size-4" />
-        </div>
-    </div>
-    <div
-        v-else 
-        class="flex flex-row gap-2 shrink-0 min-w-fit">
-        <template v-if="lpCloudMetadata">
-            <Tooltip 
-                size="small"
-                :text="lpCloudPriceTier !== null ? lpCloudPricingMapNames[lpCloudPriceTier] : ''">
-                <span
-                    class="text-xs font-medium flex items-center pl-2 min-w-max"
-                    :class="{
-                        'text-lpcloudpricing-verylow': lpCloudPriceTier === 0,
-                        'text-lpcloudpricing-low': lpCloudPriceTier !== null && [1,2].includes(lpCloudPriceTier),
-                        'text-lpcloudpricing-moderate': lpCloudPriceTier === 3,
-                        'text-lpcloudpricing-high': lpCloudPriceTier === 4,
-                    }">
-                    {{ lpCloudPriceTier !== null ? lpCloudPricingMap[lpCloudPriceTier] : '' }}
-                </span>
-            </Tooltip>
-        </template>
+    <div class="flex flex-row gap-2 shrink-0 min-w-fit">
         <!-- Favorited badge -->
-        <div 
+        <Tooltip
             v-if="isFavorited"
-            class="bg-red-400/25 rounded-sm ring-1 ring-red-400 p-0.5"
-            title="Favorited model">
+            class="bg-red-400/25 rounded-sm p-0.5"
+            text="Favorite model"
+            size="tiny">
             <BiHeart class="text-red-400 size-4" />
-        </div>
-
-        <!-- LlamaPen Cloud badges -->
-        <template v-if="lpCloudMetadata">
-            <div 
-                v-if="lpCloudMetadata.data.premium && !cloudUserStore.isPremium"
-                class="bg-yellow-400/25 rounded-sm ring-1 ring-yellow-400 p-0.5"
-                title="Premium model - requires LlamaPen Cloud Premium">
-                <BiStar class="text-yellow-400 size-4" />
-            </div>
-            <div 
-                v-if="lpCloudMetadata.data.tags?.includes('closedSource')"
-                class="bg-orange-400/25 rounded-sm ring-1 ring-orange-400 p-0.5"
-                title="Proprietary model - closed-source model that is not open-source.">
-                <BiBox class="text-orange-400 size-4" />
-            </div>
-        </template>
+        </Tooltip>
 
         <!-- Capability badges -->
-        <div 
-            v-if="capabilities.includes('vision')"
-            class="bg-capability-vision/25 rounded-sm ring-1 ring-capability-vision p-0.5"
-            title="Vision - can process images">
-            <BiShow class="text-capability-vision size-4" />
-        </div>
-        <div 
-            v-if="capabilities.includes('reasoning')"
-            class="bg-capability-reasoning/25 rounded-sm ring-1 ring-capability-reasoning p-0.5 flex flex-row"
-            :title="alwaysReasons 
-                ? 'Locked reasoning - always uses reasoning capabilities' 
-                : 'Thinking - toggleable enhanced reasoning capabilities'" >
-            <BiBrain class="text-capability-reasoning size-4" />
-            <BiLock 
-                v-if="alwaysReasons" 
-                class="text-capability-reasoning size-4" />
-        </div>
-        <div 
-            v-if="capabilities.includes('tools')"
-            class="bg-capability-tools/25 rounded-sm ring-1 ring-capability-tools p-0.5"
-            title="Tools - can use external tools">
-            <BiWrench class="text-capability-tools size-4" />
-        </div>
+        <Tooltip
+            v-if="capabilities.includes('unavailable')"
+            class="bg-slate-400/25 rounded-sm p-0.5"
+            text="Capabilities unknown - Provider has not listed capabilities for this model"
+            size="tiny">
+            <BiQuestionMark class="text-slate-400 size-4" />
+        </Tooltip>
+        <template v-else>
+            <Tooltip
+                v-if="capabilities.includes('vision')"
+                class="bg-capability-vision/25 rounded-sm p-0.5"
+                text="Vision - can process images"
+                size="tiny">
+                <BiShow class="text-capability-vision size-4" />
+            </Tooltip>
+            <Tooltip
+                v-if="hasReasoning"
+                class="bg-capability-reasoning/25 rounded-sm p-0.5"
+                size="tiny"
+                :text="
+                    alwaysReasons
+                        ? 'Locked reasoning - always uses reasoning capabilities'
+                        : 'Thinking - toggleable enhanced reasoning capabilities'
+                ">
+                <div class="flex flex-row">
+                    <BiBrain class="text-capability-reasoning size-4" />
+                    <BiLock
+                        v-if="alwaysReasons"
+                        class="text-capability-reasoning size-4" />
+                </div>
+            </Tooltip>
+            <Tooltip
+                v-if="capabilities.includes('tools')"
+                class="bg-capability-tools/25 rounded-sm p-0.5"
+                text="Tools - can use external tools"
+                size="tiny">
+                <BiWrench class="text-capability-tools size-4" />
+            </Tooltip>
+        </template>
     </div>
 </template>

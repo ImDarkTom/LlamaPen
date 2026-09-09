@@ -2,13 +2,13 @@
 import { useProviderManager } from '@/composables/useProviderManager';
 import useDownloadsStore from '@/stores/useDownloadsStore';
 import { BiCheck, BiCloud, BiData, BiDownload } from 'vue-icons-plus/bi';
-import { computed } from "vue";
+import { computed } from 'vue';
 
-const providerStore = useProviderManager();
+const { currentProvider } = useProviderManager();
 const downloadStore = useDownloadsStore();
 
 const installedCount = computed<string | undefined>(() => {
-    const installedCount = providerStore.allModelIds.value.length;
+    const installedCount = currentProvider.value.getAllModelIds().length;
     return installedCount === 0 ? undefined : String(installedCount);
 });
 
@@ -17,7 +17,7 @@ const downloadCount = computed<string | undefined>(() => {
     return downloads === 0 ? undefined : String(downloads);
 });
 
-const currentProviderOllama = computed(() => providerStore.currentProviderId.value === 'ollama');
+const canDownloadModels = computed(() => currentProvider.value.features.modelDownload !== undefined);
 </script>
 
 <template>
@@ -25,17 +25,17 @@ const currentProviderOllama = computed(() => providerStore.currentProviderId.val
         <SidebarStateBackHeader />
 
         <SidebarMenuLink
-            :text="currentProviderOllama ? 'Installed' : 'Available'"
-            :icon="currentProviderOllama ? BiData : BiCheck"
+            :text="canDownloadModels ? 'Installed' : 'Available'"
+            :icon="canDownloadModels ? BiData : BiCheck"
             :to="{ path: '/models/installed' }"
-            :badge="installedCount"/>
+            :badge="installedCount" />
 
-        <template v-if="currentProviderOllama">
+        <template v-if="canDownloadModels">
             <SidebarMenuLink
                 text="Browse"
                 :icon="BiCloud"
-                :to="{ path: '/models/browse' }"/>
-            
+                :to="{ path: '/models/browse' }" />
+
             <SidebarMenuLink
                 text="Downloads"
                 :icon="BiDownload"

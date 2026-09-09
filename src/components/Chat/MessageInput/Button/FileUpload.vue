@@ -1,34 +1,27 @@
 <script setup lang="ts">
-import { useConfigStore } from '@/stores/useConfigStore';
-import useCloudUserStore from '@/stores/useCloudUserStore';
 import { computed } from 'vue';
 import { BiImageAdd } from 'vue-icons-plus/bi';
 import { useProviderManager } from '@/composables/useProviderManager';
 
-const cloudUserStore = useCloudUserStore();
-const config = useConfigStore();
-const { selectedModelCapabilities } = useProviderManager();
+const { getSelectedModel } = useProviderManager();
 
 defineProps<{
-    onChange: (event: Event) => void
+    onChange: (event: Event) => void;
 }>();
 
 const selectedModelHasVision = computed(() => {
-    return selectedModelCapabilities.value.includes('vision')
+    return (
+        getSelectedModel().getCapabilities().includes('vision') ||
+        getSelectedModel().getCapabilities().includes('unavailable')
+    );
 });
 
-const cloudNotAllowed = computed(() => {
-    return config.cloud.enabled && !cloudUserStore.isPremium;
+const selectedModelCapabilitiesUnavailable = computed(() => {
+    return getSelectedModel().getCapabilities().includes('unavailable');
 });
 
 function onClick(e: MouseEvent) {
     if (!selectedModelHasVision.value) {
-        e.preventDefault();
-        return;
-    }
-
-    if (cloudNotAllowed.value) {
-        alert('Send attachments to Cloud models with LlamaPen Cloud Premium. Visit the Account page to learn more.');
         e.preventDefault();
         return;
     }
@@ -38,18 +31,28 @@ function onClick(e: MouseEvent) {
 <template>
     <ChatMessageInputButtonBase
         class="aspect-square p-0!"
-        :class="{ 
+        :class="{
             'opacity-50 cursor-not-allowed': !selectedModelHasVision,
-            'opacity-60': cloudNotAllowed
         }"
-        :title="selectedModelHasVision ? 'Upload file(s)' : 'Selected model does not have vision capabilities'"
-    >
-        <label 
-            for="file-upload" 
-            class="cursor-pointer size-full flex items-center justify-center"
-        >
-            <BiImageAdd />
+        :title="
+            selectedModelCapabilitiesUnavailable
+                ? 'Upload file(s) - model capabilities unknown'
+                : selectedModelHasVision
+                  ? 'Upload file(s)'
+                  : 'Selected model does not have vision capabilities'
+        ">
+        <label
+            for="file-upload"
+            class="cursor-pointer size-full flex items-center justify-center">
+            <BiImageAdd class="size-5" />
         </label>
-        <input type="file" id="file-upload" class="hidden" accept="image/*" multiple @change="onChange" @click="onClick" />
+        <input
+            type="file"
+            id="file-upload"
+            class="hidden"
+            accept="image/*"
+            multiple
+            @change="onChange"
+            @click="onClick" />
     </ChatMessageInputButtonBase>
 </template>

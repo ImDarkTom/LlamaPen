@@ -1,27 +1,70 @@
 import { defineStore } from 'pinia';
 
 export type CustomProvider = {
-    key: string;
     name: string;
     baseURL: string;
     apiKey: string;
+    format: 'ollama' | 'openai';
+    seededDefault?: true;
 };
 
-export const useCustomProvidersStore = defineStore('customProvidersStore', () => {
-    const providers = ref<CustomProvider[]>([]);
+export type KeyedCustomProvider = CustomProvider & { key: string; };
 
-    function add(provider: Omit<CustomProvider, 'key'>): string {
+export const useCustomProvidersStore = defineStore('customProvidersStore', () => {
+    const providers = ref<KeyedCustomProvider[]>([
+        {
+            key: 'ollama',
+            name: 'Ollama',
+            format: 'ollama',
+            baseURL: import.meta.env.VITE_DEFAULT_OLLAMA ?? 'http://localhost:11434',
+            apiKey: 'ollama',
+            seededDefault: true,
+        }
+    ]);
+
+    function seedDefaultProvider(data: CustomProvider) {
+        const existingProvider = providers.value.find((p) => p.seededDefault);
+
+        if (existingProvider) {
+            Object.assign(existingProvider, data, {
+                key: 'ollama',
+                seededDefault: true,
+            });
+
+            return;
+        }
+
+        providers.value.unshift({
+            ...data,
+            key: 'ollama',
+            seededDefault: true,
+        });
+    }
+
+    function getSeededDefaultValues(): KeyedCustomProvider {
+        return {
+            key: 'ollama',
+            name: 'Ollama',
+            format: 'ollama',
+            baseURL: import.meta.env.VITE_DEFAULT_OLLAMA ?? 'http://localhost:11434',
+            apiKey: 'ollama',
+            seededDefault: true,
+        };
+    }
+
+    function add(provider: CustomProvider): string {
         const key = `custom-${Date.now()}`;
         providers.value.push({ ...provider, key });
         return key;
     }
 
-    function update(updatedFields: CustomProvider) {
+    function update(updatedFields: KeyedCustomProvider) {
         const providerKey = providers.value.find((p) => p.key === updatedFields.key);
         if (!providerKey) return;
 
-        const newProvider: Omit<CustomProvider, 'key'> = {
+        const newProvider: CustomProvider = {
             apiKey: updatedFields.apiKey,
+            format: updatedFields.format,
             baseURL: updatedFields.baseURL,
             name: updatedFields.name,
         };
@@ -30,11 +73,28 @@ export const useCustomProvidersStore = defineStore('customProvidersStore', () =>
     }
 
     function remove(key: string) {
+        // todo: once we migrate to only using custom providers this will ensure the user can't
+        // break the app
+        if (providers.value.length === 1) throw Error('At least 1 provider is required.');
+
         const foundIndex = providers.value.findIndex((p) => p.key === key);
         if (foundIndex !== -1) providers.value.splice(foundIndex, 1);
     }
 
-    return { providers, add, update, remove }
+    function clearAllAdded() {
+        providers.value = [
+            {
+                key: 'ollama',
+                name: 'Ollama',
+                format: 'ollama',
+                baseURL: import.meta.env.VITE_DEFAULT_OLLAMA ?? 'http://localhost:11434',
+                apiKey: 'ollama',
+                seededDefault: true,
+            }
+        ];
+    }
+
+    return { providers, add, update, remove, seedDefaultProvider, getSeededDefaultValues, clearAllAdded };
 }, {
     persist: true,
 });

@@ -1,5 +1,4 @@
-<script setup lang="ts">
-</script>
+<script setup lang="ts"></script>
 
 <template>
     <PopupNotConnected />
@@ -8,4 +7,6 @@
     <PopupShortcuts />
     <PopupAddProvider />
     <PopupEditProvider />
+    <PopupOnboarding />
+    <PopupModelInfo />
 </template>

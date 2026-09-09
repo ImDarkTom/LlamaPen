@@ -1,10 +1,9 @@
-import { useConfigStore } from "@/stores/useConfigStore";
 import { appToolsToOllama } from "../converters/appToolsToOllama";
 import type { ChatIteratorChunk, ChatOptions } from "@/providers/base/types";
-import { ollamaWrapper } from "../OllamaWrapper";
 import type { ChatRequest } from "ollama/browser";
 import * as Ollama from 'ollama/browser';
 import { useProviderManager } from "@/composables/useProviderManager";
+import type { OllamaWrapper } from "../OllamaWrapper";
 
 /**
  * 
@@ -14,22 +13,22 @@ import { useProviderManager } from "@/composables/useProviderManager";
  * @returns Yields chunks normally. Throws if control flow error.
  */
 async function* chatIterator(
+    ollamaWrapper: OllamaWrapper,
     messages: Ollama.Message[],
     abortSignal: AbortSignal,
     options: ChatOptions
 ): AsyncGenerator<ChatIteratorChunk, ChatIteratorChunk | undefined, unknown> {
-    const { selectedModelCapabilities } = useProviderManager();
-    const config = useConfigStore();
+    const { getSelectedModel } = useProviderManager();
 
     const chatOptions: ChatRequest = {
         model: options.model,
         messages,
         think: options.reasoningEnabled || false,
         stream: true,
-        options: config.chat.messageOptionsEnabled ? config.chat.messageOptions : undefined,
+        options: options.params,
     };
 
-    if (selectedModelCapabilities.value.includes('tools')) {
+    if (getSelectedModel().getCapabilities().includes('tools')) {
         chatOptions['tools'] = appToolsToOllama();
     }
 
@@ -45,7 +44,7 @@ async function* chatIterator(
 
     //     if (response.status === 401 && data.error.type === 'auth:not-authed') {
     //         throw { type: 'error', error: { type: 'app:not-authed', message: 'You need to be signed in to send messages.' } };
-    //     } else if (response.status === 404 && !config.cloud.enabled) {
+    //     } else if (response.status === 404) {
     //         throw { type: 'error', error: { type: 'app:model-not-found', message: data.error as unknown as string } };
     //     }
 
@@ -58,24 +57,18 @@ async function* chatIterator(
                 return { type: 'done', reason: 'cancelled' };
             }
 
-            // // From llamapen cloud
-            // if ('error' in data) {
-            //     yield data;
-            //     continue;
-            // }
-
             if (chunk.done) {
                 // Process final chunk
-                yield { 
+                yield {
                     type: 'message',
                     content: chunk.message.content,
                     thinking: chunk.message.thinking,
                     tool_calls: chunk.message.tool_calls,
                 };
 
-                yield { 
-                    type: 'done', 
-                    reason: 'completed', 
+                yield {
+                    type: 'done',
+                    reason: 'completed',
                     stats: {
                         evalCount: chunk.eval_count,
                         evalDuration: chunk.eval_duration,
@@ -88,7 +81,7 @@ async function* chatIterator(
                 continue;
             }
 
-            yield { 
+            yield {
                 type: 'message',
                 content: chunk.message.content,
                 thinking: chunk.message.thinking,
@@ -100,6 +93,6 @@ async function* chatIterator(
     }
 }
 
-export function chat(messages: Ollama.Message[], abortSignal: AbortSignal, options: ChatOptions): AsyncIterable<ChatIteratorChunk> {
-    return chatIterator(messages, abortSignal, options);
+export function chat(ollamaWrapper: OllamaWrapper, messages: Ollama.Message[], abortSignal: AbortSignal, options: ChatOptions): AsyncIterable<ChatIteratorChunk> {
+    return chatIterator(ollamaWrapper, messages, abortSignal, options);
 }

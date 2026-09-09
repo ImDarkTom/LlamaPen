@@ -1,7 +1,7 @@
 import { defineStore } from 'pinia';
 import { ref } from 'vue';
 
-export type SidebarMode = 'chats' | 'models';
+export type SidebarMode = 'chats' | 'models' | 'tools' | 'settings' | 'guides';
 
 const useSidebarStore = defineStore('sidebar', () => {
     const sidebarMode = ref<SidebarMode>('chats');

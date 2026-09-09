@@ -9,8 +9,6 @@ const props = defineProps<{
     message: ToolChatMessage;
 }>();
 
-const messageTextContainer = ref<HTMLDivElement | null>(null);
-
 // === State ===
 const images = ref<{ id: string; blobSrc: string; file: Blob }[]>([]);
 
@@ -24,24 +22,12 @@ onMounted(async () => {
         }
     });
 
-    messageTextContainer.value?.addEventListener('click', (e) => {
-        const target = e.target as HTMLElement;
-        if (target.classList.contains('copy-code-button')) {
-            const code = decodeURIComponent(target.dataset.code || "");
-            navigator.clipboard.writeText(code);
-
-            target.textContent = 'Copied!'
-            setTimeout(() => {
-                target.textContent = 'Copy';
-            }, 1000);
-        }
-    })
 })
 
 </script>
 
 <template>
-    <div class="group/message flex flex-col" ref="messageTextContainer">
+    <div class="group/message flex flex-col">
         <div class="box-border flex flex-col">
             <img 
                 v-for="image of images" 

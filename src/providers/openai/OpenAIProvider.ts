@@ -1,22 +1,18 @@
-import type { ModelCapability, ModelInfo } from "@/composables/useProviderManager";
+import type { ModelInfo, ProviderModelInfo } from "@/composables/useProviderManager";
 import { BaseProvider } from "../base/BaseProvider";
 import type { Reactive, Ref } from "vue";
-import type { ConfigurableProvider, ConnectionState } from "../base/ProviderInterface";
-import type { ChatOptions, ChatIteratorChunk } from "../base/types";
+import type { ConnectionState, LLMProvider } from "../base/ProviderInterface";
+import type { ChatOptions, ChatIteratorChunk, ProviderMetadata } from "../base/types";
 import type { ModelAttributes } from "@/components/ModelsPage/types";
 import { OpenAI } from "openai";
 import { chatHelper } from "./chatHelper";
 import logger from "@/lib/logger";
+import { CapabilityParser, NameParser, OpenRouterParser } from "./nonStandardParsing";
 
-type OpenAIConfig = {
-    name: string;
-    apiKey: string;
-    baseURL: string;
-}
-
-export class OpenAIProvider extends BaseProvider implements ConfigurableProvider<OpenAIConfig> {
+export class OpenAIProvider extends BaseProvider {
     readonly name: string;
     readonly type = 'openai';
+    config: LLMProvider['config'];
 
     readonly rawModels: Ref<ModelInfo[], ModelInfo[]> = ref([]);
 
@@ -26,14 +22,15 @@ export class OpenAIProvider extends BaseProvider implements ConfigurableProvider
         lastChecked: undefined
     });
 
+    readonly features = {};
+
+
     private client: OpenAI;
 
-    config: OpenAIConfig;
-
-    constructor(config: OpenAIConfig) {
+    constructor(name: string, config: LLMProvider['config']) {
         super();
 
-        this.name = config.name;
+        this.name = name;
         this.config = config;
 
         this.client = new OpenAI({
@@ -68,10 +65,6 @@ export class OpenAIProvider extends BaseProvider implements ConfigurableProvider
         return chatHelper(messages, abortSignal, options, this.client);
     }
 
-    public getModelCapabilities(_modelId: string): ModelCapability[] {
-        return [ 'reasoning', 'tools', 'vision' ];
-    }
-
     public async getModelAttributes(modelId: string): Promise<ModelAttributes> {
         const model = this.rawModels.value.find(m => m.info.id === modelId);
         if (!model || model.info.providerMetadata?.provider !== 'openai') return {};
@@ -88,26 +81,45 @@ export class OpenAIProvider extends BaseProvider implements ConfigurableProvider
         return messages[0].content.slice(0, 20) + (messages[0].content.length > 20 ? '...' : '');
     }
 
-    protected async getModels(): Promise<ModelInfo[]> {
+    protected async getModels(): Promise<ProviderModelInfo[]> {
         const models = await this.client.models.list();
 
         return models.data.map((model) => {
-            return {
-                displayName: model.id,
-                hidden: false,
-                info: {
-                    capabilities: [],
-                    id: model.id,
-                    name: model.id,
-                    subtitle: model.owned_by,
-                    providerMetadata: {
-                        provider: 'openai',
-                        data: {
-                            created: new Date(model.created * 1000),
-                            ownedBy: model.owned_by,
-                        }
-                    }
+            const providerMetadata: ProviderMetadata = {
+                provider: 'openai',
+                data: {
+                    created: new Date(model.created * 1000),
+                    ownedBy: model.owned_by,
+                    allInfo: model,
                 }
+            };
+
+            return {
+                capabilities: CapabilityParser.attemptParseModelCapabilities(providerMetadata),
+                id: model.id,
+                external_link: OpenRouterParser.getExternalLink(providerMetadata),
+                created: model.created * 1_000,
+                description: OpenRouterParser.getDescription(providerMetadata),
+                context_length: OpenRouterParser.getContextLength(providerMetadata),
+                name: NameParser.getNameForModel(providerMetadata, model.id),
+                knowledge_cutoff: OpenRouterParser.getKnowledgeCutoff(providerMetadata),
+                top_provider: {
+                    context_length: OpenRouterParser.getContextLength(providerMetadata),
+                    is_moderated: OpenRouterParser.getModerationStatus(providerMetadata),
+                    max_completion_tokens: OpenRouterParser.getTopProviderMaxCompletionTokens(providerMetadata),
+                },
+                pricing: {
+                    completion: OpenRouterParser.getCompletionPricing(providerMetadata),
+                    prompt: OpenRouterParser.getPromptPricing(providerMetadata)
+                },
+                architecture: {
+                    input_modalities: OpenRouterParser.getInputModalities(providerMetadata),
+                    output_modalities: OpenRouterParser.getOutputModalities(providerMetadata),
+                },
+                supported_parameters: OpenRouterParser.getSupportedParameters(providerMetadata),
+                default_parameters: OpenRouterParser.getDefaultParameters(providerMetadata),
+                providerMetadata,
+                ...(OpenRouterParser.getReasoning(providerMetadata)),
             }
         });
     }

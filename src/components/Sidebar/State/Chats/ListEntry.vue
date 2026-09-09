@@ -8,7 +8,7 @@ import { getDateTimeString } from '@/utils/core/getDateTimeString';
 import { useConfigStore } from '@/stores/useConfigStore';
 
 const props = defineProps<{
-    chat: Chat,
+    chat: Chat;
 }>();
 
 const { setPinned, isOpened, renameChat, deleteChat } = useChatsStore();
@@ -24,18 +24,18 @@ const isPinned = computed(() => props.chat.pinned === 1 || false);
 const isGeneratingTitle = computed(() => messagesStore.chatsGeneratingTitles.includes(props.chat.id));
 const isChatOpened = computed(() => isOpened(props.chat.id));
 
-const hoverMessage = computed(() => 
-`${props.chat.title}
+const hoverMessage = computed(
+    () =>
+        `${props.chat.title}
 Last message: ${getDateTimeString(props.chat.lastestMessageDate)}
-Created: ${getDateTimeString(props.chat.createdAt)}`
+Created: ${getDateTimeString(props.chat.createdAt)}`,
 );
-
 
 // Editing
 function editKeyPressed(e: KeyboardEvent) {
-    if (e.key === "Enter") {
+    if (e.key === 'Enter') {
         stopEditing();
-    } else if (e.key === "Escape") {
+    } else if (e.key === 'Escape') {
         stopEditing(false);
     }
 }
@@ -65,9 +65,8 @@ function stopEditing(saveName = true) {
     if (saveName) {
         renameChat(props.chat.id, chatTextElem.value);
     } else {
-        chatTextElem.value = nameBeforeEdit.value || "Unnamed chat";
+        chatTextElem.value = nameBeforeEdit.value || 'Unnamed chat';
     }
-    
 }
 
 // Chat controls
@@ -80,8 +79,8 @@ function promptDeleteChat(e?: MouseEvent) {
     }
 }
 
-const dropdownPinText = computed(() => isPinned.value ? 'Unpin' : 'Pin');
-const dropdownPinIcon = computed(() => isPinned.value ? BiSolidPin : BiPin);
+const dropdownPinText = computed(() => (isPinned.value ? 'Unpin' : 'Pin'));
+const dropdownPinIcon = computed(() => (isPinned.value ? BiSolidPin : BiPin));
 
 const actions: MenuEntry<MouseEvent>[] = [
     {
@@ -114,9 +113,9 @@ const icon = computed(() => {
     if (isHoveringOverIcon.value) {
         if (isPinned.value) {
             return BiSolidPin;
-        } else { 
+        } else {
             return BiPin;
-        };
+        }
     }
 
     if (isPinned.value && isChatOpened.value) {
@@ -133,23 +132,22 @@ const icon = computed(() => {
 
     return BiChat;
 });
-
 </script>
 
 <template>
-	<SidebarRouterLink
+    <SidebarRouterLink
         role="listitem"
-        :to="`/chat/${props.chat.id}`" 
-        :title="hoverMessage" 
-        @dblclick="editChatName" >
-        <div 
+        :to="`/chat/${props.chat.id}`"
+        :title="hoverMessage"
+        @dblclick="editChatName">
+        <div
             class="group text-base-300 relative flex flex-row gap-1 p-1.5 px-2 pr-6 not-has-[div.absolute:hover]:hover:bg-base-900 rounded-sm"
             :class="{ 'bg-base-800!': isChatOpened }">
-            <div 
+            <div
                 v-if="config.ui.sidebar.entryIcons"
                 class="box-content aspect-square"
                 @mouseenter="isHoveringOverIcon = true"
-                @mouseleave="isHoveringOverIcon = false" >
+                @mouseleave="isHoveringOverIcon = false">
                 <component
                     :is="icon"
                     class="box-border p-0.5"
@@ -158,21 +156,20 @@ const icon = computed(() => {
             </div>
             <input
                 type="text"
-                ref="entryTextRef" 
-                class="w-full cursor-pointer truncate outline-none"
+                ref="entryTextRef"
+                class="w-full cursor-pointer truncate outline-none text-sm! font-medium"
                 :value="props.chat.title"
-                @blur="stopEditing()" 
-                @keydown="editKeyPressed" 
+                @blur="stopEditing()"
+                @keydown="editKeyPressed"
                 :readonly="!isEditingName"
-                :class="{ 
+                :class="{
                     'cursor-text! rounded-sm border-2 border-base-500': isEditingName,
                     'animate-blink': isGeneratingTitle,
-                }">
-            <div class="size-8 p-1 block md:not-group-hover:hidden absolute right-0 top-1/2 -translate-y-1/2 rounded-sm 
-                bg-base-950 md:bg-base-900 
-                hover:text-base-100 hover:bg-base-800!"
-                :class="{ 
-                    'bg-base-800! block!': isChatOpened
+                }" />
+            <div
+                class="size-8 p-1 block md:not-group-hover:hidden absolute right-0 top-1/2 -translate-y-1/2 rounded-sm bg-base-950 md:bg-base-900 hover:text-base-100 hover:bg-base-800!"
+                :class="{
+                    'bg-base-800! block!': isChatOpened,
                 }">
                 <FloatingActionMenu :actions>
                     <div @mousedown.left.stop>

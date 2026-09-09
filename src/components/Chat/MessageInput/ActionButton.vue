@@ -10,7 +10,7 @@ const messagesStore = useMessagesStore();
 const config = useConfigStore();
 
 defineProps<{
-    canGenerate: boolean,
+    canGenerate: boolean;
 }>();
 
 const emit = defineEmits(['startGeneration']);
@@ -48,12 +48,15 @@ function handleClick() {
 </script>
 
 <template>
-    <component 
-        :is="buttonIcon"
-        class="bg-primary text-base-900 size-10 shrink-0 box-border p-1.5 pointer-coarse:p-2 rounded-lg cursor-pointer"
-        :class="{ 
-            'opacity-40 cursor-default!': !canGenerate && !isChatGenerating, 
-            'p-2': config.ui.messageInput.sendButtonAltIcon
-        }"
-        @click="handleClick" />
+    <button
+        class="bg-primary rounded-lg not-disabled:cursor-pointer disabled:opacity-40 not-disabled:active:scale-98 not-disabled:hover:brightness-105"
+        :disabled="!canGenerate && !isChatGenerating">
+        <component
+            :is="buttonIcon"
+            class="size-10 shrink-0 box-border p-2 text-base-800"
+            :class="{
+                'p-2.5': config.ui.messageInput.sendButtonAltIcon,
+            }"
+            @click="handleClick" />
+    </button>
 </template>

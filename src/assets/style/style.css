@@ -1,5 +1,5 @@
-@import "normalize.css";
-@import "tailwindcss";
+@import 'normalize.css';
+@import 'tailwindcss';
 @plugin "tailwindcss-motion";
 @plugin "@tailwindcss/typography";
 @config "@/../tailwind.config.js";
@@ -14,13 +14,20 @@ z-99 - z-100: Popup
 
 /* Global Styles */
 :root {
-    font-family: Nebula Sans, Inter, system-ui, Avenir, Helvetica, Arial, sans-serif;
+    font-family:
+        Nebula Sans,
+        Inter,
+        system-ui,
+        Avenir,
+        Helvetica,
+        Arial,
+        sans-serif;
     line-height: 1.5;
     font-weight: 400;
 
     color-scheme: light dark;
     color: var(--color-base-200);
-    background-color: var(--color-base-900);
+    background-color: var(--color-base-950);
 
     font-synthesis: none;
     text-rendering: optimizeLegibility;
@@ -29,17 +36,16 @@ z-99 - z-100: Popup
 
     --transition-duration: 0.125s;
 
-
-    --light-primary: oklch(0.76 0.13 266);
-    --light-secondary: oklch(0.76 0.13 86);
+    --light-primary-hover: oklch(0.83 0.13 266);
+    --light-primary-active: oklch(0.9 0.13 266);
 
     --light-danger: oklch(0.7 0.13 30);
     --light-warning: oklch(0.7 0.13 100);
     --light-success: oklch(0.7 0.13 160);
     --light-info: oklch(0.7 0.13 260);
 
-    --dark-primary: oklch(0.4 0.13 266);
-    --dark-secondary: oklch(0.4 0.13 86);
+    --dark-primary-hover: oklch(0.69 0.13 266);
+    --dark-primary-active: oklch(0.62 0.13 266);
 
     --dark-danger: oklch(0.5 0.13 30);
     --dark-warning: oklch(0.5 0.13 100);
@@ -66,24 +72,43 @@ body:not([data-native-scrollbar]) {
 
 /* Themes */
 @layer base {
+    html[theme='light'],
+    html[theme='mono-light'],
+    html[theme='legacy-light'] {
+        --color-primary-hover: var(--dark-primary-hover);
+        --color-primary-active: var(--dark-primary-active);
+
+        --color-danger: var(--dark-danger);
+        --color-warning: var(--dark-warning);
+        --color-success: var(--dark-success);
+        --color-info: var(--dark-info);
+    }
+
+    html[theme='mono-dark'],
+    html[theme='mono-dark'],
+    html[theme='amoled'],
+    html[theme='legacy-dark'],
+    html[theme='legacy-mono-dark'] {
+        --color-primary-hover: var(--light-primary-hover);
+        --color-primary-active: var(--light-primary-active);
+
+        --color-danger: var(--light-danger);
+        --color-warning: var(--light-warning);
+        --color-success: var(--light-success);
+        --color-info: var(--light-info);
+    }
+
     html[theme='light'] {
-        --color-base-600: #ffffff;
-        --color-base-700: #fcfcfc;
-        --color-base-800: oklch(0.914 0.008 278.74);
-        --color-base-900: oklch(0.844 0.021 276.94);
-        --color-base-950: oklch(0.768 0.04 275.87);
+        --color-base-950: oklch(0.9 0.02 275.87);
+        --color-base-900: oklch(0.94 0.01 276.94);
+        --color-base-800: oklch(0.965 0.008 278.74);
+        --color-base-700: oklch(0.985 0.006 278.74);
+        --color-base-600: oklch(1 0 0);
         --color-base-500: oklch(0.615 0.092 271.88);
         --color-base-400: oklch(0.537 0.102 270.02);
         --color-base-300: oklch(0.469 0.096 268.61);
         --color-base-200: oklch(0.391 0.09 267.52);
         --color-base-100: oklch(0.191 0.038 268.72);
-
-        --color-primary: var(--dark-primary);
-        --color-secondary: var(--dark-secondary);
-        --color-danger: var(--dark-danger);
-        --color-warning: var(--dark-warning);
-        --color-success: var(--dark-success);
-        --color-info: var(--dark-info);
     }
 
     html[theme='mono-dark'] {
@@ -97,13 +122,6 @@ body:not([data-native-scrollbar]) {
         --color-base-300: var(--color-neutral-300);
         --color-base-200: var(--color-neutral-200);
         --color-base-100: var(--color-neutral-100);
-
-        --color-primary: var(--light-primary);
-        --color-secondary: var(--light-secondary);
-        --color-danger: var(--light-danger);
-        --color-warning: var(--light-warning);
-        --color-success: var(--light-success);
-        --color-info: var(--light-info);
     }
 
     html[theme='mono-light'] {
@@ -117,13 +135,6 @@ body:not([data-native-scrollbar]) {
         --color-base-300: var(--color-neutral-700);
         --color-base-200: var(--color-neutral-800);
         --color-base-100: var(--color-neutral-900);
-
-        --color-primary: var(--dark-primary);
-        --color-secondary: var(--dark-secondary);
-        --color-danger: var(--dark-danger);
-        --color-warning: var(--dark-warning);
-        --color-success: var(--dark-success);
-        --color-info: var(--dark-info);
     }
 
     html[theme='amoled'] {
@@ -137,15 +148,7 @@ body:not([data-native-scrollbar]) {
         --color-base-300: oklch(0.5 0.01 266);
         --color-base-400: oklch(0.4 0.01 266);
         --color-base-500: oklch(0.3 0.01 266);
-
-        --color-primary: var(--light-primary);
-        --color-secondary: var(--light-secondary);
-        --color-danger: var(--light-danger);
-        --color-warning: var(--light-warning);
-        --color-success: var(--light-success);
-        --color-info: var(--light-info);
     }
-
 
     html[theme='legacy-dark'] {
         --color-base-950: oklch(0.1 0.065 266);
@@ -158,13 +161,6 @@ body:not([data-native-scrollbar]) {
         --color-base-300: oklch(0.5 0.13 266);
         --color-base-400: oklch(0.4 0.13 266);
         --color-base-500: oklch(0.3 0.13 266);
-
-        --color-primary: var(--light-primary);
-        --color-secondary: var(--light-secondary);
-        --color-danger: var(--light-danger);
-        --color-warning: var(--light-warning);
-        --color-success: var(--light-success);
-        --color-info: var(--light-info);
     }
 
     html[theme='legacy-mono-dark'] {
@@ -178,13 +174,6 @@ body:not([data-native-scrollbar]) {
         --color-base-300: oklch(0.5 0.01 266);
         --color-base-200: oklch(0.76 0.01 266);
         --color-base-100: oklch(0.96 0.01 266);
-
-        --color-primary: var(--light-primary);
-        --color-secondary: var(--light-secondary);
-        --color-danger: var(--light-danger);
-        --color-warning: var(--light-warning);
-        --color-success: var(--light-success);
-        --color-info: var(--light-info);
     }
 
     html[theme='legacy-light'] {
@@ -198,13 +187,6 @@ body:not([data-native-scrollbar]) {
         --color-base-300: oklch(0.5 0.13 266);
         --color-base-400: oklch(0.6 0.13 266);
         --color-base-500: oklch(0.7 0.13 266);
-
-        --color-primary: var(--dark-primary);
-        --color-secondary: var(--dark-secondary);
-        --color-danger: var(--dark-danger);
-        --color-warning: var(--dark-warning);
-        --color-success: var(--dark-success);
-        --color-info: var(--dark-info);
     }
 }
 
@@ -222,8 +204,14 @@ body:not([data-native-scrollbar]) {
     --color-base-900: oklch(0.205 0.038 267.11);
     --color-base-950: oklch(0.145 0.033 264.72);
 
-    --color-primary: var(--light-primary);
-    --color-secondary: var(--light-secondary);
+    --color-links: oklch(0.76 0.13 86);
+
+    --color-primary: oklch(0.76 0.13 266);
+    --color-on-primary: oklch(0.269 0.048 264.71);
+
+    --color-primary-hover: var(--light-primary-hover);
+    --color-primary-active: var(--light-primary-active);
+
     --color-danger: var(--light-danger);
     --color-warning: var(--light-warning);
     --color-success: var(--light-success);
@@ -235,38 +223,28 @@ body:not([data-native-scrollbar]) {
     --color-capability-tools: var(--color-blue-400);
     --color-capability-audio: var(--color-cyan-400);
 
-    --color-lpcloudpricing-verylow: var(--color-teal-400);
-    --color-lpcloudpricing-low: var(--color-green-400);
-    --color-lpcloudpricing-moderate: var(--color-orange-400);
-    --color-lpcloudpricing-high: var(--color-red-400);
-
     --animate-breathe: breathe 2s ease-in-out infinite;
     --animate-blink: blink 1s ease-in-out infinite;
 
     /* base */
-    --shadow-elevation-1: 
-        0 0.25rem 1.25rem rgba(0, 0, 0, 0.05), 
-        0 0 0 0.5px oklch(from var(--color-base-300) l c h / 0.15);
-        
+    --shadow-elevation-1:
+        0 0.25rem 1.25rem rgba(0, 0, 0, 0.05), 0 0 0 0.5px oklch(from var(--color-base-300) l c h / 0.15);
+
     /* hovered items */
-    --shadow-elevation-2: 
-        0 0.25rem 1.25rem rgba(0, 0, 0, 0.05), 
-        0 0 0 0.5px oklch(from var(--color-base-300) l c h / 0.3);
+    --shadow-elevation-2:
+        0 0.25rem 1.25rem rgba(0, 0, 0, 0.05), 0 0 0 0.5px oklch(from var(--color-base-300) l c h / 0.3);
 
     /* focused items */
-    --shadow-elevation-3: 
-        0 0.25rem 1.25rem rgba(0, 0, 0, 0.1), 
-        0 0 0 0.5px oklch(from var(--color-base-300) l c h / 0.3);
+    --shadow-elevation-3:
+        0 0.25rem 1.25rem rgba(0, 0, 0, 0.1), 0 0 0 0.5px oklch(from var(--color-base-300) l c h / 0.3);
 
     /* popup menus */
-    --shadow-elevation-4: 
-        0 0.25rem 1.25rem rgba(0, 0, 0, 0.2), 
-        0 0 0 0.5px oklch(from var(--color-base-300) l c h / 0.7);
+    --shadow-elevation-4:
+        0 0.25rem 1.25rem rgba(0, 0, 0, 0.2), 0 0 0 0.5px oklch(from var(--color-base-300) l c h / 0.7);
 
     /* large popups */
-    --shadow-elevation-5: 
-        0 0.25rem 1.25rem rgba(0, 0, 0, 0.3), 
-        0 0 0 0.75px oklch(from var(--color-base-300) l c h / 0.9);
+    --shadow-elevation-5:
+        0 0.25rem 1.25rem rgba(0, 0, 0, 0.3), 0 0 0 0.75px oklch(from var(--color-base-300) l c h / 0.9);
 
     @keyframes breathe {
         0%,
@@ -278,7 +256,7 @@ body:not([data-native-scrollbar]) {
             transform: scale(1);
         }
     }
-    
+
     @keyframes blink {
         0%,
         100% {
@@ -296,22 +274,9 @@ body:not([data-native-scrollbar]) {
     transition-duration: var(--transition-duration);
 }
 
-@utility transition-quick {
-    @apply transition-all duration-dynamic hover:duration-0;
-}
-
-@utility btn-primary {
-    @apply bg-primary hover:bg-secondary text-base-800 rounded-lg transition-colors duration-dynamic cursor-pointer;
-}
-
-@utility btn-ghost {
-    @apply bg-base-700 group-[.active]:bg-base-600 hover:bg-base-600 group-[.active]:text-base-100 p-2 rounded-md cursor-pointer;
-}
-
 @utility tools-input {
     @apply bg-base-700 rounded-md focus:ring-1 ring-base-300 ring-inset outline-none;
 }
-
 
 /* Custom slider styling */
 .slider::-webkit-slider-thumb {
@@ -358,5 +323,5 @@ progress::-moz-progress-bar {
 
 /* HLJS */
 .hljs {
-    @apply mb-4 rounded-lg;
+    @apply mb-4 rounded-xl text-sm;
 }

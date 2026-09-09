@@ -3,40 +3,66 @@ import type { IconType } from 'vue-icons-plus';
 import { RouterLink } from 'vue-router';
 import type IconMemoryUnload from '../Icon/MemoryUnload.vue';
 
-type ComponentTypes = 'link' | 'button' | 'external-link';
+type ComponentTypes = 'link' | 'button' | 'link-external';
 
-defineProps<{
-	text: string;
-	type?: ComponentTypes;
-	icon?: IconType | string | typeof IconMemoryUnload;
-	singleLine?: boolean;
-	color?: 'primary' | 'danger' | 'sunken';
-}>();
+const props = withDefaults(
+    defineProps<{
+        text: string;
+        type?: ComponentTypes;
+        icon?: IconType | string | typeof IconMemoryUnload;
+        color?: 'primary' | 'danger' | 'tertiary' | 'ghost';
+        iconPos?: 'left' | 'right';
+        hideText?: boolean;
+        disabled?: boolean;
+    }>(),
+    {
+        type: 'button',
+        color: 'primary',
+        hideText: false,
+        iconPos: 'left',
+        disabled: false,
+    },
+);
 
 const componentTypes: Record<ComponentTypes, unknown> = {
-	link: RouterLink,
-	button: 'button',
-	"external-link": 'a'
-}
+    link: RouterLink,
+    'link-external': 'a',
+    button: 'button',
+};
 </script>
 
 <template>
-	<component 
-		:is="componentTypes[type ?? 'button']" 
-		class="text-base-900 p-3 md:p-4 rounded-lg cursor-pointer transition-quick shrink-0 text-center"
-		:class="{
-			'whitespace-nowrap': singleLine,
-			'bg-primary! hover:bg-secondary!': color === 'primary' || !color,
-			'bg-danger! hover:saturate-200 hover:bg-danger!': color === 'danger',
-			'bg-base-500 text-base-200': color === 'sunken',
-		}"
-		v-bind="type === 'external-link' ? { target: '_blank', rel: 'noopener noreferrer' } : {}"
-	>
-		<span>
-			<component v-if="icon" :is="icon" class="size-6 inline mr-2 align-middle" />
-			<span class="align-middle">
-				{{ text }}
-			</span>
-		</span>
-	</component>
+    <component
+        :is="componentTypes[type]"
+        class="shrink-0 text-center rounded-lg not-disabled:cursor-pointer disabled:cursor-not-allowed disabled:opacity-70 active:scale-98 transition-all duration-dynamic"
+        :class="{
+            'bg-primary! text-on-primary! not-disabled:hover:bg-primary-hover! not-disabled:active:bg-primary-active!':
+                color === 'primary',
+            'bg-danger! text-on-primary! not-disabled:hover:saturate-200 not-disabled:hover:bg-danger!':
+                color === 'danger',
+            'bg-transparent text-base-200! not-disabled:hover:bg-base-800! group-[.active]:bg-base-700! [&.router-link-exact-active]:bg-base-700!':
+                color === 'ghost',
+            'bg-base-800! text-base-200! not-disabled:hover:bg-base-700! group-[.active]:bg-base-600!':
+                color === 'tertiary',
+        }"
+        :title="hideText ? text : undefined"
+        :disabled="disabled">
+        <span>
+            <component
+                v-if="icon && iconPos === 'left'"
+                :is="icon"
+                class="size-6 inline align-middle"
+                :class="{ 'mr-2': !hideText }" />
+            <span
+                v-if="!hideText"
+                class="align-middle">
+                {{ text }}
+            </span>
+            <component
+                v-if="icon && iconPos === 'right'"
+                :is="icon"
+                class="size-6 inline align-middle"
+                :class="{ 'ml-2': !hideText }" />
+        </span>
+    </component>
 </template>

@@ -22,7 +22,7 @@ const useMessagesStore = defineStore('messages', () => {
 	const openedChatId = ref<number | null>(null);
 	const openedChatMessages = ref<ChatMessage[]>([]);
 	const chatsGeneratingTitles = ref<number[]>([]);
-	
+
 	const messageGenerationStates = ref<Record<number, { status: 'waiting' | 'generating' }>>({});
 
 	initLiveSync(openedChatMessages, openedChatId);
@@ -156,7 +156,7 @@ const useMessagesStore = defineStore('messages', () => {
 
 		await db.messages.update(ollamaMessageId, updateData);
 
- 		if (toolCalls.length > 0) {
+		if (toolCalls.length > 0) {
 			const toolsStore = useToolsStore();
 			const toolMessagesInitialised: Omit<ToolChatMessage, 'id'>[] = toolCalls.map(tool => {
 				return {
@@ -172,7 +172,7 @@ const useMessagesStore = defineStore('messages', () => {
 			const messageIds = await db.messages.bulkPut(toolMessagesInitialised, { allKeys: true });
 
 			const toolResponses = await toolsStore.handleToolCalls(toolCalls);
-					
+
 			if (toolResponses && toolResponses.length > 0) {
 				await Promise.all(
 					toolResponses.map((response, index) => {
@@ -188,7 +188,7 @@ const useMessagesStore = defineStore('messages', () => {
 						} as Partial<ToolChatMessage>)
 					})
 				);
-						
+
 				logger.info('Messages Store', 'Getting response after tools processed');
 				getOllamaResponse({ generateTitle: options?.generateTitle });
 			}
@@ -295,9 +295,14 @@ const useMessagesStore = defineStore('messages', () => {
 		let hasAbortTrigger = false;
 		let messageSaveCounter = 0;
 		const messagesForProvider = openedChatMessages.value.filter(m => m.id !== ollamaMessageId);
-		const chatIterator = await useProviderManager().chat(messagesForProvider, abortController.signal, {
+		const providerManager = useProviderManager();
+		const selectedModelInfo = providerManager.getSelectedModel();
+		const chatIterator = await providerManager.currentProvider.value.chat(messagesForProvider, abortController.signal, {
 			model: selectedModel,
-			reasoningEnabled: config.chat.thinking.enabled,
+			reasoningEnabled: selectedModelInfo.getReasoningEnabled(),
+			reasoningEffort: selectedModelInfo.getReasoningEffort(),
+			reasoningMaxTokens: selectedModelInfo.getReasoningMaxTokens(),
+			params: selectedModelInfo.getGenerationParams(),
 		});
 
 		try {
@@ -424,7 +429,7 @@ const useMessagesStore = defineStore('messages', () => {
 		logger.info('Messages Store', 'Generating chat title for opened chat', chatId);
 
 		const chatMessages = openedChatMessages.value;
-		const newChatTitle = await useProviderManager().generateChatTitle(chatMessages);
+		const newChatTitle = await useProviderManager().currentProvider.value.generateChatTitle(chatMessages);
 
 		useChatsStore().renameChat(chatId, newChatTitle);
 		chatsGeneratingTitles.value = chatsGeneratingTitles.value.filter(id => id !== chatId);

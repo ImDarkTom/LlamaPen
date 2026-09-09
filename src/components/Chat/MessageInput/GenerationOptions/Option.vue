@@ -12,7 +12,7 @@ const props = defineProps<{
 }>();
 
 const emit = defineEmits<{
-    'update:modelValue': [ newValue: number ]
+    'update:modelValue': [newValue: number];
 }>();
 
 const inputId = ref(`message-option-${props.label.toLowerCase().replace(/\s+/g, '-')}`);
@@ -28,21 +28,40 @@ function onInput(event: Event) {
 <template>
     <div class="flex flex-col py-1">
         <div class="flex flex-row gap-2 items-center">
-            <label :for="inputId" class="font-semibold">
-                {{ label }} 
+            <label
+                :for="inputId"
+                class="font-semibold">
+                {{ label }}
             </label>
-            <Tooltip v-if="tooltip" :text="tooltip">
+            <Tooltip
+                v-if="tooltip"
+                :text="tooltip">
                 <BiHelpCircle />
             </Tooltip>
         </div>
         <div class="bg-base-600 p-1 flex flex-row gap-2 rounded-md">
             <div class="flex flex-row w-2/3 gap-2 items-center p-1">
                 <span>{{ min }}</span>
-                <input class="slider appearance-none grow cursor-pointer" type="range" :value="modelValue" @input="onInput" :min :max :step />
+                <input
+                    class="slider appearance-none grow cursor-pointer"
+                    type="range"
+                    :value="modelValue"
+                    @input="onInput"
+                    :min
+                    :max
+                    :step />
                 <span>{{ max }}</span>
             </div>
 
-            <input class="p-1 w-1/3 focus:border-base-400 border-base-500 border-2 outline-none rounded-md" :id="inputId" type="number" :value="modelValue" @input="onInput" :min :max :step />
+            <input
+                class="p-1 w-1/3 focus:border-base-400 border-base-500 border-2 outline-none rounded-md"
+                :id="inputId"
+                type="number"
+                :value="modelValue"
+                @input="onInput"
+                :min
+                :max
+                :step />
         </div>
     </div>
 </template>

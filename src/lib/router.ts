@@ -3,7 +3,6 @@ import { createRouter, createWebHistory, type RouteRecordRaw } from 'vue-router'
 import ChatPage from "@/views/chat/ChatPage.vue";
 import SettingsPage from "@/views/settings/SettingsPage.vue";
 import GuidePage from "@/views/guide/GuidePage.vue";
-import AccountPage from '@/views/account/AccountPage.vue';
 import ModelsPage from '@/views/models/ModelsPage.vue';
 import ChatLayout from '@/layouts/ChatLayout.vue';
 import ToolsPage from '@/views/tools/ToolsPage.vue';
@@ -11,67 +10,84 @@ import NotFoundPage from '@/views/404.vue';
 import useSidebarStore, { type SidebarMode } from '@/stores/useSidebarStore';
 import DownloadsPage from '@/views/models/DownloadsPage.vue';
 import BrowsePage from '@/views/models/BrowsePage.vue';
+import OllamaSetup from '@/views/guide/ollama/OllamaSetup.vue';
+import OllamaTroubleshooting from '@/views/guide/ollama/OllamaTroubleshooting.vue';
+import OpenrouterFree from '@/views/guide/openrouter/OpenrouterFree.vue';
 
 const routes: RouteRecordRaw[] = [
     {
         path: "/",
         component: ChatLayout,
         children: [
-            { 
-                path: "/", 
+            {
+                path: "/",
                 component: ChatPage,
                 meta: { sidebarType: 'chats' },
             },
-            { 
-                path: "/chat", 
+            {
+                path: "/chat",
                 component: ChatPage,
                 meta: { sidebarType: 'chats' },
                 children: [
                     { path: "/chat/:id", component: ChatPage }
                 ],
             },
-            { 
+            {
                 path: '/settings',
                 component: SettingsPage,
-                meta: { sidebarType: 'chats' },
+                meta: { sidebarType: 'settings' },
             },
-            { 
-                path: '/guide', 
-                component: GuidePage,
-                meta: { sidebarType: 'chats' },
+            {
+                path: '/guide',
+                meta: { sidebarType: 'guides' },
+                children: [
+                    {
+                        path: '/guide',
+                        component: GuidePage,
+                    },
+
+                    {
+                        path: '/guide/ollama/setup',
+                        component: OllamaSetup,
+                    },
+                    {
+                        path: '/guide/ollama/troubleshooting',
+                        component: OllamaTroubleshooting,
+                    },
+
+                    {
+                        path: '/guide/openrouter/free-cloud-models',
+                        component: OpenrouterFree,
+                    },
+                ]
             },
-            { 
-                path: '/account',
-                component: AccountPage,
-                meta: { sidebarType: 'chats' },
-            },
-            { 
+            {
                 path: '/models',
                 redirect: '/models/installed',
                 meta: { sidebarType: 'models' },
                 children: [
-                    { 
-                        path: '/models/installed', 
+                    {
+                        path: '/models/installed',
                         component: ModelsPage
                     },
-                    { 
-                        path: '/models/installed/:model(.*)', 
+                    {
+                        path: '/models/installed/:model(.*)',
                         component: ModelsPage
                     },
-                    { 
-                        path: '/models/browse', 
+                    {
+                        path: '/models/browse',
                         component: BrowsePage
                     },
-                    { 
-                        path: '/models/downloads', 
+                    {
+                        path: '/models/downloads',
                         component: DownloadsPage
                     },
                 ]
             },
-            { 
-                path: '/tools', 
+            {
+                path: '/tools',
                 component: ToolsPage,
-                meta: { sidebarType: 'chats' },
+                meta: { sidebarType: 'tools' },
                 children: [
                     { path: '/tools/:tool(.*)', component: ToolsPage }
                 ]

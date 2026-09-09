@@ -1,18 +1,23 @@
 import { ref, type Ref } from "vue";
 import type { ConnectionState, LLMProvider } from "./ProviderInterface";
 import type { ChatIteratorChunk, ChatOptions } from "./types";
-import type { ModelCapability, ModelInfo } from "@/composables/useProviderManager";
+import type { ModelInfo, ProviderModelInfo } from "@/composables/useProviderManager";
 import logger from "@/lib/logger";
 import type { ModelAttributes } from "@/components/ModelsPage/types";
+import { NameParser, SubtitleParser } from "../openai/nonStandardParsing";
+import { useConfigStore } from "@/stores/useConfigStore";
 
 export abstract class BaseProvider implements LLMProvider {
     abstract readonly name: string;
-    abstract readonly type: 'ollama' | 'lpcloud' | 'openai';
+    abstract readonly type: 'ollama' | 'openai';
     abstract readonly connectionState: ConnectionState;
 
     abstract readonly rawModels: Ref<ModelInfo[]>;
-    protected readonly fetchedCapabilities = ref<Map<string, ModelCapability[]>>(new Map());
-    
+
+    abstract readonly features: LLMProvider['features'];
+
+    abstract config: LLMProvider['config'];
+
     private initialised = ref(false);
     private loadPromise: Promise<void> | null = null;
 
@@ -26,14 +31,31 @@ export abstract class BaseProvider implements LLMProvider {
 
         this.loadPromise = (async () => {
             try {
-                this.rawModels.value = await this.getModels();
-                
+                const configStore = useConfigStore();
+
+                const providerInfoList: ProviderModelInfo[] = await this.getModels();
+
+                const modelList: ModelInfo[] = providerInfoList.map((modelProvInfo) => {
+                    const appRename = configStore.chat.modelRenames[modelProvInfo.id];
+
+                    return {
+                        info: modelProvInfo,
+                        app: {
+                            displayName: appRename ?? NameParser.getNameForModel(modelProvInfo.providerMetadata, modelProvInfo.id),
+                            hidden: configStore.chat.hiddenModels.includes(modelProvInfo.id),
+                            subtitle: SubtitleParser.getSubtitleForModel(modelProvInfo.providerMetadata),
+                        }
+                    }
+                })
+
+                this.rawModels.value = modelList;
+
                 try {
                     await this.onModelsLoaded();
                 } catch (error) {
                     logger.error('BaseProvider:loadModels', `Error running onModelsLoaded for ${this.name}:`, error);
                 }
-            }  finally {
+            } finally {
                 this.initialised.value = true;
                 this.loadPromise = null;
             }
@@ -60,12 +82,6 @@ export abstract class BaseProvider implements LLMProvider {
         options: ChatOptions
     ): Promise<AsyncIterable<ChatIteratorChunk>>;
 
-    /**
-     * Get the capabilities for a specific model.
-     * @param modelId Model ID to check capabilities for. E.g. `gemma4:e4b`
-     */
-    public abstract getModelCapabilities(modelId: string): ModelCapability[];
-
     public abstract getModelAttributes(modelId: string): Promise<ModelAttributes>;
 
     /**
@@ -86,5 +102,23 @@ export abstract class BaseProvider implements LLMProvider {
      * Internal method to fetch models from provider and transform them info a
      * common format.
      */
-    protected abstract getModels(): Promise<ModelInfo[]>;
+    protected abstract getModels(): Promise<ProviderModelInfo[]>;
+
+    // Connection state
+    public isConnected() {
+        return this.connectionState.status === 'connected';
+    }
+
+    public isLoading() {
+        return this.connectionState.status === 'checking';
+    }
+
+    public isDisconnected() {
+        return this.connectionState.status === 'error' || this.connectionState.status === 'disconnected'
+    }
+
+
+    public getAllModelIds() {
+        return this.rawModels.value.map((model) => model.info.id);
+    }
 }

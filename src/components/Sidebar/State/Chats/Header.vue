@@ -3,7 +3,7 @@ import { emitter } from '@/lib/mitt';
 import { BiSearchAlt2, BiWrench } from 'vue-icons-plus/bi';
 import { TbListDetails } from 'vue-icons-plus/tb';
 
-const logoFile = import.meta.glob('@/icons/llamapen/favicon.svg', { eager: true });
+const logoFile = import.meta.glob('@/icons/llamapen/logo-outlined.svg', { eager: true });
 const logo = Object.values(logoFile)[0];
 
 function search() {

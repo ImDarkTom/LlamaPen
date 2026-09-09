@@ -1,4 +1,5 @@
-import type { LpCloudPricing } from "../lpcloud/types";
+import type { ModelReasoningEffort } from "@/composables/useProviderManager";
+import type { defaultMessageOptions } from "@/stores/useConfigStore";
 
 export type ChatIteratorChunk = {
 	type: 'error',
@@ -42,11 +43,13 @@ export type ProviderMessage = {
 export type ChatOptions = {
 	model: string;
 	reasoningEnabled?: boolean;
+	reasoningEffort?: ModelReasoningEffort;
+	reasoningMaxTokens?: number;
+	params?: Partial<typeof defaultMessageOptions>;
 }
 
 export type ProviderMetadata = 
 	| { provider: 'ollama', data: OllamaMetadata }
-	| { provider: 'lpcloud', data: LPCloudMetadata }
 	| { provider: 'openai', data: OpenAIMetadata }
 
 export type OllamaMetadata = {
@@ -55,16 +58,11 @@ export type OllamaMetadata = {
 	quantization?: string;
 	family?: string;
 	modifiedAt?: Date;
-}
-
-export type LPCloudMetadata = {
-	providerName: string;
-	priceTier: LpCloudPricing;
-	premium: boolean;
-	tags?: string[]
+	context_length?: number;
 }
 
 export type OpenAIMetadata = {
 	created: Date;
 	ownedBy: string;
+	allInfo?: Record<any, any>;
 }

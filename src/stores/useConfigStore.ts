@@ -1,6 +1,7 @@
 import logger from '@/lib/logger';
 import { migrations, runMigrations } from '@/lib/migration';
 import { defineStore } from "pinia";
+import type { ModelReasoningEffort } from '@/composables/useProviderManager';
 
 interface Config {
     _version: number;
@@ -8,17 +9,16 @@ interface Config {
     showSidebar: boolean,
     transitionSpeed: number,
     closeSidebarOnNavMobile: boolean,
-    ollama: {
-        url: string;
-        modelCapabilities: {
-            autoload: boolean,
-            alwaysAutoload: boolean,
-        }
+    flags: {
+        onboardingComplete: boolean;
+    },
+    provider: {
+        ollama: {
+            autoloadCapabilities: boolean,
+            alwaysAutoloadCapabilities: boolean,
+        },
     },
     ui: {
-        modelList: {
-            useGridView: boolean;
-        }
         modelIcons: {
             monochrome: boolean,
             background: boolean,
@@ -37,11 +37,6 @@ interface Config {
             entryIcons: boolean;
         },
     },
-    cloud: {
-        enabled: boolean,
-        apiUrl: string,
-        signoutBeforeDisable: boolean,
-    },
     chat: {
         messageOptionsEnabled: boolean,
         messageOptions: {
@@ -54,6 +49,8 @@ interface Config {
         thinking: {
             enabled: false;
             infoOpenByDefault: boolean;
+            effort: ModelReasoningEffort | null;
+            maxTokens: number | null;
         },
         titleGenerationStyle: 'firstMessage' | 'generate' | 'chatId' | 'dynamic';
         hiddenModels: string[];
@@ -62,10 +59,6 @@ interface Config {
     },
     models: {
         favoriteModels: string[];
-        favoriteCloudModels: string[];
-    },
-    developer: {
-        infoLogs: boolean,
     },
 };
 
@@ -90,17 +83,16 @@ export const useConfigStore = defineStore('config', {
         showSidebar: true,
         transitionSpeed: 0.125,
         closeSidebarOnNavMobile: true,
-        ollama: {
-            url: import.meta.env.VITE_DEFAULT_OLLAMA ?? 'http://localhost:11434',
-            modelCapabilities: {
-                autoload: true,
-                alwaysAutoload: false
+        flags: {
+            onboardingComplete: false,
+        },
+        provider: {
+            ollama: {
+                autoloadCapabilities: true,
+                alwaysAutoloadCapabilities: false,
             }
         },
         ui: {
-            modelList: {
-                useGridView: false,
-            },
             modelIcons: {
                 monochrome: true,
                 background: false,
@@ -119,18 +111,15 @@ export const useConfigStore = defineStore('config', {
                 entryIcons: true,
             },
         },
-        cloud: {
-            enabled: false,
-            apiUrl: import.meta.env.VITE_API_URL,
-            signoutBeforeDisable: false,
-        },
         chat: {
             messageOptionsEnabled: false,
-            messageOptions: defaultMessageOptions,
+            messageOptions: { ...defaultMessageOptions },
             thinking: {
                 // Enabled is toggled by the input box icon
                 enabled: false,
                 infoOpenByDefault: false,
+                effort: null,
+                maxTokens: null,
             },
             tokenSaveInterval: 5,
             titleGenerationStyle: 'generate',
@@ -140,15 +129,8 @@ export const useConfigStore = defineStore('config', {
         },
         models: {
             favoriteModels: [],
-            favoriteCloudModels: [],
-        },
-        developer: {
-            infoLogs: false,
         },
     }),
-    getters: {
-        requestUrl: (state) => (path: string) => `${state.cloud.enabled ? state.cloud.apiUrl : state.ollama.url}${path}`,
-    },
     actions: {
         setTransitionSpeed(speed: number) {
             if (speed > 1 || speed < 0) {
@@ -190,7 +172,9 @@ export const useConfigStore = defineStore('config', {
     persist: {
         storage: localStorage,
         afterHydrate: (ctx) => {
-            runMigrations(ctx.store);
+            if (runMigrations(ctx.store)) {
+                (ctx.store as any).$persist();
+            }
         }
     },
 })

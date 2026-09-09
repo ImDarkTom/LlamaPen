@@ -24,7 +24,7 @@ const useUIStore = defineStore('uiStore', () => {
 
         // Update current state
         const target = rawModels.value.find(modelItem => modelItem.info.id === modelId);
-        if (target) target.hidden = !setHidden;
+        if (target) target.app.hidden = !setHidden;
     }
     
     function renameModel(modelId: string, newName: string) {
@@ -33,7 +33,7 @@ const useUIStore = defineStore('uiStore', () => {
 
         // Update in state
         const target = rawModels.value.find(modelItem => modelItem.info.id === modelId);
-        if (target) target.displayName = newName;
+        if (target) target.app.displayName = newName;
     }
 
     return {

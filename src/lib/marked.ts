@@ -4,7 +4,7 @@ import markedKatex from 'marked-katex-extension';
 import DOMPurify from 'dompurify';
 
 import "katex/dist/katex.min.css";
-import "highlight.js/styles/github-dark.min.css";
+import '../assets/style/highlight.css';
 
 function escape(html: string) {
     const escapeReplacements = {
@@ -15,7 +15,7 @@ function escape(html: string) {
         "'": '&#39;',
     } as const;
 
-    return html.replace(/[&<>"']/g, (ch) => 
+    return html.replace(/[&<>"']/g, (ch) =>
         // Type is guaranteed as we are only regex matching the 5 chars
         escapeReplacements[ch as keyof typeof escapeReplacements]
     );
@@ -27,9 +27,9 @@ const renderer: RendererObject = {
         const title = token.title;
         const text = token.text || href;
 
-        const isInternal = 
-            href.startsWith('/') || 
-            href.startsWith('#') || 
+        const isInternal =
+            href.startsWith('/') ||
+            href.startsWith('#') ||
             href.startsWith(window.location.origin);
 
         const titleAttr = title ? `title="${title}"` : '';
@@ -42,23 +42,21 @@ const renderer: RendererObject = {
         const lang = token.lang || '';
         const language = hljs.getLanguage(lang) ? lang : '';
         const languagePretty = hljs.getLanguage(lang)?.name || language;
-        
+
         const highlighted = language
             ? hljs.highlight(token.text, { language }).value
             : escape(token.text);
-        
+
         const classValue = language ? `hljs language-${language}` : 'hljs'; // add language to class if valid
 
         const codeHtml = highlighted.replace(/\n$/, '');
 
         return `
-            <div class="bg-[#0d1117] rounded-t-lg px-4 py-2 select-none text-xs flex flex-row justify-between border-b border-base-200 items-center">
-                <span>${languagePretty}</span>
-                <button data-code="${encodeURIComponent(token.text)}" class="copy-code-button hover:text-base-100 border p-1 rounded-sm cursor-pointer">
-                    Copy
-                </button>
-            </div>
-                <pre><code class="${classValue} rounded-t-none! pt-1!">${codeHtml}\n</code></pre>`;
+            <code-block-header
+                class="block"
+                language="${encodeURIComponent(languagePretty)}"
+                code="${encodeURIComponent(token.text)}"></code-block-header>
+            <pre><code class="${classValue} rounded-t-none! pt-1!">${codeHtml}\n</code></pre>`;
     }
 };
 
@@ -76,7 +74,10 @@ fullMarked.use(markedKatex());
  */
 export function renderMarkdown(text: string) {
     const rawHtml = fullMarked.parse(text, { async: false });
-    const sanitizedHtml = DOMPurify.sanitize(rawHtml, { ADD_ATTR: ['target'] });
+    const sanitizedHtml = DOMPurify.sanitize(rawHtml, {
+        ADD_TAGS: ['code-block-header'],
+        ADD_ATTR: ['target', 'language', 'code'],
+    });
 
     return sanitizedHtml;
 }

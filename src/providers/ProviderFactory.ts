@@ -1,14 +1,30 @@
 import logger from "@/lib/logger";
 import type { LLMProvider } from "./base/ProviderInterface";
-import { LPCloudProvider } from "./lpcloud/LPCloudProvider";
 import { OllamaProvider } from "./ollama/OllamaProvider";
+import type { KeyedCustomProvider } from "@/stores/useCustomProvidersStore";
+import { OpenAIProvider } from "./openai/OpenAIProvider";
 
-class ProviderFactory {
+export class ProviderFactory {
     private providers = new Map<string, LLMProvider>();
-    private selectedProvider = localStorage.getItem('selectedProvider') || "ollama";
+    private selectedProvider = localStorage.getItem('selectedProvider') || this.providers.keys().next().value;
 
-    register(name: string, provider: LLMProvider) {
-        this.providers.set(name, provider);
+    private getFallbackProviderKey() {
+        return this.providers.keys().next().value;
+    }
+
+    register(provider: KeyedCustomProvider) {
+        let instance: LLMProvider;
+
+        if (provider.format === 'ollama') {
+            instance = new OllamaProvider(provider.name, provider);
+        } else if (provider.format === 'openai') {
+            instance = new OpenAIProvider(provider.name, provider);
+        } else {
+            // Legacy provider instances without a `format` property were always OpenAI
+            instance = new OpenAIProvider(provider.name, provider);
+        }
+
+        this.providers.set(provider.key, instance);
     }
 
     getProviders(): Map<string, LLMProvider> {
@@ -21,7 +37,13 @@ class ProviderFactory {
             this.selectedProvider = providerKey;
         } else {
             logger.error('ProviderFactory:setSelectedProvider', 'Invalid provider key', providerKey);
-            this.selectedProvider = "ollama";
+            const fallbackProviderKey = this.getFallbackProviderKey();
+            if (!fallbackProviderKey) {
+                localStorage.removeItem('selectedProvider');
+                return;
+            }
+
+            this.selectedProvider = fallbackProviderKey;
         }
 
         localStorage.setItem('selectedProvider', this.selectedProvider);
@@ -32,15 +54,19 @@ class ProviderFactory {
     }
 
     getSelectedProvider(): LLMProvider {
-        const provider = this.providers.get(this.selectedProvider);
+        const provider = this.selectedProvider ? this.providers.get(this.selectedProvider) : this.providers.values().next().value;
         if (!provider) {
-            logger.warn('ProviderFactory:getSelectedProvider', `Provider '${this.selectedProvider}' not found, falling back to ollama`);
-            return this.providers.get('ollama')!;
+            const fallbackProviderKey = this.getFallbackProviderKey();
+            if (!fallbackProviderKey) {
+                throw new Error('No providers registered');
+            }
+
+            logger.warn('ProviderFactory:getSelectedProvider', `Provider '${this.selectedProvider}' not found, falling back to ${fallbackProviderKey}`);
+            this.setSelectedProvider(fallbackProviderKey);
+            return this.providers.get(fallbackProviderKey)!;
         }
         return provider;
     }
 }
 
 export const providerFactory = new ProviderFactory();
-providerFactory.register('ollama', new OllamaProvider());
-providerFactory.register('lpcloud', new LPCloudProvider());

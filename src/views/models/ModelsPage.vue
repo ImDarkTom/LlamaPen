@@ -11,7 +11,7 @@ import { BiLoaderAlt } from 'vue-icons-plus/bi';
 // e.g. ollama/Viewer.vue, ollama/DownloadManager.vue, generic/Viewer.vue, etc.
 
 // State
-const { rawModels, loadModels, getModelAttributes, getModelInfo, getModelCapabilities } = useProviderManager();
+const { currentProvider, rawModels, getModel } = useProviderManager();
 
 const selectedModel = ref<ModelViewInfo>({ state: 'unselected' });
 
@@ -23,12 +23,12 @@ const modelFromParams = computed<string | null>(() => {
     } else if (Array.isArray(modelParam) && modelParam.length > 0) {
         return modelParam[0] ?? null;
     }
-    
+
     return null;
 });
 
-// Helpers 
-const refreshModelList = async () => await loadModels(true);
+// Helpers
+const refreshModelList = async () => await currentProvider.value.loadModels(true);
 
 // Hooks
 onMounted(async () => {
@@ -37,7 +37,7 @@ onMounted(async () => {
 
     if (!modelFromParams.value) {
         selectedModel.value = { state: 'unselected' };
-    } else if(modelFromParams.value === 'downloads') {
+    } else if (modelFromParams.value === 'downloads') {
         return;
     } else {
         setModelViewInfo(modelFromParams.value);
@@ -60,12 +60,13 @@ async function setModelViewInfo(modelId: string) {
     selectedModel.value = { state: 'loading' };
 
     try {
-        const attributes = await getModelAttributes(modelId);
+        const modelInfo = getModel(modelId);
+        const attributes = await modelInfo.getAttributes();
 
         if (modelFromParams.value !== modelId) return; // user changed models
 
-        const modelName = getModelInfo(modelId).data?.displayName || modelId;
-        const capabilities = getModelCapabilities(modelId);
+        const modelName = modelInfo.getDisplayName() || modelId;
+        const capabilities = modelInfo.getCapabilities();
 
         selectedModel.value = {
             state: 'data',
@@ -81,7 +82,6 @@ async function setModelViewInfo(modelId: string) {
         };
     }
 }
-
 </script>
 
 <template>
@@ -90,24 +90,24 @@ async function setModelViewInfo(modelId: string) {
             :modelsList="rawModels"
             @refresh-model-list="refreshModelList" />
 
-        <UIViewerContainer 
-            v-if="selectedModel.state === 'unselected'" 
-            class="flex items-center justify-center text-xl" >
+        <UIViewerContainer
+            v-if="selectedModel.state === 'unselected'"
+            class="flex items-center justify-center text-xl">
             Select a model from the sidebar to view its details.
         </UIViewerContainer>
         <UIViewerContainer
             v-else-if="selectedModel.state === 'loading'"
-            class="flex items-center justify-center" >
+            class="flex items-center justify-center">
             <BiLoaderAlt class="animate-spin" />
         </UIViewerContainer>
         <UIViewerContainer
             v-else-if="selectedModel.state === 'error'"
-            class="flex items-center justify-center" >
+            class="flex items-center justify-center">
             Error loading model details: <code>{{ selectedModel.message }}</code>
         </UIViewerContainer>
         <ModelsPageViewer
             v-else
-            :modelFromParams 
+            :modelFromParams
             :selectedModel />
     </div>
 </template>
