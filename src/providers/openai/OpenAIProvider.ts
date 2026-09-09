@@ -1,4 +1,4 @@
-import type { ModelCapability, ModelInfo, ProviderModelInfo } from "@/composables/useProviderManager";
+import type { ModelInfo, ProviderModelInfo } from "@/composables/useProviderManager";
 import { BaseProvider } from "../base/BaseProvider";
 import type { Reactive, Ref } from "vue";
 import type { ConnectionState, LLMProvider } from "../base/ProviderInterface";

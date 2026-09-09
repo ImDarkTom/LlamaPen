@@ -1,7 +1,7 @@
 import { ref, type Ref } from "vue";
 import type { ConnectionState, LLMProvider } from "./ProviderInterface";
 import type { ChatIteratorChunk, ChatOptions } from "./types";
-import type { ModelCapability, ModelInfo, ProviderModelInfo } from "@/composables/useProviderManager";
+import type { ModelInfo, ProviderModelInfo } from "@/composables/useProviderManager";
 import logger from "@/lib/logger";
 import type { ModelAttributes } from "@/components/ModelsPage/types";
 import { NameParser, SubtitleParser } from "../openai/nonStandardParsing";
