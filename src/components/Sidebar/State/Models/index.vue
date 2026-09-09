@@ -4,11 +4,11 @@ import useDownloadsStore from '@/stores/useDownloadsStore';
 import { BiCheck, BiCloud, BiData, BiDownload } from 'vue-icons-plus/bi';
 import { computed } from 'vue';
 
-const providerStore = useProviderManager();
+const { currentProvider } = useProviderManager();
 const downloadStore = useDownloadsStore();
 
 const installedCount = computed<string | undefined>(() => {
-    const installedCount = providerStore.allModelIds.value.length;
+    const installedCount = currentProvider.value.getAllModelIds().length;
     return installedCount === 0 ? undefined : String(installedCount);
 });
 
@@ -17,7 +17,7 @@ const downloadCount = computed<string | undefined>(() => {
     return downloads === 0 ? undefined : String(downloads);
 });
 
-const canDownloadModels = computed(() => providerStore.currentProvider.value.features.modelDownload !== undefined);
+const canDownloadModels = computed(() => currentProvider.value.features.modelDownload !== undefined);
 </script>
 
 <template>

@@ -6,15 +6,17 @@ import {
     BiDotsHorizontalRounded,
     BiDotsVerticalRounded,
     BiHeart,
+    BiInfoCircle,
     BiPencil,
     BiSolidHeart,
 } from 'vue-icons-plus/bi';
 import { useConfigStore } from '@/stores/useConfigStore';
 import { useModelSelect } from '@/stores/useModelSelect';
 import { useProviderManager, type ModelInfo } from '@/composables/useProviderManager';
+import { emitter } from '@/lib/mitt';
 
 const config = useConfigStore();
-const { getModelCapabilities } = useProviderManager();
+const { getModel } = useProviderManager();
 
 const props = defineProps<{
     model: ModelInfo;
@@ -41,7 +43,7 @@ defineExpose({
 
 const isFavorited = () => config.models.favoriteModels.includes(props.model.info.id);
 
-const modelCapabilities = computed(() => getModelCapabilities(props.model.info.id));
+const modelCapabilities = computed(() => getModel(props.model.info.id).getCapabilities());
 
 const favoriteModel = () => {
     const modelId = props.model.info.id;
@@ -52,7 +54,17 @@ const favoriteModel = () => {
     }
 };
 
+function openInfoPopup() {
+    emitter.emit('showModelInfo', props.model);
+}
+
 const selectActions: MenuEntry[] = [
+    {
+        type: 'text',
+        text: 'Info',
+        icon: BiInfoCircle,
+        onClick: () => openInfoPopup(),
+    },
     {
         type: 'text',
         text: () => (isFavorited() ? 'Unfavorite' : 'Favorite'),
@@ -95,20 +107,20 @@ const selectActions: MenuEntry[] = [
                 <span
                     class="text-sm font-medium text-ellipsis whitespace-nowrap overflow-hidden text-base-100"
                     :title="model.info.id">
-                    {{ model.displayName }}
+                    {{ model.app.displayName }}
                 </span>
                 <ChatModelSelectItemBadges
                     class="ml-2"
-                    :provider-metadata="model.info.providerMetadata"
+                    :model="model"
                     :capabilities="modelCapabilities"
                     :is-favorited="isFavorited()" />
             </div>
             <span
                 class="text-xs text-base-300"
                 :class="{
-                    'text-base-400': model.info.subtitle.length === 0,
+                    'text-base-400': model.app.subtitle.length === 0,
                 }"
-                >{{ model.info.subtitle.length > 0 ? model.info.subtitle : 'Info Unavailable' }}</span
+                >{{ model.app.subtitle.length > 0 ? model.app.subtitle : 'Info Unavailable' }}</span
             >
             <div class="absolute flex items-center justify-center right-0 top-0 h-full w-16">
                 <FloatingActionMenu :actions="selectActions">

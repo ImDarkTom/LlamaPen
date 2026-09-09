@@ -1,6 +1,6 @@
 import type { ChatIteratorChunk, ChatOptions } from "./types";
 import type { Reactive, Ref } from "vue";
-import type { ModelCapability, ModelInfo } from "@/composables/useProviderManager";
+import type { ModelInfo } from "@/composables/useProviderManager";
 import type { ModelAttributes } from "@/components/ModelsPage/types";
 
 export type ConnectionState = {
@@ -56,12 +56,6 @@ export interface LLMProvider {
     ): Promise<AsyncIterable<ChatIteratorChunk>>;
 
     /**
-     * Get the model 'capabilities', e.g. image inputs, thinking/reasoning, etc.
-     * @param modelId Model to get capabilities for.
-     */
-    getModelCapabilities(modelId: string): ModelCapability[];
-
-    /**
      * Get the attributes of a model. E.g. license, modelfile, etc.
      * @param modelId Model to get attributes for.
      */
@@ -74,6 +68,12 @@ export interface LLMProvider {
      * @param messages Chat messages to generate a title for
      */
     generateChatTitle(messages: ChatMessage[]): Promise<string>;
+
+    isConnected(): boolean;
+    isLoading(): boolean;
+    isDisconnected(): boolean;
+
+    getAllModelIds(): string[];
 }
 
 export interface ModelMemoryFeature {

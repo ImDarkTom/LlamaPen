@@ -3,7 +3,7 @@ import { useProviderManager } from '@/composables/useProviderManager';
 import { BiLinkExternal } from 'vue-icons-plus/bi';
 import { RouterLink } from 'vue-router';
 
-const { rawModels, isConnected } = useProviderManager();
+const { rawModels, currentProvider } = useProviderManager();
 
 const commitHashFull = __COMMIT_HASH__;
 const commitHashShort = __COMMIT_HASH__.slice(0, 7);
@@ -34,7 +34,7 @@ function getGreetingMessage() {
             <RouterLink to="/models">
                 <span
                     class="bg-base-800/80 hover:bg-base-700 p-2 px-3 rounded-full box-content hover:text-base-100 cursor-pointer transition-colors duration-dynamic">
-                    <template v-if="isConnected"> {{ rawModels.length }} Models Available </template>
+                    <template v-if="currentProvider.isConnected()"> {{ rawModels.length }} Models Available </template>
                     <span
                         v-else
                         class="italic">

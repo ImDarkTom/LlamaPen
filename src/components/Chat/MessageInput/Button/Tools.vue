@@ -7,12 +7,12 @@ import { useProviderManager } from '@/composables/useProviderManager';
 
 const toolsStore = useToolsStore();
 const config = useConfigStore();
-const { isLoading, selectedModelCapabilities } = useProviderManager();
+const { getSelectedModel, currentProvider } = useProviderManager();
 
 const searchQuery = ref<string>('');
 
 const selectedModelCanCallTools = computed(() => {
-    return selectedModelCapabilities.value.includes('tools') || selectedModelCapabilities.value.includes('unavailable');
+    return getSelectedModel().getCapabilities().includes('tools') || getSelectedModel().getCapabilities().includes('unavailable');
 });
 
 function toggleSelection(item: string) {
@@ -48,8 +48,8 @@ const isOpened = ref(false);
         v-model:is-opened="isOpened"
         preffered-position="top"
         :class="{ 
-            'opacity-50': isLoading,
-            'hidden': (config.ui.messageInput.hideUnusedButtons && !selectedModelCanCallTools) && !isLoading
+            'opacity-50': currentProvider.isLoading(),
+            'hidden': (config.ui.messageInput.hideUnusedButtons && !selectedModelCanCallTools) && !currentProvider.isLoading()
         }"
         title="Toggle available tools">
         <template #button>
@@ -88,7 +88,7 @@ const isOpened = ref(false);
                                 @change="toggleSelection(toolName)">
                             <div class="flex flex-col">
                                 <span class="text-base-100 text-sm font-medium">{{ toolName }}</span>
-                                <span class="text-xs text-base-300">{{ tool.description || '<blank description>' }}</span>
+                                <span class="text-xs text-base-300">{{ tool.description || '\<blank description\>' }}</span>
                             </div>
                             <ButtonPrimary
                                 type="link"

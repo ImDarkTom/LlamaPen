@@ -1,4 +1,4 @@
-import type { ModelCapability } from "@/composables/useProviderManager";
+import type { ModelCapability, ModelInputModalities, ModelOutputModalities, ModelParameters, ModelReasoningOptions } from "@/composables/useProviderManager";
 import type { ProviderMetadata } from "../base/types";
 import { numberToNumeral } from "@/utils/core/numberToNumeral";
 
@@ -10,6 +10,17 @@ const isOpenAIMetadata = (providerMetadata: ProviderMetadata): providerMetadata 
 
 const isOllamaMetadata = (providerMetadata: ProviderMetadata): providerMetadata is OllamaProviderMetadata =>
     providerMetadata.provider === 'ollama';
+
+/** Fallback for providers that don't advertise their parameters, so only spec-standard fields get sent. */
+const OPENAI_SPEC_PARAMETERS: ModelParameters[] = [
+    'temperature',
+    'top_p',
+    'max_tokens',
+    'stop',
+    'seed',
+    'presence_penalty',
+    'frequency_penalty',
+];
 
 export class CapabilityParser {
     public static attemptParseModelCapabilities(providerMetadata: ProviderMetadata): ModelCapability[] {
@@ -57,7 +68,9 @@ export class CapabilityParser {
 }
 
 export class SubtitleParser {
-    public static getSubtitleForModel(providerMetadata: ProviderMetadata): string {
+    public static getSubtitleForModel(providerMetadata?: ProviderMetadata): string {
+        if (!providerMetadata) return 'No info';
+
         if (isOpenAIMetadata(providerMetadata)) {
             // Try parse as OpenRouter
             const subtitleFromOpenRouter = SubtitleParser.attemptParseOpenRouter(providerMetadata);
@@ -66,16 +79,16 @@ export class SubtitleParser {
             return `Owner: ${providerMetadata.data.ownedBy}`;
         } else if (isOllamaMetadata(providerMetadata)) {
             return [
-                providerMetadata.data.context_length 
-                    ? `${numberToNumeral(providerMetadata.data.context_length, 0)} ctx` 
+                providerMetadata.data.context_length
+                    ? `${numberToNumeral(providerMetadata.data.context_length, 0)} ctx`
                     : null,
                 providerMetadata.data.parameterSize,
-                providerMetadata.data.quantization ]
-                    .filter(Boolean)
-                    .join(' ⸱ ');
+                providerMetadata.data.quantization]
+                .filter(Boolean)
+                .join(' ⸱ ');
         }
 
-        return '';
+        return 'No info';
     }
 
     private static attemptParseOpenRouter(providerMetadata: OpenAIProviderMetadata): string | null {
@@ -101,8 +114,8 @@ export class SubtitleParser {
 }
 
 export class NameParser {
-    public static getNameForModel(providerMetadata: ProviderMetadata, fallback: string): string {
-        if (!isOpenAIMetadata(providerMetadata)) return '';
+    public static getNameForModel(providerMetadata: ProviderMetadata | undefined, fallback: string): string {
+        if (!providerMetadata || !isOpenAIMetadata(providerMetadata)) return fallback;
 
         // Try parse as OpenRouter
         const nameFromOpenRouter = NameParser.attemptParseOpenRouter(providerMetadata);
@@ -124,6 +137,90 @@ export class NameParser {
         }
 
         return null;
+    }
+}
+
+export class OpenRouterParser {
+    public static getExternalLink(providerMetadata: ProviderMetadata | undefined): string | null {
+        if (!providerMetadata || !isOpenAIMetadata(providerMetadata)) return null;
+
+        const huggingFaceId = providerMetadata.data.allInfo?.hugging_face_id;
+
+        if (huggingFaceId) return `https://huggingface.co/${huggingFaceId}`;
+        else return null;
+    }
+
+    public static getDescription(providerMetadata: ProviderMetadata | undefined): string | null {
+        if (!providerMetadata || !isOpenAIMetadata(providerMetadata)) return null;
+
+        return providerMetadata.data.allInfo?.description ?? null;
+    }
+
+    public static getContextLength(providerMetadata: ProviderMetadata | undefined): number | null {
+        if (!providerMetadata || !isOpenAIMetadata(providerMetadata)) return null;
+
+        return providerMetadata.data.allInfo?.context_length ?? null;
+    }
+
+    public static getReasoning(providerMetadata: ProviderMetadata | undefined): { reasoning: ModelReasoningOptions } | undefined {
+        if (!providerMetadata || !isOpenAIMetadata(providerMetadata)) return undefined;
+
+
+        return { reasoning: providerMetadata.data.allInfo?.reasoning };
+    }
+
+    public static getKnowledgeCutoff(providerMetadata: ProviderMetadata | undefined): string | null {
+        if (!providerMetadata || !isOpenAIMetadata(providerMetadata)) return null;
+
+        return providerMetadata.data.allInfo?.knowledge_cutoff;
+    }
+
+    public static getModerationStatus(providerMetadata: ProviderMetadata | undefined): boolean | null {
+        if (!providerMetadata || !isOpenAIMetadata(providerMetadata)) return null;
+
+        return providerMetadata.data.allInfo?.top_provider?.is_moderated ?? null;
+    }
+
+    public static getTopProviderMaxCompletionTokens(providerMetadata: ProviderMetadata | undefined): number | null {
+        if (!providerMetadata || !isOpenAIMetadata(providerMetadata)) return null;
+
+        return providerMetadata.data.allInfo?.top_provider?.max_completion_tokens ?? null;
+    }
+
+    public static getPromptPricing(providerMetadata: ProviderMetadata | undefined): number {
+        if (!providerMetadata || !isOpenAIMetadata(providerMetadata)) return -1;
+
+        return providerMetadata.data.allInfo?.pricing?.prompt ?? -1;
+    }
+
+    public static getCompletionPricing(providerMetadata: ProviderMetadata | undefined): number {
+        if (!providerMetadata || !isOpenAIMetadata(providerMetadata)) return -1;
+
+        return providerMetadata.data.allInfo?.pricing?.completion ?? -1;
+    }
+
+    public static getInputModalities(providerMetadata: ProviderMetadata | undefined): ModelInputModalities[] {
+        if (!providerMetadata || !isOpenAIMetadata(providerMetadata)) return ['unknown-modalities'];
+
+        return providerMetadata.data.allInfo?.architecture?.input_modalities ?? ['unknown-modalities'];
+    }
+
+    public static getOutputModalities(providerMetadata: ProviderMetadata | undefined): ModelOutputModalities[] {
+        if (!providerMetadata || !isOpenAIMetadata(providerMetadata)) return ['unknown-modalities'];
+
+        return providerMetadata.data.allInfo?.architecture?.output_modalities ?? ['unknown-modalities'];
+    }
+
+    public static getSupportedParameters(providerMetadata: ProviderMetadata | undefined): ModelParameters[] {
+        if (!providerMetadata || !isOpenAIMetadata(providerMetadata)) return [];
+
+        return providerMetadata.data.allInfo?.supported_parameters ?? OPENAI_SPEC_PARAMETERS;
+    }
+
+    public static getDefaultParameters(providerMetadata: ProviderMetadata | undefined): Partial<Record<ModelParameters, unknown | null>> {
+        if (!providerMetadata || !isOpenAIMetadata(providerMetadata)) return {};
+
+        return providerMetadata.data.allInfo?.default_parameters ?? {};
     }
 }
 

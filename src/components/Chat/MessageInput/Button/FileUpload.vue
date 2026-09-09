@@ -3,7 +3,7 @@ import { computed } from 'vue';
 import { BiImageAdd } from 'vue-icons-plus/bi';
 import { useProviderManager } from '@/composables/useProviderManager';
 
-const { selectedModelCapabilities } = useProviderManager();
+const { getSelectedModel } = useProviderManager();
 
 defineProps<{
     onChange: (event: Event) => void;
@@ -11,12 +11,13 @@ defineProps<{
 
 const selectedModelHasVision = computed(() => {
     return (
-        selectedModelCapabilities.value.includes('vision') || selectedModelCapabilities.value.includes('unavailable')
+        getSelectedModel().getCapabilities().includes('vision') ||
+        getSelectedModel().getCapabilities().includes('unavailable')
     );
 });
 
 const selectedModelCapabilitiesUnavailable = computed(() => {
-    return selectedModelCapabilities.value.includes('unavailable');
+    return getSelectedModel().getCapabilities().includes('unavailable');
 });
 
 function onClick(e: MouseEvent) {

@@ -6,9 +6,8 @@ import { reactive, ref, type Reactive } from "vue";
 import type { ConnectionState, LLMProvider, ModelDownloadProgress } from "../base/ProviderInterface";
 import { BaseProvider } from "../base/BaseProvider";
 import { useConfigStore } from "@/stores/useConfigStore";
-import type { ModelCapability, ModelInfo } from "@/composables/useProviderManager";
+import type { ModelInfo, ProviderModelInfo } from "@/composables/useProviderManager";
 import type { ModelAttributes } from "@/components/ModelsPage/types";
-import { SubtitleParser } from "../openai/nonStandardParsing";
 
 /**
  * Interfaces with the Ollama wrapper before packaging responses into the common app standard.
@@ -132,13 +131,6 @@ export class OllamaProvider extends BaseProvider {
     protected async onModelsLoaded(): Promise<void> {
         await this.features.modelMemory.refreshLoadedModels();
 
-        this.rawModels.value = this.rawModels.value.map(m => {
-            return {
-                ...m,
-                subtitle: m.info.id,
-            };
-        });
-
         const config = useConfigStore();
         const shouldAutoloadCapabilities =
             config.provider.ollama.autoloadCapabilities && this.rawModels.value.length < 31
@@ -146,8 +138,53 @@ export class OllamaProvider extends BaseProvider {
 
         if (shouldAutoloadCapabilities) {
             for (const model of this.rawModels.value) {
-                const capabilities = await this.fetchModelCapabilities(model.info.id);
-                this.fetchedCapabilities.value.set(model.info.id, capabilities);
+                // 'completion' | 'tools' | 'thinking' | 'vision' | 'insert' | 'embedding' | 'search'
+                const { data: showResponse, error } = await this.ollamaWrapper.show({ model: model.info.id });
+                if (error || !showResponse) {
+                    continue;
+                }
+
+                const { capabilities } = showResponse;
+
+                if (
+                    capabilities.includes('thinking') &&
+                    !model.info.supported_parameters.includes('reasoning')
+                ) {
+                    model.info.reasoning = {
+                        default_enabled: true,
+                    };
+
+                    model.info.supported_parameters.push('reasoning');
+                }
+
+                if (capabilities.includes('vision')) {
+                    model.info.architecture.input_modalities = ['text', 'image'];
+                }
+
+                if (
+                    capabilities.includes('tools') &&
+                    !model.info.supported_parameters.includes('tools')
+                ) {
+                    model.info.supported_parameters.push('tools', 'tool_choice');
+                }
+
+                const contextLength = (() => {
+                    // Ollama has yet to fix this type
+                    const modelInfo = showResponse.model_info as unknown as Record<string, any>;
+                    const architecture = modelInfo['general.architecture'];
+
+                    if (!architecture) return null;
+
+                    const contextLength = modelInfo[`${architecture}.context_length`];
+                    if (typeof contextLength === 'number') {
+                        return contextLength;
+                    }
+
+                    return null;
+                })();
+
+                model.info.context_length = contextLength;
+                model.info.capabilities = capabilities;
             }
         }
     }
@@ -173,14 +210,10 @@ export class OllamaProvider extends BaseProvider {
         return chat(this.ollamaWrapper, ollamaFormatMessages, abortSignal, options);
     }
 
-    public async getModels(): Promise<ModelInfo[]> {
-        const configStore = useConfigStore();
+    public async getModels(): Promise<ProviderModelInfo[]> {
         const list = await this.ollamaWrapper.list();
 
         return list.map((m) => {
-            const displayName = configStore.chat.modelRenames[m.model] || m.name;
-            const isHidden = configStore.chat.hiddenModels.includes(m.model);
-
             const providerMetadata: ProviderMetadata = {
                 provider: 'ollama',
                 data: {
@@ -192,31 +225,43 @@ export class OllamaProvider extends BaseProvider {
                     context_length: (m.details as Record<string, any>).context_length,
                 }
             };
-
             return {
-                displayName,
-                hidden: isHidden,
-                info: {
-                    name: m.name,
-                    id: m.model,
-                    subtitle: SubtitleParser.getSubtitleForModel(providerMetadata),
-                    capabilities: [],
-                    providerMetadata,
-                }
+                name: m.name,
+                id: m.model,
+                external_link: `https://ollama.com/library/${m.model}`,
+                created: null,
+                description: null, // todo: supplement on 
+                context_length: null,
+                capabilities: [], // todo: remove
+                architecture: {
+                    input_modalities: ['text'],
+                    output_modalities: ['text'],
+                },
+                supported_parameters: [
+                    'repetition_penalty', // repeat_penalty
+                    'temperature',
+                    'seed',
+                    'stop',
+                    'top_k',
+                    'top_p',
+                    'min_p',
+                ],
+                default_parameters: {},
+                knowledge_cutoff: null,
+                providerMetadata,
             }
         });
     }
 
-    public getModelCapabilities(modelId: string): string[] {
-        return this.fetchedCapabilities.value.get(modelId) ?? [];
-    }
-
     public async getModelAttributes(modelId: string): Promise<ModelAttributes> {
+        const model = this.rawModels.value.find((model) => model.info.id === modelId);
+        if (!model) return {};
+
         const { data: modelInfo, error } = await this.ollamaWrapper.show({ model: modelId });
         if (error) throw new Error('Could not fetch model details.');
 
-        if (!this.fetchedCapabilities.value.has(modelId)) {
-            this.fetchedCapabilities.value.set(modelId, modelInfo.capabilities);
+        if (!model.info.capabilities) {
+            model.info.capabilities = modelInfo.capabilities;
         }
 
         return {
@@ -230,19 +275,5 @@ export class OllamaProvider extends BaseProvider {
 
     public async generateChatTitle(messages: ChatMessage[]): Promise<string> {
         return generateChatTitle(this.ollamaWrapper, messages);
-    }
-
-    private async fetchModelCapabilities(modelId: string): Promise<string[]> {
-        // 'completion' | 'tools' | 'thinking' | 'vision' | 'insert' | 'embedding' | 'search'
-        const CAPABILITY_MAP: Record<string, ModelCapability> = {
-            thinking: 'reasoning',
-        };
-
-        const { data: modelInfo, error } = await this.ollamaWrapper.show({ model: modelId });
-        if (error || !modelInfo) {
-            return [];
-        }
-
-        return modelInfo.capabilities.map((c) => CAPABILITY_MAP[c] ?? c);
     }
 }

@@ -1,3 +1,4 @@
+import type { ModelInfo } from "@/composables/useProviderManager";
 import type { KeyedCustomProvider } from "@/stores/useCustomProvidersStore";
 import mitt from "mitt";
 
@@ -23,6 +24,7 @@ type Events = {
     shortcutsPopup: void,
     createProviderPopup: void,
     editProviderPopup: KeyedCustomProvider,
+    showModelInfo: ModelInfo;
 };
 
 export const emitter = mitt<Events>();

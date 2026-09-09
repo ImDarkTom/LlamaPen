@@ -1,2 +1,0 @@
-- [x] function calling for openai-style providers
-- [ ] seeded provider reset functionality

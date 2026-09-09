@@ -1,6 +1,7 @@
 import logger from '@/lib/logger';
 import { migrations, runMigrations } from '@/lib/migration';
 import { defineStore } from "pinia";
+import type { ModelReasoningEffort } from '@/composables/useProviderManager';
 
 interface Config {
     _version: number;
@@ -48,6 +49,8 @@ interface Config {
         thinking: {
             enabled: false;
             infoOpenByDefault: boolean;
+            effort: ModelReasoningEffort | null;
+            maxTokens: number | null;
         },
         titleGenerationStyle: 'firstMessage' | 'generate' | 'chatId' | 'dynamic';
         hiddenModels: string[];
@@ -110,11 +113,13 @@ export const useConfigStore = defineStore('config', {
         },
         chat: {
             messageOptionsEnabled: false,
-            messageOptions: defaultMessageOptions,
+            messageOptions: { ...defaultMessageOptions },
             thinking: {
                 // Enabled is toggled by the input box icon
                 enabled: false,
                 infoOpenByDefault: false,
+                effort: null,
+                maxTokens: null,
             },
             tokenSaveInterval: 5,
             titleGenerationStyle: 'generate',
