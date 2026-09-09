@@ -18,6 +18,16 @@ onKeyStroke('Escape', () => {
 onMounted(() => {
     hljs.highlightAll();
 });
+
+function handleClick(event: MouseEvent) {
+    const link = (event.target as HTMLElement).closest('a');
+    const href = link?.getAttribute('href');
+
+    if (!href?.startsWith('/')) return;
+
+    event.preventDefault();
+    router.push(href);
+}
 </script>
 
 <template>
@@ -25,7 +35,8 @@ onMounted(() => {
         <article
             v-if="html"
             class="flex flex-col max-w-prose mx-auto p-2 md:p-0"
-            v-html="props.html" />
+            v-html="props.html"
+            @click="handleClick" />
         <article
             v-else
             class="flex flex-col max-w-prose mx-auto p-2 md:p-0">

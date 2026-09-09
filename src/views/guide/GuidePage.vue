@@ -12,6 +12,12 @@ const text = `
 
 The sidebar contains links to pages that may be useful for you to get the app working or
 to to fix common issues.
+
+## LlamaPen Cloud has been discontinued
+
+The service is no longer available and all account information has been deleted. For
+similar functionality without running models locally, set up OpenRouter with a free API
+key by following the [free cloud models guide](/guide/openrouter/free-cloud-models).
 `;
 </script>
 
